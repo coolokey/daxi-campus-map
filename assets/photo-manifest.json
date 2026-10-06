@@ -1,0 +1,7 @@
+{
+  "assets": [
+    {"id":"opening-hero-v1","path":"/generated/campus-opening-hero-v1.png","source":"generated","uses":["opening","distant-environment"],"notes":"Generated from campus-photo reference traits; not a geographic measurement source."},
+    {"id":"academic-exterior","path":"/campus-photos/academic-exterior.jpg","source":"campus-photo","buildingIds":["admin"],"uses":["facade","roof","track-context"],"notes":"White-gray facade, red roof, three floors, track and hillside context."},
+    {"id":"academic-entrance","path":"/campus-photos/academic-entrance.jpg","source":"campus-photo","buildingIds":["admin"],"uses":["entrance","window-grid","tree-line"],"notes":"Entrance columns, cypress line, paving and front elevation."}
+  ]
+}
