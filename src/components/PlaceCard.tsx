@@ -1,0 +1,2 @@
+import type { Place } from '../data/campus';
+export default function PlaceCard({place,onClose}:{place:Place;onClose:()=>void}){return <aside className="place-card"><button className="close" aria-label="關閉" onClick={onClose}>×</button><span className="eyebrow">{place.category}</span><h2>{place.name}</h2><p>大溪國中 · 115 學年度</p><button className="primary" onClick={()=>document.getElementById('scene')?.scrollIntoView({behavior:'smooth'})}>帶我到入口</button></aside>}

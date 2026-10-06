@@ -1,0 +1,13 @@
+{"school":"桃園市立大溪國民中學","year":"115","places":[
+ {"id":"main-gate","name":"正門","category":"入口","map":[50.5,93.4],"world":[0,0],"entrance":[0,5]},
+ {"id":"track","name":"操場及綜合球場","category":"運動場地","map":[27,39],"world":[-38,18],"entrance":[-12,0]},
+ {"id":"student-center","name":"學生生活動中心","category":"場館","map":[25,76],"world":[-36,-28],"entrance":[-22,-30]},
+ {"id":"admin","name":"行政大樓","category":"教學建築","map":[52,77],"world":[0,-23],"entrance":[0,-17]},
+ {"id":"multifunction","name":"綜合大樓","category":"教學建築","map":[83,30],"world":[38,25],"entrance":[30,20]},
+ {"id":"technology","name":"科技館","category":"教學建築","map":[83,56],"world":[39,0],"entrance":[31,-1]},
+ {"id":"art","name":"藝術館","category":"教學建築","map":[87,73],"world":[42,-19],"entrance":[33,-18]},
+ {"id":"special","name":"特教學園","category":"教學建築","map":[92,38],"world":[52,18],"entrance":[43,14]},
+ {"id":"basketball","name":"籃球場","category":"運動場地","map":[70,26],"world":[18,29],"entrance":[12,20]},
+ {"id":"parking","name":"學生腳踏車停車區","category":"服務設施","map":[92,91],"world":[47,-35],"entrance":[38,-31]},
+ {"id":"breezeway","name":"通廊","category":"通行空間","map":[64,61],"world":[16,-4],"entrance":[12,-4]}
+]}
