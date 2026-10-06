@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { Place } from '../data/campus';
 const mat=(color:number)=>new THREE.MeshStandardMaterial({color,roughness:.82});
+export function createAvatar(){const avatar=new THREE.Group();avatar.name='tour-avatar';const body=new THREE.Mesh(new THREE.CapsuleGeometry(.38,.9,4,8),mat(0x2e668f));body.position.y=1.05;const head=new THREE.Mesh(new THREE.SphereGeometry(.28,12,8),mat(0xf0b18d));head.position.y=1.8;const hair=new THREE.Mesh(new THREE.SphereGeometry(.29,12,8,0,Math.PI*2,0,Math.PI*.55),mat(0x3b2926));hair.position.y=1.93;avatar.add(body,head,hair);return avatar}
 export function buildCampus(scene:THREE.Scene,places:Place[]){
  const ground=new THREE.Mesh(new THREE.BoxGeometry(116,1,82),mat(0x9fca4a));ground.position.y=-.5;scene.add(ground);
  const road=mat(0x283b43);for(const [x,z,w,d] of [[8,-25,88,8],[31,7,7,55],[-8,-2,48,5]] as number[][]){const r=new THREE.Mesh(new THREE.BoxGeometry(w,.12,d),road);r.position.set(x,.08,z);scene.add(r)}
