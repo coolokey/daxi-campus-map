@@ -4,8 +4,8 @@
     "unreachable": []
   },
   "direction": {
-    "dot": 0.9946354779899175,
-    "behind": -6.499999999999999
+    "dot": 0.9946354779899174,
+    "behind": -6.5000000000000036
   },
   "geometry": {
     "flights": 40,
@@ -13,8 +13,8 @@
   },
   "jumping": {
     "startY": 0.18000000000000002,
-    "y": 1.0905325714276457,
-    "ground": 1.0905325714276457,
+    "y": 1.0583177142875453,
+    "ground": 1.0583177142875453,
     "jumping": false,
     "hit": false
   },
@@ -39,14 +39,16 @@
   "art": {
     "id": "art-4f",
     "y": 10.8,
-    "distance": 0,
+    "distance": 1.4210854715202004e-14,
     "floor": 4,
     "hit": false
   },
   "mobile": {
-    "heading": 2.140796326794675,
+    "heading": 1.6439463267948966,
     "cameraY": 12.850000000000001,
     "floor": 4
   },
-  "errors": []
+  "errors": [],
+  "url": "https://coolokey.github.io/daxi-campus-map/",
+  "sceneCommit": "89838f9192ac420f2c44c73d3af1299f2e86c29a"
 }
