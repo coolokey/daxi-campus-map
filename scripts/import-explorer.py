@@ -142,3 +142,5 @@ html = html.replace('</body>', '<script src="minimap-math.js"></script>\n<script
 import runpy
 runpy.run_path(str(root / 'scripts/patch-collision.py'))
 runpy.run_path(str(root / 'scripts/patch-walk-world.py'))
+
+runpy.run_path(str(root / 'scripts/patch-room-layout.py'))

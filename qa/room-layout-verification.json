@@ -1,0 +1,16 @@
+{
+  "url": "http://127.0.0.1:5178/",
+  "rooms": 82,
+  "annualPersistence": true,
+  "fixedTargets": true,
+  "safeNames": true,
+  "mobile": {
+    "left": 6,
+    "right": 384,
+    "bottom": 838,
+    "footBottom": 837,
+    "width": 390,
+    "height": 844
+  },
+  "errors": []
+}

@@ -56,7 +56,7 @@
     box(g,l,r.u0+.4,r.u1-.4,windowV-.04,windowV+.04,y+1.15,y+2.65,colors.glass);
     for(let u=r.u0+.5;u<r.u1-.4;u+=.55)box(g,l,u-.025,u+.025,windowV-.09,windowV+.09,y+1.15,y+2.65,colors.steel);
     const plate=new THREE.Mesh(new THREE.PlaneGeometry(Math.min(2.5,r.u1-r.u0-.25),.38),new THREE.MeshBasicMaterial({map:createRoomNameplateTexture(r.name),side:THREE.DoubleSide}));
-    const pp=l.world(r.u,l.wallV+l.sign*.12,y+2.5);plate.position.set(pp.x,pp.y,pp.z);if(!l.horizontal)plate.rotation.y=Math.PI/2;g.add(plate);
+    const pp=l.world(r.u,l.wallV+l.sign*.12,y+2.5);plate.position.set(pp.x,pp.y,pp.z);if(!l.horizontal)plate.rotation.y=Math.PI/2;plate.userData.roomId=r.id;g.add(plate);
     const office=r.cat==='admin'||/辦公|教務|學務|總務|校長|人事|會計/.test(r.name);
     // Keep a clear central aisle from each door; furniture sits beside it.
     for(const side of [-1,1]){

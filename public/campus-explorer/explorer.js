@@ -2638,7 +2638,7 @@
     }
 
     window.addEventListener("keydown", (e) => {
-      if (e.target.tagName === "INPUT") return;
+      if (e.target.closest("input,textarea,select,[contenteditable]")) return;
       if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") moveInput.forward = true;
       if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") moveInput.backward = true;
       if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") moveInput.left = true;
@@ -2663,7 +2663,7 @@
     });
 
     window.addEventListener("keyup", (e) => {
-      if (e.target.tagName === "INPUT") return;
+      if (e.target.closest("input,textarea,select,[contenteditable]")) return;
       if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") moveInput.forward = false;
       if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") moveInput.backward = false;
       if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") moveInput.left = false;
@@ -3038,6 +3038,9 @@
     /* ==========================================================================
        9. SEARCH, QUICK CHIPS & 2D MINIMAP
        ========================================================================== */
+    function escapeRoomText(value) {
+      return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
     const searchInput = document.getElementById("search-input");
     const searchResults = document.getElementById("search-results");
 
@@ -3058,7 +3061,7 @@
           const catColor = CATEGORY_COLORS[r.cat] || "#2563eb";
           return `
             <li onclick="onSelectSearchRoom('${r.id}')">
-              <span><b>${r.name}</b> (${r.floor}F)</span>
+              <span><b>${escapeRoomText(r.name)}</b> (${r.floor}F)</span>
               <div>
                 <span class="rm-cat-tag" style="background:${catColor};">${r.floor}F</span>
                 <span class="rm-bld">${r.buildingName}</span>
