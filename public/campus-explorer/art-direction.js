@@ -115,7 +115,7 @@
   for(const element of document.querySelectorAll('.venue-chip,.brand-btn')){
     element.tabIndex=0;element.setAttribute('role','button');element.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();element.click()}});
   }
-  for(const button of document.querySelectorAll('.dpad-btn'))button.setAttribute('aria-label',({ 'dpad-up':'向前移動','dpad-left':'向左移動','dpad-right':'向右移動','dpad-down':'向後移動'})[button.id]);
+  for(const button of document.querySelectorAll('.dpad-btn'))button.setAttribute('aria-label',({ 'dpad-up':'向前移動','dpad-left':'向左轉','dpad-right':'向右轉','dpad-down':'向後移動'})[button.id]);
   document.getElementById('search-input').setAttribute('aria-label','搜尋處室或教室');
   // 移除密集裝飾 emoji，只保留文字操作資訊。
   const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);

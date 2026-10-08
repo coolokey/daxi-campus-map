@@ -229,6 +229,7 @@
 
     function createStudentAvatar() {
       avatarGroup = new THREE.Group();
+      avatarGroup.scale.setScalar(.65);
       avatarGroup.position.set(-10, 0, 96);
       avatarAngle = Math.PI; // 預設面向校園北側 (朝前)
       avatarGroup.rotation.y = avatarAngle;
@@ -429,12 +430,14 @@
 
     // 4.0 Collision & Multi-Floor Staircase Engine (AABB 碰撞體與階梯升降系統)
     const WALL_COLLIDERS = [];
+    let collisionBuildingId = null;
     const STAIR_ZONES = [];
     const AVATAR_COLLISION_RADIUS = 0.42;
     const AVATAR_HEIGHT = 1.8;
 
     function registerWallCollider(minX, maxX, minZ, maxZ, minY, maxY) {
       WALL_COLLIDERS.push({
+        buildingId: collisionBuildingId,
         minX: Math.min(minX, maxX),
         maxX: Math.max(minX, maxX),
         minZ: Math.min(minZ, maxZ),
@@ -485,11 +488,14 @@
       const sx = dx / steps, sz = dz / steps, sy = dy / steps;
       let blocked = false;
       for (let step = 0; step < steps; step++) {
-        const y = position.y + sy;
+        let y = position.y + sy;
+        const followsGround = typeof window!=='undefined' && window.campusWalkWorld && dy===0 && !isJumping;
+        if(followsGround)y=window.campusWalkWorld.ground({x:position.x+sx,y:position.y,z:position.z+sz});
         if (!checkWallCollision(position.x + sx, y, position.z)) position.x += sx;
         else if (sx !== 0) blocked = true;
         if (!checkWallCollision(position.x, y, position.z + sz)) position.z += sz;
         else if (sz !== 0) blocked = true;
+        if(followsGround)y=window.campusWalkWorld.ground(position);
         if (!checkWallCollision(position.x, y, position.z)) position.y = y;
         else if (sy !== 0) blocked = true;
       }
@@ -1523,8 +1529,10 @@
 
     // 4.8 Buildings Construction (中空可進入建築、大樓入口、走廊、樓梯與隔間空教室)
     BUILDINGS_CONFIG.forEach(cfg => {
+      collisionBuildingId=cfg.id;
       const bldGroup = new THREE.Group();
       bldGroup.position.set(cfg.x, 0, cfg.z);
+      bldGroup.userData.buildingId=cfg.id;
       const totalH = cfg.floors * FH;
       const isHoriz = cfg.width >= cfg.depth;
       const corridorWidth = 2.6;
@@ -1945,6 +1953,7 @@
       if (cfg.stairs) {
         cfg.stairs.forEach(st => {
           const stMesh = create3DStaircaseMesh(st.x - cfg.x, st.z - cfg.z, st.floors, cfg.x, cfg.z);
+          stMesh.userData.oldStairs=true;
           bldGroup.add(stMesh);
         });
       }
@@ -2068,6 +2077,7 @@
       }
 
       scene.add(bldGroup);
+      collisionBuildingId=null;
 
       cfg.rooms.forEach(r => {
         const roomObj = {
@@ -2540,12 +2550,15 @@
     let currentMode = "bird"; // Start in Overview Mode (鳥瞰全景) with Welcome Card
     const moveInput = { forward: false, backward: false, left: false, right: false, sprint: false };
     let walkAnimCycle = 0;
+    let walkPitch = 0;
     let jumpVelocity = 0;
     let jumpBaseY = 0;
     let isJumping = false;
 
     function setControlMode(mode) {
       currentMode = mode;
+      controls.enabled=mode==="bird";
+      camera.near=mode==='bird'?1:.08;camera.fov=mode==='bird'?45:60;camera.updateProjectionMatrix();
       const btnIcon = document.getElementById("btn-mode-icon");
       const btnText = document.getElementById("btn-mode-text");
       const toggleBtn = document.getElementById("btn-mode-toggle");
@@ -2558,7 +2571,7 @@
         toggleBtn.title = "目前為第三人稱漫遊，點擊切換為鳥瞰全景";
         if (avatarGroup) avatarGroup.visible = true;
         if (bottomCtrls) bottomCtrls.style.display = "flex";
-        showToast("切換為「第三人稱視角」！WASD 跑步漫遊。");
+        showToast("切換為「第三人稱視角」！W／S 前進後退，A／D 轉向。");
         if (avatarGroup) {
           const targetLookAt = avatarGroup.position.clone().add(new THREE.Vector3(0, 1.8, 0));
           const behindPos = avatarGroup.position.clone().add(new THREE.Vector3(0, 5.5, 12));
@@ -2676,7 +2689,9 @@
       el.addEventListener("mouseleave", end);
       el.addEventListener("touchstart", start, { passive: false });
       el.addEventListener("touchend", end, { passive: false });
+      el.addEventListener("touchcancel", end, { passive: false });
     }
+    window.addEventListener('blur',()=>{Object.keys(moveInput).forEach(k=>moveInput[k]=false)});
     bindDpad("dpad-up", "forward");
     bindDpad("dpad-down", "backward");
     bindDpad("dpad-left", "left");
@@ -2709,6 +2724,11 @@
         pathPoints.push(new THREE.Vector3(destNode.x, (destNode.y || 0) + 0.6, destNode.z));
       }
 
+      if(window.campusWalkWorld){
+        const actual=window.campusWalkWorld.route(avatarGroup.position,room);
+        if(!actual){showToast('目前位置無可通行路徑，請先移到走廊或入口。');return;}
+        pathPoints.length=0;actual.forEach(p=>pathPoints.push(new THREE.Vector3(p.x,p.y+.6,p.z)));
+      }
       renderNavigationPath(pathPoints);
 
       let totalDist = 0;
@@ -2920,6 +2940,12 @@
 
     // Custom Mouse Look & Invert Y Rotation Handling
     function applyManualCameraRotation(deltaX, deltaY) {
+      if(currentMode!=='bird'){
+        avatarAngle-=deltaX*.0035*turnSensitivityMultiplier;
+        walkPitch=Math.max(-.35,Math.min(.4,walkPitch-deltaY*.0035*(isInvertY?-1:1)));
+        avatarGroup.rotation.y=avatarAngle;
+        return;
+      }
       const rotSens = turnSensitivityMultiplier;
       const inv = isInvertY ? -1 : 1;
       const thetaAngle = -deltaX * 0.0035 * rotSens;
@@ -2954,7 +2980,7 @@
       }
     });
     renderer.domElement.addEventListener("mousemove", (e) => {
-      if (mouseTurnMode === "move" && (currentMode === "avatar" || currentMode === "firstperson")) {
+      if ((mouseTurnMode === "move" || isMouseDownDragging) && (currentMode === "avatar" || currentMode === "firstperson")) {
         const deltaX = e.movementX || 0;
         const deltaY = e.movementY || 0;
         if (Math.abs(deltaX) > 0 || Math.abs(deltaY) > 0) {
@@ -3367,61 +3393,41 @@
       const baseSpeed = moveInput.sprint ? avatarRunSpeed : avatarSpeed;
       const currentSpeed = baseSpeed * avatarSpeedMultiplier * delta;
 
-      // 1. AUTO-WALK (平滑爬樓梯與行進，防抖動與超前判定)
+      // 1. AUTO-WALK：每幀用完行走距離，可跨越數個相鄰節點。
       if (isAutoWalking && currentNavPoints.length > 1) {
-        isMoving = true;
-        const targetPtIndex = autoWalkIndex + 1;
-        const currentTargetPt = currentNavPoints[targetPtIndex];
-        if (currentTargetPt) {
-          const curPos = avatarGroup.position;
-          const targetPos = new THREE.Vector3(currentTargetPt.x, (currentTargetPt.y || 0.6) - 0.6, currentTargetPt.z);
-          const distToTarget = curPos.distanceTo(targetPos);
-          const stepDist = 14 * avatarSpeedMultiplier * delta;
-
-          if (distToTarget <= stepDist || distToTarget < 1.0) {
-            if (moveAvatarWithCollision(curPos, targetPos.x-curPos.x, targetPos.z-curPos.z, targetPos.y-curPos.y)) {
-              stopAutoWalk();
-              showToast('前方有牆壁，帶路已停止。請沿走廊或門口通行。');
-              return;
+        let remaining=14*avatarSpeedMultiplier*delta;
+        for(let n=0;n<64 && remaining>1e-6 && isAutoWalking;n++){
+          const point=currentNavPoints[autoWalkIndex+1];
+          if(!point){stopAutoWalk();break;}
+          const target=new THREE.Vector3(point.x,point.y-.6,point.z),p=avatarGroup.position;
+          const dir=target.clone().sub(p),distance=dir.length();
+          if(distance>1e-6){
+            const amount=Math.min(distance,remaining);dir.multiplyScalar(amount/distance);
+            if(moveAvatarWithCollision(p,dir.x,dir.z,dir.y)){
+              stopAutoWalk();showToast('前方有牆壁，帶路已停止。請沿走廊或門口通行。');break;
             }
-            jumpBaseY = curPos.y;
-            autoWalkIndex++;
-            if (autoWalkIndex >= currentNavPoints.length - 1) {
-              stopAutoWalk();
-              showToast("🎉 已順利抵達目的地教室！");
-            }
-          } else {
-            const dir = targetPos.clone().sub(curPos).normalize();
-            if (moveAvatarWithCollision(curPos, dir.x*stepDist, dir.z*stepDist, dir.y*stepDist)) {
-              stopAutoWalk();
-              showToast('前方有牆壁，帶路已停止。請沿走廊或門口通行。');
-            }
-            jumpBaseY = curPos.y;
-            avatarAngle = Math.atan2(dir.x, dir.z);
-            avatarGroup.rotation.y = avatarAngle;
+            isMoving=true;jumpBaseY=p.y;remaining-=amount;
+            if(Math.hypot(dir.x,dir.z)>1e-6){avatarAngle=Math.atan2(dir.x,dir.z);avatarGroup.rotation.y=avatarAngle;}
+            if(amount<distance-1e-6)break;
           }
-        } else {
-          stopAutoWalk();
+          autoWalkIndex++;
+          if(autoWalkIndex>=currentNavPoints.length-1){
+            stopAutoWalk();if(navTargetPoint)navTargetPoint.visible=false;if(navPathMesh)navPathMesh.visible=false;
+            document.getElementById('nav-hud').classList.remove('visible');showToast('已抵達目的地。');
+          }
         }
       }
       // 2. MANUAL KEYBOARD / DPAD CONTROLS (Camera-Relative Movement)
       else if (avatarGroup && (currentMode === "avatar" || currentMode === "firstperson")) {
-        const camDir = new THREE.Vector3();
-        camera.getWorldDirection(camDir);
-        camDir.y = 0;
-        camDir.normalize();
-        const camRight = new THREE.Vector3().crossVectors(camDir, new THREE.Vector3(0, 1, 0)).normalize();
-
-        const moveVec = new THREE.Vector3();
-        if (moveInput.forward) moveVec.add(camDir);
-        if (moveInput.backward) moveVec.sub(camDir);
-        if (moveInput.left) moveVec.sub(camRight);
-        if (moveInput.right) moveVec.add(camRight);
+        // A/D 轉向，W/S 沿人物面朝的方向前進／後退。
+        avatarAngle += ((moveInput.left ? 1 : 0)-(moveInput.right ? 1 : 0))*1.9*turnSensitivityMultiplier*delta;
+        avatarGroup.rotation.y=avatarAngle;
+        const forward=new THREE.Vector3(Math.sin(avatarAngle),0,Math.cos(avatarAngle));
+        const moveVec=forward.multiplyScalar((moveInput.forward?1:0)-(moveInput.backward?1:0));
 
         if (moveVec.lengthSq() > 0.001) {
           isMoving = true;
           moveVec.normalize();
-          avatarAngle = Math.atan2(moveVec.x, moveVec.z);
           avatarGroup.rotation.y = avatarAngle;
 
           const dx = moveVec.x * currentSpeed;
@@ -3433,38 +3439,24 @@
           moveAvatarWithCollision(curPos, dx, dz);
           isMoving = Math.hypot(curPos.x-beforeX, curPos.z-beforeZ) > 0.0001;
 
-          // 2. Staircase Ascend / Descend & Floor Ground Detection (看到樓梯可上樓，進入各樓層走廊)
-          const stairCheck = checkStairElevation(curPos.x, curPos.y, curPos.z);
-          if (stairCheck.onStair) {
-            if (!isJumping) {
-              curPos.y = stairCheck.elevation;
-              jumpBaseY = curPos.y;
-            }
-          } else {
-            const currentBld = getBuildingAt(curPos.x, curPos.z);
-            if (currentBld) {
-              const detectedF = Math.max(1, Math.min(currentBld.floors, Math.floor((curPos.y + 0.8) / FH) + 1));
-              const floorGroundY = (detectedF - 1) * FH;
-              if (!isJumping) {
-                curPos.y = floorGroundY;
-                jumpBaseY = floorGroundY;
-              }
-            } else {
-              if (!isJumping) {
-                curPos.y = 0;
-                jumpBaseY = 0;
-              }
-            }
-          }
+          // 梯面、平台及樓板由相同的可行走配置提供高度。
         }
+      }
+      if (window.campusWalkWorld && avatarGroup && !isJumping && (currentMode==='avatar'||currentMode==='firstperson')) {
+        const groundY=window.campusWalkWorld.ground(avatarGroup.position);
+        avatarGroup.position.y=Math.max(groundY,avatarGroup.position.y-8*delta);
+        jumpBaseY=avatarGroup.position.y;
       }
 
       // Space-bar Jump Hop (依據當前樓層地面高度落地，不穿破樓板)
       if (avatarGroup && isJumping) {
+        // 查詢下降前腳底高度，落在目前梯面而非起跳樓層。
+        const landingY=window.campusWalkWorld?window.campusWalkWorld.ground(avatarGroup.position):jumpBaseY;
         avatarGroup.position.y += jumpVelocity * delta;
         jumpVelocity -= 22 * delta;
-        if (avatarGroup.position.y <= jumpBaseY) {
-          avatarGroup.position.y = jumpBaseY;
+        if (jumpVelocity <= 0 && avatarGroup.position.y <= landingY) {
+          avatarGroup.position.y = landingY;
+          jumpBaseY = landingY;
           jumpVelocity = 0;
           isJumping = false;
         }
@@ -3485,18 +3477,8 @@
           avatarRightArm.rotation.x = 0;
         }
 
-        // Camera Follow in Avatar / First-Person Mode
-        if (currentMode === "avatar" && isMoving) {
-          const deltaPos = avatarGroup.position.clone().sub(prevAvatarPos);
-          camera.position.add(deltaPos);
-          controls.target.add(deltaPos);
-        } else if (currentMode === "firstperson") {
-          camera.position.set(avatarGroup.position.x, avatarGroup.position.y + 1.7, avatarGroup.position.z);
-          if (isMoving) {
-            const deltaPos = avatarGroup.position.clone().sub(prevAvatarPos);
-            controls.target.add(deltaPos);
-          }
-        }
+        // 人物、鏡頭與行進方向共用 heading；鳥瞰獨立操作。
+        if(window.campusWalkWorld && currentMode!=='bird' && !isCameraAnimating)window.campusWalkWorld.updateCamera();
         prevAvatarPos.copy(avatarGroup.position);
 
         // Dynamic Floor Detection for Minimap Badge
@@ -3511,7 +3493,7 @@
         }
 
         // Nametag Screen Position
-        const avatarScreenPos = avatarGroup.position.clone().add(new THREE.Vector3(0, 3.2, 0));
+        const avatarScreenPos = avatarGroup.position.clone().add(new THREE.Vector3(0, 2.1, 0));
         avatarScreenPos.project(camera);
         if (avatarScreenPos.z > 1 || currentMode === "firstperson") {
           avatarNametag.style.display = "none";
@@ -3525,7 +3507,7 @@
       }
 
       // Always update OrbitControls so rotation/zoom NEVER freezes (skip during smooth camera tween)
-      if (!isCameraAnimating) {
+      if (!isCameraAnimating && currentMode==='bird') {
         controls.update();
       }
 

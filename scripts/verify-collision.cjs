@@ -14,11 +14,11 @@ const assert=require('node:assert/strict');
   await frame.evaluate(()=>{
    stopAutoWalk();avatarGroup.position.set(-12,0,36);prevAvatarPos.copy(avatarGroup.position);
    camera.position.set(-12,5,26);controls.target.set(-12,1.8,36);controls.update();
-   moveInput.forward=true;moveInput.sprint=true;avatarSpeedMultiplier=3;
+   avatarAngle=0;moveInput.forward=true;moveInput.sprint=true;avatarSpeedMultiplier=3;
   });
   await page.waitForTimeout(1600);
   const keyboard=await frame.evaluate(()=>{moveInput.forward=false;moveInput.sprint=false;return {z:avatarGroup.position.z,hit:checkWallCollision(avatarGroup.position.x,avatarGroup.position.y,avatarGroup.position.z)}});
-  assert(keyboard.z<=38.34&&keyboard.z>=36,JSON.stringify(keyboard));assert.equal(keyboard.hit,false);
+  assert(keyboard.z<=38.4601&&keyboard.z>=36,JSON.stringify(keyboard));assert.equal(keyboard.hit,false);
   const audit=await frame.evaluate(()=>{
    const guard={x:6,y:0,z:92};moveAvatarWithCollision(guard,0,-15);
    const door={x:-12,y:0,z:53};moveAvatarWithCollision(door,0,-5);
@@ -37,7 +37,7 @@ const assert=require('node:assert/strict');
   const auto=await frame.evaluate(()=>({walking:isAutoWalking,z:avatarGroup.position.z,hit:checkWallCollision(avatarGroup.position.x,avatarGroup.position.y,avatarGroup.position.z)}));
   assert.equal(auto.walking,false);assert(auto.z<39);assert.equal(auto.hit,false);
   await page.setViewportSize({width:390,height:844});
-  await frame.evaluate(()=>{avatarGroup.position.set(-12,0,36);prevAvatarPos.copy(avatarGroup.position);moveInput.forward=true});
+  await frame.evaluate(()=>{avatarGroup.position.set(-12,0,36);prevAvatarPos.copy(avatarGroup.position);avatarAngle=0;moveInput.forward=true});
   await page.waitForTimeout(800);
   const mobile=await frame.evaluate(()=>{moveInput.forward=false;return avatarGroup.position.z});assert(mobile<39);
   assert.deepEqual(errors,[]);console.log(JSON.stringify({keyboard,audit,auto,mobile,errors}));

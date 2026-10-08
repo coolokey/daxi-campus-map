@@ -17,6 +17,8 @@ const grade9Plan = {
  '906':[3,'g9-3f-901'], '901':[3,'g9-3f-902']
 };
 const grade9 = BUILDINGS_CONFIG.find(b=>b.id==='grade9-back');
+// 原示意座標使縱棟穿入行政教室，校正相接邊界以保留真實可通行室內。
+grade9.x = 7.5;
 grade9.rooms = grade9.rooms.filter(r=>grade9Plan[r.id]);
 for(const room of grade9.rooms){
  const [floor,node]=grade9Plan[room.id];
@@ -139,3 +141,4 @@ html = html.replace('</body>', '<script src="minimap-math.js"></script>\n<script
 # Keep collision fixes when rebuilding the user's supplied scene.
 import runpy
 runpy.run_path(str(root / 'scripts/patch-collision.py'))
+runpy.run_path(str(root / 'scripts/patch-walk-world.py'))

@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 const source=readFileSync(new URL('../public/campus-explorer/explorer.js',import.meta.url),'utf8');
 const engine=source.slice(source.indexOf('const WALL_COLLIDERS'),source.indexOf('    function checkStairElevation'));
-const movement=source.slice(source.indexOf('          // 1. Sliding Collision'),source.indexOf('          // 2. Staircase Ascend'));
+const movement=source.slice(source.indexOf('          // 1. Sliding Collision'),source.indexOf('          // 梯面'));
 function setup(walls:number[][]){
  return runInNewContext(engine+`; for(const wall of walls)registerWallCollider(...wall);
  ({hit:checkWallCollision,move(x,y,z,dx,dz){const curPos={x,y,z};${movement};return curPos;}})`,{walls});

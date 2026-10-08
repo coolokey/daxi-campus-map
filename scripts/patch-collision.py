@@ -11,11 +11,14 @@ if 'function moveAvatarWithCollision' not in source:
       const sx = dx / steps, sz = dz / steps, sy = dy / steps;
       let blocked = false;
       for (let step = 0; step < steps; step++) {
-        const y = position.y + sy;
+        let y = position.y + sy;
+        const followsGround = typeof window!=='undefined' && window.campusWalkWorld && dy===0 && !isJumping;
+        if(followsGround)y=window.campusWalkWorld.ground({x:position.x+sx,y:position.y,z:position.z+sz});
         if (!checkWallCollision(position.x + sx, y, position.z)) position.x += sx;
         else if (sx !== 0) blocked = true;
         if (!checkWallCollision(position.x, y, position.z + sz)) position.z += sz;
         else if (sz !== 0) blocked = true;
+        if(followsGround)y=window.campusWalkWorld.ground(position);
         if (!checkWallCollision(position.x, y, position.z)) position.y = y;
         else if (sy !== 0) blocked = true;
       }

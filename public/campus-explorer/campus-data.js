@@ -286,6 +286,8 @@ const grade9Plan = {
  '906':[3,'g9-3f-901'], '901':[3,'g9-3f-902']
 };
 const grade9 = BUILDINGS_CONFIG.find(b=>b.id==='grade9-back');
+// 原示意座標使縱棟穿入行政教室，校正相接邊界以保留真實可通行室內。
+grade9.x = 7.5;
 grade9.rooms = grade9.rooms.filter(r=>grade9Plan[r.id]);
 for(const room of grade9.rooms){
  const [floor,node]=grade9Plan[room.id];

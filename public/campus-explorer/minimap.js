@@ -67,7 +67,8 @@
   ctx.save();ctx.translate(size/2,centerY);ctx.rotate(arrowAngle);
   ctx.beginPath();ctx.moveTo(0,-10*unit);ctx.lineTo(7*unit,8*unit);ctx.lineTo(0,4*unit);ctx.lineTo(-7*unit,8*unit);ctx.closePath();ctx.fillStyle='#fff';ctx.strokeStyle='#101923';ctx.lineWidth=2*unit;ctx.fill();ctx.stroke();ctx.restore();
   floorBadge.textContent=`${location.floor}F`;
-  const text=`${location.label}・${location.floor}F`;
+  const room=window.campusWalkWorld?.roomAt(position);
+  const text=`${room?room.name.replace(/\s*\(\d+F\)/,''):location.label}・${location.floor}F`;
   if(text!==lastCaption){caption.textContent=text;card.setAttribute('aria-label',`目前位置：${text}`);lastCaption=text}
   const r=card.clientWidth*.42,x=Math.max(13,Math.min(card.clientWidth-13,card.clientWidth/2-Math.sin(heading)*r)),y=Math.max(13,Math.min(card.clientWidth-13,card.clientWidth*.6-Math.cos(heading)*r));
   compass.style.left=`${x}px`;compass.style.top=`${y}px`;compass.title='校園平面圖的上方方向';
