@@ -1,0 +1,11 @@
+{
+  "buildings": 12,
+  "rooms": 93,
+  "unreachable": [],
+  "missing": [],
+  "roofErrors": [],
+  "meshes": 2183,
+  "autoWalk": true,
+  "floorFilter": true,
+  "errors": []
+}
