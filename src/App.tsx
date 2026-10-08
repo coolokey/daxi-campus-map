@@ -5,6 +5,7 @@ import CampusMap2D from './components/CampusMap2D';
 import CampusScene3D from './components/CampusScene3D';
 import PlaceCard from './components/PlaceCard';
 import ViewerHud from './components/ViewerHud';
+import AvatarControls from './components/AvatarControls';
 
 const asset=(name:string)=>`${import.meta.env.BASE_URL}${name}`;
 
@@ -22,6 +23,7 @@ export default function App(){
    <div className="tour-copy"><span className="eyebrow">DAXI CAMPUS · 115</span><h2>從山坡、操場到校舍，<em>一眼認識大溪國中。</em></h2><p>以實景照片、空拍構圖與校園平面圖重建的互動導覽。</p><div><button className="primary" onClick={()=>setTour(advanceTour('opening'))}>開始探索</button><button className="ghost" onClick={()=>setTour('explore')}>跳過開場</button></div></div>
   </section>}
   <CampusScene3D places={campus.places} onSelect={select}/>
+  <AvatarControls/>
   <ViewerHud query={query} selectedId={selected?.id} onQueryChange={setQuery} onDestination={id=>{const place=campus.places.find(item=>item.id===id);if(place)select(place)}} onMode={()=>window.dispatchEvent(new Event('campus-toggle-walk'))} onMap={()=>setMapOpen(value=>!value)}/>
   {mapOpen&&<section className="map-overlay"><CampusMap2D places={campus.places} selected={selected} onSelect={select}/></section>}
   {query&&<div className="search-results viewer-results">{results.map(place=><button key={place.id} onClick={()=>select(place)}>{place.name}<span>{place.category}</span></button>)}</div>}
