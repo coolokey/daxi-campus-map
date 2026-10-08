@@ -229,7 +229,7 @@
 
     function createStudentAvatar() {
       avatarGroup = new THREE.Group();
-      avatarGroup.position.set(0, 0, 96);
+      avatarGroup.position.set(-10, 0, 96);
       avatarAngle = Math.PI; // 預設面向校園北側 (朝前)
       avatarGroup.rotation.y = avatarAngle;
       prevAvatarPos.copy(avatarGroup.position);
@@ -476,6 +476,24 @@
         }
       }
       return false;
+    }
+
+    // 每次最多前進 0.18 m，避免高速／掉幀時跨過薄牆。
+    // 自動帶路與鍵盤、手機共用人物體積及碰撞體。
+    function moveAvatarWithCollision(position, dx, dz, dy = 0) {
+      const steps = Math.max(1, Math.ceil(Math.hypot(dx, dy, dz) / 0.18));
+      const sx = dx / steps, sz = dz / steps, sy = dy / steps;
+      let blocked = false;
+      for (let step = 0; step < steps; step++) {
+        const y = position.y + sy;
+        if (!checkWallCollision(position.x + sx, y, position.z)) position.x += sx;
+        else if (sx !== 0) blocked = true;
+        if (!checkWallCollision(position.x, y, position.z + sz)) position.z += sz;
+        else if (sz !== 0) blocked = true;
+        if (!checkWallCollision(position.x, y, position.z)) position.y = y;
+        else if (sy !== 0) blocked = true;
+      }
+      return blocked;
     }
 
     function checkStairElevation(x, y, z) {
@@ -733,10 +751,12 @@
 
       // 電動伸縮大門 (折疊鋁合金門)
       const slidingGate = new THREE.Mesh(
-        new THREE.BoxGeometry(18, 1.6, 0.15),
+        new THREE.BoxGeometry(3, 1.6, 0.15),
         new THREE.MeshStandardMaterial({ color: 0xd4d4d8, wireframe: false })
       );
-      slidingGate.position.set(0, 0.8, 10);
+      // 入口採開門狀態，收起的門仍有碰撞體。
+      slidingGate.position.set(-7.5, 0.8, 10);
+      registerWallCollider(-19, -16, 85.9, 86.1, 0, 1.6);
       slidingGate.castShadow = true;
       plazaGroup.add(slidingGate);
 
@@ -778,6 +798,10 @@
       guardGroup.add(ledSign);
 
       scene.add(guardGroup);
+      registerWallCollider(3.2, 8.8, 83.2, 88.8, 0, 3.2);
+      // 門柱是實體；中央入口保留通行空間。
+      registerWallCollider(-22.2, -19.8, 84.8, 87.2, 0, 6.2);
+      registerWallCollider(-0.2, 2.2, 84.8, 87.2, 0, 6.2);
 
       ROOMS_DB["guard"] = {
         id: "guard",
@@ -1557,7 +1581,17 @@
             new THREE.MeshStandardMaterial({ color: 0xf1f5f9 })
           );
           rail.position.set(0, fBaseY + 0.55, outerZ);
-          floorGroup.add(rail);
+          if (f === 1) {
+            // 1F 的可通行門口必須與畫面護欄的開口一致。
+            const length = (isHoriz ? cfg.width : cfg.depth) / 2 - 2;
+            for (const sign of [-1, 1]) {
+              const part = new THREE.Mesh(new THREE.BoxGeometry(isHoriz ? length : .16, 1.1, isHoriz ? .16 : length), rail.material);
+              part.position.copy(rail.position);
+              if (isHoriz) part.position.x = sign * (length / 2 + 2);
+              else part.position.z = sign * (length / 2 + 2);
+              floorGroup.add(part);
+            }
+          } else floorGroup.add(rail);
 
           // 柱列
           const colCount = Math.max(3, Math.round(cfg.width / 7));
@@ -1569,7 +1603,7 @@
             );
             colMesh.position.set(-cfg.width / 2 + c * colStep, fCenterY, outerZ);
             colMesh.castShadow = true;
-            floorGroup.add(colMesh);
+            if (f !== 1 || Math.abs(isHoriz ? colMesh.position.x : colMesh.position.z) >= 2) floorGroup.add(colMesh);
           }
 
           // 走廊外牆碰撞體 (1F 入口處保持開放無碰撞體，其餘護欄與樓層均阻擋穿透)
@@ -1770,7 +1804,17 @@
             new THREE.MeshStandardMaterial({ color: 0xf1f5f9 })
           );
           rail.position.set(outerX, fBaseY + 0.55, 0);
-          floorGroup.add(rail);
+          if (f === 1) {
+            // 1F 的可通行門口必須與畫面護欄的開口一致。
+            const length = (isHoriz ? cfg.width : cfg.depth) / 2 - 2;
+            for (const sign of [-1, 1]) {
+              const part = new THREE.Mesh(new THREE.BoxGeometry(isHoriz ? length : .16, 1.1, isHoriz ? .16 : length), rail.material);
+              part.position.copy(rail.position);
+              if (isHoriz) part.position.x = sign * (length / 2 + 2);
+              else part.position.z = sign * (length / 2 + 2);
+              floorGroup.add(part);
+            }
+          } else floorGroup.add(rail);
 
           const colCount = Math.max(3, Math.round(cfg.depth / 7));
           const colStep = cfg.depth / colCount;
@@ -1781,7 +1825,7 @@
             );
             colMesh.position.set(outerX, fCenterY, -cfg.depth / 2 + c * colStep);
             colMesh.castShadow = true;
-            floorGroup.add(colMesh);
+            if (f !== 1 || Math.abs(isHoriz ? colMesh.position.x : colMesh.position.z) >= 2) floorGroup.add(colMesh);
           }
 
           // 外側碰撞體 (1F 入口處保持開放)
@@ -3317,7 +3361,7 @@
 
     function animate() {
       requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      const delta = Math.min(clock.getDelta(), 0.1);
 
       let isMoving = false;
       const baseSpeed = moveInput.sprint ? avatarRunSpeed : avatarSpeed;
@@ -3335,7 +3379,11 @@
           const stepDist = 14 * avatarSpeedMultiplier * delta;
 
           if (distToTarget <= stepDist || distToTarget < 1.0) {
-            curPos.copy(targetPos);
+            if (moveAvatarWithCollision(curPos, targetPos.x-curPos.x, targetPos.z-curPos.z, targetPos.y-curPos.y)) {
+              stopAutoWalk();
+              showToast('前方有牆壁，帶路已停止。請沿走廊或門口通行。');
+              return;
+            }
             jumpBaseY = curPos.y;
             autoWalkIndex++;
             if (autoWalkIndex >= currentNavPoints.length - 1) {
@@ -3344,7 +3392,10 @@
             }
           } else {
             const dir = targetPos.clone().sub(curPos).normalize();
-            curPos.addScaledVector(dir, stepDist);
+            if (moveAvatarWithCollision(curPos, dir.x*stepDist, dir.z*stepDist, dir.y*stepDist)) {
+              stopAutoWalk();
+              showToast('前方有牆壁，帶路已停止。請沿走廊或門口通行。');
+            }
             jumpBaseY = curPos.y;
             avatarAngle = Math.atan2(dir.x, dir.z);
             avatarGroup.rotation.y = avatarAngle;
@@ -3377,19 +3428,10 @@
           const dz = moveVec.z * currentSpeed;
           const curPos = avatarGroup.position;
 
-          // 1. Sliding Collision Check against Walls (碰壁不能穿牆，支援滑行)
-          let finalX = curPos.x;
-          let finalZ = curPos.z;
-
-          if (!checkWallCollision(curPos.x + dx, curPos.y, curPos.z)) {
-            finalX = curPos.x + dx;
-          }
-          if (!checkWallCollision(finalX, curPos.y, curPos.z + dz)) {
-            finalZ = curPos.z + dz;
-          }
-
-          curPos.x = finalX;
-          curPos.z = finalZ;
+          // 1. Sliding Collision Check against Walls
+          const beforeX = curPos.x, beforeZ = curPos.z;
+          moveAvatarWithCollision(curPos, dx, dz);
+          isMoving = Math.hypot(curPos.x-beforeX, curPos.z-beforeZ) > 0.0001;
 
           // 2. Staircase Ascend / Descend & Floor Ground Detection (看到樓梯可上樓，進入各樓層走廊)
           const stairCheck = checkStairElevation(curPos.x, curPos.y, curPos.z);

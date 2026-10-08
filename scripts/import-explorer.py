@@ -135,3 +135,7 @@ html = html.replace('</head>', '<meta name="color-scheme" content="light dark"><
 html = html.replace('</head>', '<link rel="stylesheet" href="minimap.css"></head>')
 html = html.replace('</body>', '<script src="minimap-math.js"></script>\n<script src="minimap.js"></script>\n</body>')
 (target / 'index.html').write_text(html, encoding='utf-8')
+
+# Keep collision fixes when rebuilding the user's supplied scene.
+import runpy
+runpy.run_path(str(root / 'scripts/patch-collision.py'))
