@@ -2787,7 +2787,6 @@
         if(deltaX||deltaY)manualTakeover();
         avatarAngle-=deltaX*.0035*turnSensitivityMultiplier;
         walkPitch=Math.max(-1.25,Math.min(1.25,walkPitch-deltaY*.0035*turnSensitivityMultiplier*(isInvertY?-1:1)));
-        avatarGroup.rotation.y=avatarAngle;
         return;
       }
       const rotSens = turnSensitivityMultiplier;
@@ -3244,9 +3243,9 @@
       }
       // 2. MANUAL KEYBOARD / DPAD CONTROLS (Camera-Relative Movement)
       else if (avatarGroup && (currentMode === "avatar" || currentMode === "firstperson")) {
-        // A/D 轉向，W/S 沿人物面朝的方向前進／後退。
+        // 滑鼠只改視線；A/D 主動轉向，W/S 沿視線前進／後退。
         avatarAngle += ((moveInput.left ? 1 : 0)-(moveInput.right ? 1 : 0))*1.9*turnSensitivityMultiplier*delta;
-        avatarGroup.rotation.y=avatarAngle;
+        if(moveInput.left||moveInput.right)avatarGroup.rotation.y=avatarAngle;
         const mobile=window.campusMobileControls;
         if(mobile&&(mobile.look.x||mobile.look.y))applyManualCameraRotation(mobile.look.x*540*delta,-mobile.look.y*350*delta);
         const forwardAmount=((moveInput.forward?1:0)-(moveInput.backward?1:0))+(mobile?.move.y||0),sideAmount=mobile?.move.x||0;
@@ -3255,7 +3254,7 @@
         if (moveVec.lengthSq() > 0.001) {
           isMoving = true;
           if(moveVec.lengthSq()>1)moveVec.normalize();
-          avatarGroup.rotation.y = avatarAngle;
+          avatarGroup.rotation.y = Math.atan2(moveVec.x,moveVec.z);
 
           const dx = moveVec.x * currentSpeed;
           const dz = moveVec.z * currentSpeed;
@@ -3304,7 +3303,7 @@
           avatarRightArm.rotation.x = 0;
         }
 
-        // 人物、鏡頭與行進方向共用 heading；鳥瞰獨立操作。
+        // 鏡頭依視線繞人物；人物面向實際行進方向，靜止時保持朝向。
         if(window.campusWalkWorld && currentMode!=='bird' && !isCameraAnimating)window.campusWalkWorld.updateCamera();
         prevAvatarPos.copy(avatarGroup.position);
 

@@ -18,6 +18,22 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','explorer.js','walk-world-math.js','spatial-world.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('free look rotates the camera without moving or turning the standing avatar in either perspective',()=>{
+ for(const mode of ['avatar','firstperson']){
+  run(`stopAutoWalk();resetManualInput();setControlMode('${mode}');clock.getDelta=()=>.1;avatarAngle=0;avatarGroup.rotation.y=0;walkPitch=0;avatarGroup.position.set(-10,0,96);applyManualCameraRotation(Math.PI/.0035,0);animate();`);
+  expect(run('avatarGroup.rotation.y')).toBe(0);
+  expect(run('avatarGroup.position.x')).toBe(-10);expect(run('avatarGroup.position.z')).toBe(96);
+  expect(run('avatarAngle')).toBeCloseTo(-Math.PI);
+  if(mode==='avatar')expect(run('camera.position.z')).toBeGreaterThan(96);
+  else expect(run('camera.position.z')).toBe(96);
+ }
+});
+it('walking after free look faces and moves along the viewed direction',()=>{
+ run(`stopAutoWalk();resetManualInput();setControlMode('avatar');avatarGroup.position.set(-10,0,96);avatarAngle=0;avatarGroup.rotation.y=0;walkPitch=0;applyManualCameraRotation(Math.PI/.0035,0);moveInput.forward=true;clock.getDelta=()=>.1;animate();`);
+ expect(run('avatarGroup.position.z')).toBeLessThan(96);
+ expect(run('avatarGroup.rotation.y')).toBeCloseTo(-Math.PI);
+ run('resetManualInput()');
+});
 it('movement immediately takes over auto walking but typing in search does not',()=>{
  expect(run(`navigateToRoom('academic');startAutoWalk();document.getElementById('search-input').dispatchEvent(new KeyboardEvent('keydown',{key:'w',bubbles:true}));isAutoWalking`)).toBe(true);
  expect(run(`document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'w',bubbles:true}));isAutoWalking`)).toBe(false);
