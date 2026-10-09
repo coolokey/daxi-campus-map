@@ -20,6 +20,21 @@ it('does not fetch hidden reference photos before opening their panel',()=>{
  run(`document.querySelector('#scene-toolbar button:last-child').click()`);
  expect(run(`document.querySelector('#photo-image').getAttribute('src')`)).toContain('photos/');
 });
+it('matches the plan orientation for the running track and basketball courts',()=>{
+ expect(run(`CampusOutdoorPlan.palette.track`)).toBe(0xc93434);
+ const courts=run(`(()=>{const g=scene.children.find(g=>g.name==='basketball-court-complex');return {positions:g?.children.filter(m=>m.userData?.mapCourt).map(m=>({x:m.position.x,z:m.position.z,w:m.geometry.parameters.width,d:m.geometry.parameters.height}))}})()`);
+ expect(courts.positions).toEqual([
+  {x:0,z:-14,w:28,d:12.6},
+  {x:0,z:0,w:28,d:12.6},
+  {x:0,z:14,w:28,d:12.6}
+ ]);
+});
+it('keeps the adjusted grade-nine label and gate spawn aligned with the map',()=>{
+ const explorer=readFileSync(root+'explorer.js','utf8'),spatial=readFileSync(root+'spatial-world.js','utf8');
+ expect(explorer).toContain('{ name: "九年級棟 (縱向)", x: 7.5, y: 6.0, z: 28 }');
+ expect(explorer).toContain('avatarGroup.position.set(-10, 0, 90)');
+ expect(spatial).toContain("const gate=node('gate',{x:-10,y:0,z:90})");
+});
 it('walks up the stage stairs and down using the actual ground motor',()=>{
  const p=run(`(()=>{const p={x:-62,y:0,z:4.3};for(let i=0;i<80;i++)moveAvatarWithCollision(p,0,.08);return p})()`);
  expect(p.y).toBeCloseTo(1.4);expect(p.z).toBeCloseTo(10.7);

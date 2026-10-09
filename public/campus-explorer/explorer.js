@@ -230,7 +230,7 @@
     function createStudentAvatar() {
       avatarGroup = new THREE.Group();
       avatarGroup.scale.setScalar(.65);
-      avatarGroup.position.set(-10, 0, 96);
+      avatarGroup.position.set(-10, 0, 90);
       avatarAngle = Math.PI; // 預設面向校園北側 (朝前)
       avatarGroup.rotation.y = avatarAngle;
       prevAvatarPos.copy(avatarGroup.position);
@@ -702,7 +702,7 @@
     // 南側主幹道 (東西向車道, z=86)
     const southRoad = new THREE.Mesh(
       new THREE.PlaneGeometry(170, 9),
-      new THREE.MeshStandardMaterial({ color: 0x334155 })
+      new THREE.MeshStandardMaterial({ color: 0x9e5842 })
     );
     southRoad.rotation.x = -Math.PI / 2;
     southRoad.position.set(20, 0.02, 86);
@@ -712,7 +712,7 @@
     // 中央南北主車道 (直通北側, x=52)
     const centralRoad = new THREE.Mesh(
       new THREE.PlaneGeometry(9, 154),
-      new THREE.MeshStandardMaterial({ color: 0x334155 })
+      new THREE.MeshStandardMaterial({ color: 0x9e5842 })
     );
     centralRoad.rotation.x = -Math.PI / 2;
     centralRoad.position.set(52, 0.025, 12);
@@ -1033,7 +1033,7 @@
       return stairGroup;
     }
 
-    // 4.5 200m 操場及綜合球場 (真實照片特徵：深灰黑瀝青橡膠跑道＋清晰白標線＋足球草坪＋藍磁磚紅浪板司令台＋三面銀旗桿)
+    // 4.5 200m 操場及綜合球場（平面圖紅色跑道＋清晰白標線＋足球草坪；司令台保留照片細節）
     function createTrackAndPlatform() { CampusOutdoorWorld.render(scene); }
     createTrackAndPlatform();
 
@@ -1085,40 +1085,42 @@
     }
     createVolleyballCourt();
 
-    // 4.7 戶外籃球場群 (依照片 04_戶外PU籃球場劃線與配色垂直鳥瞰 真實重現：天藍主場＋磚紅禁區中圈＋草綠緩衝走道＋純白專業劃線)
+    // 4.7 戶外籃球場群（依 115 平面圖上下排列；保留照片中的藍色場面與紅色禁區）
     function createBasketballComplex() {
       const courtGroup = new THREE.Group();
+      courtGroup.name = "basketball-court-complex";
       courtGroup.position.set(12, 0.04, -38);
 
       // 1. 外圍與球場緩衝隔離帶：高彩度草綠色 (Lime Green Buffer)
       const greenBuffer = new THREE.Mesh(
-        new THREE.PlaneGeometry(46, 34),
+        new THREE.PlaneGeometry(34, 46),
         new THREE.MeshStandardMaterial({ color: 0x65a30d })
       );
       greenBuffer.rotation.x = -Math.PI / 2;
       greenBuffer.receiveShadow = true;
       courtGroup.add(greenBuffer);
 
-      // 2. 三面全場籃球場 (Offset X: -14, 0, 14)
-      [-14, 0, 14].forEach(courtX => {
-        // 天藍色主要活動球場面 (Vivid Ocean Blue Playing Area: 12.6m x 28m)
+      // 2. 三面全場籃球場（依平面圖上下排列，長邊左右）
+      [-14, 0, 14].forEach(courtZ => {
+        // 天藍色主要活動球場面（左右長邊 28m × 上下寬 12.6m）
         const blueFloor = new THREE.Mesh(
-          new THREE.PlaneGeometry(12.6, 28),
+          new THREE.PlaneGeometry(28, 12.6),
           new THREE.MeshStandardMaterial({ color: 0x0284c7 })
         );
+        blueFloor.userData.mapCourt = true;
         blueFloor.rotation.x = -Math.PI / 2;
-        blueFloor.position.set(courtX, 0.01, 0);
+        blueFloor.position.set(0, 0.01, courtZ);
         blueFloor.receiveShadow = true;
         courtGroup.add(blueFloor);
 
         // 磚紅色禁區三秒區 (Terracotta Red Key Areas: 4.8m x 5.8m on both ends)
-        [-11.1, 11.1].forEach(keyZ => {
+        [-11.1, 11.1].forEach(keyX => {
           const redKey = new THREE.Mesh(
-            new THREE.PlaneGeometry(4.8, 5.8),
+            new THREE.PlaneGeometry(5.8, 4.8),
             new THREE.MeshStandardMaterial({ color: 0xdc2626 })
           );
           redKey.rotation.x = -Math.PI / 2;
-          redKey.position.set(courtX, 0.015, keyZ);
+          redKey.position.set(keyX, 0.015, courtZ);
           courtGroup.add(redKey);
 
           // 禁區罰球半圓弧 (Free-throw circle arc)
@@ -1127,7 +1129,7 @@
             new THREE.MeshStandardMaterial({ color: 0xdc2626 })
           );
           ftCircle.rotation.x = -Math.PI / 2;
-          ftCircle.position.set(courtX, 0.016, keyZ + (keyZ < 0 ? 2.9 : -2.9));
+          ftCircle.position.set(keyX + (keyX < 0 ? 2.9 : -2.9), 0.016, courtZ);
           courtGroup.add(ftCircle);
         });
 
@@ -1137,25 +1139,25 @@
           new THREE.MeshStandardMaterial({ color: 0xdc2626 })
         );
         centerCircle.rotation.x = -Math.PI / 2;
-        centerCircle.position.set(courtX, 0.015, 0);
+        centerCircle.position.set(0, 0.015, courtZ);
         courtGroup.add(centerCircle);
 
         // 白色全場劃線 (Pure White Boundary Lines & Half-court Line)
         const boundaryLine = new THREE.Mesh(
-          new THREE.PlaneGeometry(12.4, 27.8),
+          new THREE.PlaneGeometry(27.8, 12.4),
           new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true })
         );
         boundaryLine.rotation.x = -Math.PI / 2;
-        boundaryLine.position.set(courtX, 0.02, 0);
+        boundaryLine.position.set(0, 0.02, courtZ);
         courtGroup.add(boundaryLine);
 
         // 中場白線 (Half Court Line)
         const halfLine = new THREE.Mesh(
-          new THREE.PlaneGeometry(12.4, 0.12),
+          new THREE.PlaneGeometry(0.12, 12.4),
           new THREE.MeshBasicMaterial({ color: 0xffffff })
         );
         halfLine.rotation.x = -Math.PI / 2;
-        halfLine.position.set(courtX, 0.022, 0);
+        halfLine.position.set(0, 0.022, courtZ);
         courtGroup.add(halfLine);
       });
 
@@ -1186,9 +1188,9 @@
         return hoop;
       }
 
-      for (let offset of [-14, 0, 14]) {
-        courtGroup.add(createHoop(offset, -14.2, 0));
-        courtGroup.add(createHoop(offset, 14.2, Math.PI));
+      for (const courtZ of [-14, 0, 14]) {
+        courtGroup.add(createHoop(-14.2, courtZ, Math.PI / 2));
+        courtGroup.add(createHoop(14.2, courtZ, -Math.PI / 2));
       }
 
       scene.add(courtGroup);
@@ -1945,7 +1947,7 @@
       { name: "學生活動中心", x: -80, y: 6.0, z: 58 },
       { name: "行政大樓", x: -12, y: 6.0, z: 32 },
       { name: "八年級棟 (南棟)", x: 16, y: 6.0, z: 60 },
-      { name: "九年級棟 (縱向)", x: 2, y: 6.0, z: 28 },
+      { name: "九年級棟 (縱向)", x: 7.5, y: 6.0, z: 28 },
       { name: "八年級中棟 (縱向)", x: 28, y: 6.0, z: 28 },
       { name: "健康中心棟", x: 12, y: 4.5, z: -4 },
       { name: "七年級新大樓", x: 80, y: 6.0, z: -58 },
@@ -2981,7 +2983,7 @@
       miniCtx.fillRect(toMiniX(-130), toMiniZ(-74), toMiniX(110) - toMiniX(-130), toMiniZ(94) - toMiniZ(-74));
 
       // 3. Roads & Driveways (車道)
-      miniCtx.fillStyle = "#334155";
+      miniCtx.fillStyle = "#9e5842";
       // 南側主幹道
       miniCtx.fillRect(0, toMiniZ(82), 360, toMiniZ(94) - toMiniZ(82));
       // 中央南北主車道 (直通北側)
@@ -3013,7 +3015,7 @@
       const trackH = 54 * (328 / 180) * 0.5;
 
       // 紅色PU跑道
-      miniCtx.fillStyle = "#44484b";
+      miniCtx.fillStyle = "#c93434";
       miniCtx.beginPath();
       miniCtx.ellipse(trackCX, trackCZ, trackW, trackH, 0, 0, Math.PI * 2);
       miniCtx.fill();
@@ -3067,10 +3069,10 @@
       miniCtx.strokeRect(vbX, vbZ, vbW, vbH);
 
       // 6. 戶外籃球場群 (黃色, 3座全場, x=12, z=-38)
-      const bbX = toMiniX(12 - 22);
-      const bbZ = toMiniZ(-38 - 16);
-      const bbW = 44 * (328 / 250);
-      const bbH = 32 * (328 / 180);
+      const bbX = toMiniX(12 - 17);
+      const bbZ = toMiniZ(-38 - 23);
+      const bbW = 34 * (328 / 250);
+      const bbH = 46 * (328 / 180);
       miniCtx.fillStyle = "#eab308";
       miniCtx.fillRect(bbX, bbZ, bbW, bbH);
       miniCtx.strokeStyle = "#ffffff";

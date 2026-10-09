@@ -118,7 +118,7 @@
   const caption=document.createElement('div');caption.id='scene-caption';caption.textContent='依 115 平面圖配置・實景材質・空間示意';document.body.append(caption);
   const panel=document.createElement('section');panel.id='reference-panel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','校園照片對照');panel.innerHTML='<button type="button">關閉</button><h2>從實景認識校園</h2><img data-src="reference-aerial.jpg" alt="大溪國中空拍實景，供建築與球場對照"><p>平面图校對位置與樓層，實景照片校對建築外觀。立體模型為導覽示意，尺寸與路徑距離未經現地測量。</p><p><a href="campus_plan_115.jpg" target="_blank" rel="noopener">開啟 115 學年度平面圖</a>　<a href="campus-illustration.png" target="_blank" rel="noopener" id="concept-link">查看校園手繪美術圖</a></p>';
   document.body.append(panel);referenceButton.onclick=()=>{panel.querySelector('img').src='reference-aerial.jpg';panel.classList.add('open');panel.querySelector('button').focus()};panel.querySelector('button').onclick=()=>{panel.classList.remove('open');referenceButton.focus()};
-  const sourceNote=document.createElement('p');sourceNote.className='map-source-note';sourceNote.textContent='平面圖為樓層與配置依據；3D 場景為示意模型。跑道與屋面配色參考实拍照片。';document.getElementById('campus-map-modal').append(sourceNote);
+  const sourceNote=document.createElement('p');sourceNote.className='map-source-note';sourceNote.textContent='平面圖為樓層、配置與跑道色彩依據；3D 場景為示意模型，照片用於校對外觀與年代差異。';document.getElementById('campus-map-modal').append(sourceNote);
   // 原版圖面座標不是測量值，因此距離採示意單位。
   document.querySelector('.nav-dist small').textContent='示意單位';
   document.addEventListener('keydown',e=>{if(e.key==='Escape')panel.classList.remove('open')});

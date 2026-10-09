@@ -1,8 +1,9 @@
 /* Outdoor dimensions are guide units, not surveyed measurements.
- * Appearance: 2019 photos describe the stage; track colour retains the undated 3D source.
+ * Appearance: the 115 campus plan is the layout authority; the red track and court
+ * placement follow the uploaded plan while photo-derived stage details remain separate.
  */
 const CampusOutdoorPlan=(()=>{
- const palette={track:0x23272f,lawn:0x7b9555,court:0xb91c1c,line:0xf2f0e4,stage:0x83b0bf,step:0xd9bf6f,roof:0x9e5148};
+ const palette={track:0xc93434,lawn:0x7b9555,court:0xb91c1c,line:0xf2f0e4,stage:0x83b0bf,step:0xd9bf6f,roof:0x9e5148};
  const track={x:-84,z:-25,halfStraight:25,outerRadius:27,innerRadius:18};
  const stage={id:'grandstand',x0:-70,x1:-54,z0:8.1,z1:15.8,height:1.4,center:{x:-62,y:1.4,z:11},foot:{x:-62,y:0,z:4.3},stairs:{x0:-69,x1:-55,z0:4.5,z1:8.1}};
  const inside=(r,p)=>p.x>=r.x0&&p.x<=r.x1&&p.z>=r.z0&&p.z<=r.z1;

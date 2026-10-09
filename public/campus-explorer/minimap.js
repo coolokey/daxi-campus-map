@@ -14,7 +14,7 @@
   c.fillStyle='#6f805d';c.fillRect(-144,-89,257,190);
   const rect=(x,z,w,d,color)=>{c.fillStyle=color;c.fillRect(x,z,w,d)};
   // 與場景相同的主車道、校門鋪面、縱向通廊。
-  rect(-65,81.5,170,9,'#626668');rect(48,-72,9,154,'#626668');
+  rect(-65,81.5,170,9,'#9e5842');rect(48,-72,9,154,'#9e5842');
   rect(-60,43,62,35,'#a5a697');rect(-52,18,37,27,'#a5a697');rect(8,6,14,47,'#adae9f');
   c.strokeStyle='#bba765';c.lineWidth=.22;c.setLineDash([2.2,2.6]);
   c.beginPath();c.moveTo(-60,86);c.lineTo(105,86);c.moveTo(52.5,-70);c.lineTo(52.5,81);c.stroke();c.setLineDash([]);
@@ -27,8 +27,8 @@
   stadium(outdoor.track.outerRadius);c.fillStyle=hex(outdoor.palette.track);c.fill();stadium(outdoor.track.innerRadius);c.fillStyle=hex(outdoor.palette.lawn);c.fill();
   for(let r=20;r<27;r+=1.7){stadium(r);c.strokeStyle='#d6d8d0';c.lineWidth=.16;c.stroke()}
   for(const r of outdoor.courts){rect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0,hex(outdoor.palette.court));c.strokeStyle=hex(outdoor.palette.line);c.lineWidth=.12;c.strokeRect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0)}
-  rect(-29,-52,14,28,'#718c6c');rect(-11,-55,46,34,'#897660');
-  for(let i=0;i<3;i++){rect(-10+i*14.6,-53.8,12.6,28,'#739078');c.strokeStyle='#e0e4d5';c.lineWidth=.15;c.strokeRect(-10+i*14.6,-53.8,12.6,28);c.beginPath();c.arc(-3.7+i*14.6,-39.8,2.5,0,Math.PI*2);c.stroke()}
+  rect(-29,-52,14,28,'#718c6c');rect(-5,-61,34,46,'#897660');
+  for(const z of [-52,-38,-24]){rect(-2,z-6.3,28,12.6,'#739078');c.strokeStyle='#e0e4d5';c.lineWidth=.15;c.strokeRect(-2,z-6.3,28,12.6);c.beginPath();c.arc(-8.5,z,2.5,0,Math.PI*2);c.stroke();c.beginPath();c.arc(24.5,z,2.5,0,Math.PI*2);c.stroke()}
   const stage=outdoor.stage;rect(stage.x0,stage.z0,stage.x1-stage.x0,stage.z1-stage.z0,hex(outdoor.palette.stage));rect(stage.stairs.x0,stage.stairs.z0,stage.stairs.x1-stage.stairs.x0,stage.stairs.z1-stage.stairs.z0,hex(outdoor.palette.step));
   for(let z=stage.stairs.z0;z<stage.stairs.z1;z+=.5){c.strokeStyle='#eee8cc';c.lineWidth=.1;c.beginPath();c.moveTo(stage.stairs.x0,z);c.lineTo(stage.stairs.x1,z);c.stroke()}
   rect(-50,18,8,5,'#a7987d');
