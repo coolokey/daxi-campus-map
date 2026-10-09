@@ -1927,6 +1927,7 @@
 
       labelElements.push({
         element: labelDiv,
+        buildingId: cfg.id,
         worldPos: new THREE.Vector3(cfg.x, totalH + 3.6, cfg.z)
       });
     });
@@ -2866,8 +2867,9 @@
         if (floorVal === "all") {
           grp.visible = true;
         } else {
-          grp.visible = grp.userData.roof ? Number(floorVal)>=BUILDINGS_CONFIG.find(b=>b.id===grp.userData.buildingId).floors : grp.userData.floorNum <= Number(floorVal);
+          grp.visible = CampusFloorExhibitModel.meshVisible(grp.userData,floorVal,BUILDINGS_CONFIG.find(b=>b.id===grp.userData.buildingId)?.floors||4);
         }
+        grp.traverse(o=>{if(o!==grp&&o.userData.roof)o.visible=CampusFloorExhibitModel.meshVisible({roof:true},floorVal,BUILDINGS_CONFIG.find(b=>b.id===grp.userData.buildingId)?.floors||4)});
       });
 
       roomBadgeElements.forEach(rb => {
@@ -2877,6 +2879,7 @@
           rb.element.style.display = (rb.floor === Number(floorVal)) ? "flex" : "none";
         }
       });
+      window.campusFloorExhibit?.refresh();
     }
 
     document.querySelectorAll(".floor-btn").forEach(btn => {
@@ -3367,6 +3370,7 @@
 
       // 3D Floating Building Labels
       labelElements.forEach(item => {
+        if(window.campusFloorExhibit?.active){item.element.style.display='none';return;}
         const wp = item.worldPos.clone();
         wp.project(camera);
         if (wp.z > 1 || currentMode !== "bird") {
@@ -3407,7 +3411,7 @@
         const node=NAV_NODES[item.nodeId];
         const wp=node?new THREE.Vector3(node.x,(node.y||0)+2.2,node.z).project(camera):null;
         const floor=currentFloorFilter==='all'?1:Number(currentFloorFilter);
-        const visible=wp && wp.z<1 && Math.abs(wp.x)<.93 && Math.abs(wp.y)<.88 &&
+        const visible=!window.campusFloorExhibit?.active && wp && wp.z<1 && Math.abs(wp.x)<.93 && Math.abs(wp.y)<.88 &&
           item.buildingId===focusedBuildingId && item.floor===floor && camDist<140 &&
           shownRoomBadges<(window.innerWidth<768?4:8);
         item.element.style.display=visible?'flex':'none';
@@ -3423,6 +3427,7 @@
       }
 
       renderMinimap();
+      window.campusFloorExhibit?.update();
       renderer.render(scene, camera);
     }
 

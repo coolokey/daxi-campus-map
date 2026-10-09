@@ -62,7 +62,7 @@
   for(let f=1;f<=l.b.floors;f++){
    const y=(f-1)*FH,g=new THREE.Group();g.name=`floor-${f}`;g.userData={buildingId:l.id,floorNum:f};scene.add(g);floorMeshes.push(g);
    for(const p of l.footprints.filter(p=>p.floor===f)){slab(g,l,p,y);
-    if(f===l.b.floors)box(g,l,p.u0,p.u1,p.v0,p.v1,y+FH-.18,y+FH,colors.wall);
+    if(f===l.b.floors){const roof=box(g,l,p.u0,p.u1,p.v0,p.v1,y+FH-.18,y+FH,colors.wall);if(roof)roof.userData.roof=true;}
    }
    // Rooms and WC use identical rectangles for visible walls and blocking volumes.
    for(const r of l.cells.filter(c=>c.floor===f&&(c.kind==='room'||c.kind==='wc'))){
@@ -112,7 +112,7 @@
  layouts.push(...galleries);
  // Static batching retains low draw calls despite the extra circulation details.
  for(const g of scene.children.filter(g=>g.type==='Group'&&g.name.startsWith('floor-'))){
-  const batches=new Map();for(const mesh of [...g.children])if(mesh.isMesh&&mesh.visible&&!mesh.material.map&&!Array.isArray(mesh.material)){
+  const batches=new Map();for(const mesh of [...g.children])if(mesh.isMesh&&mesh.visible&&!mesh.userData.roof&&!mesh.material.map&&!Array.isArray(mesh.material)){
    mesh.updateMatrix();const geo=(mesh.geometry.index?mesh.geometry.toNonIndexed():mesh.geometry.clone()).applyMatrix4(mesh.matrix);if(!batches.has(mesh.material))batches.set(mesh.material,{p:[],n:[],uv:[]});const data=batches.get(mesh.material);
    for(const [name,key] of [['position','p'],['normal','n'],['uv','uv']]){const a=geo.getAttribute(name);if(a)for(const v of a.array)data[key].push(v)}geo.dispose();mesh.geometry.dispose();g.remove(mesh);
   }
