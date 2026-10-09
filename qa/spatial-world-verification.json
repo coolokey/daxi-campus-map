@@ -1,0 +1,342 @@
+{
+  "rooms": 108,
+  "physicalRooms": 92,
+  "nodes": 17409,
+  "unreachable": [],
+  "blockedEdges": [],
+  "stairs": [
+    {
+      "building": "gym-bld",
+      "stair": "gym-bld-north",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "gym-bld",
+      "stair": "gym-bld-north",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "gym-bld",
+      "stair": "gym-bld-north",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "gym-bld",
+      "stair": "gym-bld-north",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "gym-bld",
+      "stair": "gym-bld-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "gym-bld",
+      "stair": "gym-bld-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "gym-bld",
+      "stair": "gym-bld-south",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "gym-bld",
+      "stair": "gym-bld-south",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "admin-back",
+      "stair": "admin-back-central",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "admin-back",
+      "stair": "admin-back-central",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "admin-back",
+      "stair": "admin-back-central",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "admin-back",
+      "stair": "admin-back-central",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "health-bld",
+      "stair": "health-bld-east",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "health-bld",
+      "stair": "health-bld-east",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-west",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-west",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-west",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-west",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-east",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-east",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-east",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-east",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade9-back",
+      "stair": "grade9-back-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade9-back",
+      "stair": "grade9-back-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade9-back",
+      "stair": "grade9-back-south",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade9-back",
+      "stair": "grade9-back-south",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade8-mid",
+      "stair": "grade8-mid-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-mid",
+      "stair": "grade8-mid-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-mid",
+      "stair": "grade8-mid-south",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade8-mid",
+      "stair": "grade8-mid-south",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "new-grade7",
+      "stair": "new-grade7-west",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "new-grade7",
+      "stair": "new-grade7-west",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "new-grade7",
+      "stair": "new-grade7-west",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "new-grade7",
+      "stair": "new-grade7-west",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "multi-building",
+      "stair": "multi-building-north",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "multi-building",
+      "stair": "multi-building-north",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "multi-building",
+      "stair": "multi-building-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "multi-building",
+      "stair": "multi-building-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "tech-building",
+      "stair": "tech-building-main",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "tech-building",
+      "stair": "tech-building-main",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "art-building",
+      "stair": "art-building-main",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "art-building",
+      "stair": "art-building-main",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "art-building",
+      "stair": "art-building-main",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "art-building",
+      "stair": "art-building-main",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "art-building",
+      "stair": "art-building-main",
+      "floor": 3,
+      "error": null
+    },
+    {
+      "building": "art-building",
+      "stair": "art-building-main",
+      "floor": 3,
+      "error": null
+    }
+  ],
+  "doorFailures": [],
+  "motorRoutes": [
+    {
+      "id": "academic",
+      "error": null,
+      "end": {
+        "x": -4.28125,
+        "y": 3.6,
+        "z": 42.6
+      }
+    },
+    {
+      "id": "901",
+      "error": null,
+      "end": {
+        "x": 6.1,
+        "y": 7.2,
+        "z": 13.359673024523161
+      }
+    },
+    {
+      "id": "804",
+      "error": null,
+      "end": {
+        "x": 29.4,
+        "y": 3.6,
+        "z": 35.42201834862385
+      }
+    },
+    {
+      "id": "704",
+      "error": null,
+      "end": {
+        "x": 100.4,
+        "y": 3.6,
+        "z": -61.5
+      }
+    },
+    {
+      "id": "computer-lab-1",
+      "error": null,
+      "end": {
+        "x": 85.5,
+        "y": 0,
+        "z": 14.5
+      }
+    },
+    {
+      "id": "art-4f",
+      "error": null,
+      "end": {
+        "x": 78,
+        "y": 10.8,
+        "z": 46
+      }
+    }
+  ]
+}

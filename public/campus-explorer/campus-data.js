@@ -279,27 +279,8 @@ const FH = 3.6; // Floor Height in meters
 ];
 
 
-// 115 學年度平面圖校對：導航節點名稱是內部識別碼，以房間資料為準。
-const grade9Plan = {
- '908':[1,'g9-1f-906'], '905':[1,'g9-1f-907'], '903':[1,'g9-1f-908'],
- '907':[2,'g9-2f-clubs'], '904':[2,'g9-2f-904'], '902':[2,'g9-2f-905'],
- '906':[3,'g9-3f-901'], '901':[3,'g9-3f-902']
-};
-const grade9 = BUILDINGS_CONFIG.find(b=>b.id==='grade9-back');
-// 原示意座標使縱棟穿入行政教室，校正相接邊界以保留真實可通行室內。
-grade9.x = 7.5;
-grade9.rooms = grade9.rooms.filter(r=>grade9Plan[r.id]);
-for(const room of grade9.rooms){
- const [floor,node]=grade9Plan[room.id];
- Object.assign(room,{floor,node,name:`${room.id} 教室 (${floor}F)`});
-}
-grade9.rooms.sort((a,b)=>a.floor-b.floor || Number(b.id)-Number(a.id));
-const grade8 = BUILDINGS_CONFIG.find(b=>b.id==='grade8-mid');
-const room804=grade8.rooms.find(r=>r.id==='804');
-Object.assign(room804,{floor:1,node:'g8m-1f-counsel',name:'804 教室 (1F)'});
-grade8.rooms=grade8.rooms.filter(r=>r.id!=='counseling-act');
-BUILDINGS_CONFIG.find(b=>b.id==='new-grade7').rooms.find(r=>r.id==='706').name='706 教室 (3F)';
-BUILDINGS_CONFIG.find(b=>b.id==='new-grade7').rooms.find(r=>r.id==='math-lab').name='數學研究室 (3F)';
+// 樓層及固定空間由 spatial-plan-data.js 校對；保留縱棟與行政棟的通行間距。
+BUILDINGS_CONFIG.find(b=>b.id==='grade9-back').x=7.5;
 for(const building of BUILDINGS_CONFIG){
  building.color=building.isGymSpecial?0xcfa9a2:0xe5e2d9;
  building.roofColor=building.hasPitchedRoof?(building.id==='admin-front'?0xa94e45:0xc8bd91):0x899b96;

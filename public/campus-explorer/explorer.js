@@ -461,6 +461,7 @@
     }
 
     function checkWallCollision(x, y, z) {
+      if(typeof window!=='undefined'&&window.campusCollisionIndex)return window.campusCollisionIndex.hit(x,y,z);
       const r = AVATAR_COLLISION_RADIUS;
       const avatarMinX = x - r;
       const avatarMaxX = x + r;
@@ -2478,12 +2479,13 @@
       currentNavPoints = points || [];
       if (!points || points.length < 2) return;
 
-      const curve = new THREE.CatmullRomCurve3(points, false, "catmullrom", 0.15);
-      const tubeGeo = new THREE.TubeGeometry(curve, 140, 0.45, 8, false);
+      const tubeGeo = new THREE.BufferGeometry();
+      tubeGeo.setAttribute('position',new THREE.Float32BufferAttribute(CampusSpatialPlan.ribbon(points),3));
       const tubeMat = new THREE.MeshBasicMaterial({
         color: 0xfbbf24,
         transparent: true,
-        opacity: 0.95
+        opacity: 0.95,
+        side: THREE.DoubleSide
       });
       navPathMesh = new THREE.Mesh(tubeGeo, tubeMat);
       scene.add(navPathMesh);
@@ -2503,6 +2505,8 @@
     function clearNavigation() {
       if (navPathMesh) {
         scene.remove(navPathMesh);
+        navPathMesh.geometry.dispose();
+        navPathMesh.material.dispose();
         navPathMesh = null;
       }
       if (navTargetPoint) {
@@ -3050,9 +3054,9 @@
         searchResults.style.display = "none";
         return;
       }
-      const matches = Object.values(ROOMS_DB).filter(r => 
-        r.name.toLowerCase().includes(q) || r.id.toLowerCase().includes(q) || r.buildingName.toLowerCase().includes(q)
-      );
+      const matches = Object.values(ROOMS_DB).filter(r => !r.aliasFor && (
+        r.name.toLowerCase().includes(q) || r.id.toLowerCase().includes(q) || r.buildingName.toLowerCase().includes(q) || (r.spaceCode||r.code||'').toLowerCase().includes(q)
+      ));
 
       if (matches.length === 0) {
         searchResults.innerHTML = `<li style="color: var(--muted); cursor: default;">查無相符處室或教室</li>`;
@@ -3590,4 +3594,4 @@
     window.campusExplorer = {scene,camera,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,setFloorFilter,setControlMode};
     animate();
     checkUrlQueryTarget();
-  
+

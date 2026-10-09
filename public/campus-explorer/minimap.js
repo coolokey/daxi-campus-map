@@ -28,17 +28,32 @@
   rect(-74,-38,14,24,'#a65b51');rect(-29,-52,14,28,'#718c6c');rect(-11,-55,46,34,'#897660');
   for(let i=0;i<3;i++){rect(-10+i*14.6,-53.8,12.6,28,'#739078');c.strokeStyle='#e0e4d5';c.lineWidth=.15;c.strokeRect(-10+i*14.6,-53.8,12.6,28);c.beginPath();c.arc(-3.7+i*14.6,-39.8,2.5,0,Math.PI*2);c.stroke()}
   rect(-70,8,16,7.5,'#94a3a8');rect(-50,18,8,5,'#a7987d');
-  // 建築輪廓與所在樓層分間，鄰棟以低對比保留方向辨識。
-  for(const b of api.buildings){
-   const x=b.x-b.width/2,z=b.z-b.depth/2;
-   rect(x+.7,z+.7,b.width,b.depth,'#435448');rect(x,z,b.width,b.depth,b.isGymSpecial?'#ae9990':'#b6b7ac');
-   c.strokeStyle='#eeeee2';c.lineWidth=.3;c.strokeRect(x,z,b.width,b.depth);
-   if(floor<=b.floors){
-    const horizontal=b.width>=b.depth,rooms=b.rooms.filter(r=>r.floor===floor),count=Math.max(1,rooms.length);
-    const corridor=horizontal?z+b.depth-2.6:x+2.6;
-    c.strokeStyle='#e8e8db';c.lineWidth=.28;c.beginPath();
-    if(horizontal){c.moveTo(x,corridor);c.lineTo(x+b.width,corridor)}else{c.moveTo(corridor,z);c.lineTo(corridor,z+b.depth)}c.stroke();
-    for(let i=1;i<count;i++){c.beginPath();if(horizontal){c.moveTo(x+i*b.width/count,z);c.lineTo(x+i*b.width/count,corridor)}else{c.moveTo(corridor,z+i*b.depth/count);c.lineTo(x+b.width,z+i*b.depth/count)}c.stroke()}
+  // 世界矩形與樓層格子來自步行模型，包含多翼、穿堂和實際空缺。
+  const colors={grade7:'#63b54f',grade8:'#409ed1',grade9:'#e86482',admin:'#8470dc',special:'#b95bc2',other:'#69889a'};
+  const fill=(r,color)=>rect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0,color);
+  const outline=r=>c.strokeRect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0);
+  for(const l of window.campusWalkWorld.layouts){
+   const active=l.footprints.filter(f=>f.floor===floor),footprints=active.length?active:l.footprints.filter(f=>f.floor===1);
+   for(const footprint of footprints){fill(footprint.rect,active.length?'#b6b7ac':'#647169');c.strokeStyle=active.length?'#eeeee2':'#809087';c.lineWidth=.3;outline(footprint.rect)}
+   if(!active.length)continue;
+   for(const corridor of l.corridors.filter(corridor=>corridor.floor===floor))fill(corridor.rect,'#d7d6c2');
+   for(const cell of l.cells.filter(cell=>cell.floor===floor)){
+    if(cell.kind==='void')continue;
+    const r=cell.rect;
+    if(cell.kind==='room'){
+     const room=api.rooms[cell.id]||cell,name=room.name;
+     fill(r,colors[CampusRoomLayout.category(name,room.cat)]);c.strokeStyle='#eeeede';c.lineWidth=.3;outline(r);
+     const door=cell.door;
+     if(door){
+      const sides=[{d:Math.abs(door.x-r.x0),x0:r.x0,z0:door.z-.65,x1:r.x0,z1:door.z+.65},{d:Math.abs(door.x-r.x1),x0:r.x1,z0:door.z-.65,x1:r.x1,z1:door.z+.65},{d:Math.abs(door.z-r.z0),x0:door.x-.65,z0:r.z0,x1:door.x+.65,z1:r.z0},{d:Math.abs(door.z-r.z1),x0:door.x-.65,z0:r.z1,x1:door.x+.65,z1:r.z1}];
+      const side=sides.sort((a,b)=>a.d-b.d)[0];c.beginPath();c.moveTo(side.x0,side.z0);c.lineTo(side.x1,side.z1);c.strokeStyle='#d7d6c2';c.lineWidth=.65;c.stroke();
+     }
+    }else if(cell.kind==='stair'){
+     fill(r,'#647584');c.strokeStyle='#d9e4e6';c.lineWidth=.16;
+     for(let i=1;i<7;i++){c.beginPath();if(r.x1-r.x0>r.z1-r.z0){const x=r.x0+(r.x1-r.x0)*i/7;c.moveTo(x,r.z0);c.lineTo(x,r.z1)}else{const z=r.z0+(r.z1-r.z0)*i/7;c.moveTo(r.x0,z);c.lineTo(r.x1,z)}c.stroke()}
+    }else if(cell.kind==='wc'){
+     fill(r,'#7894ad');c.fillStyle='#f0f5ed';c.font='bold 1.7px sans-serif';c.textAlign='center';c.fillText('WC',(r.x0+r.x1)/2,(r.z0+r.z1)/2+.6);c.textAlign='start';
+    }else if(cell.kind==='passage')fill(r,'#90a38a');
    }
   }
   // 警衛室、停車區與停車格。
@@ -48,10 +63,11 @@
   for(let i=0;i<6;i++){c.fillStyle=['#76555e','#6f88a0','#536454'][i%3];c.fillRect(66+i*3.7,75.5,1.5,3.2)}
   layers.set(floor,layer);return layer;
  }
+ const locate=position=>CampusSpatialUI.locate(position,window.campusWalkWorld.layouts,p=>CampusMinimapMath.locate(p,[]));
  let lastTime=0,lastCaption='';
  function render(force=false){
   const now=performance.now();if(!force&&now-lastTime<70)return;lastTime=now;
-  const position=avatarGroup.position,location=CampusMinimapMath.locate(position,api.buildings);
+  const position=avatarGroup.position,location=locate(position);
   api.camera.getWorldDirection(cameraDirection);
   const heading=Math.atan2(cameraDirection.x,-cameraDirection.z),size=Math.round(card.clientWidth*Math.min(devicePixelRatio||1,2));
   if(canvas.width!==size){canvas.width=canvas.height=size}
@@ -59,8 +75,9 @@
   ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#2b3644';ctx.fillRect(0,0,size,size);
   ctx.translate(size/2,centerY);ctx.rotate(-heading);ctx.scale(scale,scale);ctx.translate(-position.x,-position.z);
   ctx.drawImage(layers.get(location.floor)||makeLayer(location.floor),origin.x,origin.z,worldSize,worldSize);
-  if(currentNavPoints.length){
-   ctx.beginPath();currentNavPoints.forEach((p,i)=>i?ctx.lineTo(p.x,p.z):ctx.moveTo(p.x,p.z));ctx.strokeStyle='#302a15';ctx.lineWidth=1.9;ctx.stroke();ctx.strokeStyle='#eed06b';ctx.lineWidth=.85;ctx.stroke();
+  const segments=CampusSpatialUI.routeSegments(currentNavPoints,location.floor);
+  if(segments.length){
+   ctx.beginPath();for(const [a,b] of segments){ctx.moveTo(a.x,a.z);ctx.lineTo(b.x,b.z)}ctx.strokeStyle='#302a15';ctx.lineWidth=1.9;ctx.stroke();ctx.strokeStyle='#eed06b';ctx.lineWidth=.85;ctx.stroke();
   }
   ctx.setTransform(1,0,0,1,0,0);
   const unit=size/172,arrowAngle=Math.atan2(Math.sin(avatarAngle),-Math.cos(avatarAngle))-heading;
@@ -76,6 +93,6 @@
  }
  // 取代原本整校總覽；每幀由既有主迴圈呼叫，依 70ms 節流。
  renderMinimap=()=>render();
- window.campusMinimap={render:()=>render(true),locate:()=>CampusMinimapMath.locate(avatarGroup.position,api.buildings)};
+ window.campusMinimap={render:()=>render(true),invalidate:()=>{layers.clear();render(true)},locate:()=>locate(avatarGroup.position)};
  render(true);
 })();

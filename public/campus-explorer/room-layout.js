@@ -1,13 +1,14 @@
 /* Local annual room names; immutable destination IDs keep navigation stable. */
 (() => {
  const M=CampusRoomLayout,api=campusExplorer;
+ const aliases=()=>typeof CampusSpatialData==='undefined'?{}:CampusSpatialData.aliases||{};
  const order=['admin-front','admin-back','new-grade7','grade8-front','grade8-mid','grade9-back','multi-building','tech-building','art-building','health-bld','gym-bld','recycle-bld'];
  const buildings=[...api.buildings].sort((a,b)=>order.indexOf(a.id)-order.indexOf(b.id));
  const rooms=buildings.flatMap(b=>b.rooms.map(r=>({...r,name:r.name.replace(/\s*\(\d+F\)/,'')}))),base=M.normalize(null,rooms);
  const colors={grade7:'#63b54f',grade8:'#409ed1',grade9:'#e86482',admin:'#8470dc',special:'#b95bc2',other:'#69889a'};
  let year=115,filter='all',saved={},draft={},saveError='',lastFocus=null;
  const drafts=new Map(),originalNames=new Map(Object.values(api.rooms).map(r=>[r.id,r.name]));
- function read(){try{saveError='';return M.parse(localStorage.getItem(M.key(year)),rooms)}catch{saveError='瀏覽器無法使用本機儲存，仍可檢視配置。';return {...base}}}
+ function read(){try{saveError='';return M.parse(localStorage.getItem(M.key(year)),rooms,aliases())}catch{saveError='瀏覽器無法使用本機儲存，仍可檢視配置。';return {...base}}}
  const dirty=()=>rooms.some(r=>draft[r.id]!==saved[r.id]);
  const actions=document.querySelector('.top-actions');
  document.getElementById('btn-mode-toggle').hidden=true;
@@ -42,16 +43,37 @@
   const section=document.createElement('section');section.className='rl-building';section.dataset.building=b.id;
   const heading=document.createElement('h3');heading.textContent=b.name;const range=document.createElement('small');range.textContent=b.floors===1?'1F':`1F–${b.floors}F`;heading.append(range);section.append(heading);
   const scroll=document.createElement('div');scroll.className='rl-floor-scroll';const grid=document.createElement('div');grid.className='rl-floor-grid';
-  const count=Math.max(...Array.from({length:b.floors},(_,i)=>b.rooms.filter(r=>r.floor===i+1).length));grid.style.setProperty('--room-count',Math.max(1,count));
-  for(let floor=b.floors;floor>=1;floor--){const row=document.createElement('div');row.className='rl-floor-row';const label=document.createElement('strong');label.className='rl-floor-label';label.textContent=`${floor}F`;row.append(label);
-   for(const r of b.rooms.filter(r=>r.floor===floor)){const cell=document.createElement('label');cell.className='rl-room';cell.dataset.room=r.id;paint(cell,draft[r.id],r.cat);const code=document.createElement('small');code.textContent=r.code||r.id;code.title='固定導覽空間編號';const input=document.createElement('input');input.type='text';input.value=draft[r.id];input.maxLength=60;input.title=draft[r.id];input.setAttribute('aria-label',`${b.name} ${floor}F ${r.code} 教室名稱`);input.addEventListener('input',()=>{draft[r.id]=input.value;paint(cell,input.value,r.cat);saveError='';updateStatus()});input.addEventListener('blur',()=>{draft[r.id]=input.value.trim()||saved[r.id];input.value=draft[r.id];paint(cell,input.value,r.cat);updateStatus()});cell.append(code,input);row.append(cell);}
-   if(b.floors>1){const stair=document.createElement('div');stair.className='rl-stair';stair.textContent='樓梯';row.append(stair);}grid.append(row);
+  const layout=campusWalkWorld.layouts.find(l=>l.id===b.id);
+  const spans=layout.cells.filter(c=>c.kind==='room').map(c=>{const row=layout.displayRows.find(r=>r.id===(c.row||'main'));return c[`${row.axis}1`]-c[`${row.axis}0`]}).filter(n=>n>0);
+  const unit=132/Math.max(.1,Math.min(...spans));
+  const rowLength=Math.max(...layout.displayRows.map(r=>r.end-r.start));
+  grid.style.setProperty('--plan-width',`${rowLength*unit}px`);
+  for(let floor=b.floors;floor>=1;floor--){
+   for(const physicalRow of CampusSpatialUI.rows(layout,floor)){
+    const row=document.createElement('div');row.className='rl-floor-row';row.dataset.floor=String(floor);row.dataset.row=physicalRow.id;
+    const label=document.createElement('strong');label.className='rl-floor-label';label.textContent=`${floor}F`;if(layout.displayRows.length>1){const wing=document.createElement('small');wing.textContent=physicalRow.label;label.append(wing)}row.append(label);
+    const track=document.createElement('div');track.className='rl-plan-track';track.style.width=`${(physicalRow.end-physicalRow.start)*unit}px`;
+    for(const r of physicalRow.cells){
+     const editable=r.kind==='room',cell=document.createElement(editable?'label':'div');cell.className=editable?'rl-room':`rl-space rl-${r.kind}`;
+     cell.style.left=`${(r.start-physicalRow.start)*unit}px`;cell.style.width=`${(r.end-r.start)*unit}px`;cell.dataset.kind=r.kind;
+     if(editable){
+      cell.dataset.room=r.id;paint(cell,draft[r.id],r.cat);const code=document.createElement('small');code.textContent=r.spaceCode||r.code||r.id;code.title=r.codeSource==='assigned'?'導覽用固定編號（平面圖未標示）':'平面圖固定空間編號';
+      const input=document.createElement('input');input.type='text';input.value=draft[r.id];input.maxLength=60;input.title=draft[r.id];input.setAttribute('aria-label',`${b.name} ${floor}F ${code.textContent} 教室名稱`);
+      input.addEventListener('input',()=>{draft[r.id]=input.value;input.title=input.value;paint(cell,input.value,r.cat);saveError='';updateStatus()});
+      input.addEventListener('blur',()=>{draft[r.id]=input.value.trim()||saved[r.id];input.value=draft[r.id];input.title=input.value;paint(cell,input.value,r.cat);updateStatus()});cell.append(code,input);
+     }else{
+      const code=document.createElement('small');code.textContent=r.spaceCode||r.code||'';
+      const name=document.createElement('span');name.textContent=r.label||({stair:'樓梯',wc:'廁所',passage:'穿堂',void:'空缺'})[r.kind];cell.append(code,name);
+     }track.append(cell);
+    }row.append(track);grid.append(row);
+   }
   }scroll.append(grid);section.append(scroll);list.append(section);
  }updateStatus();}
  function applyNames(){for(const r of rooms){const name=saved[r.id];api.rooms[r.id].name=name;for(const b of api.buildings){const original=b.rooms.find(a=>a.id===r.id);if(original)original.name=name;}for(const l of campusWalkWorld.layouts){const current=l.rooms.find(a=>a.id===r.id);if(current)current.name=name;}const badge=roomBadgeElements.find(a=>a.nodeId===api.rooms[r.id].node);if(badge){badge.element.lastElementChild.textContent=name.replace(/\s*\(\d+F\)/,'');badge.element.firstElementChild.style.background=colors[M.category(name,r.cat)];}}
+  for(const [oldId,id] of Object.entries(aliases()))if(api.rooms[oldId]&&api.rooms[id])api.rooms[oldId].name=api.rooms[id].name;
   api.scene.traverse(o=>{if(o.userData.roomId&&o.material?.map){const name=saved[o.userData.roomId];o.material.map.dispose();o.material.map=createRoomNameplateTexture(name,colors[M.category(name,api.rooms[o.userData.roomId].cat)]);o.material.needsUpdate=true;}});
   for(const btn of quick.querySelectorAll('[data-to]'))btn.textContent=api.rooms[btn.dataset.to].name.replace(/\s*\(\d+F\)/,'');
-  search.dispatchEvent(new Event('input'));campusMinimap.render();
+  search.dispatchEvent(new Event('input'));campusMinimap.invalidate();
  }
  function clearMotion(){Object.keys(moveInput).forEach(k=>moveInput[k]=false);stopAutoWalk();}
  function open(){lastFocus=document.activeElement;quick.classList.remove('open');clearMotion();renderTabs();renderBuildings();dialog.showModal();dialog.querySelector('#rl-close').focus();}
@@ -59,7 +81,7 @@
  document.getElementById('btn-room-layout').onclick=open;dialog.querySelector('#rl-close').onclick=close;
  dialog.addEventListener('cancel',e=>{e.preventDefault();close()});
  dialog.querySelector('#rl-restore').onclick=()=>{draft={...saved};saveError='';renderBuildings()};
- dialog.querySelector('#rl-save').onclick=()=>{const names=M.normalize(draft,rooms);try{localStorage.setItem(M.key(year),JSON.stringify(names));saved=names;draft={...saved};applyNames();renderBuildings();status.textContent=`${year} 學年度配置已儲存在此瀏覽器。`;}catch{saveError='儲存失敗，瀏覽器未允許本機儲存；修改仍保留在面板。';updateStatus();}};
+ dialog.querySelector('#rl-save').onclick=()=>{const names=M.normalize(draft,rooms,aliases());try{localStorage.setItem(M.key(year),JSON.stringify(names));saved=names;draft={...saved};applyNames();renderBuildings();status.textContent=`${year} 學年度配置已儲存在此瀏覽器。`;}catch{saveError='儲存失敗，瀏覽器未允許本機儲存；修改仍保留在面板。';updateStatus();}};
  dialog.querySelector('#rl-year').addEventListener('change',e=>{const next=Number(e.target.value);if(next===year)return;if(!Number.isInteger(next)||next<100||next>200){e.target.value=year;return;}drafts.set(year,{...draft});year=next;saved=read();draft=drafts.get(year)||{...saved};applyNames();renderBuildings();});
  // Capture before legacy WASD listeners, and keep focus within the modal.
  window.addEventListener('keydown',e=>{if(dialog.open){if(e.key==='Escape'){e.preventDefault();close();}else if(e.key==='Tab'){const items=[...dialog.querySelectorAll('button:not(:disabled),input,a[href]')].filter(el=>el.getClientRects().length),first=items[0],last=items.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}e.stopImmediatePropagation();}},true);

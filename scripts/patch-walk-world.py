@@ -1,6 +1,9 @@
 """Keep walk-camera/interior integration reproducible after source import."""
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
+if 'spatial-world.js' in (root/'public/campus-explorer/index.html').read_text(encoding='utf-8'):
+    print('Shared spatial world is active; legacy importer skipped.')
+    raise SystemExit(0)
 path=root/'public/campus-explorer/explorer.js'
 s=path.read_text(encoding='utf-8')
 if 'let collisionBuildingId' not in s:

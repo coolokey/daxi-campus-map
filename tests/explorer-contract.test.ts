@@ -22,7 +22,8 @@ describe('平面圖與導航一致性',()=>{
  });
  it('九年級班級樓層符合 115 平面圖',()=>{
   const rooms=buildings.find(b=>b.id==='grade9-back')!.rooms;
-  for(const [id,floor] of Object.entries({'908':1,'905':1,'903':1,'907':2,'904':2,'902':2,'906':3,'901':3}))expect(rooms.find(r=>r.id===id)?.floor,id).toBe(floor);
+  // 圖面三個直欄是 1F／2F／3F；原測試曾將橫列誤讀為樓層。
+  for(const [id,floor] of Object.entries({'906':1,'907':1,'908':1,'904':2,'905':2,'901':3,'902':3,'903':3}))expect(rooms.find(r=>r.id===id)?.floor,id).toBe(floor);
  });
  it('每一個教室都有可由正門到達的導航節點',()=>{
   const seen=new Set<string>(),queue=['gate'];

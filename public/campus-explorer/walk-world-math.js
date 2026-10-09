@@ -3,6 +3,7 @@ const CampusWalkMath = (() => {
  const H=3.6;
  const inside=(r,x,z)=>x>=r.x0-1e-6&&x<=r.x1+1e-6&&z>=r.z0-1e-6&&z<=r.z1+1e-6;
  function layout(b){
+  if(typeof CampusSpatialPlan!=='undefined'&&b.spatialProfile)return CampusSpatialPlan.layout(b);
   const horizontal=b.width>=b.depth,L=horizontal?b.width:b.depth,D=horizontal?b.depth:b.width;
   const sign=(b.id==='grade8-front')?-1:(!horizontal&&b.id!=='grade9-back'&&b.id!=='gym-bld'?-1:1);
   const world=(u,v,y=0)=>horizontal?{x:b.x+u,z:b.z+v,y}:{x:b.x+v,z:b.z+u,y};
@@ -31,6 +32,7 @@ const CampusWalkMath = (() => {
  }
  function rampPoint(r,t){return{x:r.start.x+(r.end.x-r.start.x)*t,z:r.start.z+(r.end.z-r.start.z)*t,y:r.h0+(r.h1-r.h0)*t}}
  function groundAt(l,x,z,currentY){
+  if(l.cells)return CampusSpatialPlan.groundAt(l,x,z,currentY);
   let best=0;
   if(inside(l.bounds,x,z))for(let f=1;f<=l.b.floors;f++){
    const y=(f-1)*H;
