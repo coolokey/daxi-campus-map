@@ -124,19 +124,20 @@
   if(l)return M.groundAt(l,position.x,position.z,y);
   return CampusOutdoorPlan.ground(position);
  }
+ // Static graph requests share BFS work. Runtime searches use fresh state.
+ const startupSearches=new Map();let buildingGraph=true;
  // Four-connected grid connectors reject blocked edges, floor holes and courtyard voids.
  function gridPath(start,end,y=0,interior=null,stageSurface=false){
-  const step=(interior||stageSurface)?.35:1,origin=stageSurface?{x:CampusOutdoorPlan.stage.x0-1,z:CampusOutdoorPlan.stage.stairs.z0-1}:interior?{x:interior.bounds.x0-1,z:interior.bounds.z0-1}:{x:-130,z:-100},key=(x,z)=>`${x},${z}`,round=p=>({x:Math.round((p.x-origin.x)/step),z:Math.round((p.z-origin.z)/step)}),a=round(start),b=round(end),queue=[a],parents=new Map([[key(a.x,a.z),null]]),cache=new Map(),f=Math.round(y/FH)+1;
+  const step=(interior||stageSurface)?.35:1,origin=stageSurface?{x:CampusOutdoorPlan.stage.x0-1,z:CampusOutdoorPlan.stage.stairs.z0-1}:interior?{x:interior.bounds.x0-1,z:interior.bounds.z0-1}:{x:-130,z:-100},round=p=>({x:Math.round((p.x-origin.x)/step),z:Math.round((p.z-origin.z)/step)}),a=round(start),b=round(end),f=Math.round(y/FH)+1;
+  const searchKey=`${stageSurface?'stage':interior?.id||'outdoor'}/${y}/${a.x},${a.z}`;
+  let state=buildingGraph?startupSearches.get(searchKey):null;if(!state){state=CampusGridSearch.create(a);if(buildingGraph)startupSearches.set(searchKey,state)}
   const stageFree=(x,z)=>CampusOutdoorPlan.onStage({x,z,y})&&Math.abs(CampusOutdoorPlan.ground({x,z})-y)<.15;
-  const free=(x,z)=>{const k=key(x,z);if(cache.has(k))return cache.get(k);const wx=origin.x+x*step,wz=origin.z+z*step;
-   const valid=wx>=-125&&wx<=115&&wz>=-100&&wz<=108&&!checkWallCollision(wx,y,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.15:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)));cache.set(k,valid);return valid};
+  const free=(x,z)=>{const wx=origin.x+x*step,wz=origin.z+z*step;
+   return wx>=-125&&wx<=115&&wz>=-100&&wz<=108&&!checkWallCollision(wx,y,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.15:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)))};
   const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||(stageSurface?!stageFree(x,z):!interior&&CampusOutdoorPlan.reserved({x,z}))||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.15)))return false}return true};
-  for(let i=0;i<queue.length&&i<130000;i++){
-   const c=queue[i];if(c.x===b.x&&c.z===b.z){const result=[];let k=key(c.x,c.z);while(k){const [x,z]=k.split(',').map(Number);result.push({x:origin.x+x*step,y,z:origin.z+z*step});k=parents.get(k)}result.reverse();
+  const points=CampusGridSearch.path(state,b,free);if(points){const result=points.map(p=>({x:origin.x+p.x*step,y,z:origin.z+p.z*step}));
     if(result.length===1)return clear(start,end)?[{...start},{...end}]:null;
     if(!clear(start,result[1])||!clear(result.at(-2),end))return null;result[0]={...start};result[result.length-1]={...end};return result;
-   }
-   for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){const x=c.x+dx,z=c.z+dz,k=key(x,z);if(!parents.has(k)&&free(x,z)){parents.set(k,key(c.x,c.z));queue.push({x,z})}}
   }
   return null;
  }
@@ -194,6 +195,7 @@
  }
  for(const [alias,id] of Object.entries(CampusSpatialData.aliases))ROOMS_DB[alias]={...ROOMS_DB[id],id:alias,aliasFor:id};
  Object.keys(NAV_NODES).forEach(k=>delete NAV_NODES[k]);Object.assign(NAV_NODES,graph);
+ buildingGraph=false;startupSearches.clear();
  function route(position,room){
   const target=graph[room.node];if(!target)return null;
   let stageExit=CampusOutdoorPlan.exitPath(position);

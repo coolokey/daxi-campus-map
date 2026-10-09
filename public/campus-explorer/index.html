@@ -12,11 +12,11 @@
   <!-- Web Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   
   <!-- Three.js & OrbitControls -->
-  <script src="vendor/three.min.js"></script>
-  <script src="vendor/OrbitControls.js"></script>
+  <script defer src="vendor/three.min.js"></script>
+  <script defer src="vendor/OrbitControls.js"></script>
 
   <link rel="stylesheet" href="base.css">
 <link rel="stylesheet" href="art-direction.css">
@@ -226,7 +226,7 @@
       <button class="nav-close" id="btn-close-map-modal">✕</button>
     </div>
     <div class="map-modal-body">
-      <img src="campus_plan_115.jpg" alt="大溪國中115學年度校園平面圖">
+      <img loading="lazy" decoding="async" src="campus_plan_115.jpg" alt="大溪國中115學年度校園平面圖">
     </div>
   </div>
 
@@ -252,32 +252,33 @@
   </div>
 
   <!-- JavaScript Application Logic -->
-  <script src="campus-data.js"></script>
-<script src="spatial-plan-data.js"></script>
-<script src="spatial-plan.js"></script>
-<script src="collision-grid.js"></script>
-<script src="outdoor-plan.js"></script>
-<script src="outdoor-world.js"></script>
-<script src="floor-exhibit-model.js"></script>
-<script src="mouse-controls-model.js"></script>
-<script src="explorer.js"></script>
-<script src="walk-world-math.js"></script>
-<script src="spatial-world.js"></script>
-<script src="photo-facade.js"></script>
-<script src="art-direction.js"></script>
+  <script defer src="campus-data.js"></script>
+<script defer src="spatial-plan-data.js"></script>
+<script defer src="spatial-plan.js"></script>
+<script defer src="collision-grid.js"></script>
+<script defer src="grid-search.js"></script>
+<script defer src="outdoor-plan.js"></script>
+<script defer src="outdoor-world.js"></script>
+<script defer src="floor-exhibit-model.js"></script>
+<script defer src="mouse-controls-model.js"></script>
+<script defer src="explorer.js"></script>
+<script defer src="walk-world-math.js"></script>
+<script defer src="spatial-world.js"></script>
+<script defer src="photo-facade.js"></script>
+<script defer src="art-direction.js"></script>
 <link rel="stylesheet" href="photo-reference.css">
-<script src="photo-reference.js"></script>
-<script src="minimap-math.js"></script>
-<script src="spatial-ui-tools.js"></script>
-<script src="room-layout-model.js"></script>
-<script src="minimap.js"></script>
-<script src="room-layout.js"></script>
+<script defer src="photo-reference.js"></script>
+<script defer src="minimap-math.js"></script>
+<script defer src="spatial-ui-tools.js"></script>
+<script defer src="room-layout-model.js"></script>
+<script defer src="minimap.js"></script>
+<script defer src="room-layout.js"></script>
 <link rel="stylesheet" href="floor-exhibit.css">
-<script src="floor-exhibit.js"></script>
-<script src="mobile-control-math.js"></script>
-<script src="mobile-controls.js"></script>
+<script defer src="floor-exhibit.js"></script>
+<script defer src="mobile-control-math.js"></script>
+<script defer src="mobile-controls.js"></script>
 <link rel="stylesheet" href="mouse-controls.css">
 
-<script src="mouse-controls.js"></script>
+<script defer src="mouse-controls.js"></script>
 </body>
 </html>
