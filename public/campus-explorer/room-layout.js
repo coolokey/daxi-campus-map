@@ -75,7 +75,7 @@
   for(const btn of quick.querySelectorAll('[data-to]'))btn.textContent=api.rooms[btn.dataset.to].name.replace(/\s*\(\d+F\)/,'');
   search.dispatchEvent(new Event('input'));campusMinimap.invalidate();
  }
- function clearMotion(){Object.keys(moveInput).forEach(k=>moveInput[k]=false);stopAutoWalk();}
+ function clearMotion(){api.resetManualInput?.();Object.keys(moveInput).forEach(k=>moveInput[k]=false);stopAutoWalk();}
  function open(){lastFocus=document.activeElement;quick.classList.remove('open');clearMotion();renderTabs();renderBuildings();dialog.showModal();dialog.querySelector('#rl-close').focus();}
  function close(){dialog.close();clearMotion();lastFocus?.focus();}
  document.getElementById('btn-room-layout').onclick=open;dialog.querySelector('#rl-close').onclick=close;

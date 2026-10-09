@@ -2468,6 +2468,7 @@
     let currentNavPoints = [];
     let isAutoWalking = false;
     let autoWalkIndex = 0;
+    let activeNavigationId = null;
 
     function renderNavigationPath(points) {
       if (navPathMesh) {
@@ -2503,6 +2504,7 @@
     }
 
     function clearNavigation() {
+      activeNavigationId = null;
       if (navPathMesh) {
         scene.remove(navPathMesh);
         navPathMesh.geometry.dispose();
@@ -2527,7 +2529,13 @@
     };
 
     function startAutoWalk() {
+      if(motionBlocked())return;
+      cancelCameraTween();
+      resetManualInput();
+      if (activeNavigationId && !navigateToRoom(activeNavigationId, false)) return;
       if (!currentNavPoints || currentNavPoints.length < 2) return;
+      if(currentMode==='bird')setControlMode('avatar');
+      window.campusWalkWorld?.updateCamera();
       isAutoWalking = true;
       const startPt = currentNavPoints[0];
       const startPos = new THREE.Vector3(startPt.x, (startPt.y || 0.6) - 0.6, startPt.z);
@@ -2539,20 +2547,36 @@
       btnAutoWalk.classList.add("walking");
       btnAutoWalk.textContent = "⏹️ 停止帶路";
       showToast("🧑‍🎓 大溪同學啟動自動帶路，正帶您前往目的地！");
-      setControlMode("avatar");
     }
 
     function stopAutoWalk() {
       isAutoWalking = false;
-      btnAutoWalk.classList.remove("walking");
-      btnAutoWalk.textContent = "🚶‍♂️ 自動帶路";
+      if(btnAutoWalk.classList.contains('walking'))btnAutoWalk.classList.remove('walking');
+      const label=activeNavigationId ? "繼續帶路" : "🚶‍♂️ 自動帶路";
+      if(btnAutoWalk.textContent!==label)btnAutoWalk.textContent=label;
     }
+
+    function manualTakeover() {
+      if(isAutoWalking){stopAutoWalk();showToast('已改為手動探索；按「繼續帶路」從目前位置出發。');}
+    }
+    function resetManualInput() {
+      keyMovementKeys.clear();
+      Object.keys(dpadInput).forEach(k=>dpadInput[k]=false);
+      Object.keys(moveInput).forEach(k=>moveInput[k]=false);
+      isMouseDownDragging=false;
+      window.campusMobileControls?.reset();
+      document.querySelectorAll('.dpad-btn.pressed').forEach(el=>el.classList.remove('pressed'));
+    }
+    function motionBlocked(){return !!document.querySelector('dialog[open],.avatar-setting-modal.open,#help-modal.open,#campus-map-modal.open,#reference-panel.open');}
 
     /* ==========================================================================
        7. CONTROL MODES & SMOOTH CAMERA
        ========================================================================== */
     let currentMode = "bird"; // Start in Overview Mode (鳥瞰全景) with Welcome Card
     const moveInput = { forward: false, backward: false, left: false, right: false, sprint: false };
+    const keyMovementKeys=new Set(),dpadInput={forward:false,backward:false,left:false,right:false};
+    const movementKeys={forward:['w','arrowup'],backward:['s','arrowdown'],left:['a','arrowleft'],right:['d','arrowright']};
+    function syncMoveInput(){for(const [direction,keys] of Object.entries(movementKeys))moveInput[direction]=dpadInput[direction]||keys.some(k=>keyMovementKeys.has(k));}
     let walkAnimCycle = 0;
     let walkPitch = 0;
     let jumpVelocity = 0;
@@ -2560,7 +2584,10 @@
     let isJumping = false;
 
     function setControlMode(mode) {
+      if(mode!==currentMode)resetManualInput();
+      if(mode==='bird')stopAutoWalk();
       currentMode = mode;
+      document.body.dataset.controlMode=mode;
       controls.enabled=mode==="bird";
       camera.near=mode==='bird'?1:.08;camera.fov=mode==='bird'?45:60;camera.updateProjectionMatrix();
       const btnIcon = document.getElementById("btn-mode-icon");
@@ -2579,7 +2606,8 @@
         if (avatarGroup) {
           const targetLookAt = avatarGroup.position.clone().add(new THREE.Vector3(0, 1.8, 0));
           const behindPos = avatarGroup.position.clone().add(new THREE.Vector3(0, 5.5, 12));
-          animateCameraTo(behindPos, targetLookAt);
+          cancelCameraTween();
+          if(window.campusWalkWorld)window.campusWalkWorld.updateCamera();else animateCameraTo(behindPos,targetLookAt);
         }
       } else if (mode === "firstperson") {
         toggleBtn.classList.add("active");
@@ -2592,7 +2620,8 @@
         if (avatarGroup) {
           const eyePos = avatarGroup.position.clone().add(new THREE.Vector3(0, 1.7, 0));
           const forwardVec = new THREE.Vector3(Math.sin(avatarAngle) * 10, 0, Math.cos(avatarAngle) * 10);
-          animateCameraTo(eyePos, eyePos.clone().add(forwardVec), 600);
+          cancelCameraTween();
+          if(window.campusWalkWorld)window.campusWalkWorld.updateCamera();else animateCameraTo(eyePos,eyePos.clone().add(forwardVec),600);
         }
       } else {
         toggleBtn.classList.remove("active");
@@ -2642,11 +2671,13 @@
     }
 
     window.addEventListener("keydown", (e) => {
-      if (e.target.closest("input,textarea,select,[contenteditable]")) return;
-      if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") moveInput.forward = true;
-      if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") moveInput.backward = true;
-      if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") moveInput.left = true;
-      if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") moveInput.right = true;
+      if (e.target instanceof Element && e.target.closest("input,textarea,select,[contenteditable]")) return;
+      if(motionBlocked())return;
+      if(['w','s','a','d','ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key.length===1?e.key.toLowerCase():e.key)){
+        e.preventDefault();manualTakeover();
+      }
+      if (["w","s","a","d","W","S","A","D","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)&&currentMode==='bird')setControlMode('avatar');
+      if(Object.values(movementKeys).flat().includes(e.key.toLowerCase())){keyMovementKeys.add(e.key.toLowerCase());syncMoveInput();}
       if (e.shiftKey) moveInput.sprint = true;
       if (e.code === "Space") {
         e.preventDefault();
@@ -2661,17 +2692,10 @@
         toggleBirdMode();
       }
 
-      if (["w","s","a","d","W","S","A","D","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
-        if (currentMode === "bird") setControlMode("avatar");
-      }
     });
 
     window.addEventListener("keyup", (e) => {
-      if (e.target.closest("input,textarea,select,[contenteditable]")) return;
-      if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") moveInput.forward = false;
-      if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") moveInput.backward = false;
-      if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") moveInput.left = false;
-      if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") moveInput.right = false;
+      keyMovementKeys.delete(e.key.toLowerCase());syncMoveInput();
       if (!e.shiftKey) moveInput.sprint = false;
     });
 
@@ -2679,13 +2703,15 @@
       const el = document.getElementById(btnId);
       const start = (e) => {
         e.preventDefault();
-        moveInput[directionKey] = true;
+        if(motionBlocked())return;
+        if(currentMode==='bird')setControlMode('avatar');
+        manualTakeover();
+        dpadInput[directionKey] = true;syncMoveInput();
         el.classList.add("pressed");
-        if (currentMode !== "avatar") setControlMode("avatar");
       };
       const end = (e) => {
         e.preventDefault();
-        moveInput[directionKey] = false;
+        dpadInput[directionKey] = false;syncMoveInput();
         el.classList.remove("pressed");
       };
       el.addEventListener("mousedown", start);
@@ -2695,7 +2721,10 @@
       el.addEventListener("touchend", end, { passive: false });
       el.addEventListener("touchcancel", end, { passive: false });
     }
-    window.addEventListener('blur',()=>{Object.keys(moveInput).forEach(k=>moveInput[k]=false)});
+    window.addEventListener('blur',()=>{resetManualInput();stopAutoWalk()});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden){resetManualInput();stopAutoWalk()}});
+    let wasMotionBlocked=false;
+    new MutationObserver(()=>{const blocked=motionBlocked();if(blocked&&!wasMotionBlocked){resetManualInput();stopAutoWalk()}wasMotionBlocked=blocked;}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['open','class']});
     bindDpad("dpad-up", "forward");
     bindDpad("dpad-down", "backward");
     bindDpad("dpad-left", "left");
@@ -2704,7 +2733,8 @@
     /* ==========================================================================
        8. NAVIGATION & CAMERA TRANSITIONS
        ========================================================================== */
-    function navigateToRoom(roomId) {
+    function navigateToRoom(roomId, focusCamera = true) {
+      stopAutoWalk();
       const room = ROOMS_DB[roomId];
       if (!room) {
         alert("找不到此處室或教室: " + roomId);
@@ -2734,6 +2764,7 @@
         pathPoints.length=0;actual.forEach(p=>pathPoints.push(new THREE.Vector3(p.x,p.y+.6,p.z)));
       }
       renderNavigationPath(pathPoints);
+      activeNavigationId=roomId;
 
       let totalDist = 0;
       for (let i = 0; i < pathPoints.length - 1; i++) {
@@ -2756,16 +2787,20 @@
 
       // Smoothly focus camera towards destination node
       const destNode = NAV_NODES[targetNodeId];
-      if (destNode) {
+      if (destNode && focusCamera && currentMode==='bird') {
         animateCameraTo(
           new THREE.Vector3(destNode.x + 24, (destNode.y || 0) + 18, destNode.z + 32),
           new THREE.Vector3(destNode.x, (destNode.y || 0) + 2, destNode.z)
         );
       }
+      return true;
     }
 
     let isCameraAnimating = false;
+    let cameraTweenGeneration=0;
+    function cancelCameraTween(){cameraTweenGeneration++;isCameraAnimating=false;}
     function animateCameraTo(targetCamPos, targetLookAt, duration = 800) {
+      const generation=++cameraTweenGeneration;
       if(matchMedia("(prefers-reduced-motion: reduce)").matches)duration=1;
       const startCamPos = camera.position.clone();
       const startLookAt = controls.target.clone();
@@ -2773,6 +2808,7 @@
       isCameraAnimating = true;
 
       function tween(now) {
+        if(generation!==cameraTweenGeneration)return;
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const ease = 0.5 - Math.cos(progress * Math.PI) / 2;
@@ -2944,7 +2980,10 @@
 
     // Custom Mouse Look & Invert Y Rotation Handling
     function applyManualCameraRotation(deltaX, deltaY) {
+      if(motionBlocked())return;
       if(currentMode!=='bird'){
+        if(isCameraAnimating)cancelCameraTween();
+        if(deltaX||deltaY)manualTakeover();
         avatarAngle-=deltaX*.0035*turnSensitivityMultiplier;
         walkPitch=Math.max(-.35,Math.min(.4,walkPitch-deltaY*.0035*(isInvertY?-1:1)));
         avatarGroup.rotation.y=avatarAngle;
@@ -3395,6 +3434,7 @@
     function animate() {
       requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.1);
+      if(motionBlocked()){resetManualInput();stopAutoWalk();}
 
       let isMoving = false;
       const baseSpeed = moveInput.sprint ? avatarRunSpeed : avatarSpeed;
@@ -3429,12 +3469,14 @@
         // A/D 轉向，W/S 沿人物面朝的方向前進／後退。
         avatarAngle += ((moveInput.left ? 1 : 0)-(moveInput.right ? 1 : 0))*1.9*turnSensitivityMultiplier*delta;
         avatarGroup.rotation.y=avatarAngle;
-        const forward=new THREE.Vector3(Math.sin(avatarAngle),0,Math.cos(avatarAngle));
-        const moveVec=forward.multiplyScalar((moveInput.forward?1:0)-(moveInput.backward?1:0));
+        const mobile=window.campusMobileControls;
+        if(mobile&&(mobile.look.x||mobile.look.y))applyManualCameraRotation(mobile.look.x*540*delta,-mobile.look.y*350*delta);
+        const forwardAmount=((moveInput.forward?1:0)-(moveInput.backward?1:0))+(mobile?.move.y||0),sideAmount=mobile?.move.x||0;
+        const moveVec=new THREE.Vector3(Math.sin(avatarAngle)*forwardAmount-Math.cos(avatarAngle)*sideAmount,0,Math.cos(avatarAngle)*forwardAmount+Math.sin(avatarAngle)*sideAmount);
 
         if (moveVec.lengthSq() > 0.001) {
           isMoving = true;
-          moveVec.normalize();
+          if(moveVec.lengthSq()>1)moveVec.normalize();
           avatarGroup.rotation.y = avatarAngle;
 
           const dx = moveVec.x * currentSpeed;
@@ -3591,7 +3633,8 @@
       track:{id:'track',name:'操場及綜合球場',buildingName:'操場',floor:1,cat:'sports',node:'track-center'},
       breezeway:{id:'breezeway',name:'中央通廊',buildingName:'教學區',floor:1,cat:'special',node:'breezeway-mid'}
     });
-    window.campusExplorer = {scene,camera,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,setFloorFilter,setControlMode};
+    window.campusExplorer = {scene,camera,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,setFloorFilter,setControlMode,manualTakeover,resetManualInput,motionBlocked};
+    document.body.dataset.controlMode=currentMode;
     animate();
     checkUrlQueryTarget();
 

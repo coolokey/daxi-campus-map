@@ -20,7 +20,7 @@
 
   <link rel="stylesheet" href="base.css">
 <link rel="stylesheet" href="art-direction.css">
-<meta name="color-scheme" content="light dark"><link rel="stylesheet" href="minimap.css"><link rel="stylesheet" href="room-layout.css"></head>
+<meta name="color-scheme" content="light dark"><link rel="stylesheet" href="minimap.css"><link rel="stylesheet" href="room-layout.css"><link rel="stylesheet" href="mobile-controls.css"></head>
 <body>
   <!-- Three.js Canvas -->
   <canvas id="webgl-canvas"></canvas>
@@ -49,7 +49,7 @@
       </div>
       <div class="shortcut-item">
         <span class="shortcut-key">滑鼠</span>
-        <span class="shortcut-desc">轉頭；手機用方向鍵移動，拖曳畫面轉頭</span>
+        <span class="shortcut-desc">轉頭；手機左搖桿移動、右搖桿轉頭</span>
       </div>
       <div class="shortcut-item">
         <span class="shortcut-key">V</span>
@@ -237,13 +237,13 @@
   <div id="help-modal" class="glass">
     <h3 style="margin-bottom: 12px; font-weight: 900; font-size: 18px; color: var(--accent);">🎮 3D 智慧導覽操作說明</h3>
     <ul style="list-style: none; line-height: 1.8; font-size: 13px; color: #cbd5e1; margin-bottom: 16px;">
-      <li>🖱️ <b>自由旋轉視野</b>：左鍵拖曳 360° 旋轉視野，右鍵平移，滾輪自由縮放距離。</li>
+      <li><b>視野</b>：鳥瞰時拖曳旋轉、右鍵平移、滾輪縮放；步行時依「轉頭」設定操作滑鼠。</li>
       <li>⌨️ <b>人物行走操控</b>：<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 或方向鍵前進後退、轉向，<kbd>Shift</kbd> 加速奔跑。</li>
-      <li>📱 <b>觸控支援</b>：單指旋轉全景，雙指捏合縮放，右下角按鈕移動角色。</li>
+      <li><b>手機步行</b>：左搖桿前進、後退與側移；右搖桿轉頭。可同時使用兩指，放開即停止。</li>
       <li>🏢 <b>樓層切換</b>：點選右側 1F ~ 4F 即可透視內部教室配置與走廊。</li>
       <li>🪜 <b>實體樓梯爬升</b>：導航至 2F/3F 教室時，同學會由川堂走至樓梯間沿踏階走上樓！</li>
-      <li>🚶 <b>自動帶路</b>：搜尋或點擊任意門牌後，點擊「自動帶路」同學將親自帶您前往！</li>
-      <li>🗺️ <b>平面總圖</b>：按 <kbd>M</kbd> 鍵可隨時對照 115 學年度原始平面藍圖。</li>
+      <li><b>自動帶路</b>：選目的地後啟動；手動移動或轉頭會接管，按「繼續帶路」從目前位置重新出發。</li>
+      <li><b>視角與平面圖</b>：<kbd>M</kbd> 切換步行／鳥瞰，<kbd>V</kbd> 切換第一／第三人稱；教室配置面板可開啟 115 學年度平面圖。</li>
     </ul>
     <button class="btn-action" style="width: 100%; justify-content: center; background: var(--accent); color: #0f172a;" id="btn-close-help">我知道了！開始導覽</button>
   </div>
@@ -262,5 +262,7 @@
 <script src="room-layout-model.js"></script>
 <script src="minimap.js"></script>
 <script src="room-layout.js"></script>
+<script src="mobile-control-math.js"></script>
+<script src="mobile-controls.js"></script>
 </body>
 </html>
