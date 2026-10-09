@@ -40,7 +40,19 @@
     box(.16,.6,.65,13.8,.34,z,0x52615a);box(.16,.6,.65,16.2,.34,z,0x52615a);
   }
   // 後側擋土牆與坡地樹叢，呼應操場照片。
-  box(210,3,1.5,-28,1.5,-75,0x8a9588);
+  for(let i=0;i<14;i++){
+    const wall=box(14.7,2.7+(i%3)*.12,.85,-126+i*15,1.3,-75,0x818b7f);wall.rotation.x=-.15;
+    box(14.8,.12,1.05,-126+i*15,2.7,-75.2,0xa1aa94);
+    for(const x of [-129+i*15,-123+i*15])box(.1,.55,.08,x,1.1,-74.5,0x536456);
+  }
+  // Track-side shade, tree wells and low brick seating from the 2019 series.
+  paved(86,2.2,-88,5.4);
+  for(let x=-126;x<=-79;x+=7.8){
+    box(2.1,.3,1.6,x,.16,7.6,0x987867);box(1.75,.03,1.3,x,.32,7.6,palette.soil);
+    const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.13,.2,3.3,8),mat(0x76644c));trunk.position.set(x,1.65,7.6);decor.add(trunk);
+    for(let i=0;i<2;i++){const leaf=new THREE.Mesh(new THREE.IcosahedronGeometry(1.8,1),mat(i?0x6d8351:0x587849));leaf.position.set(x+(i?.45:-.3),3.6+i*.6,7.6);leaf.scale.y=.8;decor.add(leaf)}
+    box(2,.12,.45,x,.48,8.55,0x9e8468);
+  }
   for(let i=0;i<30;i++){
     const crown=new THREE.Mesh(new THREE.IcosahedronGeometry(3.2+(i%3)*.7,1),mat([0x365b47,0x416851,0x51765a][i%3]));
     crown.position.set(-135+i*7.5,4.2+(i%4)*.7,-82-(i%2)*4);crown.scale.y=1.2;crown.castShadow=true;decor.add(crown);
@@ -106,7 +118,7 @@
   const caption=document.createElement('div');caption.id='scene-caption';caption.textContent='依 115 平面圖配置・實景材質・空間示意';document.body.append(caption);
   const panel=document.createElement('section');panel.id='reference-panel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','校園照片對照');panel.innerHTML='<button type="button">關閉</button><h2>從實景認識校園</h2><img src="reference-aerial.jpg" alt="大溪國中空拍實景，供建築與球場對照"><p>平面图校對位置與樓層，實景照片校對建築外觀。立體模型為導覽示意，尺寸與路徑距離未經現地測量。</p><p><a href="campus_plan_115.jpg" target="_blank" rel="noopener">開啟 115 學年度平面圖</a>　<a href="campus-illustration.png" target="_blank" rel="noopener" id="concept-link" hidden>查看校園手繪美術圖</a></p>';
   document.body.append(panel);referenceButton.onclick=()=>{panel.classList.add('open');panel.querySelector('button').focus()};panel.querySelector('button').onclick=()=>{panel.classList.remove('open');referenceButton.focus()};
-  const concept=new Image();concept.onload=()=>{document.getElementById('concept-link').hidden=false};concept.src='campus-illustration.png';
+  const concept=new Image();concept.onload=()=>{const link=document.getElementById('concept-link');if(link)link.hidden=false};concept.src='campus-illustration.png';
   const sourceNote=document.createElement('p');sourceNote.className='map-source-note';sourceNote.textContent='平面圖為樓層與配置依據；3D 場景為示意模型。跑道與屋面配色參考实拍照片。';document.getElementById('campus-map-modal').append(sourceNote);
   // 原版圖面座標不是測量值，因此距離採示意單位。
   document.querySelector('.nav-dist small').textContent='示意單位';

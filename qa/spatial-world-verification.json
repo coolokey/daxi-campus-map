@@ -1,7 +1,7 @@
 {
   "rooms": 108,
   "physicalRooms": 92,
-  "nodes": 17409,
+  "nodes": 17455,
   "unreachable": [],
   "blockedEdges": [],
   "stairs": [
@@ -336,6 +336,15 @@
         "x": 78,
         "y": 10.8,
         "z": 46
+      }
+    },
+    {
+      "id": "grandstand",
+      "error": null,
+      "end": {
+        "x": -62,
+        "y": 1.4,
+        "z": 11
       }
     }
   ]

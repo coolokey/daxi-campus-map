@@ -122,14 +122,15 @@
  function floorAt(position){
   const y=position.y,l=layouts.find(l=>M.inside(l.bounds,position.x,position.z)&&insideFloor(l,position.x,position.z,Math.max(1,Math.round(y/FH)+1)));
   if(l)return M.groundAt(l,position.x,position.z,y);
-  return 0;
+  return CampusOutdoorPlan.ground(position);
  }
  // Four-connected grid connectors reject blocked edges, floor holes and courtyard voids.
- function gridPath(start,end,y=0,interior=null){
-  const step=interior?.35:1,origin=interior?{x:interior.bounds.x0-1,z:interior.bounds.z0-1}:{x:-130,z:-100},key=(x,z)=>`${x},${z}`,round=p=>({x:Math.round((p.x-origin.x)/step),z:Math.round((p.z-origin.z)/step)}),a=round(start),b=round(end),queue=[a],parents=new Map([[key(a.x,a.z),null]]),cache=new Map(),f=Math.round(y/FH)+1;
+ function gridPath(start,end,y=0,interior=null,stageSurface=false){
+  const step=(interior||stageSurface)?.35:1,origin=stageSurface?{x:CampusOutdoorPlan.stage.x0-1,z:CampusOutdoorPlan.stage.stairs.z0-1}:interior?{x:interior.bounds.x0-1,z:interior.bounds.z0-1}:{x:-130,z:-100},key=(x,z)=>`${x},${z}`,round=p=>({x:Math.round((p.x-origin.x)/step),z:Math.round((p.z-origin.z)/step)}),a=round(start),b=round(end),queue=[a],parents=new Map([[key(a.x,a.z),null]]),cache=new Map(),f=Math.round(y/FH)+1;
+  const stageFree=(x,z)=>CampusOutdoorPlan.onStage({x,z,y})&&Math.abs(CampusOutdoorPlan.ground({x,z})-y)<.15;
   const free=(x,z)=>{const k=key(x,z);if(cache.has(k))return cache.get(k);const wx=origin.x+x*step,wz=origin.z+z*step;
-   const valid=wx>=-125&&wx<=115&&wz>=-100&&wz<=108&&!checkWallCollision(wx,y,wz)&&(interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.15:!layouts.some(l=>insideFloor(l,wx,wz,1)));cache.set(k,valid);return valid};
-  const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.15)))return false}return true};
+   const valid=wx>=-125&&wx<=115&&wz>=-100&&wz<=108&&!checkWallCollision(wx,y,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.15:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)));cache.set(k,valid);return valid};
+  const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||(stageSurface?!stageFree(x,z):!interior&&CampusOutdoorPlan.reserved({x,z}))||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.15)))return false}return true};
   for(let i=0;i<queue.length&&i<130000;i++){
    const c=queue[i];if(c.x===b.x&&c.z===b.z){const result=[];let k=key(c.x,c.z);while(k){const [x,z]=k.split(',').map(Number);result.push({x:origin.x+x*step,y,z:origin.z+z*step});k=parents.get(k)}result.reverse();
     if(result.length===1)return clear(start,end)?[{...start},{...end}]:null;
@@ -182,6 +183,11 @@
   for(const r of l.rooms.filter(r=>r.floor===1))attachPath(inside,`walk-${r.id}-corridor`,gridPath(e.inside,r.corridor,0,l),l.id);
   attachPath(gate,exterior,gridPath(graph[gate],e.outside));
  }
+ const stageFoot=node('stage-outdoor-foot',{...CampusOutdoorPlan.stage.foot});
+ attachPath(gate,stageFoot,gridPath(graph[gate],graph[stageFoot]));
+ let stagePrevious=stageFoot;
+ for(const [i,p] of CampusOutdoorPlan.stairsPath().entries()){const id=node(`stage-outdoor-stair-${i}`,p);link(stagePrevious,id);stagePrevious=id;}
+ const podium=node('stand-podium',{...CampusOutdoorPlan.stage.center});link(stagePrevious,podium);roomTargets.grandstand=podium;
  for(const room of Object.values(ROOMS_DB))if(!roomTargets[room.id]&&room.node!=='gate'){
   const old=oldNodes[room.node];if(!old)continue;let p=room.id==='guard'?{x:6,y:0,z:90}:{x:old.x,y:0,z:old.z};const l=layouts.find(l=>insideFloor(l,p.x,p.z,1));if(l)p=l.entrance;
   const target=node(room.node,p);attachPath(gate,target,gridPath(graph[gate],p));
@@ -190,6 +196,14 @@
  Object.keys(NAV_NODES).forEach(k=>delete NAV_NODES[k]);Object.assign(NAV_NODES,graph);
  function route(position,room){
   const target=graph[room.node];if(!target)return null;
+  let stageExit=CampusOutdoorPlan.exitPath(position);
+  if(stageExit){
+   if(CampusOutdoorPlan.inside(CampusOutdoorPlan.stage,position)){
+    const path=gridPath(position,{x:-62,y:1.4,z:8.1},1.4,null,true);if(!path)return null;
+    stageExit=[...path,...CampusOutdoorPlan.stairsPath().reverse().slice(1),{...CampusOutdoorPlan.stage.foot}];
+   }
+   const ids=findShortestPath(stageFoot,room.node);return ids?[...stageExit,...ids.slice(1).map(id=>graph[id])]:null;
+  }
   const f=Math.max(1,Math.round(position.y/FH)+1),l=layouts.find(l=>insideFloor(l,position.x,position.z,f));
   let connector=null,start=null;
   const candidates=Object.values(graph).filter(n=>Math.abs(n.y-position.y)<.36&&(l?n.buildingId===l.id:n.id==='gate'||n.id.includes('-outside-'))).sort((a,b)=>Math.hypot(a.x-position.x,a.z-position.z)-Math.hypot(b.x-position.x,b.z-position.z));

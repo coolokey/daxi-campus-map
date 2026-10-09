@@ -23,11 +23,15 @@
   for(let i=0;i<7;i++)rect(-19+i*2,77,1,9,'#eeeede');
   // 操場採直道＋半圓彎道，不使用與模型不符的橢圓。
   function stadium(radius){c.beginPath();c.moveTo(-109,-25-radius);c.lineTo(-59,-25-radius);c.arc(-59,-25,radius,-Math.PI/2,Math.PI/2);c.lineTo(-109,-25+radius);c.arc(-109,-25,radius,Math.PI/2,Math.PI*1.5);c.closePath()}
-  stadium(27);c.fillStyle='#45494b';c.fill();stadium(18);c.fillStyle='#7e915f';c.fill();
+  const outdoor=CampusOutdoorPlan,hex=n=>'#'+n.toString(16).padStart(6,'0');
+  stadium(outdoor.track.outerRadius);c.fillStyle=hex(outdoor.palette.track);c.fill();stadium(outdoor.track.innerRadius);c.fillStyle=hex(outdoor.palette.lawn);c.fill();
   for(let r=20;r<27;r+=1.7){stadium(r);c.strokeStyle='#d6d8d0';c.lineWidth=.16;c.stroke()}
-  rect(-74,-38,14,24,'#a65b51');rect(-29,-52,14,28,'#718c6c');rect(-11,-55,46,34,'#897660');
+  for(const r of outdoor.courts){rect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0,hex(outdoor.palette.court));c.strokeStyle=hex(outdoor.palette.line);c.lineWidth=.12;c.strokeRect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0)}
+  rect(-29,-52,14,28,'#718c6c');rect(-11,-55,46,34,'#897660');
   for(let i=0;i<3;i++){rect(-10+i*14.6,-53.8,12.6,28,'#739078');c.strokeStyle='#e0e4d5';c.lineWidth=.15;c.strokeRect(-10+i*14.6,-53.8,12.6,28);c.beginPath();c.arc(-3.7+i*14.6,-39.8,2.5,0,Math.PI*2);c.stroke()}
-  rect(-70,8,16,7.5,'#94a3a8');rect(-50,18,8,5,'#a7987d');
+  const stage=outdoor.stage;rect(stage.x0,stage.z0,stage.x1-stage.x0,stage.z1-stage.z0,hex(outdoor.palette.stage));rect(stage.stairs.x0,stage.stairs.z0,stage.stairs.x1-stage.stairs.x0,stage.stairs.z1-stage.stairs.z0,hex(outdoor.palette.step));
+  for(let z=stage.stairs.z0;z<stage.stairs.z1;z+=.5){c.strokeStyle='#eee8cc';c.lineWidth=.1;c.beginPath();c.moveTo(stage.stairs.x0,z);c.lineTo(stage.stairs.x1,z);c.stroke()}
+  rect(-50,18,8,5,'#a7987d');
   // 世界矩形與樓層格子來自步行模型，包含多翼、穿堂和實際空缺。
   const colors={grade7:'#63b54f',grade8:'#409ed1',grade9:'#e86482',admin:'#8470dc',special:'#b95bc2',other:'#69889a'};
   const fill=(r,color)=>rect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0,color);
@@ -63,7 +67,7 @@
   for(let i=0;i<6;i++){c.fillStyle=['#76555e','#6f88a0','#536454'][i%3];c.fillRect(66+i*3.7,75.5,1.5,3.2)}
   layers.set(floor,layer);return layer;
  }
- const locate=position=>CampusSpatialUI.locate(position,window.campusWalkWorld.layouts,p=>CampusMinimapMath.locate(p,[]));
+ const locate=position=>CampusSpatialUI.locate(position,window.campusWalkWorld.layouts,p=>CampusOutdoorPlan.onStage(p)?{floor:1,label:'操場司令台',buildingId:null}:CampusMinimapMath.locate(p,[]));
  let lastTime=0,lastCaption='';
  function render(force=false){
   const now=performance.now();if(!force&&now-lastTime<70)return;lastTime=now;

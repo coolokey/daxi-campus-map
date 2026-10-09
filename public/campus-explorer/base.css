@@ -20,7 +20,7 @@
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden;
+      overflow: clip;
       background: #88bdda;
       color: var(--text);
       font-family: var(--font);
@@ -1027,4 +1027,3 @@
       #quick-bar { top: 110px; }
       #floor-selector { top: 156px; }
     }
-  

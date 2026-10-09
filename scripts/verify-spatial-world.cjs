@@ -10,7 +10,7 @@ w.HTMLCanvasElement.prototype.getContext=function(){return new Proxy({canvas:thi
 function run(file){vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file,timeout:180000})}
 run('vendor/three.min.js');w.THREE.WebGLRenderer=class{constructor({canvas}){this.domElement=canvas;this.shadowMap={};this.capabilities={getMaxAnisotropy:()=>1};this.info={render:{calls:0}}}setSize(){}setPixelRatio(){}render(){}};
 run('vendor/OrbitControls.js');
-for(const file of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','explorer.js','walk-world-math.js','spatial-world.js','art-direction.js','minimap-math.js','spatial-ui-tools.js','room-layout-model.js','minimap.js','room-layout.js'])run(file);
+for(const file of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','outdoor-plan.js','outdoor-world.js','explorer.js','walk-world-math.js','spatial-world.js','photo-facade.js','art-direction.js','photo-reference.js','minimap-math.js','spatial-ui-tools.js','room-layout-model.js','minimap.js','room-layout.js'])run(file);
 const report=vm.runInContext(`(()=>{
  const world=campusWalkWorld,rooms=Object.values(ROOMS_DB),unreachable=rooms.filter(r=>!findShortestPath('gate',r.node)).map(r=>r.id),blockedEdges=[],stairs=[],doorFailures=[];
  for(const [id,a] of Object.entries(world.graph))for(const nid of a.neighbors){if(id>nid)continue;const b=world.graph[nid],distance=Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z),steps=Math.max(1,Math.ceil(distance/.15));
@@ -25,7 +25,7 @@ const report=vm.runInContext(`(()=>{
  }
  for(const l of world.layouts)for(const r of l.rooms){const points=[r.corridor,r.door,r.center],p={...points[0]};for(const target of points.slice(1))if(moveAvatarWithCollision(p,target.x-p.x,target.z-p.z)){doorFailures.push({id:r.id,p:{...p},target});break}}
  const motorRoutes=[];
- for(const id of ['academic','901','804','704','computer-lab-1','art-4f']){
+ for(const id of ['academic','901','804','704','computer-lab-1','art-4f','grandstand']){
   const room=ROOMS_DB[id],ids=room&&findShortestPath('gate',room.node),p={...world.graph.gate};let error=null;
   if(!ids)error='missing route';else for(const nid of ids.slice(1)){
    const target=world.graph[nid],origin={...p},steps=Math.max(1,Math.ceil(Math.hypot(target.x-p.x,target.y-p.y,target.z-p.z)/.15));
