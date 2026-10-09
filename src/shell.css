@@ -1,3 +1,6 @@
 html,body,#root{margin:0;width:100%;height:100%;overflow:hidden;background:#d5e4de}
 .campus-explorer-shell{width:100vw;height:100dvh;min-height:0;background:#d5e4de}
 .campus-explorer-frame{display:block;width:100%;height:100%;border:0}
+.campus-loading{position:fixed;inset:0;z-index:2;display:grid;place-content:center;text-align:center;background:linear-gradient(145deg,#152536,#243d4a);color:#f5f0df;font:700 clamp(1.3rem,3vw,2.4rem)/1.35 system-ui,sans-serif;letter-spacing:.08em;transition:opacity .35s ease,visibility .35s ease}
+.campus-loading span{display:block;margin-top:.5rem;color:#c5d6d0;font-size:.45em;font-weight:500;letter-spacing:.12em}
+.campus-loading.is-ready{opacity:0;visibility:hidden;pointer-events:none}

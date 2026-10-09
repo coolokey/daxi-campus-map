@@ -2951,7 +2951,11 @@
     };
 
     const mapModal = document.getElementById("campus-map-modal");
-    document.getElementById("btn-map-overlay").onclick = () => mapModal.classList.add("open");
+    document.getElementById("btn-map-overlay").onclick = () => {
+      const mapImage = mapModal.querySelector("img[data-src]");
+      if (mapImage && !mapImage.src) mapImage.src = mapImage.dataset.src;
+      mapModal.classList.add("open");
+    };
     document.getElementById("btn-close-map-modal").onclick = () => mapModal.classList.remove("open");
 
     // 2D High-Definition Minimap (115學年度官方平面圖精準繪製)
@@ -3414,6 +3418,6 @@
     });
     window.campusExplorer = {scene,camera,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,setFloorFilter,setControlMode,manualTakeover,resetManualInput,motionBlocked};
     document.body.dataset.controlMode=currentMode;
-    animate();
+    requestAnimationFrame(animate);
     checkUrlQueryTarget();
 

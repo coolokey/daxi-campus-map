@@ -14,6 +14,12 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','explorer.js','walk-world-math.js','spatial-world.js','photo-facade.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('does not fetch hidden reference photos before opening their panel',()=>{
+ run(`document.querySelector('#photo-image').removeAttribute('src')`);
+ expect(run(`document.querySelector('#photo-image').getAttribute('src')`)).toBe(null);
+ run(`document.querySelector('#scene-toolbar button:last-child').click()`);
+ expect(run(`document.querySelector('#photo-image').getAttribute('src')`)).toContain('photos/');
+});
 it('walks up the stage stairs and down using the actual ground motor',()=>{
  const p=run(`(()=>{const p={x:-62,y:0,z:4.3};for(let i=0;i<80;i++)moveAvatarWithCollision(p,0,.08);return p})()`);
  expect(p.y).toBeCloseTo(1.4);expect(p.z).toBeCloseTo(10.7);

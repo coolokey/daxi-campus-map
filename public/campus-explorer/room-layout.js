@@ -30,7 +30,9 @@
  document.getElementById('btn-walk').onclick=()=>mode(currentMode==='firstperson'?'firstperson':'avatar');
  document.getElementById('btn-bird').onclick=()=>mode('bird');
  document.getElementById('btn-perspective').onclick=()=>mode(currentMode==='firstperson'?'avatar':'firstperson');
- new MutationObserver(sync).observe(document.getElementById('btn-mode-text'),{childList:true,subtree:true,characterData:true});sync();
+ const modeText=document.getElementById('btn-mode-text');
+ if(modeText)new MutationObserver(sync).observe(modeText,{childList:true,subtree:true,characterData:true});
+ sync();
  const dialog=document.createElement('dialog');dialog.id='room-layout-dialog';dialog.setAttribute('aria-labelledby','room-layout-title');
  dialog.innerHTML='<header class="rl-header"><div class="rl-title-row"><h2 id="room-layout-title">教室配置</h2><label><input id="rl-year" type="number" value="115" min="100" max="200" aria-label="學年度"> 學年度</label></div><p>格子左上角為固定空間編號；中間的名稱可以直接修改。<br>輸入三碼班級（例如 701）會自動套用年級顏色。</p><button id="rl-close" type="button" aria-label="關閉教室配置">×</button></header><div class="rl-storage"><p>目前使用本機配置，修改只儲存在此瀏覽器。</p><a href="campus_plan_115.jpg" target="_blank" rel="noopener">115 校園平面圖 ↗</a></div><nav id="rl-tabs" aria-label="篩選校舍"></nav><div class="rl-scroll"><div class="rl-legend"></div><div id="rl-buildings"></div></div><footer class="rl-footer"><span id="rl-status" role="status"></span><button id="rl-restore" type="button">還原</button><button id="rl-save" type="button">儲存</button></footer>';
  document.body.append(dialog);

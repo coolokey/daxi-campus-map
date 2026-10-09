@@ -26,11 +26,10 @@
  for(const [key,g] of Object.entries(groups)){const button=document.createElement('button');button.type='button';button.dataset.photoGroup=key;button.textContent=g.label;button.onclick=()=>{active=key;index=0;render()};tabs.append(button)}
  function render(){const items=groups[active].items,item=items[index],image=panel.querySelector('#photo-image');image.src=`photos/${item[0]}.jpg`;image.alt=item[1];panel.querySelector('#photo-date').textContent=item[2];panel.querySelector('#photo-caption').textContent=item[1];panel.querySelector('#photo-evidence').textContent=item[3];panel.querySelector('#photo-count').textContent=`${index+1} / ${items.length}`;for(const b of tabs.children)b.setAttribute('aria-pressed',String(b.dataset.photoGroup===active));}
  function close(){panel.classList.remove('open');opener.focus()}
- opener.onclick=()=>{api.manualTakeover?.();api.resetManualInput?.();panel.classList.add('open');panel.querySelector('#photo-close').focus()};
+ opener.onclick=()=>{render();api.manualTakeover?.();api.resetManualInput?.();panel.classList.add('open');panel.querySelector('#photo-close').focus()};
  panel.querySelector('#photo-close').onclick=close;
  panel.querySelector('#photo-prev').onclick=()=>{index=(index-1+groups[active].items.length)%groups[active].items.length;render()};
  panel.querySelector('#photo-next').onclick=()=>{index=(index+1)%groups[active].items.length;render()};
  panel.querySelector('#photo-go').onclick=()=>{const id=groups[active].items[index][4];close();api.navigateToRoom(id)};
  panel.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();close()}else if(e.key==='Tab'){const controls=[...panel.querySelectorAll('button,a[href]')],first=controls[0],last=controls.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
- render();
 })();
