@@ -10,7 +10,7 @@ w.HTMLCanvasElement.prototype.getContext=function(){return new Proxy({canvas:thi
 function run(file){vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file,timeout:180000})}
 run('vendor/three.min.js');w.THREE.WebGLRenderer=class{constructor({canvas}){this.domElement=canvas;this.shadowMap={};this.capabilities={getMaxAnisotropy:()=>1};this.info={render:{calls:0}}}setSize(){}setPixelRatio(){}render(){}};
 run('vendor/OrbitControls.js');
-for(const file of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','explorer.js','walk-world-math.js','spatial-world.js','photo-facade.js','art-direction.js','photo-reference.js','minimap-math.js','spatial-ui-tools.js','room-layout-model.js','minimap.js','room-layout.js'])run(file);
+for(const file of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','explorer.js','walk-world-math.js','spatial-world.js','photo-facade.js','art-direction.js','photo-reference.js','minimap-math.js','spatial-ui-tools.js','room-layout-model.js','minimap.js','room-layout.js'])run(file);
 const report=vm.runInContext(`(()=>{
  const world=campusWalkWorld,rooms=Object.values(ROOMS_DB),unreachable=rooms.filter(r=>!findShortestPath('gate',r.node)).map(r=>r.id),blockedEdges=[],stairs=[],doorFailures=[];
  for(const [id,a] of Object.entries(world.graph))for(const nid of a.neighbors){if(id>nid)continue;const b=world.graph[nid],distance=Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z),steps=Math.max(1,Math.ceil(distance/.15));

@@ -237,7 +237,9 @@
   <div id="help-modal" class="glass">
     <h3 style="margin-bottom: 12px; font-weight: 900; font-size: 18px; color: var(--accent);">🎮 3D 智慧導覽操作說明</h3>
     <ul style="list-style: none; line-height: 1.8; font-size: 13px; color: #cbd5e1; margin-bottom: 16px;">
-      <li><b>視野</b>：鳥瞰時拖曳旋轉、右鍵平移、滾輪縮放；步行時依「轉頭」設定操作滑鼠。</li>
+      <li><b>鳥瞰滑鼠</b>：左鍵拖曳旋轉；右鍵或 Shift＋左鍵拖曳平移；滾輪縮放。</li>
+      <li><b>步行滑鼠</b>：「轉頭」可選左鍵拖曳、右鍵拖曳、移動滑鼠或點擊鎖定游標。移動模式點一下場景或按 Esc 暫停，再點一下繼續；左右邊緣會持續轉向。鎖定模式按 Esc 解除。</li>
+      <li><b>鏡頭設定</b>：第三人稱滾輪調整跟隨距離；第一人稱保持眼睛視角。按 [／] 調整靈敏度，可設定上下反轉，偏好會自動記住。</li>
       <li>⌨️ <b>人物行走操控</b>：<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 或方向鍵前進後退、轉向，<kbd>Shift</kbd> 加速奔跑。</li>
       <li><b>手機步行</b>：左搖桿前進、後退與側移；右搖桿轉頭。可同時使用兩指，放開即停止。</li>
       <li>🏢 <b>樓層切換</b>：點選右側 1F ~ 4F 即可透視內部教室配置與走廊。</li>
@@ -256,6 +258,7 @@
 <script src="outdoor-plan.js"></script>
 <script src="outdoor-world.js"></script>
 <script src="floor-exhibit-model.js"></script>
+<script src="mouse-controls-model.js"></script>
 <script src="explorer.js"></script>
 <script src="walk-world-math.js"></script>
 <script src="spatial-world.js"></script>
@@ -272,5 +275,8 @@
 <script src="floor-exhibit.js"></script>
 <script src="mobile-control-math.js"></script>
 <script src="mobile-controls.js"></script>
+<link rel="stylesheet" href="mouse-controls.css">
+
+<script src="mouse-controls.js"></script>
 </body>
 </html>

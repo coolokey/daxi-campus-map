@@ -2371,6 +2371,7 @@
       Object.keys(moveInput).forEach(k=>moveInput[k]=false);
       isMouseDownDragging=false;
       window.campusMobileControls?.reset();
+      window.campusMouse?.reset();
       document.querySelectorAll('.dpad-btn.pressed').forEach(el=>el.classList.remove('pressed'));
     }
     function motionBlocked(){return !!document.querySelector('dialog[open],.avatar-setting-modal.open,#help-modal.open,#campus-map-modal.open,#reference-panel.open');}
@@ -2701,13 +2702,7 @@
     }
 
     function applyMouseModeSettings() {
-      if (mouseTurnMode === "left") {
-        controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
-      } else if (mouseTurnMode === "right") {
-        controls.mouseButtons = { LEFT: THREE.MOUSE.NONE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
-      } else if (mouseTurnMode === "move") {
-        controls.mouseButtons = { LEFT: THREE.MOUSE.NONE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.NONE };
-      }
+      controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
     }
 
     if (selectMouseTurn) {
@@ -2791,7 +2786,7 @@
         if(isCameraAnimating)cancelCameraTween();
         if(deltaX||deltaY)manualTakeover();
         avatarAngle-=deltaX*.0035*turnSensitivityMultiplier;
-        walkPitch=Math.max(-.35,Math.min(.4,walkPitch-deltaY*.0035*(isInvertY?-1:1)));
+        walkPitch=Math.max(-1.25,Math.min(1.25,walkPitch-deltaY*.0035*turnSensitivityMultiplier*(isInvertY?-1:1)));
         avatarGroup.rotation.y=avatarAngle;
         return;
       }
@@ -2815,33 +2810,7 @@
       controls.update();
     }
 
-    renderer.domElement.addEventListener("mousedown", (e) => {
-      if ((mouseTurnMode === "left" && e.button === 0) || (mouseTurnMode === "right" && e.button === 2)) {
-        isMouseDownDragging = true;
-      }
-    });
-    window.addEventListener("mouseup", () => {
-      isMouseDownDragging = false;
-    });
-    renderer.domElement.addEventListener("contextmenu", (e) => {
-      if (mouseTurnMode === "right") {
-        e.preventDefault();
-      }
-    });
-    renderer.domElement.addEventListener("mousemove", (e) => {
-      if ((mouseTurnMode === "move" || isMouseDownDragging) && (currentMode === "avatar" || currentMode === "firstperson")) {
-        const deltaX = e.movementX || 0;
-        const deltaY = e.movementY || 0;
-        if (Math.abs(deltaX) > 0 || Math.abs(deltaY) > 0) {
-          applyManualCameraRotation(deltaX, deltaY);
-        }
-      } else if (isInvertY && isMouseDownDragging) {
-        const deltaY = e.movementY || 0;
-        if (Math.abs(deltaY) > 0) {
-          applyManualCameraRotation(0, -deltaY * 2);
-        }
-      }
-    });
+    // Pointer capture, hover and pointer lock are owned by mouse-controls.js.
 
     function focusBuilding(cfg) {
       focusedBuildingId=cfg.id;
@@ -3243,6 +3212,7 @@
       requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.1);
       if(motionBlocked()){resetManualInput();stopAutoWalk();}
+      window.campusMouse?.update(delta);
 
       let isMoving = false;
       const baseSpeed = moveInput.sprint ? avatarRunSpeed : avatarSpeed;

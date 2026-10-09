@@ -45,10 +45,10 @@ const CampusWalkMath = (() => {
   }
   return best;
  }
- function cameraPose(p,angle,pitch,first){
-  const sx=Math.sin(angle),sz=Math.cos(angle),eye=p.y+1.55;
-  const position=first?{x:p.x,y:eye,z:p.z}:{x:p.x-sx*6.5,y:eye+1.0+pitch*3,z:p.z-sz*6.5};
-  return{position,target:{x:p.x+sx*6,y:eye+pitch*6-(first?0:.3),z:p.z+sz*6}};
+ function cameraPose(p,angle,pitch,first,distance=6.5){
+  const sx=Math.sin(angle),sz=Math.cos(angle),eye=p.y+1.55,cp=Math.cos(pitch),sp=Math.sin(pitch);
+  const position=first?{x:p.x,y:eye,z:p.z}:{x:p.x-sx*cp*distance,y:Math.max(p.y+.35,eye+1.0-sp*distance),z:p.z-sz*cp*distance};
+  return{position,target:{x:p.x+sx*cp*6,y:eye+sp*6-(first?0:.3),z:p.z+sz*cp*6}};
  }
  return{layout,groundAt,rampPoint,cameraPose,inside};
 })();
