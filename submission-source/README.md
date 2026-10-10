@@ -28,7 +28,7 @@ pnpm exec vite build --base ./
 node scripts/verify-startup.mjs
 ```
 
-開發預覽須使用 `?presentation=1`，讓場景載入虛構研究員，因為此來源快照不含教師肖像。發布時，RPG 的 index.html 須保留 `public/proposal/rpg/index.html` 現有的 presentation 參數導向；複製產物時不納入教師圖檔。
+報名版使用 `presentation.html` 的原生 Canvas 探索程式，僅使用虛構研究員；發布時將建置後的 `presentation.html` 複製為 `public/proposal/rpg/index.html`。React 數學任務按需載入，原 Phaser 開發版仍由原始 `index.html` 建置保留。原 Phaser 開發預覽須使用 `?presentation=1`，因為來源快照不含教師肖像。複製產物時不納入教師圖檔。
 
 `portal/build.mjs` 保存原工作區的封裝方式，路徑以工作區的 `future-campus-rpg`、`daxi-campus-map` 為基準。此儲存庫的來源快照若重建，請將 RPG 產物放入 `public/proposal/rpg`，入口三個檔案放入 `public/proposal`，既有校園成品放入 `public/proposal/campus`，並複製 `portal/assets` 至 `public/proposal/assets`，保留展示說明。複製校園產物時排除既有的 proposal 子資料夾。更新發布檔後由既有 Pages 流程部署。
 
@@ -43,3 +43,5 @@ node scripts/verify-startup.mjs
 RPG 再次改善：production 使用 Phaser 官方 core 加上必要 2D 元件、Arcade Physics 與 Canvas renderer，引擎大小約減半；HTML 提早並行下載引擎、場景程式與地圖，首幀完成前顯示載入提示。詳見 `rpg-startup-2026-10-10.md`。原始碼快照已含 `phaser-lite.cjs`、更新的 Vite 設定及 startup budget 查核腳本；Phaser MIT 授權隨公開成品保留。
 
 本機驗證：RPG 27 項、校園導覽 134 項、入口 2 項測試通過，兩專案建置成功，已檢查桌機與手機畫面及主要操作。本次發布不等同正式提案送出。
+
+第三次載入改善：報名版初始 JavaScript 為 11,149 bytes，相較前版約 851 KB 減少約 98.7%。此數字不含地圖與 CSS，也不是時間保證。RPG 本次 30 項、入口 2 項測試通過；已操作驗證科技館進出、助教開啟任務、答題及手機版。詳見 `rpg-native-startup-2026-10-10.md`。

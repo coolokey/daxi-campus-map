@@ -20,8 +20,7 @@ for (const [project, target] of [['future-campus-rpg', 'rpg'], ['daxi-campus-map
     return !relative.includes('proposal') && !file.includes(`${path.sep}rpg${path.sep}teachers`);
   } });
 }
-// The registration build always uses fictional NPCs, even if opened directly.
+// This entry always uses fictional NPCs and does not need a query redirect.
 const rpgIndex = path.join(dist, 'rpg/index.html');
-const guard = '<script>if(new URLSearchParams(location.search).get("presentation")!=="1"){const u=new URL(location.href);u.searchParams.set("presentation","1");location.replace(u.href);}</script>';
-writeFileSync(rpgIndex, readFileSync(rpgIndex, 'utf8').replace('<head>', `<head>${guard}`));
+cpSync(path.join(dist, 'rpg/presentation.html'), rpgIndex);
 console.log(`報名展示已整合：${dist}`);
