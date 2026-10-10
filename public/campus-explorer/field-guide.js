@@ -17,7 +17,7 @@
  notes.innerHTML='<summary>目的地筆記與實景</summary><p id="guide-place-meta"></p><p id="guide-place-hint"></p><figure id="guide-place-figure" hidden><img id="guide-place-photo" alt="" loading="lazy"><figcaption id="guide-place-caption"></figcaption></figure>';
  route.append(notes);
  el('guide-tools').append(el('scene-toolbar'),document.querySelector('.top-actions'));
- const stories=[['woodwork-1','01','木藝與創作','走向木藝教室，認識校園的創作空間。'],['library','02','閱讀的停靠站','到圖書館，為下一段學習找一本書。'],['grandstand','03','操場上的日常','走到司令台，從另一個角度看校園。']];
+ const stories=[['woodwork-1','01','木藝與創作','走向木藝教室，認識校園的創作空間。'],['library','02','閱讀的停靠站','到圖書館，為下一段學習找一本書。'],['grandstand','03','操場上的日常','走到司令台，從另一個角度看校園。'],['palm-avenue','04','椰林迎賓大道','沿著校門外的雙排椰林，回望大溪的入口。']];
  for(const [id,num,title,copy]of stories){const b=document.createElement('button');b.className='guide-story';b.innerHTML='<span>'+num+'</span><div><strong>'+title+'</strong><p>'+copy+'</p></div><b>↗</b>';b.onclick=()=>api.navigateToRoom(id);el('guide-stories').append(b)}
  const toggle=document.createElement('button');toggle.id='guide-toggle';toggle.textContent='校園手冊';toggle.setAttribute('aria-controls','guide-panel');document.body.append(toggle);
  function setPanel(open){document.body.classList.toggle('guide-collapsed',!open);toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'收合手冊':'開啟手冊'}

@@ -133,7 +133,7 @@
   let state=buildingGraph?startupSearches.get(searchKey):null;if(!state){state=CampusGridSearch.create(a);if(buildingGraph)startupSearches.set(searchKey,state)}
   const stageFree=(x,z)=>CampusOutdoorPlan.onStage({x,z,y})&&Math.abs(CampusOutdoorPlan.ground({x,z})-y)<.15;
   const free=(x,z)=>{const wx=origin.x+x*step,wz=origin.z+z*step;
-   return wx>=-125&&wx<=115&&wz>=-100&&wz<=108&&!checkWallCollision(wx,y,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.15:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)))};
+   return ((wx>=-125&&wx<=115&&wz>=-100&&wz<=108)||CampusEntranceAvenue.contains(wx,wz))&&!checkWallCollision(wx,y,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.15:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)))};
   const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||(stageSurface?!stageFree(x,z):!interior&&CampusOutdoorPlan.reserved({x,z}))||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.15)))return false}return true};
   const points=CampusGridSearch.path(state,b,free);if(points){const result=points.map(p=>({x:origin.x+p.x*step,y,z:origin.z+p.z*step}));
     if(result.length===1)return clear(start,end)?[{...start},{...end}]:null;

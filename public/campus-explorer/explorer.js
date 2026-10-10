@@ -823,41 +823,9 @@
         node: "gate-guard"
       };
 
-      // 3. 迎賓林蔭大道大王椰子樹 (Royal Palms along entrance avenue)
-      function createRoyalPalmTree(px, pz) {
-        const palm = new THREE.Group();
-        palm.position.set(px, 0, pz);
-
-        // 灰褐節紋環狀直立樹幹
-        const trunk = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.3, 0.45, 9.5, 12),
-          new THREE.MeshStandardMaterial({ color: 0x78716c })
-        );
-        trunk.position.y = 4.75;
-        trunk.castShadow = true;
-        palm.add(trunk);
-
-        // 頂部羽狀熱帶綠色大王椰子葉冠
-        for (let i = 0; i < 9; i++) {
-          const angle = (i * Math.PI * 2) / 9;
-          const frond = new THREE.Mesh(
-            new THREE.ConeGeometry(0.7, 4.2, 6),
-            new THREE.MeshStandardMaterial({ color: 0x15803d })
-          );
-          frond.position.set(Math.cos(angle) * 1.8, 9.8, Math.sin(angle) * 1.8);
-          frond.rotation.z = Math.cos(angle) * 0.7;
-          frond.rotation.x = Math.sin(angle) * 0.7;
-          palm.add(frond);
-        }
-        scene.add(palm);
-      }
-
-      // 迎賓車道兩側整齊排列椰子樹 (對應照片 04_入校通道與兩側椰子樹行道樹)
-      [-18, 18].forEach(xOff => {
-        for (let zOff = 68; zOff >= 38; zOff -= 10) {
-          createRoyalPalmTree(xOff - 6, zOff);
-        }
-      });
+      // 照片中的椰林大道位於校門外，保留中央入校動線。
+      CampusEntranceAvenue.render(scene, registerWallCollider);
+      ROOMS_DB['palm-avenue'] = {id:'palm-avenue',code:'OUT-PALM',name:'校門椰林大道',buildingId:'entrance-avenue',buildingName:'校門外通道',floor:1,cat:'special',node:'palm-avenue-end'};
 
       // 機車與腳踏車停車棚
       const motoCanopy = new THREE.Mesh(new THREE.BoxGeometry(20, 0.3, 6), new THREE.MeshStandardMaterial({ color: 0x64748b }));
@@ -2184,6 +2152,7 @@
   "art-4f-art": { id: "art-4f-art", x: 74, y: 10.8, z: 46, neighbors: ["art-stair-mid3"] }
 };
 
+    NAV_NODES['palm-avenue-end']={x:-10,y:0,z:158,neighbors:['gate']};
     Object.keys(NAV_NODES).forEach(nid => {
       const node = NAV_NODES[nid];
       node.neighbors.forEach(neighId => {

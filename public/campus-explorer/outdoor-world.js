@@ -40,11 +40,24 @@ const CampusOutdoorWorld=(()=>{
   box(st,9.8,2.7,.05,-62,h+1.65,15.52,0x6a9197);
   // Back elevation: four framed windows from the matching 3D rear views.
   for(const x of [-67.2,-63.7,-60.3,-56.8]){
-   box(st,2.3,1.5,.07,x,h+1.6,15.96,c.line);box(st,2.05,1.28,.09,x,h+1.6,16.01,0x63808a);
-   box(st,.045,1.28,.11,x,h+1.6,16.07,c.line);box(st,2.05,.045,.11,x,h+1.6,16.07,c.line);
+   box(st,2.3,1.5,.07,x,1.25,15.96,c.line);box(st,2.05,1.28,.09,x,1.25,16.01,0x63808a);
+   for(let dx=-.84;dx<1;dx+=.28)box(st,.035,1.28,.11,x+dx,1.25,16.07,c.line);box(st,2.05,.045,.11,x,1.25,16.07,c.line);
   }
-  box(st,12.5,.85,.08,-62,h+3.2,15.98,0xe1d5ad);
-  for(let i=0;i<7;i++)box(st,1.15,.42,.09,-67+i*1.65,h+3.2,16.04,[0x6a9375,0xa86e50,0x829eb0][i%3]);
+  // Actual sports mosaic on the exterior rear wall, above the four windows.
+  // UV corners select the mural from the original photo without inventing details.
+  box(st,7.0,3.5,.09,-62,3.8,16.03,c.line);
+  const muralGeometry=new THREE.PlaneGeometry(6.6,3.2);
+  muralGeometry.attributes.uv.setXY(0,367/1280,1-354/960);
+  muralGeometry.attributes.uv.setXY(1,842/1280,1-327/960);
+  muralGeometry.attributes.uv.setXY(2,343/1280,1-585/960);
+  muralGeometry.attributes.uv.setXY(3,842/1280,1-592/960);
+  const muralMaterial=new THREE.MeshBasicMaterial({color:0xffffff});
+  const mural=new THREE.Mesh(muralGeometry,muralMaterial);mural.name='stage-rear-sports-mural';mural.position.set(-62,3.8,16.09);st.add(mural);
+  // Fetch after the first view is usable; the wall itself never blocks startup.
+  const loadMural=()=>new THREE.TextureLoader().load('photos/stage-rear-mural.jpg',texture=>{
+   texture.encoding=THREE.sRGBEncoding;texture.anisotropy=4;muralMaterial.map=texture;muralMaterial.needsUpdate=true;
+  },undefined,()=>{muralMaterial.color.setHex(0x8b9c9a);});
+  if(typeof requestIdleCallback==='function')requestIdleCallback(loadMural,{timeout:2500});else setTimeout(loadMural,600);
   // Flag poles stand on the viewer's left (+x for a -z-facing stage).
   floor(st,7,2.5,-49.5,9,c.line,.07);
   for(const [i,x] of [-52,-49.5,-47].entries()){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.06,.08,10+i%2,10),mat(0xbdc7c8));pole.position.set(x,(10+i%2)/2,9);st.add(pole)}

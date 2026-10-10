@@ -9,7 +9,8 @@ const CampusMinimapMath={
   const floor=Math.max(1,Math.min(building?.floors??4,Math.round(Math.max(0,position.y)/3.6)+1));
   if(building)return {floor,label:building.name,buildingId:building.id};
   let label='校園步道';
-  if(position.z>74&&position.x<34)label='正門廣場';
+  if(position.z>100&&position.z<175&&position.x>-20&&position.x<0)label='校門椰林大道';
+  else if(position.z>74&&position.x<34)label='正門廣場';
   else if(position.x>47&&position.x<59)label='東側車道';
   else if(position.x<-32&&position.z>17&&position.z<75)label='迎賓廣場';
   else if(position.x<-36&&position.z<12)label='操場及綜合球場';

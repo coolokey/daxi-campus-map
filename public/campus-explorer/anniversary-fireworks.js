@@ -21,11 +21,13 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const colors = ['#f6d58a','#86d6f2','#edb2bd','#d0e9ba'];
   let width=0,height=0,raf=0,last=0,elapsed=0,nextLaunch=1800,phase='',rockets=[],particles=[],digitPoints=[],staticBlessings=[],saved=null,previousFocus=null,coverWasOpen=false,lastUserLaunch=-Infinity;
-  let audio=null,master=null,soundEnabled=false,voices=0,finalePlayed=false;
+  let audio=null,master=null,fireworkAudio=null,soundEnabled=false,voices=0,finalePlayed=false;
   const nodes = new Set();
   function audioAvailable(){return soundEnabled && audio?.state==='running' && !document.hidden && dialog.open;}
-  function sound(kind) {
-    if (!audioAvailable() || voices>=8) return;
+  function sound(kind, horizontal=.5) {
+    if (!audioAvailable()) return;
+    if (kind !== 'chime') {fireworkAudio?.play(kind, horizontal);return;}
+    if (voices>=8) return;
     const t=audio.currentTime; voices++;
     const gain=audio.createGain(); gain.connect(master);
     let source, filter;
@@ -36,26 +38,19 @@
         overtone.onended=()=>{nodes.delete(overtone);overtone.disconnect();};overtone.start(t);overtone.stop(t+1.55);
       }
       gain.gain.setValueAtTime(.001,t);gain.gain.linearRampToValueAtTime(.075,t+.03);gain.gain.exponentialRampToValueAtTime(.001,t+1.5);
-    }else{
-      source=audio.createBufferSource();const duration=kind==='launch'?.65:.9;
-      const buffer=audio.createBuffer(1,Math.floor(audio.sampleRate*duration),audio.sampleRate),data=buffer.getChannelData(0);
-      for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1);
-      source.buffer=buffer;filter=audio.createBiquadFilter();filter.type=kind==='launch'?'bandpass':'lowpass';filter.frequency.setValueAtTime(kind==='launch'?450:900,t);filter.frequency.exponentialRampToValueAtTime(kind==='launch'?2200:80,t+duration);
-      source.connect(filter);filter.connect(gain);
-      gain.gain.setValueAtTime(.001,t);gain.gain.linearRampToValueAtTime(kind==='launch'?.12:.32,t+.025);gain.gain.exponentialRampToValueAtTime(.001,t+duration);
     }
     if(kind==='chime')source.connect(gain);
     nodes.add(source);source.onended=()=>{voices=Math.max(0,voices-1);nodes.delete(source);source.disconnect();filter?.disconnect();gain.disconnect();};
     source.start(t);source.stop(t+(kind==='chime'?1.55:1));
   }
-  function quiet(){for(const node of nodes){try{node.stop();}catch{ /* Already ended. */ }}if(audio&&audio.state==='running')audio.suspend().catch(()=>{});}
+  function quiet(){fireworkAudio?.stop();for(const node of nodes){try{node.stop();}catch{ /* Already ended. */ }}if(audio&&audio.state==='running')audio.suspend().catch(()=>{});}
   function updateSound(){ $('sound').textContent=soundEnabled?'關閉音效':'開啟音效';$('sound').setAttribute('aria-pressed',String(soundEnabled)); }
   $('sound').onclick=async()=>{
     if(soundEnabled){soundEnabled=false;quiet();updateSound();return;}
     try{
       const Audio=window.AudioContext||window.webkitAudioContext;
       if(!Audio)throw new Error('Audio unavailable');
-      if(!audio){audio=new Audio();master=audio.createGain();master.gain.value=.32;master.connect(audio.destination);}
+      if(!audio){audio=new Audio();master=audio.createGain();master.gain.value=.72;master.connect(audio.destination);fireworkAudio=window.CampusFireworkAudio.create(audio,master);}
       await audio.resume();soundEnabled=dialog.open&&!document.hidden;
       updateSound();if(soundEnabled)sound('chime');else quiet();
     }catch{soundEnabled=false;updateSound();$('status').textContent='此瀏覽器暫時無法播放音效，仍可欣賞煙火。';}
@@ -74,10 +69,10 @@
   }
   function launch(x,y,shape='round',color=colors[Math.floor(Math.random()*colors.length)]){
     if(rockets.length>=7)return;
-    rockets.push({x0:width*(.25+Math.random()*.5),x,y:Math.max(90,Math.min(height*.65,y)),age:0,color,shape});sound('launch');
+    rockets.push({x0:width*(.25+Math.random()*.5),x,y:Math.max(90,Math.min(height*.65,y)),age:0,color,shape});sound('launch',x/width);
   }
   function burst(r){
-    sound('burst');
+    sound('burst',r.x/width);
     const scale=Math.min(width,height)*(.12+Math.random()*.055);
     for(const p of model.shapePoints(r.shape,width<600?70:110)){
       if(particles.length>=1100)break;

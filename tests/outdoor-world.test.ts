@@ -11,7 +11,7 @@ beforeAll(()=>{
  const file=(f:string)=>{if(existsSync(root+f))run(readFileSync(root+f,'utf8'))};file('vendor/three.min.js');
  w.THREE.WebGLRenderer=class{domElement:any;shadowMap={};capabilities={getMaxAnisotropy:()=>1};constructor({canvas}:any){this.domElement=canvas}setSize(){}setPixelRatio(){}render(){}};
  file('vendor/OrbitControls.js');
- for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','explorer.js','walk-world-math.js','spatial-world.js','photo-facade.js','art-direction.js','photo-reference.js'])file(f);
+ for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','spatial-world.js','photo-facade.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
 it('does not fetch hidden reference photos before opening their panel',()=>{
@@ -79,4 +79,21 @@ it('photo reference navigation returns focus on close and can switch source grou
  run(`document.querySelector('#photo-close')?.click()`);
  expect(run(`document.getElementById('reference-panel').classList.contains('open')`)).toBe(false);
  expect(run(`document.activeElement.textContent`)).toBe('實景對照');
+});
+
+it('places feathered palms outside the gate and connects the avenue to walking navigation',()=>{
+ const info=run(`({palms:CampusEntranceAvenue.palms,triangles:CampusEntranceAvenue.crownGeometry().attributes.position.count/3,route:campusWalkWorld.route({x:-10,y:0,z:90},ROOMS_DB['palm-avenue']),centerBlocked:checkWallCollision(-10,0,130),trunkBlocked:checkWallCollision(-16.5,0,96)})`);
+ expect(info.palms).toHaveLength(20);
+ expect(info.palms.every((p:any)=>p.z>90&&p.height>13&&Math.abs(p.x+10)>4.5)).toBe(true);
+ expect(info.triangles).toBeLessThan(1800);
+ expect(info.route).toBeTruthy();
+ expect(info.centerBlocked).toBe(false);expect(info.trunkBlocked).toBe(true);
+});
+
+it('shows the original sports mosaic above the rear windows without stretching its proportions',()=>{
+ const mural=run(`(()=>{const m=scene.getObjectByName('stage-rear-sports-mural');return {x:m.position.x,y:m.position.y,z:m.position.z,w:m.geometry.parameters.width,h:m.geometry.parameters.height,uv:Array.from(m.geometry.attributes.uv.array)}})()`);
+ expect(mural.x).toBe(-62);expect(mural.z).toBeGreaterThan(16);
+ expect(mural.w/mural.h).toBeCloseTo(2.0625);
+ expect(mural.y-mural.h/2).toBeGreaterThan(2);
+ expect(mural.uv.every((n:number)=>n>0&&n<1)).toBe(true);
 });

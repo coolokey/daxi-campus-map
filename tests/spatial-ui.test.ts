@@ -103,7 +103,7 @@ it('draws shared floor rectangles and rebuilds the cached layer when names chang
   const room={id:'r',name:'701',cat:'special',floor:1}
   Object.assign(w,{THREE:{Vector3:class{}},campusExplorer:{buildings:[b],rooms:{r:room},camera:{getWorldDirection:(d:any)=>Object.assign(d,{x:0,z:-1})}},campusWalkWorld:{layouts:[{id:b.id,b,footprints:[{floor:1,rect}],corridors:[],cells:[{...room,kind:'room',rect,door:{x:14,z:26}}]}],roomAt:()=>room},avatarGroup:{position:{x:14,y:0,z:23}},avatarAngle:0,currentNavPoints:[],renderMinimap:()=>{}})
   const context=dom.getInternalVMContext()
-  for(const file of ['outdoor-plan.js','room-layout-model.js','minimap-math.js','spatial-ui-tools.js','minimap.js'])vm.runInContext(readFileSync(`public/campus-explorer/${file}`,'utf8'),context)
+  for(const file of ['entrance-avenue.js','outdoor-plan.js','room-layout-model.js','minimap-math.js','spatial-ui-tools.js','minimap.js'])vm.runInContext(readFileSync(`public/campus-explorer/${file}`,'utf8'),context)
   expect(draws).toContainEqual({x:11,z:21,width:7,depth:5,color:'#63b54f'})
   const initial=contexts.length
   w.campusMinimap.render();expect(contexts.length).toBe(initial)

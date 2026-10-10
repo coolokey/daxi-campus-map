@@ -21,6 +21,10 @@
   c.strokeStyle='#d3d2c8';c.lineWidth=.45;
   c.beginPath();c.moveTo(48,-72);c.lineTo(48,82);c.moveTo(57,-72);c.lineTo(57,81);c.moveTo(-65,81.5);c.lineTo(105,81.5);c.stroke();
   for(let i=0;i<7;i++)rect(-19+i*2,77,1,9,'#eeeede');
+  rect(-19,89,18,82,'#73796a');rect(-14.5,89,9,82,'#666864');
+  for(const x of [-14.4,-5.6])rect(x,89,.12,82,'#ba5145');
+  for(let z=91;z<169;z+=6)rect(-10,z,.12,2.8,'#e8bc53');
+  for(const p of CampusEntranceAvenue.palms){c.beginPath();c.arc(p.x,p.z,1.7,0,Math.PI*2);c.fillStyle='#285539';c.fill();}
   // 操場採直道＋半圓彎道，不使用與模型不符的橢圓。
   function stadium(radius){c.beginPath();c.moveTo(-109,-25-radius);c.lineTo(-59,-25-radius);c.arc(-59,-25,radius,-Math.PI/2,Math.PI/2);c.lineTo(-109,-25+radius);c.arc(-109,-25,radius,Math.PI/2,Math.PI*1.5);c.closePath()}
   const outdoor=CampusOutdoorPlan,hex=n=>'#'+n.toString(16).padStart(6,'0');

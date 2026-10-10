@@ -15,7 +15,7 @@ beforeAll(()=>{
  file('vendor/three.min.js');
  w.THREE.WebGLRenderer=class{domElement:any;shadowMap={};capabilities={getMaxAnisotropy:()=>1};constructor({canvas}:any){this.domElement=canvas}setSize(){}setPixelRatio(){}render(){}};
  file('vendor/OrbitControls.js');
- for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','explorer.js','walk-world-math.js','spatial-world.js'])file(f);
+ for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','spatial-world.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
 it('free look rotates the camera without moving or turning the standing avatar in either perspective',()=>{
