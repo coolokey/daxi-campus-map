@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>桃園市立大溪國中 115學年度 3D 智慧校園立體導覽圖</title>
+  <meta name="description" content="依據大溪國中 115 學年度校園平面圖與實景照片製作的示意導覽，提供來賓全校立體探索、處室班級精準查找、實體樓梯爬升、跨樓層A*路徑導引與虛擬自動帶路。">
+  
+  <!-- Favicon SVG inline -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏫</text></svg>">
+  
+  <!-- Web Fonts -->
+  
+  <!-- Three.js & OrbitControls -->
+  
+  
+
+  
+
+<meta name="color-scheme" content="light dark"><link rel="stylesheet" href="campus.e4361df9ed84.css"></head>
+<body>
+  <!-- Three.js Canvas -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- 3D DOM Labels Container -->
+  <div id="labels-container"></div>
+  <div id="avatar-nametag">🧑‍🎓 大溪同學 (您在此)</div>
+
+  <!-- Welcome / Operation Guide Card (Direct Reference to media_1791335021168.png) -->
+  <div id="welcome-card">
+    <button class="welcome-close" id="btn-close-welcome" title="關閉說明">✕</button>
+    <div class="welcome-badge">DAXI · CAMPUS FIELD NOTES</div>
+    <h1 class="welcome-title">走進大溪國中</h1>
+    <p class="welcome-desc">帶著小朋友走過每一條走廊、每一座樓梯。搜尋教室，金色路線會帶你探索校園。</p>
+    <p class="welcome-desc sub">找研習或會議場地：點上方搜尋框，直接選擇常用場地，就能顯示路線。</p>
+    
+    <div class="welcome-actions">
+      <button id="welcome-btn-enter" class="welcome-btn-primary">走進校園</button>
+      <button id="welcome-btn-overview" class="welcome-btn-secondary">先看鳥瞰</button>
+    </div>
+
+    <div class="welcome-shortcuts">
+      <div class="shortcut-item">
+        <span class="shortcut-key">W A S D</span>
+        <span class="shortcut-desc">W／S 前進後退，A／D 轉向，Shift 加速</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-key">滑鼠</span>
+        <span class="shortcut-desc">轉頭；手機左搖桿移動、右搖桿轉頭</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-key">V</span>
+        <span class="shortcut-desc">切換第三人稱／第一人稱</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-key">M</span>
+        <span class="shortcut-desc">切換步行／鳥瞰</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header id="top-nav">
+    <div class="brand-btn glass" id="btn-home" title="返回全校鳥瞰視野">
+      <div class="brand-logo">溪</div>
+      <div>
+        <div class="brand-title">桃園市立大溪國中</div>
+        <div class="brand-subtitle">115 學年度・立體校園探索</div>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="搜尋處室、班級 (例如: 701, 教務處, 體育館...)" autocomplete="off">
+      <ul id="search-results" class="glass"></ul>
+    </div>
+
+    <div class="top-actions">
+      <button class="btn-action glass" id="btn-mode-toggle" title="切換漫遊或鳥瞰視角">
+        <span id="btn-mode-icon">🦅</span>
+        <span id="btn-mode-text">鳥瞰全景</span>
+      </button>
+      <button class="btn-action glass" id="btn-map-overlay" title="查看 115 官方平面圖 (快捷鍵 M)">
+        <span>🗺️</span>
+        <span>總平面圖</span>
+      </button>
+      <button class="btn-action glass" id="btn-help" title="查看操作說明與快捷鍵">
+        <span>❓</span>
+        <span>說明</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Quick Filter Chips -->
+  <div id="quick-bar">
+    <div class="venue-chip" data-to="principal">🏛️ 校長室 (前棟2F)</div>
+    <div class="venue-chip" data-to="academic">📚 教務處 (前棟2F)</div>
+    <div class="venue-chip" data-to="student-affairs">🎖️ 學務處 (後棟1F)</div>
+    <div class="venue-chip" data-to="counseling">💬 輔導室 (特教2F)</div>
+    <div class="venue-chip" data-to="general">💼 總務處 (後棟2F)</div>
+    <div class="venue-chip" data-to="health">🩺 健康中心 (北棟1F)</div>
+    <div class="venue-chip" data-to="701">🎒 701 教室 (1F)</div>
+    <div class="venue-chip" data-to="801">🎒 801 教室 (南棟2F)</div>
+    <div class="venue-chip" data-to="901">🎒 901 教室 (中西棟 3F)</div>
+    <div class="venue-chip" data-to="woodwork-1">🪵 木藝教室 (中棟1F)</div>
+    <div class="venue-chip" data-to="library">📖 圖書館 (綜合棟1F)</div>
+    <div class="venue-chip" data-to="gym">🏀 學生活動中心禮堂</div>
+    <div class="venue-chip" data-to="grandstand">🏃 操場司令台</div>
+    <div class="venue-chip" data-to="statue">🗿 蔣公銅像庭園</div>
+    <div class="venue-chip" data-to="court-bb">🏀 籃球場群</div>
+    <div class="venue-chip" data-to="volleyball-out">🏐 戶外排球場</div>
+  </div>
+
+  <!-- Floor Selector -->
+  <div id="floor-selector" class="glass">
+    <button class="floor-btn active" data-f="all" title="顯示全棟外觀">全</button>
+    <button class="floor-btn" data-f="4" title="檢視 4F 樓層空間">4F</button>
+    <button class="floor-btn" data-f="3" title="檢視 3F 樓層空間">3F</button>
+    <button class="floor-btn" data-f="2" title="檢視 2F 樓層空間">2F</button>
+    <button class="floor-btn" data-f="1" title="檢視 1F 樓層空間">1F</button>
+  </div>
+
+  <!-- 2D High-Definition Minimap (Reference: media_1791335056310.png) -->
+  <div id="minimap-card" title="點擊小地圖可快速定位傳送">
+    <canvas id="minimap-canvas"></canvas>
+    <div class="minimap-compass" title="圖面上方，非地理北向">圖上</div>
+    <div class="minimap-floor-badge" id="minimap-floor-badge">1F</div>
+  </div>
+
+  <!-- On-Screen D-Pad for Mobile & Mouse -->
+  <div id="dpad-controller">
+    <button class="dpad-btn dpad-up" id="dpad-up">▲</button>
+    <button class="dpad-btn dpad-left" id="dpad-left">◀</button>
+    <div class="dpad-center">MOVE</div>
+    <button class="dpad-btn dpad-right" id="dpad-right">▶</button>
+    <button class="dpad-btn dpad-down" id="dpad-down">▼</button>
+  </div>
+
+  <!-- Avatar Controls: Speed & Turn Sensitivity Pills (Reference: media_1791355815735.png) -->
+  <div id="avatar-bottom-controls">
+    <button class="avatar-ctrl-pill" id="btn-speed-ctrl" title="點擊設定移動速度">速度 100%</button>
+    <button class="avatar-ctrl-pill" id="btn-turn-ctrl" title="點擊設定轉頭靈敏度與操作方式">轉頭 100%</button>
+  </div>
+
+  <!-- Speed Settings Modal (Reference: media_1791355815739.png) -->
+  <div class="avatar-setting-modal" id="modal-speed-ctrl">
+    <div class="modal-ctrl-header">
+      <div class="modal-ctrl-title">移動速度</div>
+      <button class="modal-ctrl-close" id="btn-close-speed-modal" title="關閉">✕</button>
+    </div>
+    <div class="modal-ctrl-row">
+      <span class="modal-ctrl-label">移動速度</span>
+      <span class="modal-ctrl-val" id="val-speed-display">100%</span>
+    </div>
+    <div class="modal-slider-wrap">
+      <input type="range" id="slider-speed" min="50" max="200" step="5" value="100" class="custom-gold-slider">
+    </div>
+    <div class="modal-slider-bounds">
+      <span>慢 • 50%</span>
+      <span>快 • 200%</span>
+    </div>
+    <div class="modal-ctrl-desc">
+      走路與跑步同步調整；按「跑」或 Shift 再加速。
+    </div>
+    <button class="modal-ctrl-reset-btn" id="btn-reset-speed">恢復預設</button>
+  </div>
+
+  <!-- Turn Settings Modal (Reference: media_1791355815762.png) -->
+  <div class="avatar-setting-modal" id="modal-turn-ctrl">
+    <div class="modal-ctrl-header">
+      <div class="modal-ctrl-title">轉頭設定</div>
+      <button class="modal-ctrl-close" id="btn-close-turn-modal" title="關閉">✕</button>
+    </div>
+    <div class="modal-ctrl-row">
+      <span class="modal-ctrl-label">轉頭靈敏度</span>
+      <span class="modal-ctrl-val" id="val-turn-display">100%</span>
+    </div>
+    <div class="modal-slider-wrap">
+      <input type="range" id="slider-turn" min="20" max="300" step="5" value="100" class="custom-gold-slider">
+    </div>
+    <div class="modal-slider-bounds">
+      <span>穩 • 20%</span>
+      <span>快 • 300%</span>
+    </div>
+    <div class="modal-field-block">
+      <div class="modal-field-title">滑鼠轉頭方式</div>
+      <select id="select-mouse-turn" class="custom-select">
+        <option value="move">移動滑鼠就轉頭</option>
+        <option value="left" selected>按住滑鼠左鍵轉頭</option>
+        <option value="right">按住滑鼠右鍵轉頭</option>
+      </select>
+    </div>
+    <label class="modal-checkbox-row">
+      <input type="checkbox" id="check-invert-y" class="custom-checkbox">
+      <span class="modal-checkbox-label">上下反轉</span>
+    </label>
+    <button class="modal-ctrl-reset-btn" id="btn-reset-turn">恢復預設</button>
+  </div>
+
+  <!-- Navigation HUD -->
+  <div id="nav-hud" class="glass">
+    <div class="nav-info">
+      <div class="nav-badge">🚩 導航目的地</div>
+      <div class="nav-target" id="hud-target-name">目標教室名稱</div>
+      <div class="nav-route" id="hud-route-desc">最佳推薦路徑規劃中...</div>
+    </div>
+    <div class="nav-stat">
+      <div class="nav-dist"><span id="hud-dist-val">0</span><small>m</small></div>
+    </div>
+    <div class="nav-actions">
+      <button class="auto-walk-btn" id="btn-auto-walk">🚶‍♂️ 自動帶路</button>
+      <button class="nav-close" id="btn-cancel-nav" title="結束導航">✕</button>
+    </div>
+  </div>
+
+  <!-- Mode Toast -->
+  <div id="mode-toast">切換視角模式</div>
+
+  <!-- 2D Campus Map Modal -->
+  <div id="campus-map-modal">
+    <div class="map-modal-header">
+      <h3 style="font-weight: 900; font-size: 16px;">🗺️ 大溪國中 115 學年度官方校園平面圖比對</h3>
+      <button class="nav-close" id="btn-close-map-modal">✕</button>
+    </div>
+    <div class="map-modal-body">
+      <img loading="lazy" decoding="async" data-src="campus_plan_115.jpg" alt="大溪國中115學年度校園平面圖">
+    </div>
+  </div>
+
+  <!-- Modal Backdrop -->
+  <div id="modal-backdrop"></div>
+
+  <!-- Help Modal -->
+  <div id="help-modal" class="glass">
+    <h3 style="margin-bottom: 12px; font-weight: 900; font-size: 18px; color: var(--accent);">🎮 3D 智慧導覽操作說明</h3>
+    <ul style="list-style: none; line-height: 1.8; font-size: 13px; color: #cbd5e1; margin-bottom: 16px;">
+      <li><b>鳥瞰滑鼠</b>：左鍵拖曳旋轉；右鍵或 Shift＋左鍵拖曳平移；滾輪縮放。</li>
+      <li><b>步行滑鼠</b>：「轉頭」可選左鍵拖曳、右鍵拖曳、移動滑鼠或點擊鎖定游標。移動模式點一下場景或按 Esc 暫停，再點一下繼續；左右邊緣會持續轉向。鎖定模式按 Esc 解除。</li>
+      <li><b>鏡頭設定</b>：第三人稱滾輪調整跟隨距離；第一人稱保持眼睛視角。按 [／] 調整靈敏度，可設定上下反轉，偏好會自動記住。</li>
+      <li><b>自由看景</b>：站著時滑鼠只轉視線，人物保持位置與朝向；第三人稱可繞到人物正面。開始走路後，人物面向實際移動方向。</li>
+      <li>⌨️ <b>人物行走操控</b>：<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 或方向鍵前進後退、轉向，<kbd>Shift</kbd> 加速奔跑。</li>
+      <li><b>手機步行</b>：左搖桿前進、後退與側移；右搖桿轉頭。可同時使用兩指，放開即停止。</li>
+      <li>🏢 <b>樓層切換</b>：點選手冊內的 1F ~ 4F 即可透視內部教室配置與走廊。</li>
+      <li>🪜 <b>實體樓梯爬升</b>：導航至 2F/3F 教室時，同學會由川堂走至樓梯間沿踏階走上樓！</li>
+      <li><b>自動帶路</b>：選目的地後啟動；手動移動或轉頭會接管，按「繼續帶路」從目前位置重新出發。</li>
+      <li><b>視角與平面圖</b>：<kbd>M</kbd> 切換步行／鳥瞰，<kbd>V</kbd> 切換第一／第三人稱；教室配置面板可開啟 115 學年度平面圖。</li>
+    </ul>
+    <button class="btn-action" style="width: 100%; justify-content: center; background: var(--accent); color: #0f172a;" id="btn-close-help">我知道了！開始導覽</button>
+  </div>
+
+  <!-- JavaScript Application Logic -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script defer src="campus.10e14dd30e95.js"></script></body>
+</html>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">未來科技校園地圖示意</title><desc id="desc">明亮藍綠色校園，包含草地、道路、科技館與圖書館。</desc>
+  <rect width="1200" height="800" fill="#e7f7ff"/><path d="M0 620H1200M550 0V800" stroke="#f7fbff" stroke-width="70"/>
+  <rect x="80" y="80" width="430" height="300" rx="60" fill="#72d39e"/><rect x="590" y="220" width="190" height="180" rx="18" fill="#86d7ff"/>
+  <rect x="840" y="140" width="260" height="430" rx="22" fill="#9bbcff"/><rect x="868" y="180" width="204" height="84" rx="12" fill="#dff4ff"/>
+  <rect x="868" y="292" width="204" height="84" rx="12" fill="#dff4ff"/><rect x="868" y="404" width="204" height="120" rx="12" fill="#dff4ff"/>
+  <circle cx="600" cy="620" r="55" fill="#a7e6db"/><path d="M570 620h60M600 590v60" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+  <text x="650" y="315" font-family="sans-serif" font-size="28" fill="#10567a">圖書館</text><text x="900" y="550" font-family="sans-serif" font-size="30" fill="#294a96">科技館</text>
+</svg>

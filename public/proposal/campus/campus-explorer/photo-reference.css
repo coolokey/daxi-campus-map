@@ -1,0 +1,13 @@
+#reference-panel{inset:7vh max(20px,calc((100vw - 1040px)/2));padding:24px;background:#f7f4e9;border:1px solid #b9c4ad;max-height:86vh;box-sizing:border-box}
+.photo-header{display:flex;justify-content:space-between;align-items:center;gap:20px;border-bottom:1px solid #d3d6c7;padding-bottom:16px}
+.photo-eyebrow{font-size:11px;color:#887652;letter-spacing:.12em}.photo-header h2{font-family:'Noto Serif TC',serif;margin:5px 0 0;font-size:26px}
+#reference-panel button{position:static;border-radius:5px;background:#e7e9dc;color:#365749;border:1px solid #c1c9b4;padding:9px 13px;font:inherit;font-size:12px;min-height:38px}
+#reference-panel #photo-close,#reference-panel #photo-go{background:#365749;color:#fff;border-color:#365749}
+.photo-intro{color:#677461;margin:12px 0}.photo-tabs{display:flex;gap:8px;margin:14px 0}.photo-tabs button[aria-pressed=true]{background:#365749!important;color:#fff!important}
+.photo-figure{margin:0;border:1px solid #d0d4c5;background:#eeeee4;border-radius:7px;overflow:hidden}
+#reference-panel #photo-image{display:block;width:100%;height:44vh;object-fit:contain;background:#22342b}
+.photo-figure figcaption{padding:14px 18px}#photo-date{color:#89734c;font-size:11px}.photo-figure h3{margin:6px 0;font-size:19px}.photo-figure p{margin:0;color:#66735f}
+.photo-footer{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:15px}.photo-footer>div{display:flex;gap:10px;align-items:center}#photo-count{font-size:12px;color:#6a7965;min-width:36px;text-align:center}
+.photo-source-links{margin-top:12px}.photo-source-links a{color:#365749;text-underline-offset:3px}
+@media(max-width:768px){#reference-panel{inset:8px;max-height:calc(100dvh - 16px);padding:16px}.photo-header h2{font-size:22px}#reference-panel #photo-image{height:36vh}.photo-footer{flex-wrap:wrap}.photo-figure figcaption{padding:12px}.photo-tabs{margin:10px 0}}
+@media(max-height:500px){#reference-panel{inset:6px;max-height:calc(100dvh - 12px)}#reference-panel #photo-image{height:42vh}.photo-header{padding-bottom:8px}.photo-intro{margin:6px 0}}

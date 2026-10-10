@@ -1,0 +1,26 @@
+#anniversary-launch{position:fixed;right:24px;bottom:190px;z-index:38;display:grid;justify-items:center;gap:5px;background:#fff8e8;color:#725329;border:1px solid #cba86d;border-radius:50% 50% 14px 14px;padding:12px 14px 10px;box-shadow:0 5px 24px #263a3822;font-family:inherit;cursor:pointer}
+#anniversary-launch svg{width:31px;height:34px}#anniversary-launch span{font-size:10px;letter-spacing:.12em}#anniversary-launch:hover{background:#f6dfaa;transform:translateY(-3px)}
+.anniversary-cover-entry{font:inherit;font-size:12px;color:#825c27;background:transparent;border:0;border-bottom:1px dotted #a47b39;padding:5px;cursor:pointer}
+body.anniversary-open> :not(#webgl-canvas):not(#anniversary-dialog){visibility:hidden!important}
+#anniversary-dialog{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;overflow:hidden;color:#fff6df;background:linear-gradient(180deg,#040c20bb 0%,#08132e55 48%,#040e1822 72%,#040c20b8 100%);font-family:'Noto Sans TC',sans-serif;isolation:isolate}
+#anniversary-dialog::backdrop{background:transparent}
+#anniversary-dialog canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:manipulation;cursor:crosshair}
+.anniversary-top{position:absolute;z-index:2;top:max(24px,env(safe-area-inset-top));left:clamp(20px,4vw,60px);right:clamp(20px,4vw,60px);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.anniversary-edition{font-size:10px;letter-spacing:.27em;color:#dcc8a1}.anniversary-edition strong{display:block;font-family:'Noto Serif TC',serif;font-size:17px;font-weight:500;letter-spacing:.22em;color:#fff3d2;margin-top:7px}
+#anniversary-dialog button{font:inherit;font-size:12px;min-height:44px;white-space:nowrap;border:1px solid #ecd5a64d;border-radius:40px;padding:10px 18px;background:#0b1627b8;color:#f2dfb8;cursor:pointer;backdrop-filter:blur(10px)}
+#anniversary-dialog button:hover{border-color:#e9c77f;background:#263342}#anniversary-dialog button:focus-visible,#anniversary-launch:focus-visible,.anniversary-cover-entry:focus-visible{outline:3px solid #f5cd76;outline-offset:4px}
+.anniversary-actions{display:flex;gap:9px}.anniversary-message{pointer-events:none;position:absolute;left:20px;right:20px;top:17%;text-align:center;z-index:1}
+.anniversary-kicker{font-size:11px;letter-spacing:.4em;color:#e7cd97}.anniversary-number{font-family:Georgia,serif;font-size:clamp(110px,22vw,245px);line-height:.96;letter-spacing:-.065em;margin:12px 0;color:transparent;position:relative}
+.anniversary-number::after{content:'80';position:absolute;inset:0;color:#ffdfa657;text-shadow:0 0 24px #ffd07855;opacity:0;transition:opacity 1.5s}
+#anniversary-dialog[data-phase=finale] .anniversary-number::after,#anniversary-dialog[data-phase=free] .anniversary-number::after{opacity:1}
+.anniversary-message h1{font-family:'Noto Serif TC',serif;font-weight:500;font-size:clamp(20px,3vw,34px);letter-spacing:.18em;margin:16px 0 12px;text-shadow:0 2px 20px #050b1c}
+.anniversary-message p:last-child{font-size:12px;line-height:1.9;letter-spacing:.13em;color:#e4d9c4}
+.anniversary-message .anniversary-blessing{opacity:0;transition:opacity 1s}#anniversary-dialog[data-phase=finale] .anniversary-blessing,#anniversary-dialog[data-phase=free] .anniversary-blessing{opacity:1}
+.anniversary-bottom{position:absolute;z-index:2;bottom:max(24px,env(safe-area-inset-bottom));left:20px;right:20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+#anniversary-status{font-size:12px;letter-spacing:.12em;color:#f4e7cc;text-shadow:0 2px 9px #000}.anniversary-bottom nav{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}#anniversary-dialog #anniversary-fire{background:#f0d49a;color:#172134;border-color:#f0d49a}
+.anniversary-track{width:min(240px,60vw);height:2px;background:#f5dba425;overflow:hidden}.anniversary-track i{display:block;width:0;height:100%;background:#e4bd72;box-shadow:0 0 10px #edca85}
+.anniversary-hint{font-size:10px;color:#bfc8d4;letter-spacing:.12em}.anniversary-top #anniversary-close{white-space:nowrap}
+@media(max-width:600px){#anniversary-launch{right:12px;bottom:210px;padding:10px}.anniversary-top{top:max(14px,env(safe-area-inset-top));left:16px;right:16px;align-items:flex-start}.anniversary-edition{font-size:8px;letter-spacing:.12em}.anniversary-edition strong{font-size:13px}.anniversary-actions{gap:5px}#anniversary-dialog button{padding:9px 12px;font-size:11px}.anniversary-message{top:22%}.anniversary-number{font-size:170px}.anniversary-message h1{font-size:20px;letter-spacing:.08em}.anniversary-bottom{bottom:max(18px,env(safe-area-inset-bottom))}.anniversary-hint{font-size:9px}}
+@media(max-height:550px){.anniversary-message{top:17%}.anniversary-number{font-size:105px;margin:3px}.anniversary-message h1{font-size:20px;margin:5px}.anniversary-message p:last-child{font-size:10px}.anniversary-bottom{gap:6px;bottom:10px}.anniversary-kicker{display:none}}
+@media(prefers-reduced-motion:reduce){#anniversary-dialog *,#anniversary-launch{transition:none!important}}
+@media(max-width:600px){.anniversary-edition strong{font-size:12px;line-height:1.7;letter-spacing:.08em}.anniversary-edition strong span{display:block}}
