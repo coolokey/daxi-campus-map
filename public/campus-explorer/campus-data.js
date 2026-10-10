@@ -281,10 +281,22 @@ const FH = 3.6; // Floor Height in meters
 
 // 樓層及固定空間由 spatial-plan-data.js 校對；保留縱棟與行政棟的通行間距。
 BUILDINGS_CONFIG.find(b=>b.id==='grade9-back').x=7.5;
-const FLAT_ROOF_COLORS={'new-grade7':0x526f79,'multi-building':0x665c70,'tech-building':0x476c63,'art-building':0x765c64};
+// 每棟屋頂採低彩度的獨立色調，保留同一校園的整體配色。
+const BUILDING_ROOF_COLORS={
+ 'gym-bld':0x60756f,       // 灰綠
+ 'recycle-bld':0x64716b,   // 石灰綠
+ 'admin-front':0x873e39,   // 磚紅
+ 'admin-back':0x80504a,    // 暖陶紅
+ 'health-bld':0x59727a,    // 藍灰
+ 'grade8-front':0x90795a,  // 暖砂棕
+ 'grade9-back':0x7e8062,   // 橄欖棕
+ 'grade8-mid':0x8b7065,    // 陶土棕
+ 'new-grade7':0x526f79,    // 石板藍
+ 'multi-building':0x665c70,// 灰紫
+ 'tech-building':0x476c63, // 松綠
+ 'art-building':0x765c64  // 玫瑰灰
+};
 for(const building of BUILDINGS_CONFIG){
  building.color=building.isGymSpecial?0xb88d84:0xd0c9bd;
- building.roofColor=building.hasPitchedRoof
-  ?(building.id.startsWith('admin-')?0x873e39:building.id==='health-bld'?0x59727a:0x90795a)
-  :(FLAT_ROOF_COLORS[building.id]||0x60756f);
+ building.roofColor=BUILDING_ROOF_COLORS[building.id]??building.roofColor;
 }
