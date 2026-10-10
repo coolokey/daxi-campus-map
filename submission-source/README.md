@@ -25,6 +25,7 @@ pnpm install --frozen-lockfile
 pnpm test
 pnpm exec tsc -b
 pnpm exec vite build --base ./
+node scripts/verify-startup.mjs
 ```
 
 開發預覽須使用 `?presentation=1`，讓場景載入虛構研究員，因為此來源快照不含教師肖像。發布時，RPG 的 index.html 須保留 `public/proposal/rpg/index.html` 現有的 presentation 參數導向；複製產物時不納入教師圖檔。
@@ -39,4 +40,6 @@ pnpm exec vite build --base ./
 
 生成式 AI 尚未介接；目前回饋是本機規則。各科教材、完整戰鬥、歷史校園故事與活動管理為後續擴充。現地導航仍須由校方校核。
 
-本機驗證：RPG 25 項、校園導覽 134 項、入口 2 項測試通過，兩專案建置成功，已檢查桌機與手機畫面及主要操作。本次發布不等同正式提案送出。
+RPG 再次改善：production 使用 Phaser 官方 core 加上必要 2D 元件、Arcade Physics 與 Canvas renderer，引擎大小約減半；HTML 提早並行下載引擎、場景程式與地圖，首幀完成前顯示載入提示。詳見 `rpg-startup-2026-10-10.md`。原始碼快照已含 `phaser-lite.cjs`、更新的 Vite 設定及 startup budget 查核腳本；Phaser MIT 授權隨公開成品保留。
+
+本機驗證：RPG 27 項、校園導覽 134 項、入口 2 項測試通過，兩專案建置成功，已檢查桌機與手機畫面及主要操作。本次發布不等同正式提案送出。

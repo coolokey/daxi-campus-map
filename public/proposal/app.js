@@ -44,7 +44,10 @@ function renderRoute() {
     return;
   }
   const source = new URL(rpg ? './rpg/' : './campus/campus-explorer/index.html', location.href);
-  if (rpg) source.searchParams.set('presentation', '1');
+  if (rpg) {
+    source.searchParams.set('presentation', '1');
+    source.searchParams.set('v', '20261010-rpg-startup');
+  }
   else {
     if (destination) source.searchParams.set('to', destination);
   }
