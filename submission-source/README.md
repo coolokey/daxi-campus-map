@@ -29,7 +29,9 @@ pnpm exec vite build --base ./
 
 開發預覽須使用 `?presentation=1`，讓場景載入虛構研究員，因為此來源快照不含教師肖像。發布時，RPG 的 index.html 須保留 `public/proposal/rpg/index.html` 現有的 presentation 參數導向；複製產物時不納入教師圖檔。
 
-`portal/build.mjs` 保存原工作區的封裝方式，路徑以工作區的 `future-campus-rpg`、`daxi-campus-map` 為基準。此儲存庫的來源快照若重建，請將 RPG 產物放入 `public/proposal/rpg`，入口三個檔案放入 `public/proposal`，既有校園成品放入 `public/proposal/campus`，並保留 `public/proposal/assets/campus-map.png` 及展示說明。更新發布檔後由既有 Pages 流程部署。
+`portal/build.mjs` 保存原工作區的封裝方式，路徑以工作區的 `future-campus-rpg`、`daxi-campus-map` 為基準。此儲存庫的來源快照若重建，請將 RPG 產物放入 `public/proposal/rpg`，入口三個檔案放入 `public/proposal`，既有校園成品放入 `public/proposal/campus`，並複製 `portal/assets` 至 `public/proposal/assets`，保留展示說明。複製校園產物時排除既有的 proposal 子資料夾。更新發布檔後由既有 Pages 流程部署。
+
+2026-10-10 效能改善：首頁與 RPG 地圖改用 WebP；雙介面只在首次進入時建立，背景場景暫停更新，校園直接載入 explorer，目的地改以同來源訊息切換。圖片最佳化腳本為 `portal/optimize-assets.py`（Python + Pillow），原始圖片保留。詳細大小與驗證紀錄見 `performance-2026-10-10.md`。Portal 回歸測試為 `node portal.test.cjs`，需在原工作區保有 future-campus-rpg 的 jsdom 依賴。
 
 ## 功能與界線
 
@@ -37,4 +39,4 @@ pnpm exec vite build --base ./
 
 生成式 AI 尚未介接；目前回饋是本機規則。各科教材、完整戰鬥、歷史校園故事與活動管理為後續擴充。現地導航仍須由校方校核。
 
-本機驗證：RPG 25 項、校園導覽 133 項測試通過，兩專案建置成功，已檢查桌機與手機畫面及主要操作。本次發布不等同正式提案送出。
+本機驗證：RPG 25 項、校園導覽 134 項、入口 2 項測試通過，兩專案建置成功，已檢查桌機與手機畫面及主要操作。本次發布不等同正式提案送出。

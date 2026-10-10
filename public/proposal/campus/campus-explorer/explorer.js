@@ -3204,7 +3204,7 @@
     function animate() {
       requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.1);
-      if(document.hidden)return;
+      if(document.hidden || window.proposalHidden)return;
       if(motionBlocked()){resetManualInput();stopAutoWalk();}
       window.campusMouse?.update(delta);
 

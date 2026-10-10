@@ -16,7 +16,8 @@ for (const file of files.filter(file => file.endsWith('.html'))) {
 }
 if (files.some(file => file.includes(`${path.sep}teachers${path.sep}`))) errors.push('Teacher image assets must not be included.');
 if (!readFileSync(path.join(root, 'rpg/index.html'), 'utf8').includes('presentation')) errors.push('RPG presentation guard is missing.');
-for (const entry of ['index.html', 'rpg/index.html', 'campus/index.html', 'campus/campus-explorer/index.html', 'assets/campus-map.png', '展示說明.md']) {
+if (files.some(file => path.relative(root,file).split(path.sep).includes('proposal'))) errors.push('Nested proposal package detected.');
+for (const entry of ['index.html', 'rpg/index.html', 'campus/index.html', 'campus/campus-explorer/index.html', 'assets/campus-map-480.webp', 'assets/campus-map-960.webp', '展示說明.md']) {
   if (!existsSync(path.join(root, entry))) errors.push(`Missing entry ${entry}`);
 }
 if (errors.length) { console.error(errors.join('\n')); process.exitCode = 1; }

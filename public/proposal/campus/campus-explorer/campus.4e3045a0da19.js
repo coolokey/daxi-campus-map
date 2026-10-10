@@ -5067,7 +5067,7 @@ const CampusEntranceAvenue = (() => {
     function animate() {
       requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.1);
-      if(document.hidden)return;
+      if(document.hidden || window.proposalHidden)return;
       if(motionBlocked()){resetManualInput();stopAutoWalk();}
       window.campusMouse?.update(delta);
 
@@ -6399,7 +6399,7 @@ window.CampusSpatialUI = (() => {
  syncDestination();
  el('btn-cancel-nav').addEventListener('click',()=>{if(route.contains(document.activeElement))toggle.focus({preventScroll:true});});
  const cover=document.createElement('dialog');cover.id='guide-landing';cover.setAttribute('aria-labelledby','guide-title');
- cover.innerHTML='<header><div class="guide-mast"><span class="guide-seal">溪</span><div><small>桃園市立大溪國中</small><strong>115 學年度 · 校園探索手冊</strong></div></div><span class="guide-edition">山城・木藝・校園日常</span></header><main class="guide-hero"><div class="guide-copy"><p class="guide-eyebrow">打開手冊，從大溪出發</p><h1 id="guide-title">每一條路，<br>都有大溪的故事。</h1><p>從校門到教室，從閱讀到創作。<br>用自己的步調，認識我們的校園。</p><button id="guide-start" class="guide-primary">翻開校園手冊　↗</button><small>實景照片 × 立體探索 × 校園路線</small></div><figure><img src="reference-aerial.jpg" alt="大溪國中校園空拍實景"><figcaption>FIELD NOTES / 大溪國中實景</figcaption></figure></main><nav class="guide-chapters" aria-label="探索入口"><button data-chapter="first"><span>01</span><h2>第一次來大溪</h2><p>從正門開始，認識校園與常用處室。</p><b>開始走訪 ↗</b></button><button data-chapter="search"><span>02</span><h2>找教室與處室</h2><p>輸入教室或地點，讓路線帶你前往。</p><b>尋找目的地 ↗</b></button><button data-chapter="stories"><span>03</span><h2>認識校園故事</h2><p>木藝、閱讀與操場，探索校園的日常。</p><b>選一段散步 ↗</b></button></nav><footer>大溪校園探索手冊<span>依 115 學年度平面圖建置</span></footer>';
+ cover.innerHTML='<header><div class="guide-mast"><span class="guide-seal">溪</span><div><small>桃園市立大溪國中</small><strong>115 學年度 · 校園探索手冊</strong></div></div><span class="guide-edition">山城・木藝・校園日常</span></header><main class="guide-hero"><div class="guide-copy"><p class="guide-eyebrow">打開手冊，從大溪出發</p><h1 id="guide-title">每一條路，<br>都有大溪的故事。</h1><p>從校門到教室，從閱讀到創作。<br>用自己的步調，認識我們的校園。</p><button id="guide-start" class="guide-primary">翻開校園手冊　↗</button><small>實景照片 × 立體探索 × 校園路線</small></div><figure><img src="reference-aerial.webp" decoding="async" width="1280" height="720" alt="大溪國中校園空拍實景"><figcaption>FIELD NOTES / 大溪國中實景</figcaption></figure></main><nav class="guide-chapters" aria-label="探索入口"><button data-chapter="first"><span>01</span><h2>第一次來大溪</h2><p>從正門開始，認識校園與常用處室。</p><b>開始走訪 ↗</b></button><button data-chapter="search"><span>02</span><h2>找教室與處室</h2><p>輸入教室或地點，讓路線帶你前往。</p><b>尋找目的地 ↗</b></button><button data-chapter="stories"><span>03</span><h2>認識校園故事</h2><p>木藝、閱讀與操場，探索校園的日常。</p><b>選一段散步 ↗</b></button></nav><footer>大溪校園探索手冊<span>依 115 學年度平面圖建置</span></footer>';
  document.body.append(cover);
  let previousFocus=null;
  function openCover(){previousFocus=document.activeElement;api.manualTakeover();cover.showModal();el('guide-start').focus()}
@@ -6408,6 +6408,8 @@ window.CampusSpatialUI = (() => {
  cover.addEventListener('cancel',()=>{if(previousFocus?.isConnected)previousFocus.focus();else toggle.focus()});
  if(!new URLSearchParams(location.search).has('to')&&!new URLSearchParams(location.search).has('view'))openCover();
 })();
+
+
 
 ;
 /* static-batching.js */
@@ -6722,6 +6724,26 @@ requestAnimationFrame(()=>{
   document.addEventListener('visibilitychange',()=>{
     if(!dialog.open)return;
     if(document.hidden){cancelAnimationFrame(raf);quiet();}else{last=0;if(soundWanted)void resumeSound();raf=requestAnimationFrame(frame);}
+  });
+})();
+
+;
+/* proposal-bridge.js */
+/* Keep the scene alive between portal tabs without rendering a hidden canvas. */
+(() => {
+  window.addEventListener('message', event => {
+    if (event.source !== window.parent || event.origin !== window.location.origin) return;
+    const data = event.data;
+    const api = window.campusExplorer;
+    if (data?.type === 'proposal:visibility' && typeof data.visible === 'boolean') {
+      window.proposalHidden = !data.visible;
+      if (!data.visible) { api?.resetManualInput(); api?.manualTakeover(); }
+    }
+    if (data?.type === 'proposal:destination' && typeof data.destination === 'string' && Object.hasOwn(api?.rooms || {}, data.destination)) {
+      const cover = document.getElementById('guide-landing');
+      if (cover?.open) cover.close();
+      api.navigateToRoom(data.destination);
+    }
   });
 })();
 
