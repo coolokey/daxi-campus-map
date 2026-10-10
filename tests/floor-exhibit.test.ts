@@ -32,7 +32,19 @@ describe('bird floor exhibition',()=>{
   expect(model?.pack).toBeTypeOf('function')
   const candidates=[{id:'a',x:100,y:100,w:80,h:25},{id:'b',x:105,y:102,w:80,h:25},{id:'c',x:400,y:200,w:80,h:25},{id:'behind',x:100,y:100,w:80,h:25,behind:true}]
   const packed=model.pack(candidates,500,400,[{x:350,y:170,w:100,h:80}])
-  expect(packed.map((p:any)=>p.id)).toEqual(['a'])
+  expect(packed.map((p:any)=>p.id)).toEqual(['a','b','c','behind'])
+  for(const p of packed){
+   expect(p.x-p.w/2).toBeGreaterThanOrEqual(8)
+   expect(p.y-p.h/2).toBeGreaterThanOrEqual(8)
+   expect(p.x+p.w/2).toBeLessThanOrEqual(492)
+   expect(p.y+p.h/2).toBeLessThanOrEqual(392)
+   for(const q of packed.filter((q:any)=>q.id!==p.id))expect(Math.abs(p.x-q.x)>=(p.w+q.w)/2+3||Math.abs(p.y-q.y)>=(p.h+q.h)/2+3).toBe(true)
+   expect(p.x+p.w/2<=347||p.x-p.w/2>=453||p.y+p.h/2<=167||p.y-p.h/2>=253).toBe(true)
+  }
+ })
+ it('retains a full floor of names even when every anchor is outside the camera',()=>{
+  const candidates=Array.from({length:60},(_,id)=>({id,x:-900,y:-900,w:110,h:28,behind:true}))
+  expect(model.pack(candidates,1380,850,[{x:0,y:650,w:1280,h:200}])).toHaveLength(60)
  })
 })
 it('switches to bird display, lists every floor room, opens a card without moving, and navigates only on request',()=>{
@@ -45,7 +57,10 @@ it('switches to bird display, lists every floor room, opens a card without movin
  for(const file of ['floor-exhibit-model.js','floor-exhibit.js'])vm.runInContext(readFileSync(`public/campus-explorer/${file}`,'utf8'),c)
  w.document.querySelector('[data-f="2"]').click()
  expect(w.currentMode).toBe('bird');expect(w.currentFloorFilter).toBe('2')
- w.document.getElementById('fe-list-toggle').click();expect(w.document.getElementById('fe-list').hidden).toBe(false)
+ expect(w.document.getElementById('fe-list').hidden).toBe(false)
+ expect(w.document.getElementById('fe-list-toggle').getAttribute('aria-expanded')).toBe('true')
+ w.document.getElementById('fe-list-toggle').click();expect(w.document.getElementById('fe-list').hidden).toBe(true)
+ w.document.querySelector('[data-f="2"]').click();expect(w.document.getElementById('fe-list').hidden).toBe(false)
  const item=w.document.querySelector('#fe-list [data-room="801"]');expect(item.textContent).toContain('422');item.click()
  expect(navigations).toBe(0);expect(w.document.querySelector('#fe-card h2').textContent).toBe('801 教室')
  w.campusExplorer.rooms['801'].name='802 教室';w.campusFloorExhibit.refresh();expect(w.document.querySelector('#fe-card h2').textContent).toBe('802 教室')
