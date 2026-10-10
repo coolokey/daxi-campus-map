@@ -17,7 +17,16 @@ fs.writeFileSync(path.join(dir,'index.html'),html);
 const entryFile=path.join(dist,'index.html');let entry=fs.readFileSync(entryFile,'utf8');
 const moduleTag=entry.match(/<script\b[^>]*type="module"[^>]*><\/script>/)[0],moduleUrl=/src="([^"]+)"/.exec(moduleTag)[1];
 const urlSource=fs.readFileSync(path.join(root,'src/explorer-routing.js'),'utf8').replace('export function','function');
-const boot=`(()=>{${urlSource}\nif(new URLSearchParams(location.search).get('viewer')==='legacy'){const s=document.createElement('script');s.type='module';s.src=${JSON.stringify(moduleUrl)};document.head.append(s);return;}const p=document.createElement('link');p.rel='preload';p.as='script';p.href='./campus-explorer/${jsName}';document.head.append(p);const shell=document.createElement('main'),frame=document.createElement('iframe'),loading=document.createElement('div');shell.className='campus-explorer-shell';frame.className='campus-explorer-frame';frame.title='大溪國中立體校園探索';frame.allow='fullscreen';frame.src=explorerUrl('./',location.search);loading.className='campus-loading';loading.innerHTML='<strong>大溪國中校園導覽</strong><span>場景載入中⋯</span>';window.addEventListener('message',e=>{if(e.data?.type==='campus-ready')loading.classList.add('is-ready')});window.setTimeout(()=>loading.classList.add('is-ready'),12000);shell.append(frame,loading);document.getElementById('root').replaceChildren(shell);})();`;
+const boot=`(()=>{${urlSource}
+if(new URLSearchParams(location.search).get('viewer')==='legacy'){const s=document.createElement('script');s.type='module';s.src=${JSON.stringify(moduleUrl)};document.head.append(s);return;}
+const p=document.createElement('link');p.rel='preload';p.as='script';p.href='./campus-explorer/${jsName}';document.head.append(p);
+const shell=document.createElement('main'),frame=document.createElement('iframe'),loading=document.createElement('div');
+shell.className='campus-explorer-shell';frame.className='campus-explorer-frame';frame.title='大溪國中立體校園探索';frame.allow='fullscreen';frame.src=explorerUrl('./',location.search);
+loading.className='campus-loading';loading.setAttribute('role','status');loading.setAttribute('aria-live','polite');
+loading.innerHTML='<strong>大溪國中校園導覽</strong><span class="campus-loading-caption">正在整理校園地圖</span><span class="campus-loading-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="campus-loading-note">請稍候，即將走進校園</span>';
+const slowTimer=window.setTimeout(()=>{const note=loading.querySelector('.campus-loading-note');if(note)note.textContent='載入時間較長，請稍候；若畫面未出現，請重新整理。'},12000);
+const onReady=e=>{if(e.source!==frame.contentWindow||e.data?.type!=='campus-ready')return;window.clearTimeout(slowTimer);loading.classList.add('is-ready');window.removeEventListener('message',onReady)};
+window.addEventListener('message',onReady);shell.append(frame,loading);document.getElementById('root').replaceChildren(shell);})();`;
 new vm.Script(boot);
 entry=entry.replace(moduleTag,'').replace('</body>',`<script>${boot}</script></body>`);fs.writeFileSync(entryFile,entry);
 console.log(`Campus delivery: ${scripts.length} scripts + ${styles.length} styles -> 1 script + 1 stylesheet; HTML starts viewer directly.`);

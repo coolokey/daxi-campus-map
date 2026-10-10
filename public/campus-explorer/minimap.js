@@ -14,7 +14,7 @@
   c.fillStyle='#6f805d';c.fillRect(-144,-89,257,190);
   const rect=(x,z,w,d,color)=>{c.fillStyle=color;c.fillRect(x,z,w,d)};
   // 與場景相同的主車道、校門鋪面、縱向通廊。
-  rect(-65,81.5,170,9,'#9e5842');rect(48,-72,9,154,'#9e5842');
+  rect(-65,81.5,170,9,'#8c4c3a');rect(48,-72,9,154,'#8c4c3a');
   rect(-60,43,62,35,'#a5a697');rect(-52,18,37,27,'#a5a697');rect(8,6,14,47,'#adae9f');
   c.strokeStyle='#bba765';c.lineWidth=.22;c.setLineDash([2.2,2.6]);
   c.beginPath();c.moveTo(-60,86);c.lineTo(105,86);c.moveTo(52.5,-70);c.lineTo(52.5,81);c.stroke();c.setLineDash([]);

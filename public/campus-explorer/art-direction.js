@@ -3,18 +3,18 @@
   const api=window.campusExplorer;
   if(!api)return;
   const {scene,camera,controls}=api;
-  const palette={stone:0xe5e2d9,brick:0xcfa9a2,leaf:0x567657,soil:0x8d7761};
+  const palette={stone:0xd0c9bd,brick:0xb88d84,leaf:0x567657,soil:0x8d7761};
   const materials=new Map();
   const mat=color=>{if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.86}));return materials.get(color)};
   const decor=new THREE.Group();decor.name='campus-landscape-refinement';scene.add(decor);
   function box(w,h,d,x,y,z,color){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;decor.add(m);return m}
   function tiledTexture(wall=false){
     const cvs=document.createElement('canvas');cvs.width=cvs.height=256;
-    const ctx=cvs.getContext('2d');ctx.fillStyle=wall?'#d1ada6':'#c7c8b7';ctx.fillRect(0,0,256,256);
+    const ctx=cvs.getContext('2d');ctx.fillStyle=wall?'#b88d84':'#c7c8b7';ctx.fillRect(0,0,256,256);
     const size=wall?16:32;
     for(let y=0;y<256;y+=size)for(let x=0;x<256;x+=size){
-      const brightness=wall?170+(x+y)%29:180+(x*3+y)%19;
-      ctx.fillStyle=wall?`rgb(${brightness+30},${brightness},${brightness-5})`:`rgb(${brightness+14},${brightness+14},${brightness+2})`;
+      const brightness=wall?136+(x+y)%24:180+(x*3+y)%19;
+      ctx.fillStyle=wall?`rgb(${brightness+25},${brightness},${brightness-7})`:`rgb(${brightness+14},${brightness+14},${brightness+2})`;
       ctx.fillRect(x+1,y+1,size-2,size-2);
     }
     const texture=new THREE.CanvasTexture(cvs);texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.repeat.set(wall?3:8,wall?2:8);texture.encoding=THREE.sRGBEncoding;
@@ -78,7 +78,7 @@
     // 屋頂薄框與立面水平帶，讓高樓層陰影與結構更清晰。
     const roofY=cfg.floors*FH;
     for(const side of [-1,1]){
-      const trim=box(cfg.width+.6,.17,.28,cfg.x,roofY-.1,cfg.z+side*cfg.depth/2,0xa0a99e);
+      const trim=box(cfg.width+.6,.17,.28,cfg.x,roofY-.1,cfg.z+side*cfg.depth/2,0x71827a);
       trim.userData={buildingId:cfg.id,floorNum:cfg.floors,roof:true};floorMeshes.push(trim);
     }
   }
@@ -112,11 +112,11 @@
   const lightButton=document.createElement('button');lightButton.className='scene-view-btn';lightButton.textContent='暖陽';lightButton.onclick=()=>{
     evening=!evening;lightButton.textContent=evening?'晨光':'暖陽';
     sunLight.color.setHex(evening?0xffc993:0xffedd1);sunLight.position.set(evening?-110:85,evening?85:160,90);
-    scene.background.setHex(evening?0xe7d9c1:0xd5e4de);scene.fog.color.copy(scene.background);renderer.toneMappingExposure=evening?1.02:1.08;
+    scene.background.setHex(evening?0xd5bd9b:0xc9dad2);scene.fog.color.copy(scene.background);renderer.toneMappingExposure=evening?.98:1.02;
   };toolbar.append(lightButton);
   const referenceButton=document.createElement('button');referenceButton.className='scene-view-btn';referenceButton.textContent='實景對照';toolbar.append(referenceButton);document.body.append(toolbar);
   const caption=document.createElement('div');caption.id='scene-caption';caption.textContent='依 115 平面圖配置・實景材質・空間示意';document.body.append(caption);
-  const panel=document.createElement('section');panel.id='reference-panel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','校園照片對照');panel.innerHTML='<button type="button">關閉</button><h2>從實景認識校園</h2><img data-src="reference-aerial.jpg" alt="大溪國中空拍實景，供建築與球場對照"><p>平面图校對位置與樓層，實景照片校對建築外觀。立體模型為導覽示意，尺寸與路徑距離未經現地測量。</p><p><a href="campus_plan_115.jpg" target="_blank" rel="noopener">開啟 115 學年度平面圖</a>　<a href="campus-illustration.png" target="_blank" rel="noopener" id="concept-link">查看校園手繪美術圖</a></p>';
+  const panel=document.createElement('section');panel.id='reference-panel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','校園照片對照');panel.innerHTML='<button type="button">關閉</button><h2>從實景認識校園</h2><img data-src="reference-aerial.jpg" alt="大溪國中空拍實景，供建築與球場對照"><p>平面圖校對位置與樓層，實景照片校對建築外觀。立體模型為導覽示意，尺寸與路徑距離未經現地測量。</p><p><a href="campus_plan_115.jpg" target="_blank" rel="noopener">開啟 115 學年度平面圖</a>　<a href="campus-illustration.png" target="_blank" rel="noopener" id="concept-link">查看校園手繪美術圖</a></p>';
   document.body.append(panel);referenceButton.onclick=()=>{panel.querySelector('img').src='reference-aerial.jpg';panel.classList.add('open');panel.querySelector('button').focus()};panel.querySelector('button').onclick=()=>{panel.classList.remove('open');referenceButton.focus()};
   const sourceNote=document.createElement('p');sourceNote.className='map-source-note';sourceNote.textContent='平面圖為樓層、配置與跑道色彩依據；3D 場景為示意模型，照片用於校對外觀與年代差異。';document.getElementById('campus-map-modal').append(sourceNote);
   // 原版圖面座標不是測量值，因此距離採示意單位。

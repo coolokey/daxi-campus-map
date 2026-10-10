@@ -1,6 +1,13 @@
-html,body,#root{margin:0;width:100%;height:100%;overflow:hidden;background:#d5e4de}
-.campus-explorer-shell{width:100vw;height:100dvh;min-height:0;background:#d5e4de}
+html,body,#root{margin:0;width:100%;height:100%;overflow:hidden;background:#c9dad2}
+.campus-explorer-shell{width:100vw;height:100dvh;min-height:0;background:#c9dad2}
 .campus-explorer-frame{display:block;width:100%;height:100%;border:0}
-.campus-loading{position:fixed;inset:0;z-index:2;display:grid;place-content:center;text-align:center;background:linear-gradient(145deg,#152536,#243d4a);color:#f5f0df;font:700 clamp(1.3rem,3vw,2.4rem)/1.35 system-ui,sans-serif;letter-spacing:.08em;transition:opacity .35s ease,visibility .35s ease}
-.campus-loading span{display:block;margin-top:.5rem;color:#c5d6d0;font-size:.45em;font-weight:500;letter-spacing:.12em}
+.campus-loading{position:fixed;inset:0;z-index:2;display:grid;place-content:center;text-align:center;background:radial-gradient(circle at 50% 40%,#294c4a 0%,#172e38 45%,#0d1d2b 100%);color:#f5f0df;font:700 clamp(1.3rem,3vw,2.4rem)/1.35 system-ui,sans-serif;letter-spacing:.08em;transition:opacity .35s ease,visibility .35s ease}
+.campus-loading span{display:block}
+.campus-loading-caption{margin-top:.7rem;color:#d1dfd7;font-size:.47em;font-weight:500;letter-spacing:.15em}
+.campus-loading .campus-loading-dots{display:flex;justify-content:center;gap:.58rem;margin:1.45rem auto .8rem}
+.campus-loading-dots i{width:.62rem;height:.62rem;border-radius:50%;background:#f4c971;box-shadow:0 0 .8rem #f4c97180;animation:campus-dot 1.2s ease-in-out infinite}
+.campus-loading-dots i:nth-child(2){animation-delay:.16s}.campus-loading-dots i:nth-child(3){animation-delay:.32s}
+.campus-loading-note{min-height:1.4em;color:#a8c2bb;font-size:.38em;font-weight:400;letter-spacing:.06em}
 .campus-loading.is-ready{opacity:0;visibility:hidden;pointer-events:none}
+@keyframes campus-dot{0%,60%,100%{opacity:.35;transform:translateY(0) scale(.8)}30%{opacity:1;transform:translateY(-.5rem) scale(1.1)}}
+@media(prefers-reduced-motion:reduce){.campus-loading-dots i{animation:none;opacity:.85;transform:none}}

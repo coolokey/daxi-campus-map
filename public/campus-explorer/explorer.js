@@ -20,12 +20,12 @@
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.08;
+    renderer.toneMappingExposure = 1.02;
     renderer.outputEncoding = THREE.sRGBEncoding;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xd5e4de);
-    scene.fog = new THREE.Fog(0xd5e4de, 260, 640);
+    scene.background = new THREE.Color(0xc9dad2);
+    scene.fog = new THREE.Fog(0xc9dad2, 260, 640);
 
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
     const OVERVIEW_CAM = new THREE.Vector3(-160, 168, 225);
@@ -693,7 +693,7 @@
     // 4.1 Ground Lawn & Driveways
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(460, 380),
-      new THREE.MeshStandardMaterial({ color: 0x68805c })
+      new THREE.MeshStandardMaterial({ color: 0x5f7652 })
     );
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
@@ -702,7 +702,7 @@
     // 南側主幹道 (東西向車道, z=86)
     const southRoad = new THREE.Mesh(
       new THREE.PlaneGeometry(170, 9),
-      new THREE.MeshStandardMaterial({ color: 0x9e5842 })
+      new THREE.MeshStandardMaterial({ color: 0x8c4c3a })
     );
     southRoad.rotation.x = -Math.PI / 2;
     southRoad.position.set(20, 0.02, 86);
@@ -712,7 +712,7 @@
     // 中央南北主車道 (直通北側, x=52)
     const centralRoad = new THREE.Mesh(
       new THREE.PlaneGeometry(9, 154),
-      new THREE.MeshStandardMaterial({ color: 0x9e5842 })
+      new THREE.MeshStandardMaterial({ color: 0x8c4c3a })
     );
     centralRoad.rotation.x = -Math.PI / 2;
     centralRoad.position.set(52, 0.025, 12);
@@ -791,7 +791,7 @@
       gRoofShape.closePath();
       const gRoof = new THREE.Mesh(
         new THREE.ExtrudeGeometry(gRoofShape, { depth: 6.8, bevelEnabled: false }),
-        new THREE.MeshStandardMaterial({ color: 0xd63031 })
+        new THREE.MeshStandardMaterial({ color: 0xa6262c })
       );
       gRoof.position.set(0, 3.2, -3.4);
       gRoof.rotation.y = Math.PI / 2;
@@ -1254,7 +1254,7 @@
         pillar.position.set(Math.cos(i * Math.PI / 3) * 3.2, 2.0, Math.sin(i * Math.PI / 3) * 3.2);
         pavilion.add(pillar);
       }
-      const pRoof = new THREE.Mesh(new THREE.ConeGeometry(5.2, 2.8, 6), new THREE.MeshStandardMaterial({ color: 0xb91c1c }));
+      const pRoof = new THREE.Mesh(new THREE.ConeGeometry(5.2, 2.8, 6), new THREE.MeshStandardMaterial({ color: 0x8e2d2a }));
       pRoof.position.y = 5.2;
       pavilion.add(pRoof);
       gardenGroup.add(pavilion);
@@ -2983,7 +2983,7 @@
       miniCtx.fillRect(toMiniX(-130), toMiniZ(-74), toMiniX(110) - toMiniX(-130), toMiniZ(94) - toMiniZ(-74));
 
       // 3. Roads & Driveways (車道)
-      miniCtx.fillStyle = "#9e5842";
+      miniCtx.fillStyle = "#8c4c3a";
       // 南側主幹道
       miniCtx.fillRect(0, toMiniZ(82), 360, toMiniZ(94) - toMiniZ(82));
       // 中央南北主車道 (直通北側)

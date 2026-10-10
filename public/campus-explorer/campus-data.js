@@ -281,7 +281,10 @@ const FH = 3.6; // Floor Height in meters
 
 // 樓層及固定空間由 spatial-plan-data.js 校對；保留縱棟與行政棟的通行間距。
 BUILDINGS_CONFIG.find(b=>b.id==='grade9-back').x=7.5;
+const FLAT_ROOF_COLORS={'new-grade7':0x526f79,'multi-building':0x665c70,'tech-building':0x476c63,'art-building':0x765c64};
 for(const building of BUILDINGS_CONFIG){
- building.color=building.isGymSpecial?0xcfa9a2:0xe5e2d9;
- building.roofColor=building.hasPitchedRoof?(building.id==='admin-front'?0xa94e45:0xc8bd91):0x899b96;
+ building.color=building.isGymSpecial?0xb88d84:0xd0c9bd;
+ building.roofColor=building.hasPitchedRoof
+  ?(building.id.startsWith('admin-')?0x873e39:building.id==='health-bld'?0x59727a:0x90795a)
+  :(FLAT_ROOF_COLORS[building.id]||0x60756f);
 }
