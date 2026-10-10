@@ -15,9 +15,14 @@ beforeAll(()=>{
  file('vendor/three.min.js');
  w.THREE.WebGLRenderer=class{domElement:any;shadowMap={};capabilities={getMaxAnisotropy:()=>1};constructor({canvas}:any){this.domElement=canvas}setSize(){}setPixelRatio(){}render(){}};
  file('vendor/OrbitControls.js');
- for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','spatial-world.js'])file(f);
+ for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','spatial-world.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('navigation marker stays near its target rather than accumulating a vertical offset',()=>{
+ run(`setControlMode('bird');renderNavigationPath([new THREE.Vector3(-10,.6,90),new THREE.Vector3(-10,.6,96)]);clock.getElapsedTime=()=>Math.PI/8;for(let i=0;i<120;i++)animate();`);
+ expect(run('navTargetPoint.position.y')).toBeCloseTo(3.2,0);
+ run('clearNavigation()');
+});
 it('free look rotates the camera without moving or turning the standing avatar in either perspective',()=>{
  for(const mode of ['avatar','firstperson']){
   run(`stopAutoWalk();resetManualInput();setControlMode('${mode}');clock.getDelta=()=>.1;avatarAngle=0;avatarGroup.rotation.y=0;walkPitch=0;avatarGroup.position.set(-10,0,96);applyManualCameraRotation(Math.PI/.0035,0);animate();`);

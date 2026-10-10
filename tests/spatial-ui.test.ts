@@ -58,12 +58,15 @@ it('renders only editable rooms at fixed physical slots and saves names without 
   const b = {id:'admin-front',name:'行政大樓',floors:2,rooms}
   const cells = rooms.map((r,i)=>({...r,kind:'room',row:'main',u0:i*4,u1:i*4+4}))
   const layout = {id:b.id,b,rooms:cells,cells:[...cells,{kind:'stair',floor:1,row:'main',u0:16,u1:18,label:'樓梯'}],displayRows:[{id:'main',label:'主棟',axis:'u',start:0,end:20}]}
-  let invalidations=0
-  Object.assign(w,{CampusSpatialData:{aliases:{'legacy-lab':'computer-lab-2'}},campusExplorer:{buildings:[b],rooms:{...Object.fromEntries(rooms.map(r=>[r.id,{...r}])),'legacy-lab':{...rooms[0],id:'legacy-lab'}},scene:{traverse:()=>{}},setControlMode:()=>{}},campusWalkWorld:{layouts:[layout]},campusMinimap:{invalidate:()=>invalidations++},roomBadgeElements:[],currentMode:'avatar',moveInput:{},stopAutoWalk:()=>{}})
+  let invalidations=0,textureBuilds=0
+  const plates=rooms.map(r=>({userData:{roomId:r.id,nameplateKey:r.name+'|#b95bc2'},material:{map:{dispose(){}}}}))
+  w.createRoomNameplateTexture=()=>{textureBuilds++;return {dispose(){}}}
+  Object.assign(w,{CampusSpatialData:{aliases:{'legacy-lab':'computer-lab-2'}},campusExplorer:{buildings:[b],rooms:{...Object.fromEntries(rooms.map(r=>[r.id,{...r}])),'legacy-lab':{...rooms[0],id:'legacy-lab'}},scene:{traverse:(visit:any)=>plates.forEach(visit)},setControlMode:()=>{}},campusWalkWorld:{layouts:[layout]},campusMinimap:{invalidate:()=>invalidations++},roomBadgeElements:[],currentMode:'avatar',moveInput:{},stopAutoWalk:()=>{}})
   w.localStorage.setItem('daxi-room-layout-v1-115',JSON.stringify({'legacy-lab':'舊實驗室名稱'}))
   w.localStorage.setItem('daxi-room-layout-v1-116',JSON.stringify({'legacy-lab':'應保留的舊鍵值','computer-lab-2':'116 年度實驗室'}))
   const context = dom.getInternalVMContext()
   for(const file of ['room-layout-model.js','spatial-ui-tools.js','room-layout.js'])vm.runInContext(readFileSync(`public/campus-explorer/${file}`,'utf8'),context)
+  expect(textureBuilds).toBe(1)
   const dialog=w.document.getElementById('room-layout-dialog');dialog.showModal=()=>{dialog.open=true}
   w.campusRoomLayout.open()
   const inputs=dialog.querySelectorAll('.rl-room input')
@@ -81,6 +84,7 @@ it('renders only editable rooms at fixed physical slots and saves names without 
   expect(JSON.parse(w.localStorage.getItem('daxi-room-layout-v1-115'))['legacy-lab']).toBe('舊實驗室名稱')
   expect(w.campusExplorer.rooms['legacy-lab'].name).toBe('801')
   expect(invalidations).toBe(2)
+  expect(textureBuilds).toBe(2)
   const year=dialog.querySelector('#rl-year');year.value='116';year.dispatchEvent(new w.Event('change'))
   expect(w.campusExplorer.rooms['legacy-lab'].name).toBe('116 年度實驗室')
   const nextInput=dialog.querySelector('.rl-room input');nextInput.value='116 年度更新';nextInput.dispatchEvent(new w.Event('input'));dialog.querySelector('#rl-save').click()

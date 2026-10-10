@@ -5,6 +5,7 @@ const CampusCollisionGrid={
   for(const c of walls)for(let x=Math.floor((c.minX-radius)/size);x<=Math.floor((c.maxX+radius)/size);x++)for(let z=Math.floor((c.minZ-radius)/size);z<=Math.floor((c.maxZ+radius)/size);z++){
    const k=key(x,z);if(!cells.has(k))cells.set(k,[]);cells.get(k).push(c);
   }
-  return {hit(x,y,z){return(cells.get(key(Math.floor(x/size),Math.floor(z/size)))||[]).some(c=>y+height-.2>=c.minY&&y+.2<=c.maxY&&x+radius>c.minX&&x-radius<c.maxX&&z+radius>c.minZ&&z-radius<c.maxZ)},cells};
+  return {hit(x,y,z){return(cells.get(key(Math.floor(x/size),Math.floor(z/size)))||[]).some(c=>y+height-.2>=c.minY&&y+.2<=c.maxY&&x+radius>c.minX&&x-radius<c.maxX&&z+radius>c.minZ&&z-radius<c.maxZ)},
+   pointHit(x,y,z){return(cells.get(key(Math.floor(x/size),Math.floor(z/size)))||[]).some(c=>x>c.minX-.08&&x<c.maxX+.08&&z>c.minZ-.08&&z<c.maxZ+.08&&y>c.minY&&y<c.maxY)},cells};
  }
 };

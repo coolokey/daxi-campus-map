@@ -5,7 +5,7 @@
  const order=['admin-front','admin-back','new-grade7','grade8-front','grade8-mid','grade9-back','multi-building','tech-building','art-building','health-bld','gym-bld','recycle-bld'];
  const buildings=[...api.buildings].sort((a,b)=>order.indexOf(a.id)-order.indexOf(b.id));
  const rooms=buildings.flatMap(b=>b.rooms.map(r=>({...r,name:r.name.replace(/\s*\(\d+F\)/,'')}))),base=M.normalize(null,rooms);
- const colors={grade7:'#63b54f',grade8:'#409ed1',grade9:'#e86482',admin:'#8470dc',special:'#b95bc2',other:'#69889a'};
+ const colors=M.colors;
  let year=115,filter='all',saved={},draft={},saveError='',lastFocus=null;
  const drafts=new Map(),originalNames=new Map(Object.values(api.rooms).map(r=>[r.id,r.name]));
  function read(){try{saveError='';return M.parse(localStorage.getItem(M.key(year)),rooms,aliases())}catch{saveError='瀏覽器無法使用本機儲存，仍可檢視配置。';return {...base}}}
@@ -73,7 +73,11 @@
  }updateStatus();}
  function applyNames(){for(const r of rooms){const name=saved[r.id];api.rooms[r.id].name=name;for(const b of api.buildings){const original=b.rooms.find(a=>a.id===r.id);if(original)original.name=name;}for(const l of campusWalkWorld.layouts){const current=l.rooms.find(a=>a.id===r.id);if(current)current.name=name;}const badge=roomBadgeElements.find(a=>a.nodeId===api.rooms[r.id].node);if(badge){badge.element.lastElementChild.textContent=name.replace(/\s*\(\d+F\)/,'');badge.element.firstElementChild.style.background=colors[M.category(name,r.cat)];}}
   for(const [oldId,id] of Object.entries(aliases()))if(api.rooms[oldId]&&api.rooms[id])api.rooms[oldId].name=api.rooms[id].name;
-  api.scene.traverse(o=>{if(o.userData.roomId&&o.material?.map){const name=saved[o.userData.roomId];o.material.map.dispose();o.material.map=createRoomNameplateTexture(name,colors[M.category(name,api.rooms[o.userData.roomId].cat)]);o.material.needsUpdate=true;}});
+  api.scene.traverse(o=>{if(o.userData.roomId&&o.material?.map){
+   const id=o.userData.roomId;if(!api.rooms[id]||!Object.hasOwn(saved,id))return;
+   const plate=M.nameplate(saved[id],api.rooms[id].cat);if(o.userData.nameplateKey===plate.key)return;
+   o.material.map.dispose();o.material.map=createRoomNameplateTexture(plate.text,plate.color);o.material.needsUpdate=true;o.userData.nameplateKey=plate.key;
+  }});
   for(const btn of quick.querySelectorAll('[data-to]'))btn.textContent=api.rooms[btn.dataset.to].name.replace(/\s*\(\d+F\)/,'');
   search.dispatchEvent(new Event('input'));campusMinimap.invalidate();
  }

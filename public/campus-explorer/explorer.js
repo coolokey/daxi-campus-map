@@ -14,7 +14,20 @@
        2. THREE.JS SCENE SETUP & PROCEDURAL PBR TEXTURES
        ========================================================================== */
     const canvas = document.getElementById("webgl-canvas");
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
+    function createCampusRenderer(){
+      try{return new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:"high-performance"});}
+      catch(error){
+        const fallback=document.createElement('section');fallback.id='campus-webgl-fallback';fallback.setAttribute('role','alert');
+        fallback.style.cssText='position:fixed;inset:0;z-index:100000;background:#172e38;color:#f5f0df;display:grid;place-content:center;gap:20px;padding:24px;text-align:center;font:18px system-ui';
+        const message=document.createElement('p');message.textContent='暫時無法啟動立體場景。請重新載入，或先查看校園平面圖。';
+        const retry=document.createElement('button');retry.textContent='重新載入';retry.onclick=()=>location.reload();
+        const plan=document.createElement('a');plan.href='campus_plan_115.jpg';plan.textContent='查看校園平面圖';plan.style.color='#f4c971';
+        fallback.append(message,retry,plan);document.body.append(fallback);
+        if(parent!==window)parent.postMessage({type:'campus-startup-error'},location.origin);
+        throw error;
+      }
+    }
+    const renderer = createCampusRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -559,6 +572,7 @@
       ctx.fillText(text.replace(/\s*\(\d+F\)/, ''), 128, 32);
 
       const tex = new THREE.CanvasTexture(canvas);
+      tex.encoding=THREE.sRGBEncoding;
       return tex;
     }
 
@@ -2276,6 +2290,7 @@
       }
       const lastPt = points[points.length - 1];
       navTargetPoint.position.set(lastPt.x, lastPt.y + 2.6, lastPt.z);
+      navTargetPoint.userData.baseY=lastPt.y+2.6;
       navTargetPoint.rotation.x = Math.PI;
       navTargetPoint.visible = true;
     }
@@ -3189,6 +3204,7 @@
     function animate() {
       requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.1);
+      if(document.hidden)return;
       if(motionBlocked()){resetManualInput();stopAutoWalk();}
       window.campusMouse?.update(delta);
 
@@ -3371,7 +3387,7 @@
       });
 
       if (navTargetPoint && navTargetPoint.visible) {
-        navTargetPoint.position.y += Math.sin(clock.getElapsedTime() * 4) * 0.015;
+        navTargetPoint.position.y = navTargetPoint.userData.baseY + Math.sin(clock.elapsedTime * 4) * 0.25;
       }
 
       renderMinimap();

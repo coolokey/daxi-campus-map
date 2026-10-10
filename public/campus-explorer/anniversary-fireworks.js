@@ -21,7 +21,7 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const colors = ['#f6d58a','#86d6f2','#edb2bd','#d0e9ba'];
   let width=0,height=0,raf=0,last=0,elapsed=0,nextLaunch=1800,phase='',rockets=[],particles=[],digitPoints=[],staticBlessings=[],saved=null,previousFocus=null,coverWasOpen=false,lastUserLaunch=-Infinity;
-  let audio=null,master=null,fireworkAudio=null,soundEnabled=false,voices=0,finalePlayed=false;
+  let audio=null,master=null,fireworkAudio=null,soundEnabled=false,soundWanted=false,soundGeneration=0,voices=0,finalePlayed=false;
   const nodes = new Set();
   function audioAvailable(){return soundEnabled && audio?.state==='running' && !document.hidden && dialog.open;}
   function sound(kind, horizontal=.5) {
@@ -43,17 +43,23 @@
     nodes.add(source);source.onended=()=>{voices=Math.max(0,voices-1);nodes.delete(source);source.disconnect();filter?.disconnect();gain.disconnect();};
     source.start(t);source.stop(t+(kind==='chime'?1.55:1));
   }
-  function quiet(){fireworkAudio?.stop();for(const node of nodes){try{node.stop();}catch{ /* Already ended. */ }}if(audio&&audio.state==='running')audio.suspend().catch(()=>{});}
-  function updateSound(){ $('sound').textContent=soundEnabled?'關閉音效':'開啟音效';$('sound').setAttribute('aria-pressed',String(soundEnabled)); }
-  $('sound').onclick=async()=>{
-    if(soundEnabled){soundEnabled=false;quiet();updateSound();return;}
+  function quiet(){soundGeneration++;soundEnabled=false;fireworkAudio?.stop();for(const node of nodes){try{node.stop();}catch{ /* Already ended. */ }}if(audio)audio.suspend().catch(()=>{});}
+  function updateSound(){ $('sound').textContent=soundWanted?'關閉音效':'開啟音效';$('sound').setAttribute('aria-pressed',String(soundWanted)); }
+  async function resumeSound(chime=false){
+    const generation=++soundGeneration;
     try{
       const Audio=window.AudioContext||window.webkitAudioContext;
       if(!Audio)throw new Error('Audio unavailable');
       if(!audio){audio=new Audio();master=audio.createGain();master.gain.value=.72;master.connect(audio.destination);fireworkAudio=window.CampusFireworkAudio.create(audio,master);}
-      await audio.resume();soundEnabled=dialog.open&&!document.hidden;
-      updateSound();if(soundEnabled)sound('chime');else quiet();
-    }catch{soundEnabled=false;updateSound();$('status').textContent='此瀏覽器暫時無法播放音效，仍可欣賞煙火。';}
+      await audio.resume();
+      if(generation!==soundGeneration){if(!soundWanted||!dialog.open||document.hidden)audio.suspend().catch(()=>{});return;}
+      soundEnabled=soundWanted&&dialog.open&&!document.hidden;
+      if(soundEnabled&&chime)sound('chime');else if(!soundEnabled)quiet();
+    }catch{if(generation!==soundGeneration)return;soundWanted=false;quiet();updateSound();$('status').textContent='此瀏覽器暫時無法播放音效，仍可欣賞煙火。';}
+  }
+  $('sound').onclick=()=>{
+    soundWanted=!soundWanted;updateSound();
+    if(soundWanted)void resumeSound(true);else quiet();
   };
   function resize(){
     width=innerWidth;height=innerHeight;const ratio=Math.min(devicePixelRatio||1,1.5);
@@ -123,7 +129,7 @@
     dialog.querySelector('.anniversary-track i').style.width=Math.min(100,elapsed/200)+'%';
     paint(dt);if(!reduced.matches)raf=requestAnimationFrame(frame);
   }
-  function replay(){cancelAnimationFrame(raf);rockets=[];particles=[];staticBlessings=[];elapsed=reduced.matches?20000:0;nextLaunch=1800;last=0;phase='';finalePlayed=false;quiet();if(soundEnabled)audio?.resume().catch(()=>{});setPhase(reduced.matches?'free':'night');raf=requestAnimationFrame(frame);}
+  function replay(){cancelAnimationFrame(raf);rockets=[];particles=[];staticBlessings=[];elapsed=reduced.matches?20000:0;nextLaunch=1800;last=0;phase='';finalePlayed=false;quiet();if(soundWanted)void resumeSound();setPhase(reduced.matches?'free':'night');raf=requestAnimationFrame(frame);}
   function open(){
     if(dialog.open)return;
     previousFocus=document.activeElement;coverWasOpen=!!cover?.open;if(coverWasOpen)cover.close();
@@ -135,11 +141,11 @@
     // Flush its residual deltas before setting the celebration camera.
     api.controls.enableDamping=false;api.controls.update();
     api.camera.position.set(-155,80,230);api.controls.target.set(-12,49,0);api.camera.lookAt(api.controls.target);
-    document.body.classList.add('anniversary-open');dialog.showModal();soundEnabled=false;updateSound();resize();replay();$('sound').focus();
+    document.body.classList.add('anniversary-open');dialog.showModal();soundWanted=false;updateSound();resize();replay();$('sound').focus();
   }
   function close(){dialog.close();}
   dialog.addEventListener('close',()=>{
-    cancelAnimationFrame(raf);quiet();soundEnabled=false;updateSound();rockets=[];particles=[];
+    cancelAnimationFrame(raf);soundWanted=false;quiet();updateSound();rockets=[];particles=[];
     document.body.classList.remove('anniversary-open');
     if(saved){night(0);api.setControlMode(saved.mode);cancelCameraTween();api.camera.position.copy(saved.position);api.controls.target.copy(saved.target);api.camera.lookAt(saved.target);api.controls.enabled=saved.enabled;api.controls.enableDamping=saved.damping;api.controls.autoRotate=saved.autoRotate;saved=null;}
     if(coverWasOpen)cover.showModal();previousFocus?.focus();
@@ -155,6 +161,6 @@
   reduced.addEventListener('change',()=>{if(dialog.open)replay();});
   document.addEventListener('visibilitychange',()=>{
     if(!dialog.open)return;
-    if(document.hidden){cancelAnimationFrame(raf);quiet();}else{last=0;if(soundEnabled)audio?.resume().catch(()=>{});raf=requestAnimationFrame(frame);}
+    if(document.hidden){cancelAnimationFrame(raf);quiet();}else{last=0;if(soundWanted)void resumeSound();raf=requestAnimationFrame(frame);}
   });
 })();

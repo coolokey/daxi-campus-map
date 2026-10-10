@@ -15,14 +15,14 @@ export default function App(){
  const [query,setQuery]=useState('');
  const [selected,setSelected]=useState<Place|undefined>(()=>getInitialPlaceFromUrl());
  const results=useMemo(()=>searchPlaces(query),[query]);
- const select=(place:Place)=>{setSelected(place);setTour('explore');history.pushState({},'',`?to=${encodeURIComponent(place.id)}`)};
+ const select=(place:Place)=>{setSelected(place);setTour('explore');const url=new URL(location.href);url.searchParams.set('to',place.id);history.pushState({},'',url)};
  return <main className="viewer">
   {tour==='opening'&&<section className="tour-opening">
    <img className="tour-backdrop" src={asset('generated/daxi-campus-birdseye-v2.png')} alt="大溪國中校園導覽開場景"/>
    <div className="tour-shade"/>
    <div className="tour-copy"><span className="eyebrow">DAXI CAMPUS · 115</span><h2>從山坡、操場到校舍，<em>一眼認識大溪國中。</em></h2><p>以實景照片、空拍構圖與校園平面圖重建的互動導覽。</p><div><button className="primary" onClick={()=>setTour(advanceTour('opening'))}>開始探索</button><button className="ghost" onClick={()=>setTour('explore')}>跳過開場</button></div></div>
   </section>}
-  <CampusScene3D places={campus.places} onSelect={select}/>
+  <CampusScene3D places={campus.places}/>
   <AvatarControls/>
   <ViewerHud query={query} selectedId={selected?.id} onQueryChange={setQuery} onDestination={id=>{const place=campus.places.find(item=>item.id===id);if(place)select(place)}} onMode={()=>window.dispatchEvent(new Event('campus-toggle-walk'))} onMap={()=>setMapOpen(value=>!value)}/>
   {mapOpen&&<section className="map-overlay"><CampusMap2D places={campus.places} selected={selected} onSelect={select}/></section>}
