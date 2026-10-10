@@ -2581,9 +2581,13 @@
       }
       const meters = Math.round(totalDist);
 
-      document.getElementById("hud-target-name").textContent = `[${room.buildingName} ${room.floor}F] ${room.name}`;
-      document.getElementById("hud-route-desc").textContent = `由當前位置 → 經由 ${room.buildingName} 走廊/樓梯至 ${room.floor} 樓`;
+      const outdoorDestination = room.code?.startsWith('OUT-') || roomId === 'track';
+      document.getElementById("hud-target-name").textContent = `[${room.buildingName} ${outdoorDestination ? '戶外' : room.floor+'F'}] ${room.name}`;
+      document.getElementById("hud-route-desc").textContent = outdoorDestination
+        ? `由當前位置 → 沿校園路線前往 ${room.name}`
+        : `由當前位置 → 經由 ${room.buildingName} 走廊/樓梯至 ${room.floor} 樓`;
       document.getElementById("hud-dist-val").textContent = meters;
+      document.getElementById("nav-hud").dataset.destination = roomId;
       document.getElementById("nav-hud").classList.add("visible");
       btnAutoWalk.textContent = "🚶‍♂️ 自動帶路";
       btnAutoWalk.classList.remove("walking");
