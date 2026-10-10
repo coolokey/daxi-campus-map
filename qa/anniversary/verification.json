@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "checks": [
+    "muted by default",
+    "opt-in audio running",
+    "mute suspends audio",
+    "background pauses audio and timeline",
+    "night/show/finale/free timeline",
+    "gold canvas particles",
+    "sky pointer launch",
+    "keyboard-accessible launch",
+    "replay",
+    "background and camera restored",
+    "cover restored",
+    "Escape and focus return",
+    "mobile controls fit viewport",
+    "reduced motion"
+  ],
+  "errors": []
+}
