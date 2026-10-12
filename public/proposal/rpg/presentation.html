@@ -1,13 +1,14 @@
 <!doctype html>
 <html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>大溪國中未來科技校園 RPG</title>
-<link rel="preload" as="image" href="./assets/maps/daxi-future-campus-rpg-v1.webp" fetchpriority="high">
-<style>.native-world{min-height:0;position:relative}.native-world canvas{width:100%;height:auto}.native-controls{flex-wrap:wrap;gap:.4rem;margin:.6rem 0;display:flex}.native-controls button{touch-action:none;color:#075c80;background:#d7eff8}.native-status{color:#075c80;min-height:1.6em}#dialogue{background:#fff;border-radius:1rem;margin:.7rem 0;padding:1rem}#dialogue p{line-height:1.8}</style>
-  <script type="module" crossorigin src="./assets/presentation-TtakmMJH.js"></script>
+<link rel="preload" as="image" href="./assets/maps/daxi-future-campus-rpg-v1.webp" fetchpriority="high">
+
+  <script type="module" crossorigin src="./assets/presentation-CT2jdJYY.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/styles-Ty6N40YL.js">
   <link rel="modulepreload" crossorigin href="./assets/presentation-D3gJufsz.js">
   <link rel="stylesheet" crossorigin href="./assets/styles-DRUlPi7W.css">
+  <link rel="stylesheet" crossorigin href="./assets/presentation-CLsor1-y.css">
 </head><body><main><header class="app-header"><p class="eyebrow">DAXI FUTURE CAMPUS · 校園探索雛型</p><h1>未來科技校園 RPG</h1><p>走進熟悉的校園，展開能源核心修復任務。</p></header>
-<div class="explore-toolbar"><p>方向鍵／WASD 移動，E／空白鍵互動。<br>前往科技館研究室，或直接開始數學任務。</p><button id="quest-start" class="primary-button">快速體驗數學任務</button></div>
+<div class="explore-toolbar"><a class="home-link" href="../#home" target="_top" aria-label="返回展示首頁">← 首頁</a><p>方向鍵／WASD 移動，E／空白鍵互動。<br>前往科技館研究室，或直接開始數學任務。</p><button id="quest-start" class="primary-button" title="方向鍵／WASD 移動，E／空白鍵互動">快速體驗數學任務</button></div>
 <section id="exploration" aria-label="校園探索"><p id="world-status" class="native-status" role="status">正在準備校園地圖……</p><div class="game-frame" id="world-frame"><div class="game-shell native-world"><canvas id="world" width="1280" height="720" tabindex="0" aria-label="校園地圖，使用方向鍵移動"></canvas></div></div>
 <div class="native-controls" aria-label="觸控移動"><button data-key="ArrowLeft" aria-label="向左移動">← 左</button><button data-key="ArrowUp" aria-label="向上移動">↑ 上</button><button data-key="ArrowDown" aria-label="向下移動">↓ 下</button><button data-key="ArrowRight" aria-label="向右移動">→ 右</button><button id="interact">互動（E）</button></div>
 <div id="dialogue" hidden><p>數字研究員：歡迎來到未來校園！前往右上方科技館的入口，與研究室助教一起修復能源核心。</p><button id="dialogue-close" class="primary-button">繼續探索</button></div></section>

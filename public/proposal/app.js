@@ -3,11 +3,9 @@ const home = document.createElement('div');
 home.append(document.querySelector('#home-template').content.cloneNode(true));
 content.append(home);
 const experiences = new Map();
-let anniversaryUnlocked=false;
 function notify(frame, visible, destination = null) {
   frame.contentWindow?.postMessage({ type: 'proposal:visibility', visible }, location.origin);
   if (visible && destination) frame.contentWindow?.postMessage({ type: 'proposal:destination', destination }, location.origin);
-  if (anniversaryUnlocked) frame.contentWindow?.postMessage({type:'proposal:quest-complete',questId:'energy-core'},location.origin);
 }
 
 function renderRoute() {
@@ -18,6 +16,7 @@ function renderRoute() {
   });
   const exploring = mode === 'rpg' || mode === 'campus';
   document.body.classList.toggle('exploring', exploring);
+  document.body.classList.toggle('rpg-immersive', mode === 'rpg');
   home.hidden = exploring;
   for (const [key, entry] of experiences) {
     entry.shell.hidden = key !== mode;
@@ -48,7 +47,7 @@ function renderRoute() {
   const source = new URL(rpg ? './rpg/' : './campus/campus-explorer/index.html', location.href);
   if (rpg) {
     source.searchParams.set('presentation', '1');
-    source.searchParams.set('v', '20261010-native-rpg');
+    source.searchParams.set('v', '20261012-fullscreen-rpg');
   }
   else {
     if (destination) source.searchParams.set('to', destination);
@@ -72,10 +71,4 @@ function renderRoute() {
   content.focus({ preventScroll: true });
 }
 window.addEventListener('hashchange', renderRoute);
-window.addEventListener('message',event=>{
-  if(event.origin!==location.origin||event.source!==experiences.get('rpg')?.frame.contentWindow)return;
-  if(event.data?.type!=='proposal:quest-complete'||event.data.questId!=='energy-core')return;
-  anniversaryUnlocked=true;
-  const campus=experiences.get('campus');if(campus)notify(campus.frame,!campus.shell.hidden);
-});
 renderRoute();

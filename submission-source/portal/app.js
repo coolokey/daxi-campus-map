@@ -16,6 +16,7 @@ function renderRoute() {
   });
   const exploring = mode === 'rpg' || mode === 'campus';
   document.body.classList.toggle('exploring', exploring);
+  document.body.classList.toggle('rpg-immersive', mode === 'rpg');
   home.hidden = exploring;
   for (const [key, entry] of experiences) {
     entry.shell.hidden = key !== mode;
@@ -46,7 +47,7 @@ function renderRoute() {
   const source = new URL(rpg ? './rpg/' : './campus/campus-explorer/index.html', location.href);
   if (rpg) {
     source.searchParams.set('presentation', '1');
-    source.searchParams.set('v', '20261010-native-rpg');
+    source.searchParams.set('v', '20261012-fullscreen-rpg');
   }
   else {
     if (destination) source.searchParams.set('to', destination);
