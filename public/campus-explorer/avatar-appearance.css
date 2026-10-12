@@ -10,6 +10,11 @@
 .field-guide #avatar-bottom-controls{display:none!important}
 #guide-movement-settings{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 #guide-movement-settings button{position:static;min-height:44px;padding:8px 12px;border:1px solid #c7ccb9;border-radius:2px;background:#e7e8dc;color:#193c32;font:inherit;font-size:12px;cursor:pointer;box-shadow:none}
+@media(min-width:769px) and (min-height:501px){
+ .field-guide #avatar-quick-choices{width:100%;gap:8px;margin:0;justify-content:space-between}
+ .field-guide #avatar-quick-choices fieldset{grid-template-columns:repeat(2,minmax(0,1fr));flex:1}
+ .field-guide #avatar-quick-choices span{padding:0 3px}
+}
 @media(max-width:768px){
  #avatar-quick-choices{position:fixed;z-index:38;left:50%;bottom:calc(8px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(360px,calc(100vw - 20px));box-sizing:border-box;padding:7px 10px;background:#f5f0e3;border:1px solid #cec6b2;border-top:3px solid #193c32;box-shadow:0 5px 24px #193c3220;gap:12px}
  #avatar-quick-choices fieldset{flex:1;grid-template-columns:repeat(2,minmax(0,1fr))}

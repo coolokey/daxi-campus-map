@@ -13,6 +13,12 @@
  const tools=document.createElement('nav');tools.id='guide-quick-tools';tools.setAttribute('aria-label','校園導覽快捷工具');
  tools.innerHTML='<div id="guide-quick-main"></div><div id="guide-quick-floors"></div>';
  document.body.append(tools);
+ const toolsToggle=document.createElement('button');toolsToggle.id='guide-tools-toggle';toolsToggle.type='button';toolsToggle.textContent='工具';toolsToggle.setAttribute('aria-label','開啟導覽工具');toolsToggle.setAttribute('aria-controls','guide-quick-tools');document.body.append(toolsToggle);
+ function setToolsOpen(open){document.body.classList.toggle('guide-tools-open',open);toolsToggle.setAttribute('aria-expanded',String(open));toolsToggle.setAttribute('aria-label',open?'收合導覽工具':'開啟導覽工具');toolsToggle.textContent=open?'收合':'工具'}
+ toolsToggle.onclick=()=>setToolsOpen(!document.body.classList.contains('guide-tools-open'));
+ tools.addEventListener('click',event=>{if(document.body.classList.contains('guide-tools-open')&&event.target.closest('#campus-main-controls button,.floor-btn,#fe-list-toggle'))setToolsOpen(false)});
+ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.body.classList.contains('guide-tools-open')){setToolsOpen(false);toolsToggle.focus();}});
+ setToolsOpen(false);
  el('guide-quick-main').append(document.querySelector('.search-box'),el('campus-main-controls'));
  el('guide-quick-floors').append(el('floor-selector'));
  el('guide-search').remove();el('guide-controls').closest('section').remove();el('guide-floors').closest('section').remove();
@@ -34,7 +40,7 @@
  const toggle=document.createElement('button');toggle.id='guide-toggle';toggle.textContent='校園手冊';toggle.setAttribute('aria-controls','guide-panel');document.body.append(toggle);
  function setPanel(open){document.body.classList.toggle('guide-collapsed',!open);toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'收合手冊':'開啟手冊'}
  toggle.onclick=()=>setPanel(document.body.classList.contains('guide-collapsed'));
- setPanel(innerWidth>=769);
+ setPanel(innerWidth>=1100);
  let shownDestination=null,navigation=null,plan=[],lastPoints=null;
  const setText=(node,text)=>{if(node.textContent!==text)node.textContent=text;};
  function displayNavigation(state){

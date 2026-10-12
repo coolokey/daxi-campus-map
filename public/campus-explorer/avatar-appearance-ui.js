@@ -3,7 +3,13 @@
  const api=window.campusExplorer;if(!api?.setAvatarAppearance)return;
  const choices=document.createElement('section');choices.id='avatar-quick-choices';choices.setAttribute('aria-label','人物性別與穿著，點選立即套用');
  choices.innerHTML='<fieldset><legend>性別</legend><label><input type="radio" name="avatar-gender" value="male"><span>男生</span></label><label><input type="radio" name="avatar-gender" value="female"><span>女生</span></label></fieldset><fieldset><legend>穿著</legend><label><input type="radio" name="avatar-outfit" value="uniform"><span>制服</span></label><label><input type="radio" name="avatar-outfit" value="casual"><span>便服</span></label></fieldset>';
- document.getElementById('guide-quick-floors').prepend(choices);
+ const rail=document.getElementById('guide-quick-floors');
+ function placeChoices(){
+  const compact=window.matchMedia?window.matchMedia('(max-width: 768px), (max-height: 500px)').matches:innerWidth<=768||innerHeight<=500;
+  if(compact){if(choices.parentElement!==document.body)document.body.append(choices);}
+  else if(choices.parentElement!==rail)rail.prepend(choices);
+ }
+ placeChoices();window.addEventListener('resize',placeChoices);
  const state=api.getAvatarAppearance();
  for(const key of ['gender','outfit'])choices.querySelector('[name="avatar-'+key+'"][value="'+state[key]+'"]').checked=true;
  choices.addEventListener('change',event=>{

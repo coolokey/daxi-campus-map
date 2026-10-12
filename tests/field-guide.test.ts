@@ -80,6 +80,21 @@ describe('固定工具與導航狀態', () => {
   }
   s.dom.window.close();
  });
+ it('右側工具可展開與收合，按 Escape 也可關閉', () => {
+  const s=setup(390,'?to=academic'),d=s.w.document;
+  const button=d.getElementById('guide-tools-toggle');
+  expect(button.getAttribute('aria-expanded')).toBe('false');
+  button.click();
+  expect(d.body.classList.contains('guide-tools-open')).toBe(true);
+  expect(button.getAttribute('aria-expanded')).toBe('true');
+  d.getElementById('btn-walk').click();
+  expect(d.body.classList.contains('guide-tools-open')).toBe(false);
+  button.click();
+  d.dispatchEvent(new s.w.KeyboardEvent('keydown',{key:'Escape'}));
+  expect(d.body.classList.contains('guide-tools-open')).toBe(false);
+  expect(button.getAttribute('aria-expanded')).toBe('false');
+  s.dom.window.close();
+ });
  it('開始帶路收合桌面手冊，暫停不誤報抵達，抵達後保留資訊直到關閉', async () => {
   const s=setup(1280,'?to=academic'),d=s.w.document;
   s.w.campusExplorer.navigateToRoom('academic');await s.tick();
