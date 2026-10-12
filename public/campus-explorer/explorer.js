@@ -33,12 +33,12 @@
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.02;
+    renderer.toneMappingExposure = .88;
     renderer.outputEncoding = THREE.sRGBEncoding;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xc9dad2);
-    scene.fog = new THREE.Fog(0xc9dad2, 260, 640);
+    scene.background = new THREE.Color(0xbdcbd0);
+    scene.fog = new THREE.Fog(0xbdcbd0, 260, 640);
 
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
     const OVERVIEW_CAM = new THREE.Vector3(-160, 168, 225);
@@ -53,13 +53,13 @@
     controls.minDistance = 6;
     controls.maxDistance = 420;
 
-    const hemiLight = new THREE.HemisphereLight(0xd9e7f0, 0x536449, 0.8);
+    const hemiLight = new THREE.HemisphereLight(0xdbe2e5, 0x686b5e, .72);
     scene.add(hemiLight);
 
-    const ambientLight = new THREE.AmbientLight(0xfff3df, 0.2);
+    const ambientLight = new THREE.AmbientLight(0xf2eee5, .25);
     scene.add(ambientLight);
 
-    const sunLight = new THREE.DirectionalLight(0xffedd1, 1.5);
+    const sunLight = new THREE.DirectionalLight(0xfff3e3, 1.05);
     sunLight.position.set(85, 160, 90);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = window.innerWidth < 768 ? 1024 : 2048;
@@ -78,7 +78,7 @@
       const cvs = document.createElement("canvas");
       cvs.width = 256; cvs.height = 256;
       const ctx = cvs.getContext("2d");
-      ctx.fillStyle = "#d4d8de";
+      ctx.fillStyle = "#a8ada9";
       ctx.fillRect(0, 0, 256, 256);
       ctx.strokeStyle = "rgba(0,0,0,0.12)";
       ctx.lineWidth = 3;
@@ -108,63 +108,46 @@
     const avatarSpeed = 18;
     const avatarRunSpeed = 28;
 
-    // 1. 五官紋理生成 (參考 media_1791355365994.png：黑亮大眼、高光眼神、腮紅粉頰、微笑小嘴)
-    // 1. 五官與頭部紋理生成 (完美還原 media_1791355365994.png)
+    // Soft face texture; hair is modeled separately so both hairstyles have a rounded outline.
     function createHeadTexture() {
       const cvs = document.createElement("canvas");
       cvs.width = 1024; cvs.height = 512;
       const ctx = cvs.getContext("2d");
 
       // 溫潤白皙膚色基底
-      ctx.fillStyle = "#ffdcc7";
+      ctx.fillStyle = "#efd0ba";
       ctx.fillRect(0, 0, 1024, 512);
-
-      // 後腦勺短黑髮 (兩側延伸至後方，z < 0)
-      ctx.fillStyle = "#1e1e24";
-      ctx.fillRect(0, 90, 260, 380);
-      ctx.fillRect(764, 90, 260, 380);
-
-      // 前額齊瀏海
-      ctx.beginPath();
-      ctx.moveTo(300, 120);
-      ctx.lineTo(724, 120);
-      ctx.lineTo(724, 280);
-      ctx.quadraticCurveTo(512, 300, 300, 280);
-      ctx.closePath();
-      ctx.fill();
 
       // 黑亮雙眼 (黑眼珠 + 白色純淨眼神高光)
       function drawEye(cx, cy) {
-        ctx.fillStyle = "#0f172a";
+        ctx.fillStyle = "#392e2d";
         ctx.beginPath();
-        ctx.ellipse(cx, cy, 18, 22, 0, 0, Math.PI * 2);
+        ctx.ellipse(cx, cy, 24, 30, 0, 0, Math.PI * 2);
         ctx.fill();
 
         // 眼神高光
         ctx.fillStyle = "#ffffff";
         ctx.beginPath();
-        ctx.arc(cx - 5, cy - 6, 6, 0, Math.PI * 2);
+        ctx.arc(cx - 7, cy - 9, 8, 0, Math.PI * 2);
         ctx.fill();
+        ctx.beginPath();ctx.arc(cx + 7, cy + 10, 3, 0, Math.PI * 2);ctx.fill();
       }
-      drawEye(420, 315);
-      drawEye(604, 315);
+      drawEye(423, 294);
+      drawEye(601, 294);
 
       // 可愛粉嫩腮紅
       function drawBlush(cx, cy) {
-        ctx.fillStyle = "rgba(255, 71, 87, 0.85)";
+        ctx.fillStyle = "rgba(209, 119, 111, 0.32)";
         ctx.beginPath();
-        ctx.ellipse(cx, cy, 26, 22, 0, 0, Math.PI * 2);
+        ctx.ellipse(cx, cy, 32, 15, 0, 0, Math.PI * 2);
         ctx.fill();
       }
-      drawBlush(370, 355);
-      drawBlush(654, 355);
+      drawBlush(373, 335);
+      drawBlush(651, 335);
 
       // 可愛小嘴
-      ctx.fillStyle = "#991b1b";
-      ctx.beginPath();
-      if (ctx.roundRect) ctx.roundRect(494, 375, 36, 12, 6);
-      else ctx.rect(494, 375, 36, 12);
-      ctx.fill();
+      ctx.strokeStyle = "#925b55";ctx.lineWidth=5;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(492,345);ctx.quadraticCurveTo(512,364,532,345);ctx.stroke();
 
       const tex = new THREE.CanvasTexture(cvs);
       tex.needsUpdate = true;
@@ -178,11 +161,11 @@
       const ctx = cvs.getContext("2d");
 
       // 深丈青色基底
-      ctx.fillStyle = "#1e3a8a";
+      ctx.fillStyle = "#3d5874";
       ctx.fillRect(0, 0, 512, 512);
 
       // 兩側與肩膀淺水藍 (Sky Blue) 拼接飾片
-      ctx.fillStyle = "#38bdf8";
+      ctx.fillStyle = "#9fc4d4";
       ctx.beginPath();
       ctx.moveTo(0, 0); ctx.lineTo(100, 0); ctx.lineTo(80, 512); ctx.lineTo(0, 512);
       ctx.closePath(); ctx.fill();
@@ -240,180 +223,76 @@
       return tex;
     }
 
+    // Smooth storybook proportions, with the existing arm/leg pivots retained for walking.
     function createStudentAvatar() {
       avatarGroup = new THREE.Group();
       avatarGroup.scale.setScalar(.65);
       avatarGroup.position.set(-10, 0, 90);
-      avatarAngle = Math.PI; // 預設面向校園北側 (朝前)
+      avatarAngle = Math.PI;
       avatarGroup.rotation.y = avatarAngle;
       prevAvatarPos.copy(avatarGroup.position);
+      const material=color=>new THREE.MeshStandardMaterial({color,roughness:.9,metalness:0});
+      const skin=material(0xefd0ba),hair=material(0x3e332e),navy=material(0x3d5874),sky=material(0x9fc4d4),cream=material(0xeee9dc);
+      const sphere=new THREE.SphereGeometry(1,20,14);
+      function oval(parent,name,mat,x,y,z,sx,sy,sz){
+        const mesh=new THREE.Mesh(sphere,mat);mesh.name=name;mesh.position.set(x,y,z);mesh.scale.set(sx,sy,sz);mesh.castShadow=true;parent.add(mesh);return mesh;
+      }
+      const shadow=new THREE.Mesh(new THREE.CircleGeometry(.68,28),new THREE.MeshBasicMaterial({color:0x292e31,transparent:true,opacity:.18,depthWrite:false}));
+      shadow.rotation.x=-Math.PI/2;shadow.position.y=.025;avatarGroup.add(shadow);
 
-      const headTex = createHeadTexture();
-      const uniformTex = createUniformTorsoTexture();
+      // A softly tapered lathed shirt avoids the rectangular silhouette of a block figure.
+      const profile=new THREE.SplineCurve([new THREE.Vector2(.27,-.45),new THREE.Vector2(.34,-.41),new THREE.Vector2(.38,-.22),new THREE.Vector2(.41,.12),new THREE.Vector2(.35,.34),new THREE.Vector2(.22,.45)]).getPoints(24);
+      const torsoGeo=new THREE.LatheGeometry(profile,32);
+      const uv=torsoGeo.attributes.uv;
+      for(let i=0;i<uv.count;i++)uv.setX(i,(uv.getX(i)-.25)*2);
+      torsoGeo.clearGroups();
+      for(let i=0;i<32;i++)torsoGeo.addGroup(i*24*6,24*6,i>=8&&i<24?4:5);
+      const torsoMaterials=Array.from({length:6},()=>material(0x3d5874));
+      torsoMaterials[4]=new THREE.MeshStandardMaterial({map:createUniformTorsoTexture(),roughness:.95});
+      const torso=new THREE.Mesh(torsoGeo,torsoMaterials);torso.name='avatar-torso';torso.position.y=1.39;torso.rotation.y=Math.PI;torso.scale.z=.66;torso.castShadow=true;avatarGroup.add(torso);
+      const collar=new THREE.Mesh(new THREE.TorusGeometry(.205,.055,10,24),navy.clone());collar.name='avatar-collar';collar.rotation.x=Math.PI/2;collar.position.y=1.84;avatarGroup.add(collar);
+      oval(avatarGroup,'avatar-neck',skin,0,1.88,0,.155,.16,.145);
 
-      // 地面陰影
-      const shadow = new THREE.Mesh(
-        new THREE.CircleGeometry(0.68, 16),
-        new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35 })
-      );
-      shadow.rotation.x = -Math.PI / 2;
-      shadow.position.y = 0.04;
-      avatarGroup.add(shadow);
-
-      // 身體軀幹 (Box 搭配六面材質，胸前為校服貼圖)
-      const torsoMatArray = [
-        new THREE.MeshStandardMaterial({ color: 0x38bdf8 }), // +X (水藍側邊)
-        new THREE.MeshStandardMaterial({ color: 0x38bdf8 }), // -X (水藍側邊)
-        new THREE.MeshStandardMaterial({ color: 0x1e3a8a }), // +Y (肩膀)
-        new THREE.MeshStandardMaterial({ color: 0x1e295b }), // -Y (下擺)
-        new THREE.MeshStandardMaterial({ map: uniformTex }),   // +Z (大溪國中校服正面)
-        new THREE.MeshStandardMaterial({ color: 0x1e3a8a })  // -Z (深藍背面)
-      ];
-      const torso = new THREE.Mesh(
-        new THREE.BoxGeometry(0.82, 1.15, 0.46),
-        torsoMatArray
-      );
-      torso.position.y = 1.45;
-      torso.name = 'avatar-torso';
-      torso.castShadow = true;
-      avatarGroup.add(torso);
-
-      // 立領結構 (內白外深藍)
-      const collar = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.24, 0.28, 0.16, 16),
-        new THREE.MeshStandardMaterial({ color: 0x1e3a8a })
-      );
-      collar.position.y = 2.05;
-      collar.name = 'avatar-collar';
-      avatarGroup.add(collar);
-
-      // 頭部 (圓形球體直接貼附五官與黑髮紋理，完全無紙面片接縫，完美還原 media_1791355365994.png)
-      const headGroup = new THREE.Group();
-      headGroup.position.y = 2.42;
-
-      const headGeo = new THREE.SphereGeometry(0.38, 32, 32);
-      const headMat = new THREE.MeshStandardMaterial({ map: headTex });
-      const headMesh = new THREE.Mesh(headGeo, headMat);
-      headMesh.rotation.y = -Math.PI / 2; // 正面五官對齊局部 +Z
-      headMesh.castShadow = true;
-      headGroup.add(headMesh);
-
-      // 雙側小耳朵
-      const skinMat = new THREE.MeshStandardMaterial({ color: 0xffdcc7 });
-      const earL = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 12), skinMat);
-      earL.position.set(-0.38, -0.02, 0);
-      headGroup.add(earL);
-      const earR = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 12), skinMat);
-      earR.position.set(0.38, -0.02, 0);
-      headGroup.add(earR);
-
-      const longHair = new THREE.Group();longHair.name='avatar-long-hair';
-      const hairMat = new THREE.MeshStandardMaterial({color:0x222027});
-      const shortHair=new THREE.Mesh(new THREE.SphereGeometry(.389,32,16,0,Math.PI*2,0,Math.PI*.48),hairMat);
-      shortHair.name='avatar-short-hair';shortHair.castShadow=true;headGroup.add(shortHair);
+      const head=new THREE.Group();head.name='avatar-head';head.position.y=2.29;avatarGroup.add(head);
+      const face=new THREE.Mesh(new THREE.SphereGeometry(.49,32,24),new THREE.MeshStandardMaterial({map:createHeadTexture(),roughness:.95}));
+      face.name='avatar-face';face.scale.set(1,.98,.94);face.rotation.y=-Math.PI/2;face.castShadow=true;head.add(face);
+      for(const side of [-1,1])oval(head,'avatar-ear',skin,side*.475,-.055,.015,.085,.105,.075);
+      oval(head,'avatar-nose',skin,0,-.12,.455,.038,.045,.035);
+      const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.507,28,18,0,Math.PI*2,0,Math.PI*.47),hair);hairCap.name='avatar-short-hair';hairCap.scale.z=.95;hairCap.castShadow=true;head.add(hairCap);
+      const boyFringe=new THREE.Group();boyFringe.name='avatar-boy-fringe';head.add(boyFringe);
+      for(const [x,y,z,sx,sy,sz,tilt]of [[-.28,.24,.34,.21,.14,.14,-.5],[-.06,.29,.41,.23,.14,.14,-.3],[.18,.29,.37,.21,.12,.15,.15],[.31,.15,.26,.14,.20,.12,.4]]){
+        oval(boyFringe,'avatar-hair-lock',hair,x,y,z,sx,sy,sz).rotation.z=tilt;
+      }
+      oval(boyFringe,'avatar-crown-lock',hair,-.12,.49,-.06,.14,.12,.16).rotation.z=-.3;
+      const longHair=new THREE.Group();longHair.name='avatar-long-hair';longHair.visible=false;head.add(longHair);
+      oval(longHair,'avatar-rounded-bob',hair,0,-.17,-.28,.47,.45,.245);
       for(const side of [-1,1]){
-        const hair=new THREE.Mesh(new THREE.BoxGeometry(.15,.55,.38),hairMat);
-        hair.position.set(side*.32,-.32,-.06);hair.castShadow=true;longHair.add(hair);
-      }
-      const backHair=new THREE.Mesh(new THREE.BoxGeometry(.58,.58,.14),hairMat);
-      backHair.position.set(0,-.3,-.3);backHair.castShadow=true;longHair.add(backHair);
-      longHair.visible=false;headGroup.add(longHair);
-
-      avatarGroup.add(headGroup);
-
-      // 手臂結構 (左臂 / 右臂：深藍袖身＋水藍側條，膚色小臂與手掌)
-      const sleeveMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a });
-      const stripeMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8 });
-
-      function buildArm(isLeft) {
-        const armGroup = new THREE.Group();
-        const sideSign = isLeft ? -1 : 1;
-        armGroup.position.set(sideSign * 0.52, 1.95, 0);
-
-        // 短袖肩膀
-        const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.125, 0.115, 0.36, 12), sleeveMat);
-        sleeve.position.y = -0.18;
-        sleeve.castShadow = true;
-        armGroup.add(sleeve);
-        sleeve.name = isLeft?'avatar-sleeve-left':'avatar-sleeve-right';
-
-        // 水藍色肩飾條
-        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.36, 0.12), stripeMat);
-        stripe.position.set(sideSign * 0.11, -0.18, 0);
-        armGroup.add(stripe);
-
-        // 膚色前臂
-        const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.44, 12), skinMat);
-        forearm.position.y = -0.54;
-        forearm.castShadow = true;
-        armGroup.add(forearm);
-
-        // 手掌
-        const hand = new THREE.Mesh(new THREE.SphereGeometry(0.105, 10, 10), skinMat);
-        hand.position.y = -0.78;
-        hand.castShadow = true;
-        armGroup.add(hand);
-
-        return armGroup;
+        oval(longHair,'avatar-side-lock',hair,side*.415,-.18,.025,.14,.36,.205).rotation.z=side*.1;
+        oval(longHair,'avatar-fringe',hair,side*.19,.27,.37,.26,.14,.15).rotation.z=side*.18;
+        oval(longHair,'avatar-hair-clip',sky,side*.405,.10,.205,.045,.055,.035);
       }
 
-      avatarLeftArm = buildArm(true);
-      avatarGroup.add(avatarLeftArm);
-      avatarRightArm = buildArm(false);
-      avatarGroup.add(avatarRightArm);
-
-      // 腿部結構 (深藍運動短褲＋側邊白條，膚色膝腿，純白運動短襪，黑底白邊運動鞋)
-      const shortsMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a });
-      const whiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-      const shoeBodyMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
-
-      function buildLeg(isLeft) {
-        const legGroup = new THREE.Group();
-        const sideSign = isLeft ? -1 : 1;
-        legGroup.position.set(sideSign * 0.22, 0.9, 0);
-
-        // 大溪國中運動短褲
-        const shorts = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.145, 0.44, 12), shortsMat);
-        shorts.position.y = -0.22;
-        shorts.castShadow = true;
-        legGroup.add(shorts);
-        shorts.name = isLeft?'avatar-shorts-left':'avatar-shorts-right';
-
-        // 短褲外側白邊飾條 (如 media_1791355660385.png)
-        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.44, 0.11), whiteMat);
-        stripe.position.set(sideSign * 0.145, -0.22, 0);
-        legGroup.add(stripe);
-
-        // 膚色小腿
-        const calf = new THREE.Mesh(new THREE.CylinderGeometry(0.115, 0.105, 0.32, 12), skinMat);
-        calf.position.y = -0.52;
-        calf.castShadow = true;
-        legGroup.add(calf);
-
-        // 白色學生運動襪 (純白襪筒)
-        const sock = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.115, 0.22, 12), whiteMat);
-        sock.position.y = -0.68;
-        sock.castShadow = true;
-        legGroup.add(sock);
-
-        // 運動鞋 (深藍黑鞋身＋白色橡膠大底，完全符合 media_1791355365994.png)
-        const shoeBody = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.18, 0.44), shoeBodyMat);
-        shoeBody.position.set(0, -0.81, 0.08);
-        shoeBody.castShadow = true;
-        legGroup.add(shoeBody);
-
-        const shoeSole = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.07, 0.46), whiteMat);
-        shoeSole.position.set(0, -0.87, 0.08);
-        legGroup.add(shoeSole);
-
-        return legGroup;
+      function buildArm(left){
+        const side=left?-1:1,arm=new THREE.Group();arm.position.set(side*.49,1.72,0);arm.rotation.z=side*.07;
+        oval(arm,'avatar-sleeve-'+(left?'left':'right'),navy.clone(),side*.015,-.12,0,.18,.235,.185);
+        oval(arm,'avatar-shoulder-trim',sky,side*.135,-.08,.02,.055,.16,.13);
+        oval(arm,'avatar-forearm',skin,side*.025,-.41,.015,.105,.26,.11);
+        oval(arm,'avatar-hand',skin,side*.025,-.64,.025,.12,.135,.115);
+        avatarGroup.add(arm);return arm;
       }
-
-      avatarLeftLeg = buildLeg(true);
-      avatarGroup.add(avatarLeftLeg);
-      avatarRightLeg = buildLeg(false);
-      avatarGroup.add(avatarRightLeg);
-
+      avatarLeftArm=buildArm(true);avatarRightArm=buildArm(false);
+      function buildLeg(left){
+        const side=left?-1:1,leg=new THREE.Group();leg.position.set(side*.21,.96,0);
+        oval(leg,'avatar-shorts-'+(left?'left':'right'),navy.clone(),0,-.13,0,.19,.25,.19);
+        oval(leg,'avatar-shorts-trim',sky,side*.155,-.12,.015,.028,.18,.08);
+        oval(leg,'avatar-calf',skin,0,-.43,0,.12,.24,.125);
+        oval(leg,'avatar-sock',cream,0,-.65,.015,.126,.13,.14);
+        oval(leg,'avatar-shoe',navy,0,-.80,.09,.17,.135,.26);
+        oval(leg,'avatar-shoe-sole',cream,0,-.895,.10,.177,.045,.265);
+        oval(leg,'avatar-shoe-toe',cream,0,-.795,.265,.13,.065,.085);
+        avatarGroup.add(leg);return leg;
+      }
+      avatarLeftLeg=buildLeg(true);avatarRightLeg=buildLeg(false);
       scene.add(avatarGroup);
     }
 
@@ -424,21 +303,26 @@
     let avatarAppearance={gender:'male',outfit:'uniform'};
     const avatarTorso=avatarGroup.getObjectByName('avatar-torso');
     const avatarUniformTexture=avatarTorso.material[4].map;
+    function setAvatarColor(material,color){
+      material.color.setHex(color);
+      if(material.userData.campusColorCalibrated)material.color.convertSRGBToLinear();
+    }
     function getAvatarAppearance(){return {...avatarAppearance};}
     function setAvatarAppearance(value={}){
       if(['male','female'].includes(value.gender))avatarAppearance.gender=value.gender;
       if(['uniform','casual'].includes(value.outfit))avatarAppearance.outfit=value.outfit;
       const uniform=avatarAppearance.outfit==='uniform';
       avatarGroup.getObjectByName('avatar-long-hair').visible=avatarAppearance.gender==='female';
+      avatarGroup.getObjectByName('avatar-boy-fringe').visible=avatarAppearance.gender==='male';
       avatarTorso.material.forEach((material,index)=>{
         material.map=index===4&&uniform?avatarUniformTexture:null;
-        material.color.setHex(uniform?(index===4?0xffffff:index<2?0x38bdf8:index===3?0x1e295b:0x1e3a8a):0xc76c45);
+        setAvatarColor(material,uniform?(index===4?0xffffff:0x3d5874):0xc98b6c);
         material.needsUpdate=true;
       });
-      avatarGroup.getObjectByName('avatar-collar').material.color.setHex(uniform?0x1e3a8a:0xb85b36);
+      setAvatarColor(avatarGroup.getObjectByName('avatar-collar').material,uniform?0x3d5874:0xae745c);
       for(const side of ['left','right']){
-        avatarGroup.getObjectByName('avatar-sleeve-'+side).material.color.setHex(uniform?0x1e3a8a:0xc76c45);
-        avatarGroup.getObjectByName('avatar-shorts-'+side).material.color.setHex(uniform?0x1e3a8a:0x374151);
+        setAvatarColor(avatarGroup.getObjectByName('avatar-sleeve-'+side).material,uniform?0x3d5874:0xc98b6c);
+        setAvatarColor(avatarGroup.getObjectByName('avatar-shorts-'+side).material,uniform?0x3d5874:0x586267);
       }
       try{localStorage.setItem('daxi-avatar-appearance',JSON.stringify(avatarAppearance));}catch(_){/* Session-only appearance still works. */}
       return getAvatarAppearance();
@@ -628,7 +512,7 @@
 
       // 兩側大溪國中標誌性藍黃波浪圓圈彩繪
       for (let y = 30; y < 490; y += 75) {
-        ctx.fillStyle = "#38bdf8";
+        ctx.fillStyle = "#9fc4d4";
         ctx.beginPath();
         ctx.arc(28, y, 22, 0, Math.PI * 2);
         ctx.fill();
@@ -637,7 +521,7 @@
         ctx.arc(28, y, 12, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = "#38bdf8";
+        ctx.fillStyle = "#9fc4d4";
         ctx.beginPath();
         ctx.arc(228, y, 22, 0, Math.PI * 2);
         ctx.fill();
@@ -755,7 +639,7 @@
       // 迎賓鋪面 (人字拼紅灰高質感地磚)
       const plaza = new THREE.Mesh(
         new THREE.PlaneGeometry(54, 24),
-        new THREE.MeshStandardMaterial({ map: paverTex, color: 0xf1f5f9 })
+        new THREE.MeshStandardMaterial({ map: paverTex, color: 0xc5c7bd, roughness: 1 })
       );
       plaza.rotation.x = -Math.PI / 2;
       plaza.receiveShadow = true;
@@ -1342,11 +1226,11 @@
       const corridorWidth = 2.6;
 
       // Common architectural materials
-      const extWallMat = new THREE.MeshStandardMaterial({ color: cfg.color, roughness: 0.65 });
-      const intWallMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.8 });
-      const floorMat = new THREE.MeshStandardMaterial({ color: 0xd8dee9, roughness: 0.7 });
-      const corridorFloorMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.7 });
-      const ceilingMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.9, side: THREE.DoubleSide });
+      const extWallMat = new THREE.MeshStandardMaterial({ color: cfg.color, roughness: .95 });
+      const intWallMat = new THREE.MeshStandardMaterial({ color: 0xc9c6bc, roughness: .95 });
+      const floorMat = new THREE.MeshStandardMaterial({ color: 0xa8ada9, roughness: 1 });
+      const corridorFloorMat = new THREE.MeshStandardMaterial({ color: 0xb6b9b1, roughness: 1 });
+      const ceilingMat = new THREE.MeshStandardMaterial({ color: 0xcecdc3, roughness: 1, side: THREE.DoubleSide });
       const glassMat = new THREE.MeshStandardMaterial({ color: 0x3b525b, transparent: true, opacity: 0.78 });
       const chalkboardMat = new THREE.MeshStandardMaterial({ color: 0x1b4332, roughness: 0.85 });
       const whiteboardMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 });
@@ -1851,7 +1735,7 @@
         roofShape.closePath();
         const pRoof = new THREE.Mesh(
           new THREE.ExtrudeGeometry(roofShape, { depth: cfg.width + 1.6, bevelEnabled: false }),
-          new THREE.MeshStandardMaterial({ color: cfg.roofColor })
+          new THREE.MeshStandardMaterial({ color: cfg.roofColor, roughness: 1 })
         );
         pRoof.position.set(-cfg.width / 2 - 0.8, totalH + 0.1, 0);
         pRoof.rotation.y = Math.PI / 2;
@@ -1871,7 +1755,7 @@
       } else {
         const roofMesh = new THREE.Mesh(
           new THREE.BoxGeometry(cfg.width + 0.8, 0.8, cfg.depth + 0.8),
-          new THREE.MeshStandardMaterial({ color: cfg.roofColor })
+          new THREE.MeshStandardMaterial({ color: cfg.roofColor, roughness: 1 })
         );
         roofMesh.position.y = totalH + 0.4;
         roofMesh.userData={buildingId:cfg.id,floorNum:cfg.floors,roof:true};

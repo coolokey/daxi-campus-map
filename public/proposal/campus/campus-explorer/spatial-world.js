@@ -3,8 +3,8 @@
  const M=CampusWalkMath,layouts=BUILDINGS_CONFIG.map(M.layout),graph={},roomTargets={},oldNodes={...NAV_NODES};
  const node=(id,p,buildingId)=>{graph[id]={id,...p,buildingId,neighbors:[]};return id};
  const link=(a,b)=>{if(a!==b&&!graph[a].neighbors.includes(b)){graph[a].neighbors.push(b);graph[b].neighbors.push(a)}};
- const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.85});
- const colors={wall:material(0xf3f0e7),blue:material(0x9cbecb),floor:material(0xc5c1b5),stair:material(0xc7c4b9),wood:material(0x956941),green:material(0x315748),steel:material(0x61717a),light:material(0xfff9dd),glass:new THREE.MeshStandardMaterial({color:0xb0ced6,transparent:true,opacity:.45})};
+ const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.96});
+ const colors={wall:material(0xc9c5b9),blue:material(0x8da9ae),floor:material(0xa6aaa3),stair:material(0xb8bab0),wood:material(0x956941),green:material(0x315748),steel:material(0x61717a),light:material(0xfff9dd),glass:new THREE.MeshStandardMaterial({color:0x8fa5a9,transparent:true,opacity:.45})};
  colors.light.emissive.setHex(0x8a8467);colors.light.emissiveIntensity=.4;
  const box=(group,l,u0,u1,v0,v1,y0,y1,mat,solid=false)=>{
   if(u1-u0<1e-5||v1-v0<1e-5||y1-y0<1e-5)return null;
@@ -56,6 +56,7 @@
  for(let i=WALL_COLLIDERS.length-1;i>=0;i--)if(WALL_COLLIDERS[i].buildingId)WALL_COLLIDERS.splice(i,1);
  STAIR_ZONES.length=0;
  for(const l of layouts){
+  const roofMaterial=material(l.b.roofColor);
   const parent=scene.children.find(g=>g.userData.buildingId===l.id);
   for(const child of [...parent.children])if(child.name.startsWith('floor-')||child.userData.oldStairs||(l.b.spatialProfile.shape&&child.userData.roof)){
    parent.remove(child);child.traverse(o=>{if(o.geometry)o.geometry.dispose()});const i=floorMeshes.indexOf(child);if(i>=0)floorMeshes.splice(i,1);
@@ -63,7 +64,7 @@
   for(let f=1;f<=l.b.floors;f++){
    const y=(f-1)*FH,g=new THREE.Group();g.name=`floor-${f}`;g.userData={buildingId:l.id,floorNum:f};scene.add(g);floorMeshes.push(g);
    for(const p of l.footprints.filter(p=>p.floor===f)){slab(g,l,p,y);
-    if(f===l.b.floors){const roof=box(g,l,p.u0,p.u1,p.v0,p.v1,y+FH-.18,y+FH,colors.wall);if(roof)roof.userData.roof=true;}
+    if(f===l.b.floors){const roof=box(g,l,p.u0,p.u1,p.v0,p.v1,y+FH-.18,y+FH,roofMaterial);if(roof)roof.userData.roof=true;}
    }
    // Rooms and WC use identical rectangles for visible walls and blocking volumes.
    for(const r of l.cells.filter(c=>c.floor===f&&(c.kind==='room'||c.kind==='wc'))){

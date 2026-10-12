@@ -3,10 +3,10 @@
  */
 (()=>{
  const api=window.campusExplorer,b=BUILDINGS_CONFIG.find(b=>b.id==='admin-front');if(!api||!b)return;
- const materials=new Map(),mat=c=>{if(!materials.has(c))materials.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.85}));return materials.get(c)};
+ const materials=new Map(),mat=c=>{if(!materials.has(c))materials.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.97}));return materials.get(c)};
  function group(f,name){const g=new THREE.Group();g.name=name;g.userData={buildingId:b.id,floorNum:f};api.scene.add(g);floorMeshes.push(g);return g}
  function box(g,w,h,d,x,y,z,c){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;g.add(m);return m}
- const frontZ=b.z+b.depth/2,cream=0xece9df,white=0xe9e9e3,teal=0x447b79;
+ const frontZ=b.z+b.depth/2,cream=0xc9c5b9,white=0xcacbc2,teal=0x447b79;
  // The circulation facade is open at 1F. No glass sheet or pillar closes a doorway.
  for(let f=1;f<=b.floors;f++){
   const g=group(f,`photo-admin-facade-${f}`),y=(f-1)*FH;
@@ -53,11 +53,11 @@
  const h=b.floors*FH,rise=1.35,halfDepth=b.depth/2+.55,slope=Math.atan2(rise,halfDepth),length=Math.hypot(halfDepth,rise);
  for(const z of [b.z-b.depth/2-.55,b.z+b.depth/2+.55])box(roof,b.width+1.6,.1,.17,b.x,h+.04,z,teal);
  for(const sign of [-1,1]){
-  const panel=box(roof,b.width+1.6,.1,length,b.x,h+.15+rise/2,b.z+sign*halfDepth/2,sign>0?0xb65f54:0xc9c5a5);panel.rotation.x=sign*slope;
+  const panel=box(roof,b.width+1.6,.1,length,b.x,h+.15+rise/2,b.z+sign*halfDepth/2,sign>0?0xa86e60:0x96988b);panel.rotation.x=sign*slope;
  }
  // Ribs share the slope and elevation of the roof panels.
  for(let x=b.x-b.width/2;x<=b.x+b.width/2;x+=.6)for(const sign of [-1,1]){
-  const rib=box(roof,.025,.025,length,x,h+.22+rise/2,b.z+sign*halfDepth/2,sign>0?0xb16b5e:0xb8b398);rib.rotation.x=sign*slope;
+  const rib=box(roof,.025,.025,length,x,h+.22+rise/2,b.z+sign*halfDepth/2,sign>0?0x9a665a:0x8b8f82);rib.rotation.x=sign*slope;
  }
  // Source-backed garden landmarks stay clear of the central route.
  const garden=group(1,'photo-admin-garden');

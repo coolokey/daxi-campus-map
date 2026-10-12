@@ -10,11 +10,11 @@
   function box(w,h,d,x,y,z,color){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;decor.add(m);return m}
   function tiledTexture(wall=false){
     const cvs=document.createElement('canvas');cvs.width=cvs.height=256;
-    const ctx=cvs.getContext('2d');ctx.fillStyle=wall?'#b88d84':'#c7c8b7';ctx.fillRect(0,0,256,256);
+    const ctx=cvs.getContext('2d');ctx.fillStyle=wall?'#b88d84':'#a1a79b';ctx.fillRect(0,0,256,256);
     const size=wall?16:32;
     for(let y=0;y<256;y+=size)for(let x=0;x<256;x+=size){
-      const brightness=wall?136+(x+y)%24:180+(x*3+y)%19;
-      ctx.fillStyle=wall?`rgb(${brightness+25},${brightness},${brightness-7})`:`rgb(${brightness+14},${brightness+14},${brightness+2})`;
+      const brightness=wall?136+(x+y)%24:148+(x*3+y)%13;
+      ctx.fillStyle=wall?`rgb(${brightness+25},${brightness},${brightness-7})`:`rgb(${brightness+8},${brightness+8},${brightness+1})`;
       ctx.fillRect(x+1,y+1,size-2,size-2);
     }
     const texture=new THREE.CanvasTexture(cvs);texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.repeat.set(wall?3:8,wall?2:8);texture.encoding=THREE.sRGBEncoding;
@@ -91,6 +91,7 @@
       if(calibratedMaterials.has(material))continue;calibratedMaterials.add(material);
       // r128 的十六進位材質色尚未自動從 sRGB 轉線性；輸出 sRGB 前先校準。
       material.color?.convertSRGBToLinear();
+      material.userData.campusColorCalibrated=true;
       if(material.map)material.map.encoding=THREE.sRGBEncoding;
       material.needsUpdate=true;
     }
@@ -111,8 +112,8 @@
   let evening=false;
   const lightButton=document.createElement('button');lightButton.className='scene-view-btn';lightButton.textContent='暖陽';lightButton.onclick=()=>{
     evening=!evening;lightButton.textContent=evening?'晨光':'暖陽';
-    sunLight.color.setHex(evening?0xffc993:0xffedd1);sunLight.position.set(evening?-110:85,evening?85:160,90);
-    scene.background.setHex(evening?0xd5bd9b:0xc9dad2);scene.fog.color.copy(scene.background);renderer.toneMappingExposure=evening?.98:1.02;
+    sunLight.color.setHex(evening?0xf1d7b9:0xfff3e3);sunLight.position.set(evening?-110:85,evening?85:160,90);
+    scene.background.setHex(evening?0xbeb4a5:0xbdcbd0);scene.fog.color.copy(scene.background);renderer.toneMappingExposure=evening?.84:.88;
   };toolbar.append(lightButton);
   const referenceButton=document.createElement('button');referenceButton.className='scene-view-btn';referenceButton.textContent='實景對照';toolbar.append(referenceButton);document.body.append(toolbar);
   const caption=document.createElement('div');caption.id='scene-caption';caption.textContent='依 115 平面圖配置・實景材質・空間示意';document.body.append(caption);

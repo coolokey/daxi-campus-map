@@ -41,6 +41,16 @@ it('changes gender and clothes independently without replacing the avatar or its
  expect(run(`campusExplorer.getAvatarAppearance()`)).toEqual({gender:'female',outfit:'uniform'});
  run(`campusExplorer.setAvatarAppearance({gender:'male',outfit:'uniform'});clearNavigation();`);
 });
+it('keeps calibrated clothing colors stable across repeated outfit switches',()=>{
+ run(`campusExplorer.setAvatarAppearance({outfit:'uniform'});window.clothing=avatarGroup.getObjectByName('avatar-sleeve-left').material;clothing.color.convertSRGBToLinear();clothing.userData.campusColorCalibrated=true;window.expectedNavy=clothing.color.clone();campusExplorer.setAvatarAppearance({outfit:'casual'});window.expectedCasual=new THREE.Color(0xc98b6c).convertSRGBToLinear();`);
+ expect(run(`clothing.color.equals(expectedCasual)`)).toBe(true);
+ run(`campusExplorer.setAvatarAppearance({gender:'female',outfit:'uniform'});`);
+ expect(run(`clothing.color.equals(expectedNavy)`)).toBe(true);
+ expect(run(`avatarGroup.getObjectByName('avatar-boy-fringe').visible`)).toBe(false);
+ run(`campusExplorer.setAvatarAppearance({gender:'male',outfit:'uniform'});`);
+ expect(run(`clothing.color.equals(expectedNavy)`)).toBe(true);
+ expect(run(`avatarGroup.getObjectByName('avatar-boy-fringe').visible`)).toBe(true);
+});
 it('navigation marker stays near its target rather than accumulating a vertical offset',()=>{
  run(`setControlMode('bird');renderNavigationPath([new THREE.Vector3(-10,.6,90),new THREE.Vector3(-10,.6,96)]);clock.getElapsedTime=()=>Math.PI/8;for(let i=0;i<120;i++)animate();`);
  expect(run('navTargetPoint.position.y')).toBeCloseTo(3.2,0);

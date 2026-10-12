@@ -6,8 +6,8 @@ const FH = 3.6; // Floor Height in meters
     id: "gym-bld",
     name: "學生活動中心 / 體育館",
     category: "sports",
-    color: 0xd98a80,
-    roofColor: 0x9e473e,
+    color: 0xb58c82,
+    roofColor: 0x925d53,
     x: -80, z: 58, width: 34, depth: 36, floors: 3,
     isGymSpecial: true,
     stairs: [
@@ -27,8 +27,8 @@ const FH = 3.6; // Floor Height in meters
     id: "recycle-bld",
     name: "資源回收室",
     category: "admin",
-    color: 0xc8d6e5,
-    roofColor: 0x576574,
+    color: 0xb8c1c0,
+    roofColor: 0x59666d,
     x: -106, z: 58, width: 14, depth: 16, floors: 1,
     stairs: [],
     rooms: [
@@ -41,8 +41,8 @@ const FH = 3.6; // Floor Height in meters
     id: "admin-front",
     name: "行政大樓 (前棟)",
     category: "admin",
-    color: 0xecf0f1,
-    roofColor: 0xd63031,
+    color: 0xc7c4b9,
+    roofColor: 0xa66b5c,
     hasPitchedRoof: true,
     x: -12, z: 44, width: 26, depth: 10, floors: 3,
     stairs: [
@@ -65,8 +65,8 @@ const FH = 3.6; // Floor Height in meters
     id: "admin-back",
     name: "行政大樓 (後棟)",
     category: "admin",
-    color: 0xecf0f1,
-    roofColor: 0xd63031,
+    color: 0xc7c4b9,
+    roofColor: 0xa66b5c,
     hasPitchedRoof: true,
     x: -12, z: 20, width: 26, depth: 10, floors: 3,
     stairs: [
@@ -89,8 +89,8 @@ const FH = 3.6; // Floor Height in meters
     id: "health-bld",
     name: "健康中心 / 合作社棟",
     category: "admin",
-    color: 0xe8f4f8,
-    roofColor: 0x0284c7,
+    color: 0xb9c7c3,
+    roofColor: 0x5f7f89,
     hasPitchedRoof: true,
     x: 12, z: -4, width: 28, depth: 9, floors: 2,
     stairs: [
@@ -109,8 +109,8 @@ const FH = 3.6; // Floor Height in meters
     id: "grade8-front",
     name: "八年級教學棟 (南棟)",
     category: "grade8",
-    color: 0xf3ede2,
-    roofColor: 0xd63031,
+    color: 0xc8c4b7,
+    roofColor: 0xa66b5c,
     hasPitchedRoof: true,
     x: 16, z: 60, width: 44, depth: 10, floors: 3,
     stairs: [
@@ -135,8 +135,8 @@ const FH = 3.6; // Floor Height in meters
     id: "grade9-back",
     name: "九年級教學棟",
     category: "grade9",
-    color: 0xebf5ee,
-    roofColor: 0xd63031,
+    color: 0xc1c8ba,
+    roofColor: 0xa66b5c,
     hasPitchedRoof: true,
     x: 2, z: 28, width: 12, depth: 38, floors: 3,
     stairs: [
@@ -161,8 +161,8 @@ const FH = 3.6; // Floor Height in meters
     id: "grade8-mid",
     name: "八年級中棟 / 專科棟",
     category: "grade8",
-    color: 0xf3ede2,
-    roofColor: 0xd63031,
+    color: 0xc8c4b7,
+    roofColor: 0xa66b5c,
     hasPitchedRoof: true,
     x: 28, z: 28, width: 13, depth: 38, floors: 3,
     stairs: [
@@ -188,8 +188,8 @@ const FH = 3.6; // Floor Height in meters
     id: "new-grade7",
     name: "七年級新大樓與特教園地",
     category: "grade7",
-    color: 0xe6f0f7,
-    roofColor: 0x2b5b7a,
+    color: 0xbcc6cb,
+    roofColor: 0x526c7e,
     x: 80, z: -58, width: 46, depth: 14, floors: 3,
     stairs: [
       { x: 60, z: -58, name: "七年級西側樓梯", floors: 3 },
@@ -219,8 +219,8 @@ const FH = 3.6; // Floor Height in meters
     id: "multi-building",
     name: "綜合大樓 / 圖書館",
     category: "special",
-    color: 0xeeeaf2,
-    roofColor: 0x5e3a73,
+    color: 0xc6c1cb,
+    roofColor: 0x756681,
     x: 74, z: -23, width: 32, depth: 34, floors: 2,
     stairs: [
       { x: 62, z: -23, name: "綜合大樓樓梯", floors: 2 }
@@ -240,8 +240,8 @@ const FH = 3.6; // Floor Height in meters
     id: "tech-building",
     name: "科技館",
     category: "special",
-    color: 0xe4f2ef,
-    roofColor: 0x1b675e,
+    color: 0xbcc9c2,
+    roofColor: 0x567b70,
     x: 74, z: 12, width: 28, depth: 22, floors: 2,
     stairs: [
       { x: 62, z: 12, name: "科技館樓梯", floors: 2 }
@@ -263,8 +263,8 @@ const FH = 3.6; // Floor Height in meters
     id: "art-building",
     name: "藝術館",
     category: "special",
-    color: 0xf8e9eb,
-    roofColor: 0x82414f,
+    color: 0xc9bbb6,
+    roofColor: 0x896774,
     x: 74, z: 46, width: 14, depth: 32, floors: 4,
     stairs: [
       { x: 68, z: 46, name: "藝術館主樓梯間", floors: 4 }
