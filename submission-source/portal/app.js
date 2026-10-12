@@ -3,9 +3,11 @@ const home = document.createElement('div');
 home.append(document.querySelector('#home-template').content.cloneNode(true));
 content.append(home);
 const experiences = new Map();
+let anniversaryUnlocked=false;
 function notify(frame, visible, destination = null) {
   frame.contentWindow?.postMessage({ type: 'proposal:visibility', visible }, location.origin);
   if (visible && destination) frame.contentWindow?.postMessage({ type: 'proposal:destination', destination }, location.origin);
+  if (anniversaryUnlocked) frame.contentWindow?.postMessage({type:'proposal:quest-complete',questId:'energy-core'},location.origin);
 }
 
 function renderRoute() {
@@ -71,4 +73,10 @@ function renderRoute() {
   content.focus({ preventScroll: true });
 }
 window.addEventListener('hashchange', renderRoute);
+window.addEventListener('message',event=>{
+  if(event.origin!==location.origin||event.source!==experiences.get('rpg')?.frame.contentWindow)return;
+  if(event.data?.type!=='proposal:quest-complete'||event.data.questId!=='energy-core')return;
+  anniversaryUnlocked=true;
+  const campus=experiences.get('campus');if(campus)notify(campus.frame,!campus.shell.hidden);
+});
 renderRoute();
