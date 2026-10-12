@@ -58,4 +58,6 @@ window.dispatchEvent(new CustomEvent('campus:quest-complete', {
 
 本機 desktop（1440×960）、ipad（1024×768）、mobile（390×844）全部通過上述流程；本機無資源 404 與腳本／shader 錯誤，桌面任務獎勵也通過。離線 18 聲源、音量 100% 混音峰值為 0.5913，RMS 為 0.0614，未數位削波。聲源亂數每次數值略有不同，原始報告保留於 QA 目錄。
 
+已隨 `5a89b14` 發布至原 GitHub Pages 網址，Actions run `38190462561` 成功。公開站三種尺寸與實際五題任務獎勵流程也全部通過，18 錄音解碼、播放聲源、行走、文字 80、停止清理均確認；無資源 404、腳本或 shader 錯誤。線上報告與截圖在 `qa/immersive-fireworks/published/`；可設定 `FIREWORK_QA_OUTPUT` 將不同環境的結果分開保存。
+
 桌面／iPad／手機為 Edge 瀏覽器尺寸與觸控模擬，不代表已在實體 iPad Safari 測試。數位混音量測驗證有訊號且未削波，無法取代使用者實際揚聲器或耳機的主觀聆聽；錄音本身可能有現場雜音。校園距離仍為原示意模型的單位，聲速延遲是臨場模擬，非實地聲學校正。

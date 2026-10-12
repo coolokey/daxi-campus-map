@@ -1,6 +1,6 @@
 const {chromium}=require(process.env.CAMPUS_PLAYWRIGHT_PATH||'C:/Users/MAO YU REN/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const out=path.resolve(__dirname,'../qa/immersive-fireworks');fs.mkdirSync(out,{recursive:true});
+const out=path.resolve(process.env.FIREWORK_QA_OUTPUT||path.join(__dirname,'../qa/immersive-fireworks'));fs.mkdirSync(out,{recursive:true});
 const base=(process.env.CAMPUS_QA_URL||'http://127.0.0.1:5187/').replace(/\/?$/,'/');
 const allProfiles=[{name:'desktop',width:1440,height:960},{name:'ipad',width:1024,height:768,touch:true},{name:'mobile',width:390,height:844,touch:true}];
 const profiles=process.env.FIREWORK_QA_PROFILE?allProfiles.filter(p=>p.name===process.env.FIREWORK_QA_PROFILE):allProfiles;

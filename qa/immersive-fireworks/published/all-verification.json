@@ -1,0 +1,229 @@
+[
+  {
+    "profile": "desktop",
+    "passed": true,
+    "dense": {
+      "visual": {
+        "bursts": 26,
+        "launched": 28,
+        "textPoints": 0,
+        "active": 271,
+        "smoke": 15,
+        "drawPoints": 1605,
+        "tier": "mobile",
+        "flash": 0.000003572997642485154
+      },
+      "quality": "mobile",
+      "audio": {
+        "active": 18,
+        "loaded": 18,
+        "failed": [],
+        "played": [
+          {
+            "kind": "far",
+            "file": "far-03.mp3",
+            "visualTime": 13.890666666666666,
+            "scheduledAt": 14.873210639808581,
+            "delay": 0.9825439731419151,
+            "pan": -0.05222856253385544,
+            "gain": 0.10878323763608932
+          },
+          {
+            "kind": "crackle",
+            "file": "crackle-01.mp3",
+            "visualTime": 13.890666666666666,
+            "scheduledAt": 14.953210639808582,
+            "delay": 0.9825439731419151,
+            "pan": -0.05222856253385544,
+            "gain": 0.031909748911857605
+          },
+          {
+            "kind": "tail",
+            "file": "tail-03.mp3",
+            "visualTime": 13.890666666666666,
+            "scheduledAt": 15.053210639808581,
+            "delay": 0.9825439731419151,
+            "pan": -0.05222856253385544,
+            "gain": 0.02610797807574272
+          },
+          {
+            "kind": "launch",
+            "file": "launch-03.mp3",
+            "visualTime": 14.461333333333334,
+            "scheduledAt": 14.461333333333334,
+            "delay": 0,
+            "pan": -0.22964464128017426,
+            "gain": 0.09126730263233185
+          },
+          {
+            "kind": "launch",
+            "file": "launch-01.mp3",
+            "visualTime": 14.461333333333334,
+            "scheduledAt": 14.461333333333334,
+            "delay": 0,
+            "pan": -0.2033519595861435,
+            "gain": 0.09192401170730591
+          }
+        ],
+        "volume": 0.55
+      }
+    },
+    "mix": {
+      "peak": 0.575246274471283,
+      "rms": 0.06656729367430352,
+      "played": 18
+    },
+    "missing": [],
+    "errors": []
+  },
+  {
+    "profile": "ipad",
+    "passed": true,
+    "dense": {
+      "visual": {
+        "bursts": 41,
+        "launched": 49,
+        "textPoints": 0,
+        "active": 776,
+        "smoke": 22,
+        "drawPoints": 3188,
+        "tier": "mobile",
+        "flash": 0.0669033901026562
+      },
+      "quality": "mobile",
+      "audio": {
+        "active": 17,
+        "loaded": 18,
+        "failed": [],
+        "played": [
+          {
+            "kind": "launch",
+            "file": "launch-02.mp3",
+            "visualTime": 15.12,
+            "scheduledAt": 15.12,
+            "delay": 0,
+            "pan": -0.1946895867586136,
+            "gain": 0.07987912744283676
+          },
+          {
+            "kind": "launch",
+            "file": "launch-03.mp3",
+            "visualTime": 15.8,
+            "scheduledAt": 15.8,
+            "delay": 0,
+            "pan": -0.17522412538528442,
+            "gain": 0.08022522926330566
+          },
+          {
+            "kind": "far",
+            "file": "far-01.mp3",
+            "visualTime": 15.8,
+            "scheduledAt": 16.7662556249,
+            "delay": 0.9662556249000005,
+            "pan": -0.06304148584604263,
+            "gain": 0.11119850724935532
+          },
+          {
+            "kind": "crackle",
+            "file": "crackle-01.mp3",
+            "visualTime": 15.8,
+            "scheduledAt": 16.8462556249,
+            "delay": 0.9662556249000005,
+            "pan": -0.06304148584604263,
+            "gain": 0.03261822834610939
+          },
+          {
+            "kind": "tail",
+            "file": "tail-01.mp3",
+            "visualTime": 15.8,
+            "scheduledAt": 16.9462556249,
+            "delay": 0.9662556249000005,
+            "pan": -0.06304148584604263,
+            "gain": 0.026687640696763992
+          }
+        ],
+        "volume": 0.55
+      }
+    },
+    "mix": null,
+    "missing": [],
+    "errors": []
+  },
+  {
+    "profile": "mobile",
+    "passed": true,
+    "dense": {
+      "visual": {
+        "bursts": 20,
+        "launched": 27,
+        "textPoints": 0,
+        "active": 874,
+        "smoke": 24,
+        "drawPoints": 3068,
+        "tier": "mobile",
+        "flash": 0.41370168611569635
+      },
+      "quality": "mobile",
+      "audio": {
+        "active": 16,
+        "loaded": 18,
+        "failed": [],
+        "played": [
+          {
+            "kind": "tail",
+            "file": "tail-02.mp3",
+            "visualTime": 9.76,
+            "scheduledAt": 11.102969537044764,
+            "delay": 1.162969537044765,
+            "pan": -0.1416594684123993,
+            "gain": 0.020732332020998
+          },
+          {
+            "kind": "launch",
+            "file": "launch-03.mp3",
+            "visualTime": 10.530666666666667,
+            "scheduledAt": 10.530666666666667,
+            "delay": 0,
+            "pan": -0.03000854328274727,
+            "gain": 0.058391306549310684
+          },
+          {
+            "kind": "far",
+            "file": "far-02.mp3",
+            "visualTime": 10.530666666666667,
+            "scheduledAt": 11.787455492690864,
+            "delay": 1.2567888260241966,
+            "pan": -0.17734825611114502,
+            "gain": 0.07727915048599243
+          },
+          {
+            "kind": "crackle",
+            "file": "crackle-01.mp3",
+            "visualTime": 10.530666666666667,
+            "scheduledAt": 11.867455492690864,
+            "delay": 1.2567888260241966,
+            "pan": -0.17734825611114502,
+            "gain": 0.02266855165362358
+          },
+          {
+            "kind": "launch",
+            "file": "launch-01.mp3",
+            "visualTime": 10.872,
+            "scheduledAt": 10.872,
+            "delay": 0,
+            "pan": -0.01721138134598732,
+            "gain": 0.05478106066584587
+          }
+        ],
+        "volume": 0.55
+      }
+    },
+    "mix": null,
+    "missing": [],
+    "errors": []
+  },
+  {
+    "profile": "proposal-rpg-reward",
+    "passed": true
+  }
+]
