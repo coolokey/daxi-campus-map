@@ -1,0 +1,92 @@
+[
+  {
+    "profile": "desktop",
+    "passed": true,
+    "recordings": {
+      "revision": "cc0-outdoor-20261012",
+      "verifiedHashes": 18,
+      "crowdSources": [
+        "festival-crowd",
+        "outdoor-show-crowd",
+        "stadium-crowd"
+      ]
+    },
+    "dense": {
+      "visual": {
+        "bursts": 27,
+        "launched": 28,
+        "textPoints": 0,
+        "active": 257,
+        "smoke": 16,
+        "drawPoints": 1237,
+        "tier": "mobile",
+        "flash": 0.00000249878576299484
+      },
+      "quality": "mobile",
+      "audio": {
+        "active": 18,
+        "loaded": 18,
+        "failed": [],
+        "played": [
+          {
+            "kind": "tail",
+            "file": "tail-02.mp3",
+            "visualTime": 13.512,
+            "scheduledAt": 14.634439740657413,
+            "delay": 0.9424397406574121,
+            "pan": -0.1968962848186493,
+            "gain": 0.027568427845835686
+          },
+          {
+            "kind": "far",
+            "file": "far-01.mp3",
+            "visualTime": 13.512,
+            "scheduledAt": 14.506328129165155,
+            "delay": 0.9943281291651547,
+            "pan": -0.055751021951436996,
+            "gain": 0.10708189755678177
+          },
+          {
+            "kind": "crackle",
+            "file": "crackle-01.mp3",
+            "visualTime": 13.512,
+            "scheduledAt": 14.586328129165155,
+            "delay": 0.9943281291651547,
+            "pan": -0.055751021951436996,
+            "gain": 0.031410690397024155
+          },
+          {
+            "kind": "tail",
+            "file": "tail-01.mp3",
+            "visualTime": 13.512,
+            "scheduledAt": 14.686328129165155,
+            "delay": 0.9943281291651547,
+            "pan": -0.055751021951436996,
+            "gain": 0.02569965459406376
+          },
+          {
+            "kind": "far",
+            "file": "far-03.mp3",
+            "visualTime": 13.512,
+            "scheduledAt": 14.427481127715346,
+            "delay": 0.9154811277153455,
+            "pan": -0.2683318555355072,
+            "gain": 0.11923202872276306
+          }
+        ],
+        "volume": 0.55
+      }
+    },
+    "mix": {
+      "peak": 0.5791471600532532,
+      "rms": 0.057892920677846044,
+      "played": 18
+    },
+    "missing": [],
+    "errors": []
+  },
+  {
+    "profile": "proposal-rpg-reward",
+    "passed": true
+  }
+]

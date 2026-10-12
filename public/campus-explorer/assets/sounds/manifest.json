@@ -1,5 +1,6 @@
 {
-  "version": 2,
+  "version": 3,
+  "revision": "cc0-outdoor-20261012",
   "verifiedDate": "2026-10-12",
   "sources": {
     "stephan": {
@@ -16,45 +17,116 @@
       "original": "25-CC0-bang-sfx.zip",
       "sha256": "c0c9ecc11e2dc0d190f0cced755569858234b8528286bc83becb6314c663407f"
     },
-    "applause": {
-      "author": "eXpl0it3r",
+    "rudmer-rocket": {
+      "author": "Rudmer_Rotteveel",
       "license": "CC0 1.0",
-      "page": "https://opengameart.org/content/applause-in-a-large-hall-or-church",
-      "original": "applause.wav",
-      "sha256": "0d3bfde5a050f3c5e6685bd7f1efc7ab1d289fbad65c88c1ce9b4691228c69c9"
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "page": "https://freesound.org/people/Rudmer_Rotteveel/sounds/336008/",
+      "downloadURL": "https://cdn.freesound.org/previews/336/336008_4921277-hq.mp3",
+      "original": "rudmer-rocket-hq.mp3",
+      "quality": "Official publicly accessible HQ MP3 preview; not original WAV/FLAC",
+      "verifiedDate": "2026-10-12",
+      "sha256": "662c9cc0565d1256f29145a2ceca6868815df2a193c36cbb1e55858602dc0fa2",
+      "licenseRecord": "rudmer-rocket-license-record.json",
+      "licenseRecordSHA256": "352702d31c10d92a5e5a56e3ea8ac81a100e7342243a7b2c028dcd7ab2a63914"
+    },
+    "kinoton-rocket": {
+      "author": "Kinoton",
+      "license": "CC0 1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "page": "https://freesound.org/people/Kinoton/sounds/347163/",
+      "downloadURL": "https://cdn.freesound.org/previews/347/347163_2247456-hq.mp3",
+      "original": "kinoton-rocket-hq.mp3",
+      "quality": "Official publicly accessible HQ MP3 preview; not original WAV/FLAC",
+      "verifiedDate": "2026-10-12",
+      "sha256": "dbd1161d175cd8d9e1dff3e0353af409245446255cbfca51e662b10ff78f3b81",
+      "licenseRecord": "kinoton-rocket-license-record.json",
+      "licenseRecordSHA256": "c78029f4e56ceef827f6c7b0881a6f2449caae7143d82208d1f5862b653f0e58"
+    },
+    "luka-launch": {
+      "author": "LukaCafuka",
+      "license": "CC0 1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "page": "https://freesound.org/people/LukaCafuka/sounds/750685/",
+      "downloadURL": "https://cdn.freesound.org/previews/750/750685_16236894-hq.mp3",
+      "original": "luka-launch-hq.mp3",
+      "quality": "Official publicly accessible HQ MP3 preview; not original WAV/FLAC",
+      "verifiedDate": "2026-10-12",
+      "sha256": "f935a2aa172fec20c879180847722ae5438c1862e3d985b2bbe68eafc15391d1",
+      "licenseRecord": "luka-launch-license-record.json",
+      "licenseRecordSHA256": "d734e49ae11b744d868bcf8096832a404ac523e7b7d680a3f1ad2f45526c569b"
+    },
+    "festival-crowd": {
+      "author": "kyles",
+      "license": "CC0 1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "page": "https://freesound.org/people/kyles/sounds/629852/",
+      "downloadURL": "https://cdn.freesound.org/previews/629/629852_612689-hq.mp3",
+      "original": "festival-crowd-hq.mp3",
+      "quality": "Official publicly accessible HQ MP3 preview; not original WAV/FLAC",
+      "verifiedDate": "2026-10-12",
+      "sha256": "13dc33e10435b3a3aa097738fe9c42220fce6f25c1e3f95ae545b032316708fe",
+      "licenseRecord": "festival-crowd-license-record.json",
+      "licenseRecordSHA256": "8eafe9f57f08e565afae34ff42f05b57a666dbde02e087023b7335c8a74d1cb7"
+    },
+    "outdoor-show-crowd": {
+      "author": "kyles",
+      "license": "CC0 1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "page": "https://freesound.org/people/kyles/sounds/455659/",
+      "downloadURL": "https://cdn.freesound.org/previews/455/455659_612689-hq.mp3",
+      "original": "outdoor-show-crowd-hq.mp3",
+      "quality": "Official publicly accessible HQ MP3 preview; not original WAV/FLAC",
+      "verifiedDate": "2026-10-12",
+      "sha256": "dd774d1cb4a896ad48305a90cc31e0c75c4182d5c38bba3d8af14ca238105c01",
+      "licenseRecord": "outdoor-show-crowd-license-record.json",
+      "licenseRecordSHA256": "7cb1429b5bc33ce306c8d530c1b2a32bfc9551a166cf46ad7ee5804e7994fcce"
+    },
+    "stadium-crowd": {
+      "author": "cognito perceptu",
+      "license": "CC0 1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "page": "https://freesound.org/people/cognito%20perceptu/sounds/57587/",
+      "downloadURL": "https://cdn.freesound.org/previews/57/57587_57789-hq.mp3",
+      "original": "stadium-crowd-hq.mp3",
+      "quality": "Official publicly accessible HQ MP3 preview; not original WAV/FLAC",
+      "verifiedDate": "2026-10-12",
+      "sha256": "a0ea664b28c787822381c10eddbc77a220ab66e89b312536775c92d9313fbd26",
+      "licenseRecord": "stadium-crowd-license-record.json",
+      "licenseRecordSHA256": "2d7e8a3601c84da8bf750f02ca035ff6cd56fa5e43a701e34c6200e7aa83d54e"
     }
   },
   "layers": {
     "launch": [
       {
         "file": "launch-01.mp3",
-        "source": "stephan",
-        "sourceFile": "stephan-fireworks.ogg",
-        "start": 12.2,
-        "duration": 1.4,
-        "edit": "highpass=f=1100,lowpass=f=6500,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=1.220:d=0.18",
-        "note": "Distinct whistle excerpts from the same live fireworks recording.",
-        "sha256": "50ec572ddf0e3f9b4b31f4949dd22218525a8cba7428c8f175cccf25d5d4befa"
+        "source": "rudmer-rocket",
+        "sourceFile": "rudmer-rocket-hq.mp3",
+        "start": 0.06,
+        "duration": 1.02,
+        "edit": "highpass=f=450,lowpass=f=8000,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=0.840:d=0.18",
+        "note": "Real rocket ascent excerpt from official CC0 HQ MP3 preview; final explosion excluded.",
+        "sha256": "f35d721860a009c68bfbad3c1be60e44f527327927143fb58aff6cd65e23e127"
       },
       {
         "file": "launch-02.mp3",
-        "source": "stephan",
-        "sourceFile": "stephan-fireworks.ogg",
-        "start": 24.4,
-        "duration": 1.4,
-        "edit": "highpass=f=1100,lowpass=f=6500,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=1.220:d=0.18",
-        "note": "Distinct whistle excerpts from the same live fireworks recording.",
-        "sha256": "a8e00b754639b575c9e103792b38e8d259144da235457dba3ae5ab4fa74d7e02"
+        "source": "kinoton-rocket",
+        "sourceFile": "kinoton-rocket-hq.mp3",
+        "start": 0,
+        "duration": 1.25,
+        "edit": "highpass=f=450,lowpass=f=8000,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=1.070:d=0.18",
+        "note": "Real rocket ascent excerpt from official CC0 HQ MP3 preview; final explosion excluded.",
+        "sha256": "cd521596d3340b43e55736e4fea362fab1409c0b02f82d2dd8888c2493bf6881"
       },
       {
         "file": "launch-03.mp3",
-        "source": "stephan",
-        "sourceFile": "stephan-fireworks.ogg",
-        "start": 45.9,
+        "source": "luka-launch",
+        "sourceFile": "luka-launch-hq.mp3",
+        "start": 0,
         "duration": 1.4,
-        "edit": "highpass=f=1100,lowpass=f=6500,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=1.220:d=0.18",
-        "note": "Distinct whistle excerpts from the same live fireworks recording.",
-        "sha256": "93f8241f2c06930b1bfcf11c79adf7393957dc083e752cbfc732707e53172e74"
+        "edit": "highpass=f=450,lowpass=f=8000,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=1.220:d=0.18",
+        "note": "Real rocket ascent excerpt from official CC0 HQ MP3 preview; final explosion excluded.",
+        "sha256": "accf954a6c7916943da9e91dce657c9928c50da148177b081b6fe954045967c9"
       }
     ],
     "near": [
@@ -188,33 +260,33 @@
     "crowd": [
       {
         "file": "crowd-01.mp3",
-        "source": "applause",
-        "sourceFile": "applause.wav",
+        "source": "festival-crowd",
+        "sourceFile": "festival-crowd-hq.mp3",
         "start": 2,
-        "duration": 7.0,
-        "edit": "highpass=f=150,lowpass=f=6000,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=6.820:d=0.18",
-        "note": "Indoor concert applause; not a recording of Daxi students.",
-        "sha256": "e009db3843712ce4efc84e55775195286833421311d4c836a3ce69087cadb31d"
+        "duration": 12.0,
+        "edit": "highpass=f=150,lowpass=f=7000,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=11.820:d=0.18",
+        "note": "Outdoor festival/show/stadium crowd from official CC0 HQ MP3 preview; not Daxi school attendees.",
+        "sha256": "dace767108b6d037bb20338c7dad6a7653b3118836c3c09f3fc1b1459f976a72"
       },
       {
         "file": "crowd-02.mp3",
-        "source": "applause",
-        "sourceFile": "applause.wav",
-        "start": 13,
-        "duration": 7.0,
-        "edit": "highpass=f=150,lowpass=f=6000,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=6.820:d=0.18",
-        "note": "Indoor concert applause; not a recording of Daxi students.",
-        "sha256": "8b1888e628220df6b8c11e9ee6c09b958dce48b0895ef66e326bebdd486a1575"
+        "source": "outdoor-show-crowd",
+        "sourceFile": "outdoor-show-crowd-hq.mp3",
+        "start": 3,
+        "duration": 12.0,
+        "edit": "highpass=f=150,lowpass=f=7000,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=11.820:d=0.18",
+        "note": "Outdoor festival/show/stadium crowd from official CC0 HQ MP3 preview; not Daxi school attendees.",
+        "sha256": "00cb26b39a957839ca2b8260b895e241fbad751c25b8ce8d286b506c26034a35"
       },
       {
         "file": "crowd-03.mp3",
-        "source": "applause",
-        "sourceFile": "applause.wav",
-        "start": 25,
-        "duration": 7.0,
-        "edit": "highpass=f=150,lowpass=f=6000,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=6.820:d=0.18",
-        "note": "Indoor concert applause; not a recording of Daxi students.",
-        "sha256": "857de13d67d9186b4a16868d50d3ae7fe85f5dca0fb723f40449e477da8f6033"
+        "source": "stadium-crowd",
+        "sourceFile": "stadium-crowd-hq.mp3",
+        "start": 0.1,
+        "duration": 5.327528,
+        "edit": "highpass=f=150,lowpass=f=7000,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=5.220:d=0.18",
+        "note": "Outdoor festival/show/stadium crowd from official CC0 HQ MP3 preview; not Daxi school attendees.",
+        "sha256": "529b95f2b060616c20966d0ec2a55748c30f93fcd234464b6bf37d5bcf57befd"
       }
     ]
   }

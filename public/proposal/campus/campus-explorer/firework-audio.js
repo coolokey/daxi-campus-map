@@ -18,12 +18,13 @@
       if(pending)return pending;
       pending=(async()=>{
         try{
-          const response=await fetcher(manifestURL,{signal:abort.signal});if(!response.ok)throw new Error('Manifest HTTP '+response.status);
+          const response=await fetcher(manifestURL,{signal:abort.signal,cache:'no-cache'});if(!response.ok)throw new Error('Manifest HTTP '+response.status);
           const manifest=await response.json();
           await Promise.all(Object.entries(manifest.layers).flatMap(([kind,entries])=>entries.map(async entry=>{
             try{
               const url=new URL(entry.file,manifestURL).href;
-              const response=await fetcher(url,{signal:abort.signal});if(!response.ok)throw new Error('HTTP '+response.status);
+              const versioned=new URL(url);if(entry.sha256)versioned.searchParams.set('v',entry.sha256.slice(0,16));
+              const response=await fetcher(versioned.href,{signal:abort.signal});if(!response.ok)throw new Error('HTTP '+response.status);
               const buffer=await context.decodeAudioData(await response.arrayBuffer());
               if(disposed)return;
               if(!buffers.has(kind))buffers.set(kind,[]);buffers.get(kind).push({buffer,file:entry.file});

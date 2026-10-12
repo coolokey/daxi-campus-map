@@ -4,6 +4,7 @@ const out=path.resolve(process.env.FIREWORK_QA_OUTPUT||path.join(__dirname,'../q
 const base=(process.env.CAMPUS_QA_URL||'http://127.0.0.1:5187/').replace(/\/?$/,'/');
 const allProfiles=[{name:'desktop',width:1440,height:960},{name:'ipad',width:1024,height:768,touch:true},{name:'mobile',width:390,height:844,touch:true}];
 const profiles=process.env.FIREWORK_QA_PROFILE?allProfiles.filter(p=>p.name===process.env.FIREWORK_QA_PROFILE):allProfiles;
+const expectedSounds=JSON.parse(fs.readFileSync(path.join(__dirname,'../public/campus-explorer/assets/sounds/manifest.json'),'utf8'));
 (async()=>{
  const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=swiftshader','--enable-webgl']});const report=[];
  try{
@@ -21,6 +22,20 @@ const profiles=process.env.FIREWORK_QA_PROFILE?allProfiles.filter(p=>p.name===pr
    assert.equal(await frame.evaluate(()=>document.querySelectorAll('canvas').length),await frame.evaluate(()=>document.querySelectorAll('canvas:not(#anniversary-dialog canvas)').length),'no effect canvas');
    await frame.locator('#anniversary-sound').click();await frame.waitForFunction(()=>campusAnniversary.stats().soundEnabled&&campusAnniversary.stats().audio.loaded===18,null,{timeout:30000});
    console.log(profile.name+': 18 recordings decoded and sound enabled');
+   const recordings=await frame.evaluate(async expected=>{
+    const url=new URL('assets/sounds/manifest.json',document.baseURI);
+    const manifest=await (await fetch(url,{cache:'no-cache'})).json();
+    if(manifest.revision!==expected.revision)throw new Error('Outdated recording manifest');
+    const entries=Object.values(expected.layers).flat();
+    await Promise.all(entries.map(async entry=>{
+     const resource=new URL(entry.file,url);resource.searchParams.set('v',entry.sha256.slice(0,16));
+     const response=await fetch(resource);if(!response.ok)throw new Error('Audio HTTP '+response.status);
+     const digest=await crypto.subtle.digest('SHA-256',await response.arrayBuffer());
+     const hash=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
+     if(hash!==entry.sha256)throw new Error('Outdated/corrupt audio '+entry.file);
+    }));
+    return {revision:manifest.revision,verifiedHashes:entries.length,crowdSources:manifest.layers.crowd.map(e=>e.source)};
+   },expectedSounds);
    // Background pauses the real controller and stops queued delayed sources.
    await frame.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});
    const paused=await frame.evaluate(()=>campusAnniversary.stats().elapsed);await page.waitForTimeout(350);
@@ -75,7 +90,7 @@ const profiles=process.env.FIREWORK_QA_PROFILE?allProfiles.filter(p=>p.name===pr
    }
    const meaningfulMissing=missing.filter(s=>!s.includes('favicon.ico'));
    assert.deepEqual(meaningfulMissing,[]);assert.deepEqual(errors,[]);
-   report.push({profile:profile.name,passed:true,dense:{visual:dense.visual,quality:dense.quality,audio:dense.audio},mix,missing,errors});
+   report.push({profile:profile.name,passed:true,recordings,dense:{visual:dense.visual,quality:dense.quality,audio:dense.audio},mix,missing,errors});
    console.log(profile.name+': visual/audio, walking, controls, replay, reduced motion and cleanup passed');await page.close();
   }
   if(!process.env.FIREWORK_QA_PROFILE||process.env.FIREWORK_QA_PROFILE==='desktop'){
