@@ -1,0 +1,221 @@
+{
+  "version": 2,
+  "verifiedDate": "2026-10-12",
+  "sources": {
+    "stephan": {
+      "author": "Stephan",
+      "license": "Public domain (PD-author / PDSounds)",
+      "page": "https://commons.wikimedia.org/wiki/File:Fireworks.ogg",
+      "original": "stephan-fireworks.ogg",
+      "sha256": "57ef5943e3cd0a119b4feb310353f95cdb8708267441cc4140d8102e30be763b"
+    },
+    "rubberduck": {
+      "author": "rubberduck",
+      "license": "CC0 1.0",
+      "page": "https://opengameart.org/node/92774",
+      "original": "25-CC0-bang-sfx.zip",
+      "sha256": "c0c9ecc11e2dc0d190f0cced755569858234b8528286bc83becb6314c663407f"
+    },
+    "applause": {
+      "author": "eXpl0it3r",
+      "license": "CC0 1.0",
+      "page": "https://opengameart.org/content/applause-in-a-large-hall-or-church",
+      "original": "applause.wav",
+      "sha256": "0d3bfde5a050f3c5e6685bd7f1efc7ab1d289fbad65c88c1ce9b4691228c69c9"
+    }
+  },
+  "layers": {
+    "launch": [
+      {
+        "file": "launch-01.mp3",
+        "source": "stephan",
+        "sourceFile": "stephan-fireworks.ogg",
+        "start": 12.2,
+        "duration": 1.4,
+        "edit": "highpass=f=1100,lowpass=f=6500,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=1.220:d=0.18",
+        "note": "Distinct whistle excerpts from the same live fireworks recording.",
+        "sha256": "50ec572ddf0e3f9b4b31f4949dd22218525a8cba7428c8f175cccf25d5d4befa"
+      },
+      {
+        "file": "launch-02.mp3",
+        "source": "stephan",
+        "sourceFile": "stephan-fireworks.ogg",
+        "start": 24.4,
+        "duration": 1.4,
+        "edit": "highpass=f=1100,lowpass=f=6500,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=1.220:d=0.18",
+        "note": "Distinct whistle excerpts from the same live fireworks recording.",
+        "sha256": "a8e00b754639b575c9e103792b38e8d259144da235457dba3ae5ab4fa74d7e02"
+      },
+      {
+        "file": "launch-03.mp3",
+        "source": "stephan",
+        "sourceFile": "stephan-fireworks.ogg",
+        "start": 45.9,
+        "duration": 1.4,
+        "edit": "highpass=f=1100,lowpass=f=6500,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=1.220:d=0.18",
+        "note": "Distinct whistle excerpts from the same live fireworks recording.",
+        "sha256": "93f8241f2c06930b1bfcf11c79adf7393957dc083e752cbfc732707e53172e74"
+      }
+    ],
+    "near": [
+      {
+        "file": "near-01.mp3",
+        "source": "rubberduck",
+        "sourceFile": "bangs/fw_01.ogg",
+        "start": 0,
+        "duration": 1.203197,
+        "edit": "loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=1.023:d=0.18",
+        "note": "Recorded firework, unpitched edit.",
+        "sha256": "6a874ca6d2ac222254999af5c59b5774c91be32daf7acbab08f115c8e21b5b3c"
+      },
+      {
+        "file": "near-02.mp3",
+        "source": "rubberduck",
+        "sourceFile": "bangs/fw_02.ogg",
+        "start": 0,
+        "duration": 1.110658,
+        "edit": "loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=0.931:d=0.18",
+        "note": "Recorded firework, unpitched edit.",
+        "sha256": "5bbb84d664bb551f6cdf8e983ba333b7679d754138ae840247786b5c6fabf4b8"
+      },
+      {
+        "file": "near-03.mp3",
+        "source": "rubberduck",
+        "sourceFile": "bangs/fw_03.ogg",
+        "start": 0,
+        "duration": 1.321451,
+        "edit": "loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=1.141:d=0.18",
+        "note": "Recorded firework, unpitched edit.",
+        "sha256": "4bac785b0c1a41e3a7bd36e58f2fd8591676c127bdae09746bffe60cc1945855"
+      }
+    ],
+    "far": [
+      {
+        "file": "far-01.mp3",
+        "source": "rubberduck",
+        "sourceFile": "bangs/fw_04.ogg",
+        "start": 0,
+        "duration": 2.384059,
+        "edit": "lowpass=f=550,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=2.204:d=0.18",
+        "note": "Low-pass edit of a distinct recorded firework; simulated distance.",
+        "sha256": "d0e661486c938d2c1fb0fc57fac2141208c00e1cc5cc2b16eb59a2a494299b07"
+      },
+      {
+        "file": "far-02.mp3",
+        "source": "rubberduck",
+        "sourceFile": "bangs/fw_05.ogg",
+        "start": 0,
+        "duration": 1.135941,
+        "edit": "lowpass=f=550,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=0.956:d=0.18",
+        "note": "Low-pass edit of a distinct recorded firework; simulated distance.",
+        "sha256": "e9eb28cf19fbcad8e75695f3d14ae4d4b4115e94493bab47545dd38a799305fb"
+      },
+      {
+        "file": "far-03.mp3",
+        "source": "rubberduck",
+        "sourceFile": "bangs/fw_06.ogg",
+        "start": 0,
+        "duration": 1.373469,
+        "edit": "lowpass=f=550,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=1.193:d=0.18",
+        "note": "Low-pass edit of a distinct recorded firework; simulated distance.",
+        "sha256": "800d38ffc6fabcb025134e08b8e1478440a97598921fd85ebef50f2934b86e36"
+      }
+    ],
+    "crackle": [
+      {
+        "file": "crackle-01.mp3",
+        "source": "stephan",
+        "sourceFile": "stephan-fireworks.ogg",
+        "start": 66.5,
+        "duration": 2.5,
+        "edit": "highpass=f=1700,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=2.320:d=0.18",
+        "note": "Distinct cracker excerpts; other live ambience may remain.",
+        "sha256": "a7d82bd4dd8a6571e1091e49b89f20f9dc3d42cf3f4e5ff9265bc8fd25dac512"
+      },
+      {
+        "file": "crackle-02.mp3",
+        "source": "stephan",
+        "sourceFile": "stephan-fireworks.ogg",
+        "start": 78.2,
+        "duration": 2.5,
+        "edit": "highpass=f=1700,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=2.320:d=0.18",
+        "note": "Distinct cracker excerpts; other live ambience may remain.",
+        "sha256": "d40a1d397219033a9d8ea40d01f9f126e243f4a25ff9dc5e54448a67a3cb6252"
+      },
+      {
+        "file": "crackle-03.mp3",
+        "source": "stephan",
+        "sourceFile": "stephan-fireworks.ogg",
+        "start": 86.0,
+        "duration": 2.5,
+        "edit": "highpass=f=1700,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=2.320:d=0.18",
+        "note": "Distinct cracker excerpts; other live ambience may remain.",
+        "sha256": "df5120693c9dea90c94129ac7d0a30d8ee0d305eb130c974493fe84d144964fa"
+      }
+    ],
+    "tail": [
+      {
+        "file": "tail-01.mp3",
+        "source": "rubberduck",
+        "sourceFile": "bangs/fw_01.ogg",
+        "start": 0.4812832,
+        "duration": 0.721927,
+        "edit": "lowpass=f=2400,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=0.542:d=0.18",
+        "note": "Recorded decay excerpt, with extra convolution reverb at runtime.",
+        "sha256": "38adb6e249c601eabc801d5cd0a668009658f799a698e1890cc83d2c6d485840"
+      },
+      {
+        "file": "tail-02.mp3",
+        "source": "rubberduck",
+        "sourceFile": "bangs/fw_02.ogg",
+        "start": 0.4442668000000001,
+        "duration": 0.666395,
+        "edit": "lowpass=f=2400,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=0.486:d=0.18",
+        "note": "Recorded decay excerpt, with extra convolution reverb at runtime.",
+        "sha256": "1df543b14a686e471466360e7ea058bb7ab2cdac32c06959799ad59a6519f9ca"
+      },
+      {
+        "file": "tail-03.mp3",
+        "source": "rubberduck",
+        "sourceFile": "bangs/fw_03.ogg",
+        "start": 0.5285832,
+        "duration": 0.79288,
+        "edit": "lowpass=f=2400,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=0.613:d=0.18",
+        "note": "Recorded decay excerpt, with extra convolution reverb at runtime.",
+        "sha256": "0cb35dfcd04f09e656570016f16543f310c933592b503bc67a6bc9b4d8e35bff"
+      }
+    ],
+    "crowd": [
+      {
+        "file": "crowd-01.mp3",
+        "source": "applause",
+        "sourceFile": "applause.wav",
+        "start": 2,
+        "duration": 7.0,
+        "edit": "highpass=f=150,lowpass=f=6000,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=6.820:d=0.18",
+        "note": "Indoor concert applause; not a recording of Daxi students.",
+        "sha256": "e009db3843712ce4efc84e55775195286833421311d4c836a3ce69087cadb31d"
+      },
+      {
+        "file": "crowd-02.mp3",
+        "source": "applause",
+        "sourceFile": "applause.wav",
+        "start": 13,
+        "duration": 7.0,
+        "edit": "highpass=f=150,lowpass=f=6000,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=6.820:d=0.18",
+        "note": "Indoor concert applause; not a recording of Daxi students.",
+        "sha256": "8b1888e628220df6b8c11e9ee6c09b958dce48b0895ef66e326bebdd486a1575"
+      },
+      {
+        "file": "crowd-03.mp3",
+        "source": "applause",
+        "sourceFile": "applause.wav",
+        "start": 25,
+        "duration": 7.0,
+        "edit": "highpass=f=150,lowpass=f=6000,loudnorm=I=-24:TP=-7:LRA=7,afade=t=in:d=0.012,afade=t=out:st=6.820:d=0.18",
+        "note": "Indoor concert applause; not a recording of Daxi students.",
+        "sha256": "857de13d67d9186b4a16868d50d3ae7fe85f5dca0fb723f40449e477da8f6033"
+      }
+    ]
+  }
+}

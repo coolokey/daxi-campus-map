@@ -3392,6 +3392,7 @@
 
       renderMinimap();
       window.campusFloorExhibit?.update();
+      window.campusAnniversary?.update(performance.now());
       renderer.render(scene, camera);
     }
 
@@ -3407,7 +3408,7 @@
       track:{id:'track',name:'操場及綜合球場',buildingName:'操場',floor:1,cat:'sports',node:'track-center'},
       breezeway:{id:'breezeway',name:'中央通廊',buildingName:'教學區',floor:1,cat:'special',node:'breezeway-mid'}
     });
-    window.campusExplorer = {scene,camera,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,setFloorFilter,setControlMode,manualTakeover,resetManualInput,motionBlocked};
+    window.campusExplorer = {scene,camera,renderer,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,setFloorFilter,setControlMode,manualTakeover,resetManualInput,motionBlocked};
     document.body.dataset.controlMode=currentMode;
     requestAnimationFrame(animate);
     checkUrlQueryTarget();

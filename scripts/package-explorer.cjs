@@ -29,3 +29,16 @@ attachCampusLoading(frame,loading);shell.append(frame,loading);document.getEleme
 new vm.Script(boot);
 entry=entry.replace(moduleTag,'').replace('</body>',`<script>${boot}</script></body>`);fs.writeFileSync(entryFile,entry);
 console.log(`Campus delivery: ${scripts.length} scripts + ${styles.length} styles -> 1 script + 1 stylesheet; HTML starts viewer directly.`);
+const embedded=path.join(dist,'proposal/campus/campus-explorer');
+let embeddedHtml=fs.readFileSync(path.join(embedded,'index.html'),'utf8');
+const embeddedScripts=[...embeddedHtml.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/g)];
+const embeddedStyles=[...embeddedHtml.matchAll(/<link\b[^>]*>/g)].filter(m=>/rel="stylesheet"/.test(m[0]));
+const embeddedJs=embeddedScripts.map(m=>`\n/* ${m[1]} */\n${fs.readFileSync(path.join(embedded,m[1]),'utf8')}\n;`).join('');
+new vm.Script(embeddedJs);
+const embeddedCss=embeddedStyles.map(m=>fs.readFileSync(path.join(embedded,/href="([^"]+)"/.exec(m[0])[1]),'utf8')).join('\n');
+const embeddedJsName=`campus.${hash(embeddedJs)}.js`,embeddedCssName=`campus.${hash(embeddedCss)}.css`;
+fs.writeFileSync(path.join(embedded,embeddedJsName),embeddedJs);fs.writeFileSync(path.join(embedded,embeddedCssName),embeddedCss);
+for(const m of [...embeddedScripts,...embeddedStyles])embeddedHtml=embeddedHtml.replace(m[0],'');
+embeddedHtml=embeddedHtml.replace('</head>',`<link rel="stylesheet" href="${embeddedCssName}"></head>`).replace('</body>',`<script defer src="${embeddedJsName}"></script></body>`);
+fs.writeFileSync(path.join(embedded,'index.html'),embeddedHtml);
+console.log('Embedded proposal campus bundled with the same anniversary engine.');

@@ -4,6 +4,7 @@
     if (event.source !== window.parent || event.origin !== window.location.origin) return;
     const data = event.data;
     const api = window.campusExplorer;
+    if(data?.type==='proposal:quest-complete'&&data.questId==='energy-core')window.campusAnniversary?.unlock(data.questId);
     if (data?.type === 'proposal:visibility' && typeof data.visible === 'boolean') {
       window.proposalHidden = !data.visible;
       if (!data.visible) { api?.resetManualInput(); api?.manualTakeover(); }

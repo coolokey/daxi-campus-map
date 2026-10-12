@@ -1,0 +1,75 @@
+[
+  {
+    "profile": "mobile",
+    "passed": true,
+    "dense": {
+      "visual": {
+        "bursts": 18,
+        "launched": 25,
+        "textPoints": 0,
+        "active": 246,
+        "smoke": 14,
+        "drawPoints": 924,
+        "tier": "low",
+        "flash": 0.01885257746791735
+      },
+      "quality": "low",
+      "audio": {
+        "active": 16,
+        "loaded": 18,
+        "failed": [],
+        "played": [
+          {
+            "kind": "crackle",
+            "file": "crackle-01.mp3",
+            "visualTime": 13.621333333333334,
+            "scheduledAt": 14.954376590675388,
+            "delay": 1.2530432573420534,
+            "pan": 0.10470613837242126,
+            "gain": 0.022767234593629837
+          },
+          {
+            "kind": "tail",
+            "file": "tail-01.mp3",
+            "visualTime": 13.621333333333334,
+            "scheduledAt": 15.054376590675387,
+            "delay": 1.2530432573420534,
+            "pan": 0.10470613837242126,
+            "gain": 0.01862773671746254
+          },
+          {
+            "kind": "launch",
+            "file": "launch-01.mp3",
+            "visualTime": 14.154666666666667,
+            "scheduledAt": 14.154666666666667,
+            "delay": 0,
+            "pan": 0.06653294712305069,
+            "gain": 0.05712701007723808
+          },
+          {
+            "kind": "launch",
+            "file": "launch-03.mp3",
+            "visualTime": 14.157333333333334,
+            "scheduledAt": 14.157333333333334,
+            "delay": 0,
+            "pan": 0.018039654940366745,
+            "gain": 0.062171388417482376
+          },
+          {
+            "kind": "launch",
+            "file": "launch-01.mp3",
+            "visualTime": 14.512,
+            "scheduledAt": 14.512,
+            "delay": 0,
+            "pan": -0.05003698915243149,
+            "gain": 0.0598345510661602
+          }
+        ],
+        "volume": 0.55
+      }
+    },
+    "mix": null,
+    "missing": [],
+    "errors": []
+  }
+]

@@ -1,0 +1,83 @@
+[
+  {
+    "profile": "desktop",
+    "passed": true,
+    "dense": {
+      "visual": {
+        "bursts": 36,
+        "launched": 42,
+        "textPoints": 0,
+        "active": 713,
+        "smoke": 19,
+        "drawPoints": 3143,
+        "tier": "mobile",
+        "flash": 0.07382147218060249
+      },
+      "quality": "mobile",
+      "audio": {
+        "active": 13,
+        "loaded": 18,
+        "failed": [],
+        "played": [
+          {
+            "kind": "launch",
+            "file": "launch-03.mp3",
+            "visualTime": 7.352,
+            "scheduledAt": 7.352,
+            "delay": 0,
+            "pan": -0.06895484030246735,
+            "gain": 0.07627030462026596
+          },
+          {
+            "kind": "launch",
+            "file": "launch-02.mp3",
+            "visualTime": 7.352,
+            "scheduledAt": 7.352,
+            "delay": 0,
+            "pan": -0.009173012338578701,
+            "gain": 0.07730269432067871
+          },
+          {
+            "kind": "far",
+            "file": "far-03.mp3",
+            "visualTime": 7.352,
+            "scheduledAt": 8.341494516601848,
+            "delay": 0.9894945166018485,
+            "pan": -0.006885882001370192,
+            "gain": 0.10777515918016434
+          },
+          {
+            "kind": "launch",
+            "file": "launch-03.mp3",
+            "visualTime": 8.021333333333333,
+            "scheduledAt": 8.021333333333333,
+            "delay": 0,
+            "pan": -0.19992010295391083,
+            "gain": 0.08458439260721207
+          },
+          {
+            "kind": "launch",
+            "file": "launch-02.mp3",
+            "visualTime": 8.021333333333333,
+            "scheduledAt": 8.021333333333333,
+            "delay": 0,
+            "pan": -0.03801612928509712,
+            "gain": 0.07617201656103134
+          }
+        ],
+        "volume": 0.55
+      }
+    },
+    "mix": {
+      "peak": 0.5913055539131165,
+      "rms": 0.06143185908896429,
+      "played": 18
+    },
+    "missing": [],
+    "errors": []
+  },
+  {
+    "profile": "proposal-rpg-reward",
+    "passed": true
+  }
+]

@@ -1,0 +1,75 @@
+[
+  {
+    "profile": "ipad",
+    "passed": true,
+    "dense": {
+      "visual": {
+        "bursts": 25,
+        "launched": 34,
+        "textPoints": 0,
+        "active": 614,
+        "smoke": 23,
+        "drawPoints": 2819,
+        "tier": "mobile",
+        "flash": 0.13126799511294868
+      },
+      "quality": "mobile",
+      "audio": {
+        "active": 17,
+        "loaded": 18,
+        "failed": [],
+        "played": [
+          {
+            "kind": "far",
+            "file": "far-02.mp3",
+            "visualTime": 13.970666666666666,
+            "scheduledAt": 14.952153164732541,
+            "delay": 0.9814864980658757,
+            "pan": -0.06750635802745819,
+            "gain": 0.10893777757883072
+          },
+          {
+            "kind": "launch",
+            "file": "launch-03.mp3",
+            "visualTime": 14.501333333333333,
+            "scheduledAt": 14.501333333333333,
+            "delay": 0,
+            "pan": -0.17704032361507416,
+            "gain": 0.07924424111843109
+          },
+          {
+            "kind": "launch",
+            "file": "launch-01.mp3",
+            "visualTime": 14.501333333333333,
+            "scheduledAt": 14.501333333333333,
+            "delay": 0,
+            "pan": -0.03635797277092934,
+            "gain": 0.08337275683879852
+          },
+          {
+            "kind": "launch",
+            "file": "launch-03.mp3",
+            "visualTime": 14.501333333333333,
+            "scheduledAt": 14.501333333333333,
+            "delay": 0,
+            "pan": -0.19728446006774902,
+            "gain": 0.0875905379652977
+          },
+          {
+            "kind": "far",
+            "file": "far-03.mp3",
+            "visualTime": 14.501333333333333,
+            "scheduledAt": 15.42603784172228,
+            "delay": 0.9247045083889472,
+            "pan": -0.14091460406780243,
+            "gain": 0.11771325021982193
+          }
+        ],
+        "volume": 0.55
+      }
+    },
+    "mix": null,
+    "missing": [],
+    "errors": []
+  }
+]

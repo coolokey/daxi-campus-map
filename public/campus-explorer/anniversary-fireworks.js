@@ -1,166 +1,132 @@
-/* Anniversary experience: local Canvas fireworks and opt-in synthesized audio. */
+/* Non-modal anniversary controller. Campus input and rendering remain in explorer.js. */
 (() => {
-  const api = window.campusExplorer, model = window.CampusAnniversary;
-  if (!api || !model) return;
-  const cake = '<svg viewBox="0 0 40 44" fill="none" aria-hidden="true"><path d="M8 23h24v16H8z" fill="#e8c587"/><path d="M5 22q4-8 8 0 4-8 8 0 4-8 8 0 4-8 6 0v5H5z" fill="#fff6df" stroke="#956c36"/><path d="M20 11v9M12 14v6M28 14v6" stroke="#956c36" stroke-width="2"/><path d="M20 3q-7 8 0 8 7 0 0-8M12 7q-5 6 0 6 5 0 0-6M28 7q-5 6 0 6 5 0 0-6" fill="#c28b33"/><path d="M5 40h30" stroke="#956c36" stroke-width="2"/></svg>';
-  const launcher = document.createElement('button');
-  launcher.id = 'anniversary-launch'; launcher.type = 'button'; launcher.title = '校園裡藏著一份生日禮物';
-  launcher.setAttribute('aria-label', '開啟大溪八十週年生日煙火'); launcher.innerHTML = cake + '<span>生日驚喜</span>';
-  const dialog = document.createElement('dialog'); dialog.id = 'anniversary-dialog'; dialog.setAttribute('aria-labelledby', 'anniversary-title');
-  dialog.innerHTML = `<canvas aria-hidden="true"></canvas>
-    <header class="anniversary-top"><div class="anniversary-edition">DAXI · A NIGHT TO REMEMBER<strong><span>八十載光陰，</span><span>今夜一起點亮</span></strong></div><div class="anniversary-actions"><button id="anniversary-sound" type="button" aria-pressed="false">開啟音效</button><button id="anniversary-close" type="button">返回校園 ×</button></div></header>
-    <section class="anniversary-message"><p class="anniversary-kicker">獻給每一位大溪人</p><div class="anniversary-number" aria-hidden="true">80</div><div class="anniversary-blessing"><h1 id="anniversary-title">大溪國中八十週年生日快樂</h1><p>下一段故事，由你續寫。</p></div></section>
-    <footer class="anniversary-bottom"><p id="anniversary-status" role="status" aria-live="polite"></p><div class="anniversary-track" aria-hidden="true"><i></i></div><nav aria-label="煙火操作"><button id="anniversary-fire" type="button" hidden>送上一朵祝福煙火</button><button id="anniversary-replay" type="button">重新欣賞</button></nav><p class="anniversary-hint">音效預設關閉 · 按 Esc 返回校園</p></footer>`;
-  document.body.append(launcher, dialog);
-  const cover = document.getElementById('guide-landing');
-  const coverEntry = document.createElement('button'); coverEntry.type='button'; coverEntry.className='anniversary-cover-entry'; coverEntry.textContent='找到了嗎？校園裡的生日驚喜 ↗';
-  cover?.querySelector('footer')?.append(coverEntry);
-  const $ = id => dialog.querySelector('#anniversary-' + id);
-  const cvs = dialog.querySelector('canvas'), ctx = cvs.getContext('2d');
-  if (!ctx) {launcher.remove();coverEntry.remove();dialog.remove();return;}
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const colors = ['#f6d58a','#86d6f2','#edb2bd','#d0e9ba'];
-  let width=0,height=0,raf=0,last=0,elapsed=0,nextLaunch=1800,phase='',rockets=[],particles=[],digitPoints=[],staticBlessings=[],saved=null,previousFocus=null,coverWasOpen=false,lastUserLaunch=-Infinity;
-  let audio=null,master=null,fireworkAudio=null,soundEnabled=false,soundWanted=false,soundGeneration=0,voices=0,finalePlayed=false;
-  const nodes = new Set();
-  function audioAvailable(){return soundEnabled && audio?.state==='running' && !document.hidden && dialog.open;}
-  function sound(kind, horizontal=.5) {
-    if (!audioAvailable()) return;
-    if (kind !== 'chime') {fireworkAudio?.play(kind, horizontal);return;}
-    if (voices>=8) return;
-    const t=audio.currentTime; voices++;
-    const gain=audio.createGain(); gain.connect(master);
-    let source, filter;
-    if(kind==='chime'){
-      source=audio.createOscillator();source.type='sine';source.frequency.setValueAtTime(523.25,t);
-      for(const frequency of [659.25,783.99]){
-        const overtone=audio.createOscillator();overtone.type='sine';overtone.frequency.value=frequency;overtone.connect(gain);nodes.add(overtone);
-        overtone.onended=()=>{nodes.delete(overtone);overtone.disconnect();};overtone.start(t);overtone.stop(t+1.55);
-      }
-      gain.gain.setValueAtTime(.001,t);gain.gain.linearRampToValueAtTime(.075,t+.03);gain.gain.exponentialRampToValueAtTime(.001,t+1.5);
-    }
-    if(kind==='chime')source.connect(gain);
-    nodes.add(source);source.onended=()=>{voices=Math.max(0,voices-1);nodes.delete(source);source.disconnect();filter?.disconnect();gain.disconnect();};
-    source.start(t);source.stop(t+(kind==='chime'?1.55:1));
-  }
-  function quiet(){soundGeneration++;soundEnabled=false;fireworkAudio?.stop();for(const node of nodes){try{node.stop();}catch{ /* Already ended. */ }}if(audio)audio.suspend().catch(()=>{});}
-  function updateSound(){ $('sound').textContent=soundWanted?'關閉音效':'開啟音效';$('sound').setAttribute('aria-pressed',String(soundWanted)); }
-  async function resumeSound(chime=false){
+  const api=window.campusExplorer,model=window.CampusAnniversary;
+  if(!api||!window.CampusFireworkScene)return;
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  const launcher=document.createElement('button');launcher.id='anniversary-launch';launcher.type='button';launcher.innerHTML='<span aria-hidden="true">80</span><b>週年煙火秀</b>';launcher.setAttribute('aria-label','開始大溪國中 80 週年煙火秀');
+  const panel=document.createElement('section');panel.id='anniversary-dialog';panel.hidden=true;panel.setAttribute('aria-label','八十週年煙火秀控制');
+  panel.innerHTML=`<div class="anniversary-heading"><span>大溪國中 <b>80</b> 週年</span><button id="anniversary-close" type="button">停止表演 ×</button></div>
+    <p id="anniversary-status" role="status" aria-live="polite"></p>
+    <div class="anniversary-track" aria-hidden="true"><i></i></div>
+    <div class="anniversary-controls"><button id="anniversary-replay" type="button">再次觀看</button><button id="anniversary-sound" type="button" aria-pressed="false">開啟音效</button><button id="anniversary-quality" type="button" aria-pressed="false">降低特效</button><button id="anniversary-view" type="button">觀賞視角</button></div>
+    <label class="anniversary-volume" for="anniversary-volume">音量<input id="anniversary-volume" type="range" min="0" max="100" value="55"><output id="anniversary-volume-value">55%</output></label>
+    <p id="anniversary-audio-status">音效尚未開啟；開啟後播放真實錄音。</p><p class="anniversary-help">可繼續走動、轉頭與操作校園；Esc 停止。</p>`;
+  const banner=document.createElement('div');banner.id='anniversary-banner';banner.setAttribute('aria-live','polite');banner.hidden=true;
+  const cover=document.getElementById('guide-landing'),coverEntry=document.createElement('button');coverEntry.type='button';coverEntry.className='anniversary-cover-entry';coverEntry.textContent='80 週年煙火秀 ↗';
+  cover?.querySelector('footer')?.append(coverEntry);document.body.append(launcher,panel,banner);
+  const $=id=>panel.querySelector('#anniversary-'+id);
+  let running=false,fx=null,saved=null,elapsed=0,last=0,cueIndex=0,cues=[],phase='',cameraSaved=null,interacted=false,previousFocus=null;
+  let audio=null,audioEngine=null,soundWanted=false,soundEnabled=false,soundGeneration=0,low=false,quality=null,slowSum=0,slowFrames=0,lastDowngrade=0;
+  let config={requireQuest:false,questId:'energy-core'},unlocked=false,crowdStarted=false;
+  const environment={width:innerWidth,cores:navigator.hardwareConcurrency||4,memory:navigator.deviceMemory||4};
+  function qualityValue(){return model.qualityFor({...environment,width:innerWidth,reduced:reduced.matches,low});}
+  function soundUI(){ $('sound').textContent=soundWanted?'靜音':'開啟音效';$('sound').setAttribute('aria-pressed',String(soundWanted)); }
+  function quiet(){soundGeneration++;soundEnabled=false;audioEngine?.stop();audio?.suspend().catch(()=>{});crowdStarted=false;}
+  async function resumeSound(){
     const generation=++soundGeneration;
     try{
-      const Audio=window.AudioContext||window.webkitAudioContext;
-      if(!Audio)throw new Error('Audio unavailable');
-      if(!audio){audio=new Audio();master=audio.createGain();master.gain.value=.72;master.connect(audio.destination);fireworkAudio=window.CampusFireworkAudio.create(audio,master);}
-      await audio.resume();
-      if(generation!==soundGeneration){if(!soundWanted||!dialog.open||document.hidden)audio.suspend().catch(()=>{});return;}
-      soundEnabled=soundWanted&&dialog.open&&!document.hidden;
-      if(soundEnabled&&chime)sound('chime');else if(!soundEnabled)quiet();
-    }catch{if(generation!==soundGeneration)return;soundWanted=false;quiet();updateSound();$('status').textContent='此瀏覽器暫時無法播放音效，仍可欣賞煙火。';}
+      const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)throw new Error('瀏覽器不支援 Web Audio');
+      if(!audio){audio=new Audio();audioEngine=window.CampusFireworkAudio.create(audio,audio.destination,{manifestURL:new URL('assets/sounds/manifest.json',document.baseURI).href});}
+      // resume is called before awaiting a fetch, while the user activation is alive (iOS).
+      const resume=audio.resume().then(()=>{if(generation!==soundGeneration&&(!soundWanted||!running||document.hidden||window.proposalHidden))return audio.suspend();});$('audio-status').textContent='正在載入真實錄音……';
+      const [result]=await Promise.all([audioEngine.load(),resume]);
+      if(generation!==soundGeneration){if(!soundWanted||!running||document.hidden||window.proposalHidden)audio.suspend().catch(()=>{});return;}
+      soundEnabled=soundWanted&&running&&!document.hidden&&!window.proposalHidden;
+      audioEngine.setVolume(Number($('volume').value)/100);
+      $('audio-status').textContent=result.failed.length?`已載入 ${result.loaded}/18；缺少 ${result.failed.length} 個資源，未載入部分保持無聲。`:`已載入 ${result.loaded}/18 個真實錄音樣本。`;
+      if(!soundEnabled)quiet();
+    }catch(error){if(generation!==soundGeneration)return;soundWanted=false;quiet();soundUI();$('audio-status').textContent='音效無法啟用：'+error.message+'。仍可欣賞煙火。';}
   }
-  $('sound').onclick=()=>{
-    soundWanted=!soundWanted;updateSound();
-    if(soundWanted)void resumeSound(true);else quiet();
-  };
-  function resize(){
-    width=innerWidth;height=innerHeight;const ratio=Math.min(devicePixelRatio||1,1.5);
-    cvs.width=Math.round(width*ratio);cvs.height=Math.round(height*ratio);ctx.setTransform(ratio,0,0,ratio,0,0);
-    const box=dialog.querySelector('.anniversary-number').getBoundingClientRect();
-    const stencil=document.createElement('canvas');stencil.width=Math.ceil(box.width);stencil.height=Math.ceil(box.height);
-    const pen=stencil.getContext('2d');if(!pen)return;
-    const typography=getComputedStyle(dialog.querySelector('.anniversary-number'));
-    pen.font=typography.font;pen.letterSpacing=typography.letterSpacing;pen.textAlign='center';pen.textBaseline='middle';pen.fillText('80',box.width/2,box.height*.48);
-    const pixels=pen.getImageData(0,0,stencil.width,stencil.height).data;digitPoints=[];
-    const step=width<600?5:6;
-    for(let y=0;y<stencil.height;y+=step)for(let x=0;x<stencil.width;x+=step)if(pixels[(y*stencil.width+x)*4+3]>110)digitPoints.push({x:box.left+x,y:box.top+y});
-  }
-  function launch(x,y,shape='round',color=colors[Math.floor(Math.random()*colors.length)]){
-    if(rockets.length>=7)return;
-    rockets.push({x0:width*(.25+Math.random()*.5),x,y:Math.max(90,Math.min(height*.65,y)),age:0,color,shape});sound('launch',x/width);
-  }
-  function burst(r){
-    sound('burst',r.x/width);
-    const scale=Math.min(width,height)*(.12+Math.random()*.055);
-    for(const p of model.shapePoints(r.shape,width<600?70:110)){
-      if(particles.length>=1100)break;
-      const speed=scale*(.8+Math.random()*.2);
-      particles.push({x:r.x,y:r.y,vx:p.x*speed,vy:p.y*speed,age:0,life:1.7+Math.random()*.65,color:r.color,trail:[]});
-    }
-  }
-  function setPhase(value){
-    if(phase===value)return;phase=value;dialog.dataset.phase=value;
-    $('status').textContent=value==='night'?'校園入夜，一份生日驚喜即將升空。':value==='show'?'讓每一道光，成為送給大溪的祝福。':value==='finale'?'大溪八十，生日快樂。':reduced.matches?'靜態紀念模式：送上一道祝福星光。':'點一下天空，親手送上一朵祝福煙火。';
-    $('fire').hidden=value!=='free';
-    if(value==='finale'&&!finalePlayed){sound('chime');finalePlayed=true;}
-  }
+  function play(kind,position,extra={}){if(!soundEnabled)return null;return audioEngine?.play(kind,{position,camera:api.camera,...extra});}
   function night(amount){
     if(!saved)return;
-    api.scene.background?.copy(saved.background).lerp(new THREE.Color(0x071329),amount);
-    if(api.scene.fog&&saved.fog)api.scene.fog.color.copy(saved.fog).lerp(new THREE.Color(0x071329),amount);
-    for(const [light,intensity] of saved.lights)light.intensity=intensity*(1-amount*.62);
+    api.scene.background.copy(saved.background).lerp(new THREE.Color(0x040a1b),amount);
+    if(api.scene.fog&&saved.fog)api.scene.fog.color.copy(saved.fog).lerp(new THREE.Color(0x08142b),amount);
+    for(const [light,intensity] of saved.lights)light.intensity=intensity*(1-.83*amount);
+    if(api.renderer)api.renderer.toneMappingExposure=saved.exposure*(1-.35*amount);
   }
-  function paint(dt){
-    ctx.clearRect(0,0,width,height);ctx.globalCompositeOperation='lighter';
-    for(let i=0;i<55;i++){const x=((i*173+47)%997)/997*width,y=((i*83+11)%389)/389*height*.65;ctx.globalAlpha=.18+Math.sin(elapsed/1800+i)*.1;ctx.fillStyle='#e6d7b9';ctx.fillRect(x,y,1.2,1.2);}
-    ctx.globalAlpha=1;
-    for(const r of rockets){r.age+=dt;const t=Math.min(1,r.age/.85),e=1-Math.pow(1-t,2);const x=r.x0+(r.x-r.x0)*e,y=height*.91+(r.y-height*.91)*e;
-      ctx.strokeStyle=r.color;ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(x,y+Math.max(9,55*(1-t)));ctx.lineTo(x,y);ctx.stroke();ctx.fillStyle='#fff6cf';ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fill();
-      if(t===1)burst(r);
+  function cinematicView(){
+    if(!running)return;
+    if(!cameraSaved)cameraSaved={mode:currentMode,position:api.camera.position.clone(),target:api.controls.target.clone()};
+    api.setControlMode('bird');cancelCameraTween();
+    const damping=api.controls.enableDamping;api.controls.enableDamping=false;api.controls.update();api.controls.enableDamping=damping;
+    const mobile=innerWidth<600;
+    api.camera.position.set(mobile?-25:-125,mobile?49:59,mobile?355:245);api.controls.target.set(0,mobile?78:69,-35);api.camera.lookAt(api.controls.target);interacted=false;
+    fx?.alignText?.();
+  }
+  function start(){
+    if(config.requireQuest&&!unlocked){panel.hidden=false;$('status').textContent='完成能源核心修復任務後，即可解鎖煙火秀。';return false;}
+    if(running){const wanted=soundWanted;stop(false);soundWanted=wanted;}
+    previousFocus=document.activeElement;const fromCover=!!cover?.open;if(fromCover)cover.close();
+    saved={background:api.scene.background.clone(),fog:api.scene.fog?.color.clone(),lights:[],exposure:api.renderer?.toneMappingExposure};api.scene.traverse(o=>{if(o.isLight)saved.lights.push([o,o.intensity]);});
+    running=true;elapsed=0;last=0;cueIndex=0;cues=model.createCues();phase='';slowSum=0;slowFrames=0;lastDowngrade=0;cameraSaved=null;interacted=false;crowdStarted=false;
+    quality=qualityValue();
+    fx=window.CampusFireworkScene.create(api,quality,{
+      launch:position=>play('launch',position),
+      move:(handle,position)=>{if(soundEnabled)audioEngine?.updateSource(handle,position,api.camera);},
+      burst:(position)=>{
+        const distance=positionDistance(position);play(distance>300?'far':'near',position);play('crackle',position,{delay:.08});play('tail',position,{delay:.18});
+      }
+    });
+    panel.hidden=false;panel.classList.remove('is-finished');banner.hidden=false;document.body.classList.add('anniversary-playing');
+    if(fromCover){cinematicView();if(!document.body.classList.contains('guide-collapsed'))document.getElementById('guide-toggle')?.click();}
+    quiet();if(soundWanted)void resumeSound();soundUI();updatePhase('countdown');return true;
+  }
+  function positionDistance(position){return Math.hypot(position.x-api.camera.position.x,position.y-api.camera.position.y,position.z-api.camera.position.z);}
+  function stop(finished=false){
+    running=false;quiet();fx?.dispose();fx=null;night(0);saved=null;last=0;
+    if(!finished)soundWanted=false;soundUI();
+    document.body.classList.remove('anniversary-playing');banner.hidden=true;
+    if(cameraSaved&&!interacted&&currentMode==='bird'){
+      api.setControlMode(cameraSaved.mode);cancelCameraTween();api.camera.position.copy(cameraSaved.position);api.controls.target.copy(cameraSaved.target);api.camera.lookAt(cameraSaved.target);
     }
-    rockets=rockets.filter(r=>r.age<.85);
-    for(const p of particles){p.age+=dt;p.trail.push({x:p.x,y:p.y});if(p.trail.length>4)p.trail.shift();p.vx*=Math.exp(-dt*.8);p.vy+=dt*24;p.x+=p.vx*dt;p.y+=p.vy*dt;
-      ctx.globalAlpha=Math.max(0,1-p.age/p.life);ctx.strokeStyle=p.color;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(p.trail[0].x,p.trail[0].y);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,1.8,1.8);
+    cameraSaved=null;
+    panel.hidden=!finished;panel.classList.toggle('is-finished',finished);panel.dataset.phase=finished?'finished':'stopped';
+    if(finished){$('status').textContent='煙火秀已結束，謝謝你一起點亮大溪的八十週年。';$('replay').textContent='再次觀看';}
+    else if(panel.contains(document.activeElement))launcher.focus({preventScroll:true});
+    return true;
+  }
+  function updatePhase(value){
+    if(phase===value)return;phase=value;panel.dataset.phase=value;
+    const copy={countdown:'準備好了嗎？生日煙火即將開始。',night:'夜幕降臨，讓校園一起發光。',sparse:'序曲・第一道祝福升空',dense:'盛放・金色菊花、彩球、垂柳與扇形連發',eighty:'八十載光陰，匯聚成今夜的光。',blessing:'大溪國中 80 週年校慶快樂！',fade:'將這一夜的光，留在每位大溪人的心裡。'};
+    $('status').textContent=copy[value]||'';
+    banner.className=value==='blessing'||value==='fade'?'anniversary-blessing':'';
+    if(value==='blessing'||value==='fade')banner.innerHTML='<small>獻給每一位大溪人</small><strong>大溪國中 80 週年校慶快樂！</strong>';
+    else if(value!=='countdown')banner.textContent='';
+  }
+  function update(now){
+    if(!running)return;
+    if(document.hidden||window.proposalHidden){last=0;return;}
+    const step=model.frameStep(now,last);last=now;elapsed+=step.elapsedMs;
+    const next=model.phaseAt(elapsed);if(next==='finished'){stop(true);return;}updatePhase(next);
+    if(next==='countdown')banner.textContent=String(Math.max(1,3-Math.floor(elapsed/1000)));
+    const darkness=elapsed<3000?0:elapsed<5000?(elapsed-3000)/2000:elapsed<28000?1:(30000-elapsed)/2000;night(darkness);
+    while(cueIndex<cues.length&&cues[cueIndex].at<=elapsed){const cue=cues[cueIndex++];if(!reduced.matches&&elapsed-cue.at<900&&elapsed<22000)fx.launch(cue);}
+    if(soundEnabled&&!crowdStarted&&elapsed>=5000&&elapsed<28000){play('crowd',api.camera.position,{loop:true});crowdStarted=true;}
+    if(soundEnabled&&next==='fade')audioEngine.setVolume(Number($('volume').value)/100*Math.max(0,(30000-elapsed)/2000));
+    fx.update(step.elapsedMs/1000,reduced.matches&&elapsed>=5000?Math.max(24500,elapsed):elapsed,reduced.matches);
+    panel.querySelector('.anniversary-track i').style.width=Math.min(100,elapsed/300)+'%';
+    if(step.elapsedMs>0){slowSum+=step.elapsedMs;slowFrames++;}
+    if(slowFrames>=40&&elapsed-lastDowngrade>3500){
+      if(slowSum/slowFrames>42&&quality.tier!=='low'){
+        const tier=quality.tier==='high'?'medium':quality.tier==='medium'?'mobile':'low';
+        quality=model.qualityFor({width:tier==='mobile'?390:900,cores:8,memory:4,low:tier==='low'});fx.setQuality(quality);$('quality').textContent='已自動降低特效';
+      }
+      slowSum=0;slowFrames=0;lastDowngrade=elapsed;
     }
-    particles=particles.filter(p=>p.age<p.life);
-    if(phase==='finale'||phase==='free'){
-      const opacity=reduced.matches?1:Math.min(1,(elapsed-14000)/1700);
-      digitPoints.forEach((p,i)=>{ctx.globalAlpha=Math.max(0,opacity)*(.65+.35*Math.sin(i*1.7+elapsed/1200)**2);ctx.fillStyle=i%7?'#ffdda0':'#fff8dc';ctx.beginPath();ctx.arc(p.x,p.y,i%7?1.2:2,0,Math.PI*2);ctx.fill();});
-    }
-    ctx.globalAlpha=1;ctx.strokeStyle='#ffdda0';ctx.lineWidth=1.5;
-    for(const p of staticBlessings){ctx.beginPath();ctx.moveTo(p.x-9,p.y);ctx.lineTo(p.x+9,p.y);ctx.moveTo(p.x,p.y-9);ctx.lineTo(p.x,p.y+9);ctx.stroke();}
-    ctx.globalCompositeOperation='source-over';
   }
-  function frame(now){
-    if(!dialog.open||document.hidden)return;
-    const step=model.frameStep(now,last),dt=step.simulationSeconds;last=now;
-    elapsed+=step.elapsedMs;setPhase(reduced.matches?'free':model.phaseAt(elapsed));night(reduced.matches?1:Math.min(1,elapsed/1800));
-    if(!reduced.matches&&phase!=='free'&&elapsed>=nextLaunch){
-      const i=Math.round(nextLaunch/850);launch(width*(.16+Math.random()*.68),height*(.16+Math.random()*.28),['round','star','heart'][i%3]);nextLaunch=elapsed+(phase==='finale'?600:850);
-    }
-    dialog.querySelector('.anniversary-track i').style.width=Math.min(100,elapsed/200)+'%';
-    paint(dt);if(!reduced.matches)raf=requestAnimationFrame(frame);
-  }
-  function replay(){cancelAnimationFrame(raf);rockets=[];particles=[];staticBlessings=[];elapsed=reduced.matches?20000:0;nextLaunch=1800;last=0;phase='';finalePlayed=false;quiet();if(soundWanted)void resumeSound();setPhase(reduced.matches?'free':'night');raf=requestAnimationFrame(frame);}
-  function open(){
-    if(dialog.open)return;
-    previousFocus=document.activeElement;coverWasOpen=!!cover?.open;if(coverWasOpen)cover.close();
-    api.manualTakeover();api.resetManualInput();document.exitPointerLock?.();
-    saved={mode:currentMode,position:api.camera.position.clone(),target:api.controls.target.clone(),background:api.scene.background.clone(),fog:api.scene.fog?.color.clone(),lights:[],enabled:api.controls.enabled,damping:api.controls.enableDamping,autoRotate:api.controls.autoRotate};
-    api.scene.traverse(object=>{if(object.isLight)saved.lights.push([object,object.intensity]);});
-    api.setControlMode('bird');cancelCameraTween();api.controls.enabled=false;api.controls.autoRotate=false;
-    // OrbitControls.update runs in the campus loop even when input is disabled.
-    // Flush its residual deltas before setting the celebration camera.
-    api.controls.enableDamping=false;api.controls.update();
-    api.camera.position.set(-155,80,230);api.controls.target.set(-12,49,0);api.camera.lookAt(api.controls.target);
-    document.body.classList.add('anniversary-open');dialog.showModal();soundWanted=false;updateSound();resize();replay();$('sound').focus();
-  }
-  function close(){dialog.close();}
-  dialog.addEventListener('close',()=>{
-    cancelAnimationFrame(raf);soundWanted=false;quiet();updateSound();rockets=[];particles=[];
-    document.body.classList.remove('anniversary-open');
-    if(saved){night(0);api.setControlMode(saved.mode);cancelCameraTween();api.camera.position.copy(saved.position);api.controls.target.copy(saved.target);api.camera.lookAt(saved.target);api.controls.enabled=saved.enabled;api.controls.enableDamping=saved.damping;api.controls.autoRotate=saved.autoRotate;saved=null;}
-    if(coverWasOpen)cover.showModal();previousFocus?.focus();
-  });
-  function freeFire(event){
-    if(phase!=='free'||performance.now()-lastUserLaunch<250)return;lastUserLaunch=performance.now();
-    const x=event?.clientX??width*(.25+Math.random()*.5),y=event?.clientY??height*.3;
-    if(reduced.matches){staticBlessings.push({x,y});if(staticBlessings.length>12)staticBlessings.shift();paint(0);$('status').textContent='收到你的祝福，大溪八十，生日快樂！';sound('chime');return;}
-    launch(x,y,['round','heart','star'][Math.floor(Math.random()*3)]);
-  }
-  cvs.addEventListener('pointerdown',freeFire);$('fire').onclick=()=>freeFire();$('close').onclick=close;$('replay').onclick=replay;launcher.onclick=open;coverEntry.onclick=open;
-  window.addEventListener('resize',()=>{if(dialog.open){resize();if(reduced.matches)paint(0);}});
-  reduced.addEventListener('change',()=>{if(dialog.open)replay();});
-  document.addEventListener('visibilitychange',()=>{
-    if(!dialog.open)return;
-    if(document.hidden){cancelAnimationFrame(raf);quiet();}else{last=0;if(soundWanted)void resumeSound();raf=requestAnimationFrame(frame);}
-  });
+  $('replay').onclick=start;$('close').onclick=()=>stop();launcher.onclick=start;coverEntry.onclick=start;
+  $('sound').onclick=()=>{soundWanted=!soundWanted;soundUI();if(soundWanted&&running)void resumeSound();else quiet();};
+  $('volume').oninput=()=>{$('volume-value').textContent=$('volume').value+'%';audioEngine?.setVolume(Number($('volume').value)/100);};
+  $('quality').onclick=()=>{low=!low;$('quality').setAttribute('aria-pressed',String(low));$('quality').textContent=low?'恢復自動特效':'降低特效';quality=qualityValue();fx?.setQuality(quality);};
+  $('view').onclick=cinematicView;
+  window.addEventListener('keydown',event=>{if(event.key==='Escape'&&running)stop();else if(running&&!panel.contains(event.target)&&['w','a','s','d','ArrowLeft','ArrowUp','ArrowDown','ArrowRight'].includes(event.key))interacted=true;});
+  document.getElementById('webgl-canvas')?.addEventListener('pointerdown',()=>{if(running)interacted=true;});
+  function visibility(){if(!running)return;last=0;if(document.hidden||window.proposalHidden)quiet();else if(soundWanted)void resumeSound();}
+  document.addEventListener('visibilitychange',visibility);
+  window.addEventListener('message',event=>{if(event.source===window.parent&&event.origin===location.origin&&event.data?.type==='proposal:visibility'){window.proposalHidden=!event.data.visible;visibility();}});
+  reduced.addEventListener('change',()=>{quality=qualityValue();fx?.setQuality(quality);});
+  function unlock(questId){if(questId!==config.questId)return false;unlocked=true;launcher.dataset.unlocked='true';launcher.title='任務完成，已解鎖校慶煙火獎勵';return true;}
+  window.addEventListener('campus:quest-complete',event=>unlock(event.detail?.questId));
+  window.campusAnniversary={start,stop,update,unlock,configure:options=>{config={...config,...options};},stats:()=>({running,elapsed,phase,quality:quality?.tier,reduced:reduced.matches,unlocked,visual:fx?.stats()||null,audio:audioEngine?.stats()||null,soundWanted,soundEnabled}),dispose:()=>{stop();audioEngine?.dispose();audio?.close();}};
 })();
