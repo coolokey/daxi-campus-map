@@ -259,6 +259,7 @@
       for(const side of [-1,1])oval(head,'avatar-ear',skin,side*.475,-.055,.015,.085,.105,.075);
       oval(head,'avatar-nose',skin,0,-.12,.455,.038,.045,.035);
       const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.507,28,18,0,Math.PI*2,0,Math.PI*.47),hair);hairCap.name='avatar-short-hair';hairCap.scale.z=.95;hairCap.castShadow=true;head.add(hairCap);
+      oval(head,'avatar-back-hair',hair,0,-.08,-.18,.49,.48,.34);
       const boyFringe=new THREE.Group();boyFringe.name='avatar-boy-fringe';head.add(boyFringe);
       for(const [x,y,z,sx,sy,sz,tilt]of [[-.28,.24,.34,.21,.14,.14,-.5],[-.06,.29,.41,.23,.14,.14,-.3],[.18,.29,.37,.21,.12,.15,.15],[.31,.15,.26,.14,.20,.12,.4]]){
         oval(boyFringe,'avatar-hair-lock',hair,x,y,z,sx,sy,sz).rotation.z=tilt;
