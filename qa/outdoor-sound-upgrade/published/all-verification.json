@@ -1,0 +1,256 @@
+[
+  {
+    "profile": "desktop",
+    "passed": true,
+    "recordings": {
+      "revision": "cc0-outdoor-20261012",
+      "verifiedHashes": 18,
+      "crowdSources": [
+        "festival-crowd",
+        "outdoor-show-crowd",
+        "stadium-crowd"
+      ]
+    },
+    "dense": {
+      "visual": {
+        "bursts": 23,
+        "launched": 29,
+        "textPoints": 0,
+        "active": 720,
+        "smoke": 23,
+        "drawPoints": 3092,
+        "tier": "mobile",
+        "flash": 0.103239304706918
+      },
+      "quality": "mobile",
+      "audio": {
+        "active": 15,
+        "loaded": 18,
+        "failed": [],
+        "played": [
+          {
+            "kind": "launch",
+            "file": "launch-02.mp3",
+            "visualTime": 14.48,
+            "scheduledAt": 14.48,
+            "delay": 0,
+            "pan": -0.02579793706536293,
+            "gain": 0.08716508746147156
+          },
+          {
+            "kind": "launch",
+            "file": "launch-01.mp3",
+            "visualTime": 14.48,
+            "scheduledAt": 14.48,
+            "delay": 0,
+            "pan": -0.12623611092567444,
+            "gain": 0.09224154055118561
+          },
+          {
+            "kind": "far",
+            "file": "far-02.mp3",
+            "visualTime": 14.48,
+            "scheduledAt": 15.357058219431506,
+            "delay": 0.8770582194315062,
+            "pan": -0.333564430475235,
+            "gain": 0.12586404383182526
+          },
+          {
+            "kind": "crackle",
+            "file": "crackle-01.mp3",
+            "visualTime": 14.48,
+            "scheduledAt": 15.437058219431506,
+            "delay": 0.8770582194315062,
+            "pan": -0.333564430475235,
+            "gain": 0.03692011907696724
+          },
+          {
+            "kind": "tail",
+            "file": "tail-03.mp3",
+            "visualTime": 14.48,
+            "scheduledAt": 15.537058219431506,
+            "delay": 0.8770582194315062,
+            "pan": -0.333564430475235,
+            "gain": 0.030207369476556778
+          }
+        ],
+        "volume": 0.55
+      }
+    },
+    "mix": {
+      "peak": 0.5941914916038513,
+      "rms": 0.06233720801083719,
+      "played": 18
+    },
+    "missing": [],
+    "errors": []
+  },
+  {
+    "profile": "ipad",
+    "passed": true,
+    "recordings": {
+      "revision": "cc0-outdoor-20261012",
+      "verifiedHashes": 18,
+      "crowdSources": [
+        "festival-crowd",
+        "outdoor-show-crowd",
+        "stadium-crowd"
+      ]
+    },
+    "dense": {
+      "visual": {
+        "bursts": 35,
+        "launched": 43,
+        "textPoints": 0,
+        "active": 796,
+        "smoke": 24,
+        "drawPoints": 3146,
+        "tier": "mobile",
+        "flash": 0.162008635642216
+      },
+      "quality": "mobile",
+      "audio": {
+        "active": 17,
+        "loaded": 18,
+        "failed": [],
+        "played": [
+          {
+            "kind": "crackle",
+            "file": "crackle-02.mp3",
+            "visualTime": 17.034666666666666,
+            "scheduledAt": 18.002790315229895,
+            "delay": 0.888123648563231,
+            "pan": -0.22819310426712036,
+            "gain": 0.03634462505578995
+          },
+          {
+            "kind": "tail",
+            "file": "tail-02.mp3",
+            "visualTime": 17.034666666666666,
+            "scheduledAt": 18.102790315229896,
+            "delay": 0.888123648563231,
+            "pan": -0.22819310426712036,
+            "gain": 0.029736511409282684
+          },
+          {
+            "kind": "launch",
+            "file": "launch-01.mp3",
+            "visualTime": 17.570666666666668,
+            "scheduledAt": 17.570666666666668,
+            "delay": 0,
+            "pan": -0.18055590987205505,
+            "gain": 0.08605670928955078
+          },
+          {
+            "kind": "far",
+            "file": "far-03.mp3",
+            "visualTime": 17.570666666666668,
+            "scheduledAt": 18.571687205938385,
+            "delay": 1.0010205392717189,
+            "pan": 0.07552771270275116,
+            "gain": 0.10613241791725159
+          },
+          {
+            "kind": "crackle",
+            "file": "crackle-01.mp3",
+            "visualTime": 17.570666666666668,
+            "scheduledAt": 18.651687205938384,
+            "delay": 1.0010205392717189,
+            "pan": 0.07552771270275116,
+            "gain": 0.031132176518440247
+          }
+        ],
+        "volume": 0.55
+      }
+    },
+    "mix": null,
+    "missing": [],
+    "errors": []
+  },
+  {
+    "profile": "mobile",
+    "passed": true,
+    "recordings": {
+      "revision": "cc0-outdoor-20261012",
+      "verifiedHashes": 18,
+      "crowdSources": [
+        "festival-crowd",
+        "outdoor-show-crowd",
+        "stadium-crowd"
+      ]
+    },
+    "dense": {
+      "visual": {
+        "bursts": 21,
+        "launched": 28,
+        "textPoints": 0,
+        "active": 314,
+        "smoke": 11,
+        "drawPoints": 1221,
+        "tier": "low",
+        "flash": 0.7308802575935606
+      },
+      "quality": "low",
+      "audio": {
+        "active": 18,
+        "loaded": 18,
+        "failed": [],
+        "played": [
+          {
+            "kind": "launch",
+            "file": "launch-02.mp3",
+            "visualTime": 15.12,
+            "scheduledAt": 15.12,
+            "delay": 0,
+            "pan": -0.044839587062597275,
+            "gain": 0.054641544818878174
+          },
+          {
+            "kind": "far",
+            "file": "far-03.mp3",
+            "visualTime": 15.12,
+            "scheduledAt": 16.34377998955421,
+            "delay": 1.22377998955421,
+            "pan": -0.12679509818553925,
+            "gain": 0.0803181380033493
+          },
+          {
+            "kind": "crackle",
+            "file": "crackle-01.mp3",
+            "visualTime": 15.12,
+            "scheduledAt": 16.42377998955421,
+            "delay": 1.22377998955421,
+            "pan": -0.12679509818553925,
+            "gain": 0.023559987545013428
+          },
+          {
+            "kind": "tail",
+            "file": "tail-03.mp3",
+            "visualTime": 15.12,
+            "scheduledAt": 16.52377998955421,
+            "delay": 1.22377998955421,
+            "pan": -0.12679509818553925,
+            "gain": 0.01927635259926319
+          },
+          {
+            "kind": "far",
+            "file": "far-01.mp3",
+            "visualTime": 15.12,
+            "scheduledAt": 16.313328601361764,
+            "delay": 1.193328601361764,
+            "pan": -0.07755453884601593,
+            "gain": 0.08327666670084
+          }
+        ],
+        "volume": 0.55
+      }
+    },
+    "mix": null,
+    "missing": [],
+    "errors": []
+  },
+  {
+    "profile": "proposal-rpg-reward",
+    "passed": true
+  }
+]
