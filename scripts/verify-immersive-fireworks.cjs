@@ -20,7 +20,8 @@ const expectedSounds=JSON.parse(fs.readFileSync(path.join(__dirname,'../public/c
    await frame.locator('.anniversary-cover-entry').click();
    assert.equal(await frame.evaluate(()=>document.querySelectorAll('dialog[open]').length),0,'non-modal');
    assert.equal(await frame.evaluate(()=>document.querySelectorAll('canvas').length),await frame.evaluate(()=>document.querySelectorAll('canvas:not(#anniversary-dialog canvas)').length),'no effect canvas');
-   await frame.locator('#anniversary-sound').click();await frame.waitForFunction(()=>campusAnniversary.stats().soundEnabled&&campusAnniversary.stats().audio.loaded===18,null,{timeout:30000});
+   await frame.waitForFunction(()=>campusAnniversary.stats().soundEnabled&&campusAnniversary.stats().audio.loaded===18,null,{timeout:30000});
+   assert.equal(await frame.locator('#anniversary-volume').inputValue(),'100');assert.equal(await frame.evaluate(()=>campusAnniversary.stats().audio.volume),1);
    console.log(profile.name+': 18 recordings decoded and sound enabled');
    const recordings=await frame.evaluate(async expected=>{
     const url=new URL('assets/sounds/manifest.json',document.baseURI);

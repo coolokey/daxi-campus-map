@@ -11,20 +11,27 @@ function setup(){
  const node=()=>({gain:{value:0,setValueAtTime(){},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){}},frequency:{value:0,setValueAtTime(){}},connect(){},disconnect(){},start(){},stop(){}});
  w.AudioContext=class{state='suspended';currentTime=0;destination={};constructor(){instances.push(this)}createGain=node;createOscillator=node;resume(){return new Promise<void>(resolve=>pending.push(()=>{this.state='running';resolve()}));}suspend(){this.state='suspended';return Promise.resolve()}};
  const scene=new THREE.Scene();scene.background=new THREE.Color(0xffffff);
- Object.assign(w,{THREE,currentMode:'bird',cancelCameraTween(){},matchMedia:()=>({matches:true,addEventListener(){}}),requestAnimationFrame:()=>1,cancelAnimationFrame(){},CampusFireworkAudio:{create:()=>({load:async()=>({loaded:18,failed:[]}),play(){},stop(){},setVolume(){},stats:()=>({active:0,loaded:18})})},CampusFireworkScene:{create:()=>({launch(){},update(){},setQuality(){},dispose(){},stats:()=>({active:0})})},campusExplorer:{scene,camera:new THREE.PerspectiveCamera(),controls:{target:new THREE.Vector3(),enabled:true,enableDamping:true,autoRotate:false,update(){}},manualTakeover(){},resetManualInput(){},setControlMode(){}}});
+ Object.assign(w,{THREE,currentMode:'bird',cancelCameraTween(){},matchMedia:()=>({matches:true,addEventListener(){}}),requestAnimationFrame:()=>1,cancelAnimationFrame(){},CampusFireworkAudio:{create:()=>({load:async()=>({loaded:18,failed:[]}),play(){},stop(){},dispose(){},setVolume(){},stats:()=>({active:0,loaded:18})})},CampusFireworkScene:{create:()=>({launch(){},update(){},setQuality(){},dispose(){},stats:()=>({active:0})})},campusExplorer:{scene,camera:new THREE.PerspectiveCamera(),controls:{target:new THREE.Vector3(),enabled:true,enableDamping:true,autoRotate:false,update(){}},manualTakeover(){},resetManualInput(){},setControlMode(){}}});
  for(const file of ['anniversary-model.js','anniversary-fireworks.js'])w.eval(readFileSync('public/campus-explorer/'+file,'utf8'));
  const click=(id:string)=>w.document.getElementById('anniversary-'+id).click(),flush=async()=>{for(const resolve of pending.splice(0))resolve();for(let i=0;i<8;i++)await Promise.resolve();};
  return {dom,w,click,flush,instances};
 }
-it('closing and reopening cannot let an old audio resume enable sound without consent',async()=>{
- const s=setup();s.click('launch');s.click('sound');s.click('close');s.click('launch');await s.flush();
- expect(s.w.document.getElementById('anniversary-sound').getAttribute('aria-pressed')).toBe('false');
- expect(s.instances[0].state).toBe('suspended');s.dom.window.close();
+it('點選開始即啟用音效，預設音量 100%，停止後仍可再啟用',async()=>{
+ const s=setup();expect(s.instances).toHaveLength(0);s.click('launch');await s.flush();
+ expect(s.w.campusAnniversary.stats().soundEnabled).toBe(true);
+ expect(s.w.document.getElementById('anniversary-volume').value).toBe('100');
+ expect(s.w.document.getElementById('anniversary-volume-value').textContent).toBe('100%');
+ expect(s.w.document.getElementById('anniversary-sound').textContent).toBe('靜音');
+ s.click('close');s.click('launch');await s.flush();expect(s.w.campusAnniversary.stats().soundEnabled).toBe(true);s.dom.window.close();
 });
-it('a second click cancels a pending audio enable',async()=>{
- const s=setup();s.click('launch');s.click('sound');s.click('sound');await s.flush();
- expect(s.w.document.getElementById('anniversary-sound').getAttribute('aria-pressed')).toBe('false');
- expect(s.instances[0].state).toBe('suspended');s.dom.window.close();
+it('靜音會取消尚未完成的啟用，重播保留使用者的靜音選擇',async()=>{
+ const s=setup();s.click('launch');s.click('sound');await s.flush();
+ expect(s.w.campusAnniversary.stats().soundEnabled).toBe(false);expect(s.instances[0].state).toBe('suspended');
+ s.click('close');s.click('launch');await s.flush();expect(s.w.campusAnniversary.stats().soundEnabled).toBe(false);s.dom.window.close();
+});
+it('停止後，尚未完成的音效載入不會重啟聲音',async()=>{
+ const s=setup();s.click('launch');s.click('close');await s.flush();
+ expect(s.w.campusAnniversary.stats().soundEnabled).toBe(false);expect(s.instances[0].state).toBe('suspended');s.dom.window.close();
 });
 it('does not create a modal dialog or an effect canvas that blocks the campus',()=>{
  const s=setup();s.click('launch');

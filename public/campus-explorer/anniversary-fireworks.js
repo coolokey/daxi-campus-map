@@ -10,14 +10,14 @@
     <div class="anniversary-track" aria-hidden="true"><i></i></div>
     <div class="anniversary-controls"><button id="anniversary-replay" type="button">再次觀看</button><button id="anniversary-sound" type="button" aria-pressed="false">開啟音效</button><button id="anniversary-quality" type="button" aria-pressed="false">降低動畫</button><button id="anniversary-view" type="button">觀賞視角</button></div>
     <label class="anniversary-preset" for="anniversary-preset">畫質<select id="anniversary-preset"><option value="auto">自動</option><option value="high">高畫質</option><option value="standard">標準</option><option value="battery">省電</option></select></label>
-    <label class="anniversary-volume" for="anniversary-volume">音量<input id="anniversary-volume" type="range" min="0" max="100" value="55"><output id="anniversary-volume-value">55%</output></label>
-    <p id="anniversary-audio-status">音效尚未開啟；開啟後播放真實錄音。</p><p class="anniversary-help">可繼續走動、轉頭與操作校園；Esc 停止。</p>`;
+    <label class="anniversary-volume" for="anniversary-volume">音量<input id="anniversary-volume" type="range" min="0" max="100" value="100"><output id="anniversary-volume-value">100%</output></label>
+    <p id="anniversary-audio-status">開始表演後，自動播放真實錄音。</p><p class="anniversary-help">可繼續走動、轉頭與操作校園；Esc 停止。</p>`;
   const banner=document.createElement('div');banner.id='anniversary-banner';banner.setAttribute('aria-live','polite');banner.hidden=true;
   const cover=document.getElementById('guide-landing'),coverEntry=document.createElement('button');coverEntry.type='button';coverEntry.className='anniversary-cover-entry';coverEntry.textContent='80 週年煙火秀 ↗';
   cover?.querySelector('footer')?.append(coverEntry);document.body.append(launcher,panel,banner);
   const $=id=>panel.querySelector('#anniversary-'+id);
   let running=false,fx=null,saved=null,elapsed=0,last=0,cueIndex=0,cues=[],phase='',cameraSaved=null,interacted=false,previousFocus=null;
-  let audio=null,audioEngine=null,soundWanted=false,soundEnabled=false,soundGeneration=0,low=false,quality=null,slowSum=0,slowFrames=0,lastDowngrade=0;
+  let audio=null,audioEngine=null,soundWanted=true,soundEnabled=false,soundGeneration=0,low=false,quality=null,slowSum=0,slowFrames=0,lastDowngrade=0;
   const listeners=[];function listen(target,type,handler){if(!target?.addEventListener)return;target.addEventListener(type,handler);listeners.push(()=>target.removeEventListener?.(type,handler));}
   const isReduced=()=>reduced.matches||low;
   let disposed=false;
@@ -81,7 +81,7 @@
   function positionDistance(position){return Math.hypot(position.x-api.camera.position.x,position.y-api.camera.position.y,position.z-api.camera.position.z);}
   function stop(finished=false){
     running=false;quiet();fx?.dispose();fx=null;night(0);saved=null;last=0;
-    if(!finished)soundWanted=false;soundUI();
+    soundUI();
     document.body.classList.remove('anniversary-playing','anniversary-lettering');banner.hidden=true;
     if(cameraSaved&&!interacted&&currentMode==='bird'){
       api.setControlMode(cameraSaved.mode);cancelCameraTween();api.camera.position.copy(cameraSaved.position);api.controls.target.copy(cameraSaved.target);api.camera.lookAt(cameraSaved.target);

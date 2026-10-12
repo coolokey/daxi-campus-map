@@ -4,7 +4,7 @@
     const fetcher=options.fetch||fetch,random=options.random||Math.random;
     const manifestURL=options.manifestURL||new URL('assets/sounds/manifest.json',document.baseURI).href;
     const buffers=new Map(),lastSample=new Map(),active=new Map(),played=[],failed=[];
-    const abort=new AbortController();let pending=null,disposed=false,volume=.55;
+    const abort=new AbortController();let pending=null,disposed=false,volume=1;
     const mix=context.createGain(),compressor=context.createDynamicsCompressor(),limiter=context.createWaveShaper(),master=context.createGain();
     compressor.threshold.value=-20;compressor.knee.value=10;compressor.ratio.value=12;compressor.attack.value=.002;compressor.release.value=.2;
     const curve=new Float32Array(4096);for(let i=0;i<curve.length;i++)curve[i]=.88*Math.tanh((i/(curve.length-1)*2-1)*1.45);
