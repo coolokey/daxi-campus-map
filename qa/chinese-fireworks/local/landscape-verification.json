@@ -1,0 +1,139 @@
+[
+  {
+    "profile": "landscape",
+    "passed": true,
+    "recordings": {
+      "revision": "cc0-outdoor-20261012",
+      "verifiedHashes": 18,
+      "crowdSources": [
+        "festival-crowd",
+        "outdoor-show-crowd",
+        "stadium-crowd"
+      ]
+    },
+    "dense": {
+      "visual": {
+        "bursts": 18,
+        "launched": 27,
+        "textPoints": 0,
+        "active": 332,
+        "smoke": 12,
+        "drawPoints": 1194,
+        "tier": "low",
+        "flash": 1.8314250160152679,
+        "textLines": [
+          "80週年",
+          "大溪國中 生日快樂"
+        ],
+        "formedLines": 0,
+        "textDrift": 0,
+        "textBounds": {
+          "scale": 0.8433333333333334,
+          "center": 273,
+          "top": 95,
+          "gap": 26,
+          "left": 20,
+          "right": 526,
+          "bottom": 278.00333333333333
+        }
+      },
+      "quality": "low",
+      "audio": {
+        "active": 18,
+        "loaded": 18,
+        "failed": [],
+        "played": [
+          {
+            "kind": "far",
+            "size": 1,
+            "rate": 1.0130277872085571,
+            "duration": 1.1359375,
+            "file": "far-02.mp3",
+            "visualTime": 6.76,
+            "scheduledAt": 7.789295567063723,
+            "delay": 1.0292955670637238,
+            "pan": 0.0034672452602535486,
+            "gain": 0.10224998742341995
+          },
+          {
+            "kind": "crackle",
+            "size": 1,
+            "rate": 1.0306240320205688,
+            "duration": 2.5,
+            "file": "crackle-01.mp3",
+            "visualTime": 6.76,
+            "scheduledAt": 7.869295567063723,
+            "delay": 1.0292955670637238,
+            "pan": 0.0034672452602535486,
+            "gain": 0.0299933310598135
+          },
+          {
+            "kind": "launch",
+            "size": 1,
+            "rate": 0.9749985933303833,
+            "duration": 1.25,
+            "file": "launch-02.mp3",
+            "visualTime": 6.810666666666667,
+            "scheduledAt": 6.810666666666667,
+            "delay": 0,
+            "pan": -0.0668310597538948,
+            "gain": 0.07929784059524536
+          },
+          {
+            "kind": "far",
+            "size": 1,
+            "rate": 0.995262861251831,
+            "duration": 2.3840416666666666,
+            "file": "far-01.mp3",
+            "visualTime": 6.882666666666666,
+            "scheduledAt": 7.84436757783096,
+            "delay": 0.9617009111642935,
+            "pan": -0.28596287965774536,
+            "gain": 0.11188744008541107
+          },
+          {
+            "kind": "launch",
+            "size": 1,
+            "rate": 1.020230770111084,
+            "duration": 1.02,
+            "file": "launch-01.mp3",
+            "visualTime": 6.930666666666666,
+            "scheduledAt": 6.930666666666666,
+            "delay": 0,
+            "pan": 0.006172444671392441,
+            "gain": 0.07399588823318481
+          }
+        ],
+        "volume": 0.55
+      }
+    },
+    "finale": {
+      "bursts": 53,
+      "launched": 53,
+      "textPoints": 7970,
+      "active": 108,
+      "smoke": 11,
+      "drawPoints": 330,
+      "tier": "low",
+      "flash": 0.000008251581831102835,
+      "textLines": [
+        "80週年",
+        "大溪國中 生日快樂"
+      ],
+      "formedLines": 2,
+      "textDrift": 0,
+      "textBounds": {
+        "scale": 0.8433333333333334,
+        "center": 273,
+        "top": 95,
+        "gap": 26,
+        "left": 20,
+        "right": 526,
+        "bottom": 278.00333333333333
+      }
+    },
+    "mix": null,
+    "missing": [],
+    "errors": []
+  }
+]

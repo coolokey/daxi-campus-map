@@ -24,20 +24,27 @@
   function commit(c){c.points.geometry.setDrawRange(0,c.count);for(const a of Object.values(c.points.geometry.attributes))a.needsUpdate=true;}
   function create(api,initialQuality,callbacks={}){
     const model=window.CampusAnniversary,group=new THREE.Group();group.name='daxi-anniversary-fireworks';
-    const stars=cloud(8500),smoke=cloud(90,true),text=cloud(800),textGroup=new THREE.Group();
-    group.add(smoke.points,stars.points,textGroup);textGroup.add(text.points);textGroup.position.set(0,119,-145);
+    const stars=cloud(8500),smoke=cloud(90,true),text=cloud(16000),textGroup=new THREE.Group();
+    group.add(smoke.points,stars.points,textGroup);textGroup.add(text.points);text.points.name='anniversary-text-particles';text.points.material.depthTest=false;text.points.renderOrder=20;
+    text.points.material.vertexShader=vertex.replace('clamp(aSize*uScale/max(1.0,-mv.z),1.0,96.0)','aSize*uScale');
+    text.points.material.fragmentShader=`varying vec3 vColor; varying float vAlpha;
+      void main(){float d=length(gl_PointCoord-vec2(.5))*2.0;if(d>1.0)discard;
+      gl_FragColor=vec4(vColor*2.2,vAlpha*(1.0-smoothstep(.25,1.0,d)));}`;
     textGroup.quaternion.copy(api.camera.quaternion);
     const flash=new THREE.PointLight(0xffd399,0,520,1.3);flash.name='anniversary-burst-light';flash.castShadow=false;group.add(flash);
     const fill=new THREE.HemisphereLight(0xffd49a,0x284568,0);group.add(fill);
     api.scene.add(group);
-    const targets=model.eightyTargets(),textOrigins=targets.map(()=>({x:(Math.random()-.5)*190,y:-65-Math.random()*35,z:(Math.random()-.5)*70}));
+    const textLines=window.CampusFireworkText.lines;
+    const textBursts=[[],[]],textDepth=150;
+    const targets=textLines.flatMap((line,lineIndex)=>line.points.map((p,i)=>({x:p[0],y:p[1],line:lineIndex,slot:i%(4+lineIndex),seed:Math.random()*Math.PI*2,speed:12+Math.random()*26})));
+    function alignText(){textGroup.quaternion.copy(api.camera.quaternion);textGroup.position.copy(api.camera.position).add(new THREE.Vector3(0,0,-textDepth).applyQuaternion(api.camera.quaternion));}
     let particles=[],rockets=[],clouds=[],bursts=0,disposed=false,quality=initialQuality,flashValue=0,flashColor=[1,.7,.28];
     const palettes=[[1,.66,.2],[.35,.7,1],[1,.18,.3],[.3,1,.63],[.8,.45,1]];
     const statistics={bursts:0,launched:0,textPoints:0,active:0,smoke:0,drawPoints:0,tier:quality.tier};
     function launch(cue){
       if(disposed||rockets.length>=10)return;
       const position={x:cue.x*.55,y:15,z:-110-Math.random()*45};
-      const rocket={position,origin:{...position},target:{x:cue.x,y:cue.height,z:-140-Math.random()*35},age:0,duration:1.3+Math.random()*.55,kind:cue.kind,color:cue.kind==='willow'||cue.kind==='chrysanthemum'?[1,.68,.22]:palettes[Math.floor(Math.random()*palettes.length)],sound:null};
+      const rocket={position,origin:{...position},target:{x:cue.x,y:cue.height,z:-140-Math.random()*35},age:0,duration:cue.duration||1.3+Math.random()*.55,textLine:cue.textLine,textSlot:cue.textSlot,decorative:cue.decorative,kind:cue.kind,color:cue.kind==='willow'||cue.kind==='chrysanthemum'?[1,.68,.22]:palettes[Math.floor(Math.random()*palettes.length)],sound:null};
       rocket.sound=callbacks.launch?.(rocket.position);rockets.push(rocket);statistics.launched++;
     }
     function burst(rocket){
@@ -45,11 +52,12 @@
       const position=rocket.target,count=Math.round(quality.stars*(rocket.kind==='willow'?1.15:1));
       for(const v of model.burstVectors(rocket.kind,count)){
         if(particles.length>=Math.floor(quality.maxParticles/3))break;
-        particles.push({x:position.x,y:position.y,z:position.z,vx:v.x,vy:v.y,vz:v.z,life:v.life,age:0,seed:Math.random()*30,color:rocket.color,willow:rocket.kind==='willow'});
+        particles.push({x:position.x,y:position.y,z:position.z,vx:v.x,vy:v.y,vz:v.z,life:v.life,age:0,seed:Math.random()*30,color:rocket.kind==='sphere'?palettes[Math.floor(Math.random()*palettes.length)]:rocket.color,willow:rocket.kind==='willow'});
       }
       for(let i=0;i<5&&clouds.length<quality.smoke;i++)clouds.push({x:position.x+(Math.random()-.5)*15,y:position.y+(Math.random()-.5)*10,z:position.z,age:0,life:5+Math.random()*2,size:14+Math.random()*10});
       flash.position.set(position.x,position.y,position.z);flashValue=Math.min(1,flashValue+.75);flashColor=rocket.color;flash.color.setRGB(...flashColor);
-      callbacks.burst?.(position,rocket.kind);
+      if(rocket.textLine!==undefined){const projected=new THREE.Vector3(position.x,position.y,position.z).project(api.camera);textBursts[rocket.textLine][rocket.textSlot]={x:projected.x,y:projected.y};}
+      callbacks.burst?.(position,rocket.kind,rocket.decorative?.45:rocket.kind==='comet'?.6:1);
     }
     function update(delta,elapsed,reduced=false){
       if(disposed)return;
@@ -76,16 +84,34 @@
         clouds=clouds.filter(c=>c.age<c.life);
       }
       flashValue*=Math.exp(-delta*6);flash.intensity=reduced?0:flashValue*4;fill.intensity=reduced?0:flashValue*.26;
-      if(elapsed>=22000){
-        const t=reduced?1:Math.min(1,(elapsed-22000)/2400),ease=t*t*(3-2*t),fade=elapsed<28000?1:Math.max(0,(30000-elapsed)/2000);
-        targets.forEach((p,i)=>{const origin=textOrigins[i];add(text,origin.x+(p.x-origin.x)*ease,origin.y+(p.y-origin.y)*ease,origin.z+(p.z-origin.z)*ease,[1,.76,.35],3.8,fade*(reduced?.8:.72+.28*Math.sin(i+elapsed*.003)**2));});
+      alignText();
+      const width=window.innerWidth||1280,height=window.innerHeight||960;
+      const layout=model.textLayout(width,height,textLines,callbacks.textPanel?.());
+      const scale=layout.scale;
+      const worldPerPixel=2*textDepth*Math.tan(THREE.MathUtils.degToRad(api.camera.fov||50)/2)/height;
+      const textTop=layout.top,lineGap=layout.gap,drift=reduced?0:Math.max(0,(elapsed-27000)/1000);
+      text.points.material.uniforms.uScale.value=Math.min(window.devicePixelRatio||1,2);
+      if(elapsed>=18000||reduced){
+        targets.forEach((p,i)=>{
+          const start=18000+p.line*2000+1050+p.slot*50;
+          if(!reduced&&elapsed<start)return;
+          const age=Math.max(0,(elapsed-start)/1000),t=reduced?1:Math.min(1,Math.max(0,(age-.22)/1.25)),ease=t*t*(3-2*t);
+          const targetX=layout.center-width/2+p.x*scale,targetY=height/2-textTop-(p.y+(p.line?textLines[0].height+lineGap:0))*scale;
+          const origin=textBursts[p.line][p.slot]||{x:(p.slot/(3+p.line)-.5)*1.2,y:-.2+p.line*.15};
+          const spread=Math.min(age,.3)*p.speed;
+          const ox=origin.x*width/2+Math.cos(p.seed)*spread,oy=origin.y*height/2+Math.sin(p.seed)*spread;
+          const x=ox+(targetX-ox)*ease+Math.sin(p.seed)*drift*7;
+          const y=oy+(targetY-oy)*ease-drift*drift*9;
+          const fade=Math.max(0,(30000-elapsed)/3000),twinkle=reduced?.85:.78+.22*Math.sin(i+elapsed*.0025)**2;
+          add(text,x*worldPerPixel,y*worldPerPixel,0,i%17===0?[1,.28,.16]:[1,.72,.25],Math.max(2.4,3.2*scale),Math.min(1,fade)*twinkle*(reduced?1:Math.min(1,age*4)));
+        });
       }
       commit(stars);commit(smoke);commit(text);
-      Object.assign(statistics,{active:particles.length+rockets.length,textPoints:text.count,smoke:clouds.length,drawPoints:stars.count,tier:quality.tier,flash:flash.intensity});
+      Object.assign(statistics,{active:particles.length+rockets.length,textPoints:text.count,smoke:clouds.length,drawPoints:stars.count,tier:quality.tier,flash:flash.intensity,textLines:textLines.map(l=>l.label),formedLines:reduced||elapsed>=23000?2:elapsed>=21000?1:0,textDrift:drift,textBounds:layout});
     }
     function setQuality(value){quality=value;if(particles.length>quality.maxParticles/3)particles.length=Math.floor(quality.maxParticles/3);}
     function dispose(){disposed=true;particles=[];rockets=[];clouds=[];api.scene.remove(group);group.traverse(object=>{object.geometry?.dispose();object.material?.dispose();});Object.assign(statistics,{active:0,smoke:0,drawPoints:0,textPoints:0,flash:0});}
-    return {group,launch,update,setQuality,dispose,alignText:()=>textGroup.quaternion.copy(api.camera.quaternion),stats:()=>({...statistics})};
+    return {group,launch,update,setQuality,dispose,alignText,stats:()=>({...statistics})};
   }
   window.CampusFireworkScene=Object.freeze({create});
 })();

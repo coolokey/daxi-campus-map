@@ -2,11 +2,11 @@ const {chromium}=require(process.env.CAMPUS_PLAYWRIGHT_PATH||'C:/Users/MAO YU RE
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const out=path.resolve(process.env.FIREWORK_QA_OUTPUT||path.join(__dirname,'../qa/immersive-fireworks'));fs.mkdirSync(out,{recursive:true});
 const base=(process.env.CAMPUS_QA_URL||'http://127.0.0.1:5187/').replace(/\/?$/,'/');
-const allProfiles=[{name:'desktop',width:1440,height:960},{name:'ipad',width:1024,height:768,touch:true},{name:'mobile',width:390,height:844,touch:true}];
-const profiles=process.env.FIREWORK_QA_PROFILE?allProfiles.filter(p=>p.name===process.env.FIREWORK_QA_PROFILE):allProfiles;
+const allProfiles=[{name:'desktop',width:1440,height:960},{name:'ipad',width:1024,height:768,touch:true},{name:'mobile',width:390,height:844,touch:true},{name:'landscape',width:844,height:390,touch:true},{name:'short-tablet',width:1024,height:500,touch:true}];
+const profiles=process.env.FIREWORK_QA_PROFILE?allProfiles.filter(p=>process.env.FIREWORK_QA_PROFILE.split(',').includes(p.name)):allProfiles;
 const expectedSounds=JSON.parse(fs.readFileSync(path.join(__dirname,'../public/campus-explorer/assets/sounds/manifest.json'),'utf8'));
 (async()=>{
- const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=swiftshader','--enable-webgl']});const report=[];
+ const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11','--enable-webgl']});const report=[];
  try{
   for(const profile of profiles){
    const page=await browser.newPage({viewport:{width:profile.width,height:profile.height},hasTouch:!!profile.touch}),errors=[],missing=[];
@@ -63,9 +63,11 @@ const expectedSounds=JSON.parse(fs.readFileSync(path.join(__dirname,'../public/c
    assert(dense.visual.bursts>0);assert(dense.audio.played.some(s=>s.kind==='near'||s.kind==='far'||s.kind==='launch'));
    await frame.waitForFunction(()=>campusAnniversary.stats().phase==='blessing',null,{timeout:25000});
    await page.screenshot({path:path.join(out,profile.name+'-eighty.png')});
-   const finale=await frame.evaluate(()=>campusAnniversary.stats());assert(finale.visual.textPoints>150);
-   assert((await frame.locator('#anniversary-banner').textContent()).includes('大溪國中 80 週年校慶快樂！'));
-   for(const id of ['close','sound','quality','volume']){
+   const finale=await frame.evaluate(()=>campusAnniversary.stats());assert(finale.visual.textPoints>7000);assert.equal(finale.visual.formedLines,2);assert.deepEqual(finale.visual.textLines,['80週年','大溪國中 生日快樂']);
+   const bounds=finale.visual.textBounds;assert(bounds.left>=0&&bounds.right<=profile.width&&bounds.top>=90&&bounds.bottom<profile.height-25);
+   const hud=await frame.locator('#anniversary-dialog').boundingBox();assert(bounds.bottom<hud.y||bounds.right<hud.x,'text avoids controls');
+   assert.equal(await frame.locator('#anniversary-banner').textContent(),'','no HTML substitute for particle text');
+   for(const id of ['close','sound','quality','volume','preset']){
     const b=await frame.locator('#anniversary-'+id).boundingBox();assert(b&&b.x>=0&&b.x+b.width<=profile.width+1&&b.y>=0&&b.y+b.height<=profile.height+1,'reachable '+id);
    }
    await frame.waitForFunction(()=>!campusAnniversary.stats().running,null,{timeout:15000});
@@ -90,10 +92,11 @@ const expectedSounds=JSON.parse(fs.readFileSync(path.join(__dirname,'../public/c
    }
    const meaningfulMissing=missing.filter(s=>!s.includes('favicon.ico'));
    assert.deepEqual(meaningfulMissing,[]);assert.deepEqual(errors,[]);
-   report.push({profile:profile.name,passed:true,recordings,dense:{visual:dense.visual,quality:dense.quality,audio:dense.audio},mix,missing,errors});
+   report.push({profile:profile.name,passed:true,recordings,dense:{visual:dense.visual,quality:dense.quality,audio:dense.audio},finale:finale.visual,mix,missing,errors});
+   fs.writeFileSync(path.join(out,profile.name+'-verification.json'),JSON.stringify(report.slice(-1),null,2));
    console.log(profile.name+': visual/audio, walking, controls, replay, reduced motion and cleanup passed');await page.close();
   }
-  if(!process.env.FIREWORK_QA_PROFILE||process.env.FIREWORK_QA_PROFILE==='desktop'){
+  if(profiles.some(p=>p.name==='desktop')){
    const p=await browser.newPage({viewport:{width:1280,height:960}});await p.goto(base+'proposal/#rpg',{waitUntil:'networkidle',timeout:60000});
    const rpg=p.frames().find(f=>f.url().includes('/rpg/'));assert(rpg);await rpg.locator('#quest-start').click();
    for(const answer of [2,2,2,1,1])await rpg.locator('.choice-button').nth(answer).click();

@@ -41,3 +41,12 @@ it('optional task gate opens only for the configured explicit completion event',
  expect(s.w.campusAnniversary.start()).toBe(true);
  s.w.campusAnniversary.stop();s.dom.window.close();
 });
+
+it('品質與低動畫可獨立調整，銷毀後移除介面及監聽',()=>{
+ const s=setup(),select=s.w.document.getElementById('anniversary-preset');
+ expect(select).not.toBeNull();select.value='battery';select.dispatchEvent(new s.w.Event('change'));
+ s.click('launch');expect(s.w.campusAnniversary.stats().quality).toBe('low');
+ s.w.campusAnniversary.dispose();expect(s.w.document.getElementById('anniversary-launch')).toBeNull();
+ s.w.dispatchEvent(new s.w.CustomEvent('campus:quest-complete',{detail:{questId:'energy-core'}}));
+ expect(s.w.campusAnniversary.stats().unlocked).toBe(false);s.dom.window.close();
+});

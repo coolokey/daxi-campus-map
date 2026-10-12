@@ -7,6 +7,13 @@ function model(){
  runInNewContext(readFileSync(new URL('../public/campus-explorer/anniversary-model.js',import.meta.url),'utf8'),context);
  return context.window.CampusAnniversary;
 }
+it('橫向文字避開右側面板，平板文字保持在面板上方',()=>{
+ const m=model(),lines=[{width:390,height:112},{width:600,height:72}];
+ const wide=m.textLayout(1024,500,lines,{left:708,top:100,right:1006,bottom:488});
+ expect(wide.right).toBeLessThan(708);expect(wide.bottom).toBeLessThan(500);
+ const ipad=m.textLayout(1024,768,lines,{left:695,top:260,right:1006,bottom:588});
+ expect(ipad.bottom).toBeLessThan(260);expect(ipad.left).toBeGreaterThan(0);
+});
 describe('校慶煙火體驗',()=>{
  it('原地轉頭 180 度後，聲音左右方位反轉，距離保持不變',()=>{
   const m=model(),position={x:100,y:0,z:-100},listener={x:0,y:0,z:0};
@@ -23,7 +30,7 @@ describe('校慶煙火體驗',()=>{
  });
  it('30 秒內完成倒數、入夜、零星、密集、80、祝福與漸弱',()=>{
   const m=model();
-  expect([0,2999,3000,5000,12000,22000,25000,28000,30000].map(m.phaseAt)).toEqual(['countdown','countdown','night','sparse','dense','eighty','blessing','fade','finished']);
+  expect([0,2999,3000,9999,10000,18000,23000,27000,30000].map(m.phaseAt)).toEqual(['countdown','countdown','sparse','sparse','dense','formation','blessing','fade','finished']);
  });
  it.each(['round','heart','star'])('%s 煙火提供有限且有空間分布的點位',shape=>{
   const points=model().shapePoints(shape,80);
@@ -34,7 +41,7 @@ describe('校慶煙火體驗',()=>{
  });
  it('五種煙火的 3D 速度、壽命與品質配額有效',()=>{
   const m=model();
-  for(const kind of ['chrysanthemum','sphere','willow','fan','comet']){
+  for(const kind of ['chrysanthemum','sphere','willow','fan','comet','ring']){
    const stars=m.burstVectors(kind,120,()=>.4);
    expect(stars).toHaveLength(120);
    expect(stars.every((s:any)=>Number.isFinite(s.x+s.y+s.z)&&s.life>1)).toBe(true);
@@ -48,7 +55,19 @@ describe('校慶煙火體驗',()=>{
   expect(points.some((p:any)=>p.x<0)).toBe(true);
   expect(points.some((p:any)=>p.x>0)).toBe(true);
   const cues=m.createCues(()=>.5);
-  expect(new Set(cues.map((c:any)=>c.kind)).size).toBe(5);
-  expect(cues.every((c:any)=>c.at>=5000&&c.at<22000)).toBe(true);
+  expect(new Set(cues.map((c:any)=>c.kind)).size).toBe(6);
+  expect(cues.every((c:any)=>c.at>=3000&&c.at<27000)).toBe(true);
  });
+});
+
+it('環狀煙火維持圓環平面，文字兩波在 18 秒與 20 秒發射',()=>{
+ const m=model(),ring=m.burstVectors('ring',120,()=>.5);
+ expect(Math.max(...ring.map((p:any)=>Math.abs(p.z)))).toBeLessThan(2);
+ expect(Math.min(...ring.map((p:any)=>Math.hypot(p.x,p.y)))).toBeGreaterThan(15);
+ const cues=m.createCues(()=>.5);
+ expect(cues.filter((c:any)=>c.textLine===0)).toHaveLength(4);
+ expect(cues.filter((c:any)=>c.textLine===1)).toHaveLength(5);
+ expect(cues.find((c:any)=>c.textLine===0).at).toBe(18000);
+ expect(cues.find((c:any)=>c.textLine===1).at).toBe(20000);
+ expect(m.qualityFor({preset:'battery'}).maxParticles).toBeLessThan(m.qualityFor({preset:'standard'}).maxParticles);
 });

@@ -45,8 +45,11 @@
       let index=Math.floor(random()*choices.length);if(choices.length>1&&index===lastSample.get(kind))index=(index+1)%choices.length;lastSample.set(kind,index);
       const selected=choices[index],source=context.createBufferSource(),gain=context.createGain(),pan=context.createStereoPanner(),filter=context.createBiquadFilter(),send=context.createGain();
       const state=spatial(settings.position,settings.camera);
-      const baseGain={launch:.5,near:.82,far:.75,crackle:.22,tail:.18,crowd:.12}[kind]||.2;
+      const size=Math.max(.3,Math.min(1,settings.size||1)),small=kind==='near'&&size<.7;
+      const baseGain=({launch:.5,near:.82,far:.75,crackle:.22,tail:.18,crowd:.12}[kind]||.2)*size;
       source.buffer=selected.buffer;source.playbackRate.value=kind==='crowd'?1:.96+random()*.08;
+      if(small)source.playbackRate.value*=1.3;
+      const duration=small?Math.min(.85,selected.buffer.duration):selected.buffer.duration;
       source.loop=!!settings.loop;
       filter.type='lowpass';filter.frequency.value=kind==='far'?700:kind==='crowd'?5000:Math.max(1800,12000-state.distance*18);
       gain.gain.value=baseGain*(kind==='crowd'?1:state.gain);pan.pan.value=kind==='crowd'?0:state.pan;send.gain.value=kind==='launch'?.06:.22;
@@ -55,8 +58,9 @@
       active.set(source,{gain,pan,baseGain,cleanup});source.onended=cleanup;
       const acousticDelay=kind==='launch'||kind==='crowd'?0:Math.max(0,state.distance-100)/343;
       const at=context.currentTime+acousticDelay+(settings.delay||0);
-      try{source.start(at);}catch(error){cleanup();return null;}
-      played.push({kind,file:selected.file,visualTime:context.currentTime,scheduledAt:at,delay:acousticDelay,pan:pan.pan.value,gain:gain.gain.value});
+      if(small){const end=at+duration/source.playbackRate.value;gain.gain.setValueAtTime(gain.gain.value,end-.045);gain.gain.linearRampToValueAtTime(0,end);}
+      try{if(small)source.start(at,0,duration);else source.start(at);}catch(error){cleanup();return null;}
+      played.push({kind,size,rate:source.playbackRate.value,duration,file:selected.file,visualTime:context.currentTime,scheduledAt:at,delay:acousticDelay,pan:pan.pan.value,gain:gain.gain.value});
       if(played.length>400)played.shift();return source;
     }
     function stop(){for(const [source,entry] of [...active]){try{source.stop();}catch{}entry.cleanup();}convolver.buffer=null;convolver.buffer=impulse;}
