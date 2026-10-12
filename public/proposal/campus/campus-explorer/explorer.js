@@ -274,6 +274,7 @@
         torsoMatArray
       );
       torso.position.y = 1.45;
+      torso.name = 'avatar-torso';
       torso.castShadow = true;
       avatarGroup.add(torso);
 
@@ -283,6 +284,7 @@
         new THREE.MeshStandardMaterial({ color: 0x1e3a8a })
       );
       collar.position.y = 2.05;
+      collar.name = 'avatar-collar';
       avatarGroup.add(collar);
 
       // 頭部 (圓形球體直接貼附五官與黑髮紋理，完全無紙面片接縫，完美還原 media_1791355365994.png)
@@ -332,6 +334,16 @@
       visor.castShadow = true;
       headGroup.add(visor);
 
+      const longHair = new THREE.Group();longHair.name='avatar-long-hair';
+      const hairMat = new THREE.MeshStandardMaterial({color:0x222027});
+      for(const side of [-1,1]){
+        const hair=new THREE.Mesh(new THREE.BoxGeometry(.15,.55,.38),hairMat);
+        hair.position.set(side*.32,-.32,-.06);hair.castShadow=true;longHair.add(hair);
+      }
+      const backHair=new THREE.Mesh(new THREE.BoxGeometry(.58,.58,.14),hairMat);
+      backHair.position.set(0,-.3,-.3);backHair.castShadow=true;longHair.add(backHair);
+      longHair.visible=false;headGroup.add(longHair);
+
       avatarGroup.add(headGroup);
 
       // 手臂結構 (左臂 / 右臂：深藍袖身＋水藍側條，膚色小臂與手掌)
@@ -348,6 +360,7 @@
         sleeve.position.y = -0.18;
         sleeve.castShadow = true;
         armGroup.add(sleeve);
+        sleeve.name = isLeft?'avatar-sleeve-left':'avatar-sleeve-right';
 
         // 水藍色肩飾條
         const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.36, 0.12), stripeMat);
@@ -389,6 +402,7 @@
         shorts.position.y = -0.22;
         shorts.castShadow = true;
         legGroup.add(shorts);
+        shorts.name = isLeft?'avatar-shorts-left':'avatar-shorts-right';
 
         // 短褲外側白邊飾條 (如 media_1791355660385.png)
         const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.44, 0.11), whiteMat);
@@ -430,6 +444,31 @@
 
     // Initialize 3D student avatar
     createStudentAvatar();
+
+    // Change only appearance: retain the same animated body, position and route.
+    let avatarAppearance={gender:'male',outfit:'uniform'};
+    const avatarTorso=avatarGroup.getObjectByName('avatar-torso');
+    const avatarUniformTexture=avatarTorso.material[4].map;
+    function getAvatarAppearance(){return {...avatarAppearance};}
+    function setAvatarAppearance(value={}){
+      if(['male','female'].includes(value.gender))avatarAppearance.gender=value.gender;
+      if(['uniform','casual'].includes(value.outfit))avatarAppearance.outfit=value.outfit;
+      const uniform=avatarAppearance.outfit==='uniform';
+      avatarGroup.getObjectByName('avatar-long-hair').visible=avatarAppearance.gender==='female';
+      avatarTorso.material.forEach((material,index)=>{
+        material.map=index===4&&uniform?avatarUniformTexture:null;
+        material.color.setHex(uniform?(index===4?0xffffff:index<2?0x38bdf8:index===3?0x1e295b:0x1e3a8a):0xc76c45);
+        material.needsUpdate=true;
+      });
+      avatarGroup.getObjectByName('avatar-collar').material.color.setHex(uniform?0x1e3a8a:0xb85b36);
+      for(const side of ['left','right']){
+        avatarGroup.getObjectByName('avatar-sleeve-'+side).material.color.setHex(uniform?0x1e3a8a:0xc76c45);
+        avatarGroup.getObjectByName('avatar-shorts-'+side).material.color.setHex(uniform?0x1e3a8a:0x374151);
+      }
+      try{localStorage.setItem('daxi-avatar-appearance',JSON.stringify(avatarAppearance));}catch(_){/* Session-only appearance still works. */}
+      return getAvatarAppearance();
+    }
+    try{const saved=JSON.parse(localStorage.getItem('daxi-avatar-appearance')||'null');if(saved&&typeof saved==='object')setAvatarAppearance(saved);}catch(_){/* Keep default on unavailable or invalid storage. */}
 
     /* ==========================================================================
        4. CAMPUS ENVIRONMENT, STAIRCASES & ARCHITECTURE
@@ -2260,6 +2299,24 @@
     let isAutoWalking = false;
     let autoWalkIndex = 0;
     let activeNavigationId = null;
+    let navigationStatus = 'cancelled',navigationProgressTime=0;
+
+    function getNavigationState(){
+      let index=Math.max(0,autoWalkIndex);
+      if(!isAutoWalking&&avatarGroup&&currentNavPoints.length){
+        let closest=Infinity;
+        currentNavPoints.forEach((p,i)=>{const distance=Math.hypot(p.x-avatarGroup.position.x,p.y-.6-avatarGroup.position.y,p.z-avatarGroup.position.z);if(distance<closest){closest=distance;index=i;}});
+      }
+      index=Math.min(index,Math.max(0,currentNavPoints.length-2));
+      let remaining=0;
+      const next=currentNavPoints[index+1];
+      if(next&&avatarGroup){remaining=Math.hypot(next.x-avatarGroup.position.x,next.y-.6-avatarGroup.position.y,next.z-avatarGroup.position.z);for(let i=index+1;i<currentNavPoints.length-1;i++)remaining+=currentNavPoints[i].distanceTo(currentNavPoints[i+1]);}
+      return {status:navigationStatus,destination:activeNavigationId,points:currentNavPoints,index,remaining:navigationStatus==='arrived'?0:remaining};
+    }
+    function publishNavigation(status=navigationStatus){
+      navigationStatus=status;
+      window.dispatchEvent(new CustomEvent('campus:navigation',{detail:getNavigationState()}));
+    }
 
     function renderNavigationPath(points) {
       if (navPathMesh) {
@@ -2309,6 +2366,7 @@
       document.getElementById("nav-hud").classList.remove("visible");
       stopAutoWalk();
       currentNavPoints = [];
+      publishNavigation('cancelled');
     }
 
     const btnAutoWalk = document.getElementById("btn-auto-walk");
@@ -2338,14 +2396,17 @@
       }
       btnAutoWalk.classList.add("walking");
       btnAutoWalk.textContent = "⏹️ 停止帶路";
+      publishNavigation('walking');
       showToast("🧑‍🎓 大溪同學啟動自動帶路，正帶您前往目的地！");
     }
 
     function stopAutoWalk() {
+      const wasWalking=isAutoWalking;
       isAutoWalking = false;
       if(btnAutoWalk.classList.contains('walking'))btnAutoWalk.classList.remove('walking');
       const label=activeNavigationId ? "繼續帶路" : "🚶‍♂️ 自動帶路";
       if(btnAutoWalk.textContent!==label)btnAutoWalk.textContent=label;
+      if(wasWalking&&navigationStatus==='walking')publishNavigation('paused');
     }
 
     function manualTakeover() {
@@ -2553,7 +2614,15 @@
 
       if(window.campusWalkWorld){
         const actual=window.campusWalkWorld.route(avatarGroup.position,room);
-        if(!actual){showToast('目前位置無可通行路徑，請先移到走廊或入口。');return;}
+        if(!actual){
+          renderNavigationPath([]);if(navTargetPoint)navTargetPoint.visible=false;
+          activeNavigationId=roomId;autoWalkIndex=0;
+          const hud=document.getElementById('nav-hud');hud.dataset.destination=roomId;hud.classList.add('visible');
+          document.getElementById('hud-target-name').textContent=`[${room.buildingName} ${room.floor}F] ${room.name}`;
+          document.getElementById('hud-route-desc').textContent='目前位置無可通行路徑，請先移到走廊或入口。';
+          btnAutoWalk.textContent='重新規劃';publishNavigation('blocked');
+          showToast('目前位置無可通行路徑，請先移到走廊或入口。');return;
+        }
         pathPoints.length=0;actual.forEach(p=>pathPoints.push(new THREE.Vector3(p.x,p.y+.6,p.z)));
       }
       renderNavigationPath(pathPoints);
@@ -2575,6 +2644,8 @@
       document.getElementById("nav-hud").classList.add("visible");
       btnAutoWalk.textContent = "🚶‍♂️ 自動帶路";
       btnAutoWalk.classList.remove("walking");
+      autoWalkIndex=0;
+      publishNavigation('ready');
 
       if (room.floor > 1) {
         setFloorFilter(room.floor);
@@ -3223,7 +3294,7 @@
           if(distance>1e-6){
             const amount=Math.min(distance,remaining);dir.multiplyScalar(amount/distance);
             if(moveAvatarWithCollision(p,dir.x,dir.z,dir.y)){
-              stopAutoWalk();showToast('前方有牆壁，帶路已停止。請沿走廊或門口通行。');break;
+              stopAutoWalk();publishNavigation('blocked');showToast('前方有牆壁，帶路已停止。請沿走廊或門口通行。');break;
             }
             isMoving=true;jumpBaseY=p.y;remaining-=amount;
             if(Math.hypot(dir.x,dir.z)>1e-6){avatarAngle=Math.atan2(dir.x,dir.z);avatarGroup.rotation.y=avatarAngle;}
@@ -3233,6 +3304,7 @@
           if(autoWalkIndex>=currentNavPoints.length-1){
             stopAutoWalk();if(navTargetPoint)navTargetPoint.visible=false;if(navPathMesh)navPathMesh.visible=false;
             document.getElementById('nav-hud').classList.remove('visible');showToast('已抵達目的地。');
+            publishNavigation('arrived');
           }
         }
       }
@@ -3263,6 +3335,7 @@
           // 梯面、平台及樓板由相同的可行走配置提供高度。
         }
       }
+      if(activeNavigationId&&navigationStatus!=='arrived'&&performance.now()-navigationProgressTime>250){navigationProgressTime=performance.now();publishNavigation();}
       if (window.campusWalkWorld && avatarGroup && !isJumping && (currentMode==='avatar'||currentMode==='firstperson')) {
         const groundY=window.campusWalkWorld.ground(avatarGroup.position);
         avatarGroup.position.y=Math.max(groundY,avatarGroup.position.y-8*delta);
@@ -3408,7 +3481,7 @@
       track:{id:'track',name:'操場及綜合球場',buildingName:'操場',floor:1,cat:'sports',node:'track-center'},
       breezeway:{id:'breezeway',name:'中央通廊',buildingName:'教學區',floor:1,cat:'special',node:'breezeway-mid'}
     });
-    window.campusExplorer = {scene,camera,renderer,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,setFloorFilter,setControlMode,manualTakeover,resetManualInput,motionBlocked};
+    window.campusExplorer = {scene,camera,renderer,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,clearNavigation,getNavigationState,setFloorFilter,setControlMode,manualTakeover,resetManualInput,motionBlocked,getAvatarAppearance,setAvatarAppearance};
     document.body.dataset.controlMode=currentMode;
     requestAnimationFrame(animate);
     checkUrlQueryTarget();

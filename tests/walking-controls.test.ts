@@ -15,9 +15,30 @@ beforeAll(()=>{
  file('vendor/three.min.js');
  w.THREE.WebGLRenderer=class{domElement:any;shadowMap={};capabilities={getMaxAnisotropy:()=>1};constructor({canvas}:any){this.domElement=canvas}setSize(){}setPixelRatio(){}render(){}};
  file('vendor/OrbitControls.js');
+ w.localStorage.setItem('daxi-avatar-appearance',JSON.stringify({gender:'female',outfit:'casual'}));
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','spatial-world.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('restores saved appearance at startup and still applies when storage is unavailable',()=>{
+ expect(run(`campusExplorer.getAvatarAppearance()`)).toEqual({gender:'female',outfit:'casual'});
+ expect(run(`avatarGroup.getObjectByName('avatar-long-hair').visible`)).toBe(true);
+ run(`window.savedStorageSetter=Storage.prototype.setItem;Storage.prototype.setItem=()=>{throw new Error('unavailable')};campusExplorer.setAvatarAppearance({gender:'male',outfit:'uniform'});Storage.prototype.setItem=savedStorageSetter;`);
+ expect(run(`campusExplorer.getAvatarAppearance()`)).toEqual({gender:'male',outfit:'uniform'});
+});
+it('changes gender and clothes independently without replacing the avatar or its route',()=>{
+ run(`avatarGroup.position.set(-10,0,96);navigateToRoom('academic');startAutoWalk();window.beforeAvatar=avatarGroup;window.beforePosition=avatarGroup.position.clone();window.beforeRoute=currentNavPoints;campusExplorer.setAvatarAppearance({gender:'female',outfit:'casual'});`);
+ expect(run(`campusExplorer.getAvatarAppearance()`)).toEqual({gender:'female',outfit:'casual'});
+ expect(run(`avatarGroup===beforeAvatar&&avatarGroup.position.equals(beforePosition)&&currentNavPoints===beforeRoute&&isAutoWalking`)).toBe(true);
+ expect(run(`avatarGroup.getObjectByName('avatar-long-hair').visible`)).toBe(true);
+ expect(run(`avatarGroup.getObjectByName('avatar-torso').material[4].map===null`)).toBe(true);
+ expect(run(`JSON.parse(localStorage.getItem('daxi-avatar-appearance'))`)).toEqual({gender:'female',outfit:'casual'});
+ run(`campusExplorer.setAvatarAppearance({outfit:'uniform'});`);
+ expect(run(`campusExplorer.getAvatarAppearance().gender`)).toBe('female');
+ expect(run(`!!avatarGroup.getObjectByName('avatar-torso').material[4].map`)).toBe(true);
+ run(`campusExplorer.setAvatarAppearance({gender:'unknown',outfit:'unknown'});`);
+ expect(run(`campusExplorer.getAvatarAppearance()`)).toEqual({gender:'female',outfit:'uniform'});
+ run(`campusExplorer.setAvatarAppearance({gender:'male',outfit:'uniform'});clearNavigation();`);
+});
 it('navigation marker stays near its target rather than accumulating a vertical offset',()=>{
  run(`setControlMode('bird');renderNavigationPath([new THREE.Vector3(-10,.6,90),new THREE.Vector3(-10,.6,96)]);clock.getElapsedTime=()=>Math.PI/8;for(let i=0;i<120;i++)animate();`);
  expect(run('navTargetPoint.position.y')).toBeCloseTo(3.2,0);
@@ -105,4 +126,33 @@ it('repeated pause calls do not cause feedback mutations in a blocked overlay',a
  await Promise.resolve();
  expect(run(`qaMutationCount`)).toBe(0);
  run(`qaObserver.disconnect();`);
+});
+
+it('publishes walking, paused, arrived and cancelled from actual route execution',()=>{
+ run(`resetManualInput();stopAutoWalk();window.campusMobileControls?.reset();avatarGroup.position.set(-10,0,96);window.navigationEvents=[];window.addEventListener('campus:navigation',e=>navigationEvents.push(e.detail.status));navigateToRoom('academic');startAutoWalk();`);
+ expect(run(`campusExplorer.getNavigationState().status`)).toBe('walking');
+ run(`manualTakeover();`);
+ expect(run(`campusExplorer.getNavigationState().status`)).toBe('paused');
+ expect(run(`navigationEvents.includes('arrived')`)).toBe(false);
+ run(`startAutoWalk();clock.getDelta=()=>.1;for(let i=0;i<1500&&isAutoWalking;i++)animate();`);
+ expect(run(`campusExplorer.getNavigationState().status`)).toBe('arrived');
+ expect(run(`avatarGroup.position.distanceTo(currentNavPoints.at(-1).clone().add(new THREE.Vector3(0,-.6,0)))`)).toBeLessThan(.1);
+ run(`clearNavigation();for(let i=0;i<5;i++)animate();`);
+ expect(run(`campusExplorer.getNavigationState().status`)).toBe('cancelled');
+ expect(run(`navigationEvents.at(-1)`)).toBe('cancelled');
+},20000);
+it('a collision stops navigation without claiming arrival',()=>{
+ run(`avatarGroup.position.set(-10,0,96);navigateToRoom('academic');startAutoWalk();window.savedCollision=moveAvatarWithCollision;moveAvatarWithCollision=()=>true;animate();moveAvatarWithCollision=savedCollision;`);
+ expect(run(`campusExplorer.getNavigationState().status`)).toBe('blocked');
+ expect(run(`isAutoWalking`)).toBe(false);
+ run(`clearNavigation()`);
+});
+it('an unreachable new destination replaces the old route instead of resuming the old target',()=>{
+ run(`avatarGroup.position.set(-10,0,96);navigateToRoom('academic');window.savedRoute=campusWalkWorld.route;campusWalkWorld.route=()=>null;navigateToRoom('library');campusWalkWorld.route=savedRoute;`);
+ expect(run(`campusExplorer.getNavigationState().destination`)).toBe('library');
+ expect(run(`campusExplorer.getNavigationState().status`)).toBe('blocked');
+ expect(run(`currentNavPoints.length`)).toBe(0);
+ expect(run(`navTargetPoint.visible`)).toBe(false);
+ expect(run(`document.getElementById('hud-target-name').textContent`)).toContain('圖書');
+ run(`clearNavigation()`);
 });
