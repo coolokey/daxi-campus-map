@@ -88,6 +88,24 @@
  #guide-arrival h2{font-size:20px;margin:5px 0}
  .field-guide[data-control-mode='bird'] #guide-route[data-status='ready'] :is(#guide-route-status,#guide-route-steps,#guide-place-notes,.nav-badge){display:none}
 }
+/* The handbook lives at the side; primary map controls stay above the scene. */
+.field-guide #guide-toggle,.field-guide.guide-collapsed #guide-toggle{position:fixed;left:0;top:calc(50% - 58px);height:116px;width:38px;padding:12px 8px;writing-mode:vertical-rl;letter-spacing:.12em;z-index:39;border:1px solid #b9c3ac;border-left:0;background:#193c32;color:#fff7e6}
+.field-guide #guide-panel{left:46px}
+#guide-quick-tools #guide-quick-floors{gap:16px}
+@media(min-width:769px) and (min-height:501px){.field-guide #guide-panel,.field-guide #guide-route{top:166px}.field-guide #mouse-look-hint{top:158px}}
+#guide-quick-floors{align-items:center}
+@media(max-width:768px){
+ #guide-quick-main{grid-template-columns:minmax(0,1fr)}
+ #guide-quick-tools .search-box{grid-column:1;grid-row:1}
+ .field-guide #guide-toggle,.field-guide.guide-collapsed #guide-toggle{top:190px;height:106px;width:36px}
+ .field-guide #guide-panel{left:44px;width:calc(100vw - 54px)}
+ .field-guide #guide-route{left:44px}
+}
+@media(max-height:500px) and (orientation:landscape){
+ .field-guide #guide-toggle,.field-guide.guide-collapsed #guide-toggle{top:119px;height:90px;width:36px}
+ .field-guide #guide-panel{left:44px}
+ .field-guide #guide-route{left:50%}
+}
 @media(max-height:500px) and (orientation:landscape){
  #guide-quick-tools{top:6px;left:10px;right:10px;padding:5px 7px}
  #guide-quick-main{display:flex}#guide-quick-tools .search-box{flex:1;min-width:140px}

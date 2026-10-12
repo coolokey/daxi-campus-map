@@ -124,7 +124,7 @@
       ctx.fillRect(0, 90, 260, 380);
       ctx.fillRect(764, 90, 260, 380);
 
-      // 前額齊瀏海 (小黃帽帽沿下自然露出的黑髮弧線)
+      // 前額齊瀏海
       ctx.beginPath();
       ctx.moveTo(300, 120);
       ctx.lineTo(724, 120);
@@ -307,35 +307,10 @@
       earR.position.set(0.38, -0.02, 0);
       headGroup.add(earR);
 
-      // 標誌性小黃帽 (圓球帽頂 + 前沿遮陽帽舌，完美還原 media_1791355365994.png)
-      const capMat = new THREE.MeshStandardMaterial({ color: 0xfacc15 });
-      const capDome = new THREE.Mesh(
-        new THREE.SphereGeometry(0.395, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.52),
-        capMat
-      );
-      capDome.position.y = 0.02;
-      headGroup.add(capDome);
-
-      // 帽頂小圓鈕扣
-      const capBtn = new THREE.Mesh(
-        new THREE.SphereGeometry(0.045, 12, 12),
-        new THREE.MeshStandardMaterial({ color: 0xeab308 })
-      );
-      capBtn.position.y = 0.435;
-      headGroup.add(capBtn);
-
-      // 前向遮陽帽沿 (黃色弧形遮陽板，緊密貼合帽頂下緣)
-      const visor = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.36, 0.41, 0.024, 24, 1, false, -Math.PI * 0.30, Math.PI * 0.60),
-        capMat
-      );
-      visor.position.set(0, 0.02, 0.16);
-      visor.rotation.x = 0.10;
-      visor.castShadow = true;
-      headGroup.add(visor);
-
       const longHair = new THREE.Group();longHair.name='avatar-long-hair';
       const hairMat = new THREE.MeshStandardMaterial({color:0x222027});
+      const shortHair=new THREE.Mesh(new THREE.SphereGeometry(.389,32,16,0,Math.PI*2,0,Math.PI*.48),hairMat);
+      shortHair.name='avatar-short-hair';shortHair.castShadow=true;headGroup.add(shortHair);
       for(const side of [-1,1]){
         const hair=new THREE.Mesh(new THREE.BoxGeometry(.15,.55,.38),hairMat);
         hair.position.set(side*.32,-.32,-.06);hair.castShadow=true;longHair.add(hair);

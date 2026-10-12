@@ -20,6 +20,8 @@ beforeAll(()=>{
 },180000);
 afterAll(()=>dom.window.close());
 it('restores saved appearance at startup and still applies when storage is unavailable',()=>{
+ expect(run(`avatarGroup.getObjectByName('avatar-short-hair')?.isMesh`)).toBe(true);
+ expect(run(`avatarGroup.getObjectByName('avatar-cap')`)).toBeUndefined();
  expect(run(`campusExplorer.getAvatarAppearance()`)).toEqual({gender:'female',outfit:'casual'});
  expect(run(`avatarGroup.getObjectByName('avatar-long-hair').visible`)).toBe(true);
  run(`window.savedStorageSetter=Storage.prototype.setItem;Storage.prototype.setItem=()=>{throw new Error('unavailable')};campusExplorer.setAvatarAppearance({gender:'male',outfit:'uniform'});Storage.prototype.setItem=savedStorageSetter;`);

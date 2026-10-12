@@ -20,6 +20,7 @@ function setup(width = 390, query = '') {
  }, navigateToRoom(id: string) { hud.dataset.destination = id; hud.classList.add('visible'); } };
  w.eval(readFileSync('public/campus-explorer/navigation-guide-model.js', 'utf8'));
  w.eval(readFileSync('public/campus-explorer/field-guide.js', 'utf8'));
+ expect(w.document.getElementById('guide-toggle').closest('#guide-quick-tools')).toBeNull();
  return { dom, w, hud, walks: () => walks, tick: () => new Promise(resolve => w.setTimeout(resolve, 0)) };
 }
 
