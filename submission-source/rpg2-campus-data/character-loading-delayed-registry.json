@@ -1,0 +1,7 @@
+{
+  "url": "http://127.0.0.1:8770/proposal/rpg/",
+  "registryDelayMs": 16000,
+  "movementDuringDelay": true,
+  "firstCohortPreserved": true,
+  "errors": []
+}
