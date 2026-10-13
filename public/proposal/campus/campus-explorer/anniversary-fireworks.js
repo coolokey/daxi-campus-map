@@ -36,6 +36,7 @@
       const resume=audio.resume().then(()=>{if(generation!==soundGeneration&&(!soundWanted||!running||document.hidden||window.proposalHidden))return audio.suspend();});$('audio-status').textContent='正在載入真實錄音……';
       const [result]=await Promise.race([Promise.all([audioEngine.load(),resume]),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(new Error('錄音載入逾時')),8000);})]);
       if(generation!==soundGeneration){if(!soundWanted||!running||document.hidden||window.proposalHidden)audio.suspend().catch(()=>{});return;}
+      if(!result.loaded)throw new Error('錄音尚未載入，請重新開啟音效重試');
       soundEnabled=soundWanted&&running&&!document.hidden&&!window.proposalHidden;
       audioEngine.setVolume(Number($('volume').value)/100);
       $('audio-status').textContent=result.failed.length?`已載入 ${result.loaded}/18；缺少 ${result.failed.length} 個資源，未載入部分保持無聲。`:`已載入 ${result.loaded}/18 個真實錄音樣本。`;

@@ -1,16 +1,16 @@
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
-function setup(fail=false){
+function setup(fail:boolean|string=false){
  const log:any[]=[],envelopes:any[]=[],param=()=>({value:0,setTargetAtTime(v:number){this.value=v},setValueAtTime(v:number){this.value=v},linearRampToValueAtTime(v:number,t:number){envelopes.push({v,t})}});
  const node=()=>({gain:param(),pan:param(),frequency:param(),threshold:param(),knee:param(),ratio:param(),attack:param(),release:param(),connect(){},disconnect(){},buffer:null,playbackRate:{value:1},start(...args:any[]){log.push(args)},stop(){}});
  const context:any={currentTime:10,sampleRate:12000,createGain:node,createStereoPanner:node,createBiquadFilter:node,createDynamicsCompressor:node,createWaveShaper:node,createConvolver:node,createBufferSource:node,createBuffer:(_:number,n:number)=>({getChannelData:()=>new Float32Array(n)}),decodeAudioData:async()=>({duration:2})};
  const manifest={layers:Object.fromEntries(['launch','near','far','crackle','tail','crowd'].map(k=>[k,[1,2,3].map(i=>({file:k+'-'+i+'.mp3',sha256:'a'.repeat(64)}))]))};
- const requested:any[]=[];
- const fetcher=async(...args:any[])=>{requested.push(args);return {ok:!fail,status:fail?404:200,json:async()=>manifest,arrayBuffer:async()=>new ArrayBuffer(8)}};
+ const requested:any[]=[];let failure=fail;
+ const fetcher=async(...args:any[])=>{requested.push(args);const bad=typeof failure==='string'?String(args[0]).includes(failure):failure;return {ok:!bad,status:bad?404:200,json:async()=>manifest,arrayBuffer:async()=>new ArrayBuffer(8)}};
  const w:any={};runInNewContext(readFileSync('public/campus-explorer/anniversary-model.js','utf8'),{window:w});
  runInNewContext(readFileSync('public/campus-explorer/firework-audio.js','utf8'),{window:w,URL,AbortController,fetch:fetcher,Float32Array,console});
- return{engine:w.CampusFireworkAudio.create(context,node(),{manifestURL:'https://school.test/sub/campus/assets/sounds/manifest.json',fetch:fetcher}),log,requested,envelopes};
+ return{engine:w.CampusFireworkAudio.create(context,node(),{manifestURL:'https://school.test/sub/campus/assets/sounds/manifest.json',fetch:fetcher}),log,requested,envelopes,setFailure:(value:boolean|string)=>{failure=value}};
 }
 describe('真實煙火錄音',()=>{
  it('截短的小煙火在樣本停止前淡出，避免直接切斷波形',async()=>{
@@ -51,4 +51,14 @@ describe('真實煙火錄音',()=>{
   expect(engine.stats().active).toBeLessThanOrEqual(18);
   engine.dispose();expect(engine.stats().active).toBe(0);
  });
+});
+
+it('斷網恢復後重新載入，成功結果沿用快取',async()=>{
+ const s=setup(true);expect((await s.engine.load()).loaded).toBe(0);s.setFailure(false);
+ const result=await s.engine.load();expect(result.loaded).toBe(18);expect(result.failed).toEqual([]);expect(s.requested).toHaveLength(20);
+ await s.engine.load();expect(s.requested).toHaveLength(20);
+});
+it('部分下載失敗只重試缺失樣本，不重複加入成功錄音',async()=>{
+ const s=setup('near-1.mp3');expect((await s.engine.load()).loaded).toBe(17);s.setFailure(false);
+ const result=await s.engine.load();expect(result.loaded).toBe(18);expect(result.failed).toEqual([]);expect(s.requested).toHaveLength(21);expect(s.engine.stats().loaded).toBe(18);
 });

@@ -6,7 +6,7 @@
  const materials=new Map(),mat=c=>{if(!materials.has(c))materials.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.97}));return materials.get(c)};
  function group(f,name){const g=new THREE.Group();g.name=name;g.userData={buildingId:b.id,floorNum:f};api.scene.add(g);floorMeshes.push(g);return g}
  function box(g,w,h,d,x,y,z,c){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;g.add(m);return m}
- const frontZ=b.z+b.depth/2,cream=0xc9c5b9,white=0xcacbc2,teal=0x447b79;
+ const frontZ=b.z+b.depth/2,cream=CampusSurfacePalette.forBuilding(b).exterior,white=0xb4b8ae,teal=0x447b79;
  // The circulation facade is open at 1F. No glass sheet or pillar closes a doorway.
  for(let f=1;f<=b.floors;f++){
   const g=group(f,`photo-admin-facade-${f}`),y=(f-1)*FH;
@@ -39,8 +39,8 @@
   const wall=new THREE.Mesh(new THREE.CylinderGeometry(.48,.48,2.8,12,1,false,0,Math.PI),mat(cream));wall.position.set(x,1.4,frontZ+.35);entrance.add(wall);
  }
  // Low entrance threshold and flank ramp are visual guides at the existing zero-level entrance.
- box(entrance,4.1,.045,1.15,b.x,.025,frontZ+.65,0xc4c0b5);
- const ramp=box(entrance,1.2,.08,3.1,b.x+4.35,.06,frontZ+1.5,0xc4c0b5);ramp.rotation.x=-.02;
+ box(entrance,4.1,.045,1.15,b.x,.025,frontZ+.65,0x93978d);
+ const ramp=box(entrance,1.2,.08,3.1,b.x+4.35,.06,frontZ+1.5,0x93978d);ramp.rotation.x=-.02;
  for(const x of [b.x+3.75,b.x+4.95])for(const h of [.55,.9]){
   box(entrance,.035,.035,3.1,x,h,frontZ+1.5,0xaab5b4);
   for(const z of [frontZ+.1,frontZ+1.5,frontZ+2.9])box(entrance,.035,h,.035,x,h/2,z,0xaab5b4);

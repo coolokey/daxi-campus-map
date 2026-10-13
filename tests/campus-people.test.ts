@@ -157,3 +157,12 @@ describe('老師輪替與人物避讓',()=>{
   s.w.campusExplorer.getFloorFilter=()=>1;s.api.update(.1,10);expect(teacher.root?.visible??false).toBe(false);s.dom.window.close();
  });
 });
+
+it('隱藏樓層的子牆面不會遮住人物姓名，可見牆面仍會遮擋',()=>{
+ const parent=new THREE.Group(),wall=new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshBasicMaterial());parent.add(wall);parent.visible=false;
+ const spy=vi.spyOn(THREE.Raycaster.prototype,'intersectObjects').mockReturnValue([{object:wall}] as any);
+ const s=setup(1280,w=>{w.campusExplorer.camera.position.set(-18,3,95);w.campusExplorer.camera.lookAt(-18,2,87);w.campusExplorer.camera.updateMatrixWorld();w.campusExplorer.getPlayerPosition=()=>new THREE.Vector3(-18,0,92)});
+ s.api.update(.1,1);const guard=s.api.actors.find((a:any)=>a.id==='gate-guard');expect(guard.isOccluded).toBe(false);
+ parent.visible=true;s.api.update(.1,2);expect(guard.isOccluded).toBe(true);
+ spy.mockRestore();s.dom.window.close();wall.geometry.dispose();(wall.material as THREE.Material).dispose();
+});

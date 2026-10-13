@@ -1,3 +1,13 @@
+// Photo references: admin LINE_ALBUM_3D_261007_41/47 (cream paint, grey
+// terrazzo); gym 12/18/58 (concrete, beige tiles, blue stair skirt).
+// Other wings retain their aerial-supported exterior hue; interiors are schematic.
+const CampusSurfacePalette = (()=>{
+ const base={wall:0xb2ad9c,band:0x8b9a8e,floor:0x85877d,stair:0x7b807b,edge:0x565f5b,handrail:0x73574b,skirt:0x69726a};
+ const admin={wall:0xb5ac96,band:0xa1a393,floor:0x878579,stair:0x737974,edge:0x515a57,handrail:0x714f48,skirt:0x606963,exterior:0xb8b8ae};
+ const gym={wall:0xb0b3a0,band:0xb18a7d,floor:0x727672,stair:0xa09b8d,edge:0x76776b,handrail:0x826346,skirt:0x285d88,exterior:0xaf8579};
+ const shade=c=>[16,8,0].reduce((n,shift)=>n|(Math.round(((c>>shift)&255)*.92)<<shift),0);
+ return {forBuilding:(b={})=>({...base,exterior:shade(b.color||0xb1b2a5),...(['admin-front','admin-back','admin-gallery'].includes(b.id)?admin:b.id==='gym-bld'?gym:{})})};
+})();
 const FH = 3.6; // Floor Height in meters
 
     const BUILDINGS_CONFIG = [
