@@ -1,0 +1,42 @@
+{
+  "commit": "91399eb",
+  "counts": {
+    "buildings": 12,
+    "rooms": 92,
+    "unknownRoomNames": 21,
+    "stairs": 13,
+    "candidateEntrances": 30,
+    "navigationNodes": 17313,
+    "navigationEdges": 17411,
+    "collisionVolumes": 1237
+  },
+  "checks": [
+    {
+      "kind": "campus",
+      "bytes": 184390,
+      "hashVerified": true
+    },
+    {
+      "kind": "navigation",
+      "bytes": 6909936,
+      "hashVerified": true
+    },
+    {
+      "kind": "technologyPilot",
+      "bytes": 89151,
+      "hashVerified": true
+    },
+    {
+      "url": "https://coolokey.github.io/daxi-campus-map/",
+      "status": 200
+    },
+    {
+      "url": "https://coolokey.github.io/daxi-campus-map/proposal/",
+      "status": 200
+    },
+    {
+      "url": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/",
+      "status": 200
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "url": "http://127.0.0.1:8770/proposal/rpg/",
+  "results": [
+    "published world renders and NPCs move",
+    "three scales, map navigation and keyboard after map close",
+    "NPC dialogue and existing mathematics task",
+    "mobile layout and touch full map"
+  ],
+  "errors": [],
+  "failed": []
+}

@@ -1,0 +1,14 @@
+{
+  "url": "http://127.0.0.1:8770/proposal/rpg/",
+  "results": [
+    "existing game retained; pilot loaded on demand at gate",
+    "real keyboard walk gate to source entrance and enter 1F",
+    "real keyboard corridor walk and south stair transition to 2F",
+    "mentor dialogue accepts original five questions, wrong answer hint, reward, one completion event and return to same room",
+    "real keyboard return via 2F stairs, 1F corridor and exterior exit",
+    "iPad and phone portrait/landscape layout, minimap touch and controls",
+    "return to original campus mode"
+  ],
+  "errors": [],
+  "failed": []
+}
