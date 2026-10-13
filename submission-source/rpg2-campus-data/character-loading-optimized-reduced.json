@@ -1,0 +1,137 @@
+{
+  "url": "http://127.0.0.1:8770/proposal/rpg/",
+  "label": "optimized-reduced",
+  "results": [
+    {
+      "width": 1440,
+      "network": {
+        "downloadBytesPerSecond": 200000,
+        "latencyMs": 120,
+        "cache": false
+      },
+      "paints": {
+        "teacher": 19457.800000000745,
+        "student": 19466.5,
+        "player": 19466.800000000745
+      },
+      "map": {
+        "start": 150.5,
+        "end": 19440.400000002235,
+        "bytes": 2943746
+      },
+      "registry": {
+        "start": 895,
+        "end": 2108.2000000029802,
+        "bytes": 72966
+      },
+      "parallel": true,
+      "atlases": [
+        {
+          "name": "player-male-uniform.webp",
+          "bytes": 33498,
+          "start": 2119.300000000745,
+          "end": 3226.60000000149
+        },
+        {
+          "name": "staff-045.webp",
+          "bytes": 33698,
+          "start": 2119.400000002235,
+          "end": 3226.800000000745
+        },
+        {
+          "name": "staff-083.webp",
+          "bytes": 34364,
+          "start": 2119.60000000149,
+          "end": 3274.800000000745
+        },
+        {
+          "name": "staff-053.webp",
+          "bytes": 34012,
+          "start": 2119.60000000149,
+          "end": 3415.300000000745
+        },
+        {
+          "name": "student-4.webp",
+          "bytes": 33498,
+          "start": 2119.7000000029802,
+          "end": 4331
+        },
+        {
+          "name": "student-8.webp",
+          "bytes": 33498,
+          "start": 2119.7000000029802,
+          "end": 4345.60000000149
+        },
+        {
+          "name": "student-10.webp",
+          "bytes": 33498,
+          "start": 2119.800000000745,
+          "end": 4392.10000000149
+        },
+        {
+          "name": "gate-guard.webp",
+          "bytes": 33530,
+          "start": 2119.900000002235,
+          "end": 4486.10000000149
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "network": {
+        "downloadBytesPerSecond": 200000,
+        "latencyMs": 120,
+        "cache": false
+      },
+      "paints": {
+        "teacher": 18948.89999999851,
+        "player": 18949.800000000745,
+        "student": 18949.800000000745
+      },
+      "map": {
+        "start": 156.5,
+        "end": 18942,
+        "bytes": 2943746
+      },
+      "registry": {
+        "start": 927.1000000014901,
+        "end": 2146.60000000149,
+        "bytes": 72966
+      },
+      "parallel": true,
+      "atlases": [
+        {
+          "name": "player-male-uniform.webp",
+          "bytes": 33498,
+          "start": 2155.800000000745,
+          "end": 3263.89999999851
+        },
+        {
+          "name": "staff-004.webp",
+          "bytes": 33766,
+          "start": 2155.89999999851,
+          "end": 3271.60000000149
+        },
+        {
+          "name": "student-4.webp",
+          "bytes": 33498,
+          "start": 2156,
+          "end": 3293.89999999851
+        },
+        {
+          "name": "student-3.webp",
+          "bytes": 33182,
+          "start": 2156.10000000149,
+          "end": 3432
+        },
+        {
+          "name": "gate-guard.webp",
+          "bytes": 33530,
+          "start": 2156.199999999255,
+          "end": 3924.5
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

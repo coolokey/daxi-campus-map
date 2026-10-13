@@ -1,0 +1,191 @@
+{
+  "url": "http://127.0.0.1:8770/proposal/rpg/",
+  "label": "baseline",
+  "results": [
+    {
+      "width": 1440,
+      "network": {
+        "downloadBytesPerSecond": 200000,
+        "latencyMs": 120,
+        "cache": false
+      },
+      "paints": {
+        "teacher": 21513.39999999851,
+        "student": 24155.5,
+        "player": 25564.5
+      },
+      "map": {
+        "start": 153.39999999850988,
+        "end": 17601.39999999851,
+        "bytes": 2943746
+      },
+      "registry": {
+        "start": 17877.099999997765,
+        "end": 18505.89999999851,
+        "bytes": 98712
+      },
+      "parallel": false,
+      "atlases": [
+        {
+          "name": "staff-007.png",
+          "bytes": 95179,
+          "start": 18533,
+          "end": 21503.5
+        },
+        {
+          "name": "staff-008.png",
+          "bytes": 96175,
+          "start": 18533.099999997765,
+          "end": 21539.699999999255
+        },
+        {
+          "name": "staff-009.png",
+          "bytes": 94942,
+          "start": 18533.300000000745,
+          "end": 21511.599999997765
+        },
+        {
+          "name": "staff-010.png",
+          "bytes": 94383,
+          "start": 18533.300000000745,
+          "end": 21532.099999997765
+        },
+        {
+          "name": "staff-011.png",
+          "bytes": 94521,
+          "start": 18533.5,
+          "end": 21536
+        },
+        {
+          "name": "staff-012.png",
+          "bytes": 97639,
+          "start": 18533.5,
+          "end": 21577.39999999851
+        },
+        {
+          "name": "student-7.png",
+          "bytes": 85322,
+          "start": 18533.599999997765,
+          "end": 24152
+        },
+        {
+          "name": "student-6.png",
+          "bytes": 86693,
+          "start": 18533.599999997765,
+          "end": 24153
+        },
+        {
+          "name": "student-8.png",
+          "bytes": 86693,
+          "start": 18533.699999999255,
+          "end": 24218.800000000745
+        },
+        {
+          "name": "student-9.png",
+          "bytes": 85322,
+          "start": 18533.800000000745,
+          "end": 24235.5
+        },
+        {
+          "name": "student-10.png",
+          "bytes": 86693,
+          "start": 18534,
+          "end": 24243.699999999255
+        },
+        {
+          "name": "student-11.png",
+          "bytes": 85322,
+          "start": 18534,
+          "end": 24259.39999999851
+        },
+        {
+          "name": "player-male-uniform.png",
+          "bytes": 86693,
+          "start": 18534.199999999255,
+          "end": 25560
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "network": {
+        "downloadBytesPerSecond": 200000,
+        "latencyMs": 120,
+        "cache": false
+      },
+      "paints": {
+        "student": 21346.60000000149,
+        "teacher": 21561.199999999255,
+        "player": 22921.5
+      },
+      "map": {
+        "start": 158.69999999925494,
+        "end": 17678.800000000745,
+        "bytes": 2943746
+      },
+      "registry": {
+        "start": 17977.400000002235,
+        "end": 18622,
+        "bytes": 98712
+      },
+      "parallel": false,
+      "atlases": [
+        {
+          "name": "staff-004.png",
+          "bytes": 95447,
+          "start": 18650,
+          "end": 21559.900000002235
+        },
+        {
+          "name": "staff-005.png",
+          "bytes": 95264,
+          "start": 18650.10000000149,
+          "end": 21568.300000000745
+        },
+        {
+          "name": "staff-006.png",
+          "bytes": 95663,
+          "start": 18650.60000000149,
+          "end": 21598.400000002235
+        },
+        {
+          "name": "student-4.png",
+          "bytes": 86693,
+          "start": 18650.800000000745,
+          "end": 21378.300000000745
+        },
+        {
+          "name": "student-5.png",
+          "bytes": 85322,
+          "start": 18651,
+          "end": 21341.699999999255
+        },
+        {
+          "name": "student-6.png",
+          "bytes": 86693,
+          "start": 18651,
+          "end": 21551.5
+        },
+        {
+          "name": "student-7.png",
+          "bytes": 85322,
+          "start": 18651.199999999255,
+          "end": 22777.5
+        },
+        {
+          "name": "gate-guard.png",
+          "bytes": 95897,
+          "start": 18651.60000000149,
+          "end": 22915.300000000745
+        },
+        {
+          "name": "player-male-uniform.png",
+          "bytes": 86693,
+          "start": 18651.699999999255,
+          "end": 22915.900000002235
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

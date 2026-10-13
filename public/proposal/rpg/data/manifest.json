@@ -50,8 +50,8 @@
     "bytes": 235095
   },
   "characters": {
-    "file": "rpg-characters-v3.json",
-    "sha256": "881de7b2f642a12df090d36c834022876f08bfc3683943c623b2b30e4d406e54",
+    "file": "rpg-characters-v4.json",
+    "sha256": "9fce7c032b1c0cfc4a49c2119f807c15034b0b5c3d5292556105f9f61edbff3a",
     "count": 109,
     "teachers": 91,
     "directions": 8,
@@ -61,6 +61,8 @@
     "portraitSize": [
       512,
       640
-    ]
+    ],
+    "encoding": "lossless-webp",
+    "preload": "player-current-and-next-cohort"
   }
 }
