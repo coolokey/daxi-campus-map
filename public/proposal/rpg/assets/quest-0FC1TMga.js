@@ -1,0 +1,1 @@
+import{n as e,r as t,t as n}from"./DemoQuest-kxEvk0Tf.js";var r=t(),i=e();function a(e,t){(0,r.createRoot)(e).render((0,i.jsx)(n,{onClose:t}))}export{a as mountQuest};

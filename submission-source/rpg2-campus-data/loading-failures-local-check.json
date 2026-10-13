@@ -1,0 +1,10 @@
+{
+  "url": "http://127.0.0.1:8770/proposal/rpg/",
+  "results": [
+    "NPC dialogue module failure resumes exploration without unhandled rejection",
+    "Late dialogue completion is ignored after another task",
+    "Mentor task module failure restores exploration and controls",
+    "Optional minimap module failure leaves exploration usable and shows recovery message",
+    "Building entry and quick-task clicks cannot start conflicting scene transitions"
+  ]
+}

@@ -63,6 +63,28 @@
       640
     ],
     "encoding": "lossless-webp",
-    "preload": "player-current-and-next-cohort"
+    "preload": "player-current-and-next-cohort",
+    "roamingCaps": {
+      "desktop": {
+        "teacher": 3,
+        "student": 3
+      },
+      "phone": {
+        "teacher": 1,
+        "student": 2
+      }
+    }
+  },
+  "collisionAudit": {
+    "footprints": 62,
+    "sourcePixels": [
+      1525,
+      1031
+    ],
+    "baseWorld": [
+      2400,
+      1624
+    ],
+    "geometry": "ground footprints on retained illustration; not survey measurements"
   }
 }

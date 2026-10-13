@@ -1,0 +1,11 @@
+{
+  "url": "http://127.0.0.1:8770/proposal/rpg/",
+  "results": [
+    "1440x900 scale 1: real keyboard blocked at building/fountain, field gate and turf reachable, player and NPC feet stay outside solids",
+    "1440x900 scale 1.5: real keyboard blocked at building/fountain, field gate and turf reachable, player and NPC feet stay outside solids",
+    "1440x900 scale 2: real keyboard blocked at building/fountain, field gate and turf reachable, player and NPC feet stay outside solids",
+    "390x844 scale 1: real keyboard blocked at building/fountain, field gate and turf reachable, player and NPC feet stay outside solids"
+  ],
+  "errors": [],
+  "failed": []
+}
