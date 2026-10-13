@@ -126,6 +126,12 @@
   if(l)return M.groundAt(l,position.x,position.z,y);
   return CampusOutdoorPlan.ground(position);
  }
+ // Keep the feet on a connected surface. Stair rails and slab edges must not
+ // become a multi-floor drop when keyboard or joystick input drifts sideways.
+ function stepHeight(from,x,z){
+  const current=floorAt(from),next=floorAt({x,y:from.y,z});
+  return Math.abs(next-current)<=.35+1e-6?next:null;
+ }
  // Static graph requests share BFS work. Runtime searches use fresh state.
  const startupSearches=new Map();let buildingGraph=true;
  // Four-connected grid connectors reject blocked edges, floor holes and courtyard voids.
@@ -226,5 +232,5 @@
  let touch=null;renderer.domElement.addEventListener('touchstart',e=>{if(currentMode!=='bird'&&e.touches.length===1)touch={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});
  renderer.domElement.addEventListener('touchmove',e=>{if(!touch||currentMode==='bird')return;const p=e.touches[0];if(!p)return;applyManualCameraRotation(p.clientX-touch.x,p.clientY-touch.y);touch={x:p.clientX,y:p.clientY};e.preventDefault()},{passive:false});renderer.domElement.addEventListener('touchend',()=>touch=null);
  const roomAt=p=>{const f=Math.floor((p.y+.15)/FH)+1;for(const l of layouts){const q=l.local(p.x,p.z),r=l.rooms.find(r=>r.floor===f&&CampusSpatialPlan.contains(r,q.u,q.v));if(r)return r}return null};
- window.campusWalkWorld={layouts,graph,ground:floorAt,route,gridPath,updateCamera,roomAt,galleries,insideFloor};
+ window.campusWalkWorld={layouts,graph,ground:floorAt,stepHeight,route,gridPath,updateCamera,roomAt,galleries,insideFloor};
 })();

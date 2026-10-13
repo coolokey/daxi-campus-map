@@ -207,6 +207,35 @@ it('player movement consults people collisions and automatic walking waits inste
  expect(run(`document.getElementById('mode-toast').textContent`)).toContain('前方有人');
  run(`delete window.campusPeople;clearNavigation();`);
 });
+it('walking across the side of a stair cannot drop the player to a lower floor',()=>{
+ run(`window.stairFalls=[];for(const l of campusWalkWorld.layouts)for(const r of l.ramps||[])for(const direction of [-1,1])for(const jumping of [false,true]){
+ const middle=CampusWalkMath.rampPoint(r,.55);avatarGroup.position.set(middle.x,middle.y+(jumping?.55:0),middle.z);isJumping=jumping;
+ moveAvatarWithCollision(avatarGroup.position,r.axis==='z'?direction*4:0,r.axis==='x'?direction*4:0);
+ const support=campusWalkWorld.ground(avatarGroup.position);
+ if(support<middle.y-.35)stairFalls.push({building:l.id,floor:r.floor,from:middle.y,to:support,jumping,direction});
+ }isJumping=false;`);
+ expect(run(`stairFalls`)).toEqual([]);
+});
+it('every stair flight and switchback landing supports ordinary walking up and down',()=>{
+ run(`window.stairWalkIssues=[];for(const l of campusWalkWorld.layouts)for(const s of l.stairs||[])for(let f=1;f<l.b.floors;f++){
+ const ramps=l.ramps.filter(r=>r.stairId===s.id&&r.floor===f),points=[];
+ for(const r of ramps)for(let i=0;i<=36;i++)points.push(CampusWalkMath.rampPoint(r,i/36));
+ for(const route of [points,[...points].reverse()])for(const automatic of [false,true]){
+ avatarGroup.position.set(route[0].x,route[0].y,route[0].z);isJumping=false;
+ for(const p of route.slice(1)){moveAvatarWithCollision(avatarGroup.position,p.x-avatarGroup.position.x,p.z-avatarGroup.position.z,automatic?p.y-avatarGroup.position.y:0);
+ if(Math.abs(avatarGroup.position.y-p.y)>.2||Math.hypot(avatarGroup.position.x-p.x,avatarGroup.position.z-p.z)>.2){stairWalkIssues.push({stair:s.id,floor:f,expected:p,actual:avatarGroup.position.clone()});break}}
+ }} `);
+ expect(run(`stairWalkIssues`)).toEqual([]);
+},20000);
+it('diagonal joystick drift slides along the stair edge while keeping forward movement',()=>{
+ run(`window.stairSlideIssues=[];for(const l of campusWalkWorld.layouts)for(const r of l.ramps||[])for(const side of [-1,1]){
+ const p=CampusWalkMath.rampPoint(r,.5),axis=r.axis,forward=Math.sign(r.end[axis]-r.start[axis])*.5;
+ avatarGroup.position.set(p.x,p.y,p.z);isJumping=false;
+ moveAvatarWithCollision(avatarGroup.position,axis==='x'?forward:side*3,axis==='z'?forward:side*3);
+ if(Math.abs(avatarGroup.position[axis]-p[axis]-forward)>.15||campusWalkWorld.ground(avatarGroup.position)<p.y-.35)stairSlideIssues.push({building:l.id,floor:r.floor});
+ }`);
+ expect(run(`stairSlideIssues`)).toEqual([]);
+});
 it('real campus teacher patrols respect walls, furniture and office floor boundaries',()=>{
  // Physics simulation in bird view avoids unrelated name-tag occlusion raycasts.
  run(`document.body.dataset.controlMode='bird';`);
