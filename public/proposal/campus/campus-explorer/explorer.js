@@ -275,6 +275,7 @@
 
       function buildArm(left){
         const side=left?-1:1,arm=new THREE.Group();arm.position.set(side*.49,1.72,0);arm.rotation.z=side*.07;
+        arm.name='avatar-arm-'+(left?'left':'right');
         oval(arm,'avatar-sleeve-'+(left?'left':'right'),navy.clone(),side*.015,-.12,0,.18,.235,.185);
         oval(arm,'avatar-shoulder-trim',sky,side*.135,-.08,.02,.055,.16,.13);
         oval(arm,'avatar-forearm',skin,side*.025,-.41,.015,.105,.26,.11);
@@ -284,6 +285,7 @@
       avatarLeftArm=buildArm(true);avatarRightArm=buildArm(false);
       function buildLeg(left){
         const side=left?-1:1,leg=new THREE.Group();leg.position.set(side*.21,.96,0);
+        leg.name='avatar-leg-'+(left?'left':'right');
         oval(leg,'avatar-shorts-'+(left?'left':'right'),navy.clone(),0,-.13,0,.19,.25,.19);
         oval(leg,'avatar-shorts-trim',sky,side*.155,-.12,.015,.028,.18,.08);
         oval(leg,'avatar-calf',skin,0,-.43,0,.12,.24,.125);
@@ -329,6 +331,43 @@
       return getAvatarAppearance();
     }
     try{const saved=JSON.parse(localStorage.getItem('daxi-avatar-appearance')||'null');if(saved&&typeof saved==='object')setAvatarAppearance(saved);}catch(_){/* Keep default on unavailable or invalid storage. */}
+
+    // Geometry/textures are shared, but each person owns materials and animated joints.
+    function createCharacter(spec={}){
+      const root=avatarGroup.clone(true),materials=new Map();
+      root.name='campus-character';root.position.set(0,0,0);root.rotation.set(0,0,0);root.visible=true;
+      root.scale.setScalar(spec.role==='teacher'?.72:.65);
+      root.traverse(node=>{
+        if(!node.material)return;
+        const own=material=>{if(!materials.has(material))materials.set(material,material.clone());return materials.get(material)};
+        node.material=Array.isArray(node.material)?node.material.map(own):own(node.material);
+      });
+      const female=spec.hairStyle?spec.hairStyle==='long':spec.gender==='female';
+      root.getObjectByName('avatar-long-hair').visible=female;
+      root.getObjectByName('avatar-boy-fringe').visible=!female;
+      const uniform=spec.role!=='teacher'&&spec.outfit!=='casual',shirt=spec.shirtColor??0x899b8e;
+      root.getObjectByName('avatar-torso').material.forEach((material,index)=>{
+        material.map=uniform&&index===4?avatarUniformTexture:null;
+        setAvatarColor(material,uniform?(index===4?0xffffff:0x3d5874):shirt);material.needsUpdate=true;
+      });
+      for(const name of ['avatar-collar','avatar-sleeve-left','avatar-sleeve-right'])setAvatarColor(root.getObjectByName(name).material,uniform?0x3d5874:shirt);
+      for(const side of ['left','right']){
+        const pants=root.getObjectByName('avatar-shorts-'+side);setAvatarColor(pants.material,uniform?0x3d5874:0x586267);
+        if(spec.role==='teacher'){pants.position.y=-.34;pants.scale.y=.48;}
+      }
+      if(spec.hairColor!=null){
+        const hairMaterial=root.getObjectByName('avatar-short-hair').material;
+        setAvatarColor(hairMaterial,spec.hairColor);
+      }
+      if(spec.glasses){
+        const glasses=new THREE.Group();glasses.name='avatar-glasses';glasses.position.set(0,-.045,.445);
+        const frame=new THREE.MeshStandardMaterial({color:0x514a43,roughness:.95});frame.color.convertSRGBToLinear();
+        for(const x of [-.17,.17]){const rim=new THREE.Mesh(new THREE.TorusGeometry(.118,.015,6,20),frame);rim.position.x=x;rim.scale.y=.83;glasses.add(rim)}
+        const bridge=new THREE.Mesh(new THREE.CylinderGeometry(.013,.013,.11,6),frame);bridge.rotation.z=Math.PI/2;glasses.add(bridge);
+        root.getObjectByName('avatar-head').add(glasses);
+      }
+      return root;
+    }
 
     /* ==========================================================================
        4. CAMPUS ENVIRONMENT, STAIRCASES & ARCHITECTURE
@@ -3326,6 +3365,7 @@
       renderMinimap();
       window.campusFloorExhibit?.update();
       window.campusAnniversary?.update(performance.now());
+      window.campusPeople?.update(delta,clock.elapsedTime);
       renderer.render(scene, camera);
     }
 
@@ -3341,7 +3381,7 @@
       track:{id:'track',name:'操場及綜合球場',buildingName:'操場',floor:1,cat:'sports',node:'track-center'},
       breezeway:{id:'breezeway',name:'中央通廊',buildingName:'教學區',floor:1,cat:'special',node:'breezeway-mid'}
     });
-    window.campusExplorer = {scene,camera,renderer,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,clearNavigation,getNavigationState,setFloorFilter,setControlMode,manualTakeover,resetManualInput,motionBlocked,getAvatarAppearance,setAvatarAppearance};
+    window.campusExplorer = {scene,camera,renderer,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,clearNavigation,getNavigationState,setFloorFilter,setControlMode,manualTakeover,resetManualInput,motionBlocked,getAvatarAppearance,setAvatarAppearance,createCharacter,getPlayerPosition:()=>avatarGroup.position.clone()};
     document.body.dataset.controlMode=currentMode;
     requestAnimationFrame(animate);
     checkUrlQueryTarget();

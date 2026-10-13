@@ -7,6 +7,9 @@ for(const file of ['campus-data.js','spatial-world.js','photo-facade.js','art-di
 // otherwise copying the modules would leave the old hashed bundle running.
 fs.copyFileSync(path.join(source,'index.html'),path.join(target,'index.html'));
 const html=fs.readFileSync(path.join(target,'index.html'),'utf8');
+for(const file of ['staff-data.js','campus-people.js','campus-people.css'])fs.copyFileSync(path.join(source,file),path.join(target,file));
+const staffTarget=path.join(target,'assets/staff');fs.mkdirSync(staffTarget,{recursive:true});
+for(const file of fs.readdirSync(path.join(source,'assets/staff')))fs.copyFileSync(path.join(source,'assets/staff',file),path.join(staffTarget,file));
 for(const file of ['avatar-appearance-ui.js','avatar-appearance.css'])fs.copyFileSync(path.join(source,file),path.join(target,file));
 for(const match of html.matchAll(/(?:src|href)="([^"?#]+\.(?:js|css))"/g)){
   const file=match[1];if(!fs.existsSync(path.join(target,file)))fs.copyFileSync(path.join(source,file),path.join(target,file));

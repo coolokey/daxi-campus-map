@@ -19,6 +19,17 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','spatial-world.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('creates independent campus characters without changing player appearance or route',()=>{
+ run(`window.playerSnapshot=avatarGroup.position.clone();window.playerHair=avatarGroup.getObjectByName('avatar-short-hair').material.color.clone();window.teacher=campusExplorer.createCharacter({role:'teacher',gender:'male',glasses:true,hairColor:0x77716b,shirtColor:0x859a88});window.student=campusExplorer.createCharacter({role:'student',gender:'female',outfit:'uniform'});`);
+ expect(run(`teacher!==avatarGroup&&teacher.parent===null&&avatarGroup.position.equals(playerSnapshot)`)).toBe(true);
+ expect(run(`teacher.getObjectByName('avatar-arm-left')!==avatarLeftArm`)).toBe(true);
+ expect(run(`teacher.getObjectByName('avatar-short-hair').material!==avatarGroup.getObjectByName('avatar-short-hair').material`)).toBe(true);
+ expect(run(`avatarGroup.getObjectByName('avatar-short-hair').material.color.equals(playerHair)`)).toBe(true);
+ expect(run(`teacher.getObjectByName('avatar-glasses')?.isGroup`)).toBe(true);
+ expect(run(`student.getObjectByName('avatar-long-hair').visible`)).toBe(true);
+ expect(run(`!!student.getObjectByName('avatar-torso').material[4].map`)).toBe(true);
+ expect(run(`teacher.getObjectByName('avatar-torso').material[4].map===null`)).toBe(true);
+});
 it('restores saved appearance at startup and still applies when storage is unavailable',()=>{
  expect(run(`avatarGroup.getObjectByName('avatar-short-hair')?.isMesh`)).toBe(true);
  expect(run(`avatarGroup.getObjectByName('avatar-cap')`)).toBeUndefined();

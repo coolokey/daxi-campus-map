@@ -1,0 +1,717 @@
+[
+  {
+    "id": "staff-001",
+    "name": "林晏瑄",
+    "source": "002+003.jpg",
+    "crop": [
+      1712,
+      263,
+      2034,
+      702
+    ],
+    "currentTitle": "校長",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-023",
+    "name": "韓美瑛",
+    "source": "008+009.jpg",
+    "crop": [
+      87,
+      377,
+      372,
+      781
+    ],
+    "currentTitle": "708 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-045",
+    "name": "黃文昌",
+    "source": "008+009.jpg",
+    "crop": [
+      844,
+      377,
+      1154,
+      781
+    ],
+    "currentTitle": "806 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-013",
+    "name": "游家興",
+    "source": "008+009.jpg",
+    "crop": [
+      87,
+      1017,
+      372,
+      1438
+    ],
+    "currentTitle": "輔導主任",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-016",
+    "name": "陳古學",
+    "source": "008+009.jpg",
+    "crop": [
+      471,
+      1017,
+      757,
+      1438
+    ],
+    "currentTitle": "會計室主任",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-019",
+    "name": "吳玉珍",
+    "source": "008+009.jpg",
+    "crop": [
+      844,
+      1017,
+      1154,
+      1438
+    ],
+    "currentTitle": "人事室主任",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-022",
+    "name": "李昱瑩",
+    "source": "008+009.jpg",
+    "crop": [
+      2233,
+      456,
+      2419,
+      781
+    ],
+    "currentTitle": "教學組長",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-025",
+    "name": "游貿仁",
+    "source": "008+009.jpg",
+    "crop": [
+      1303,
+      895,
+      1501,
+      1158
+    ],
+    "currentTitle": "註冊組長",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-030",
+    "name": "林耀明",
+    "source": "008+009.jpg",
+    "crop": [
+      1774,
+      895,
+      1960,
+      1158
+    ],
+    "currentTitle": "資訊組長",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-059",
+    "name": "林佳均",
+    "source": "008+009.jpg",
+    "crop": [
+      2233,
+      895,
+      2421,
+      1158
+    ],
+    "currentTitle": "增置員額",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-068",
+    "name": "陳淑惠",
+    "source": "008+009.jpg",
+    "crop": [
+      1774,
+      1316,
+      1960,
+      1579
+    ],
+    "currentTitle": "幹事",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-070",
+    "name": "吳承翰",
+    "source": "008+009.jpg",
+    "crop": [
+      2005,
+      1316,
+      2196,
+      1579
+    ],
+    "currentTitle": "幹事",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-074",
+    "name": "葉思妘",
+    "source": "008+009.jpg",
+    "crop": [
+      2233,
+      1316,
+      2421,
+      1579
+    ],
+    "currentTitle": "專任助理",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-049",
+    "name": "侯玓妤",
+    "source": "012+013.jpg",
+    "crop": [
+      60,
+      600,
+      246,
+      866
+    ],
+    "currentTitle": "輔導組長",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-052",
+    "name": "孫凱琳",
+    "source": "012+013.jpg",
+    "crop": [
+      290,
+      600,
+      476,
+      866
+    ],
+    "currentTitle": "資料組長",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-055",
+    "name": "曹淑珍",
+    "source": "012+013.jpg",
+    "crop": [
+      521,
+      600,
+      707,
+      866
+    ],
+    "currentTitle": "特教組長",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-081",
+    "name": "邱采薇",
+    "source": "012+013.jpg",
+    "crop": [
+      752,
+      600,
+      938,
+      866
+    ],
+    "currentTitle": "資源班導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-084",
+    "name": "蕭安彤",
+    "source": "012+013.jpg",
+    "crop": [
+      982,
+      600,
+      1169,
+      866
+    ],
+    "currentTitle": "資源班專任",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-086",
+    "name": "簡嘉慧",
+    "source": "012+013.jpg",
+    "crop": [
+      60,
+      986,
+      246,
+      1252
+    ],
+    "currentTitle": "特教班專任",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-088",
+    "name": "鄒蜀美",
+    "source": "012+013.jpg",
+    "crop": [
+      290,
+      986,
+      476,
+      1252
+    ],
+    "currentTitle": "專任輔導教師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-089",
+    "name": "鄭涵文",
+    "source": "012+013.jpg",
+    "crop": [
+      521,
+      986,
+      707,
+      1252
+    ],
+    "currentTitle": "專任輔導教師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-026",
+    "name": "吳嘉祥",
+    "source": "012+013.jpg",
+    "crop": [
+      752,
+      986,
+      938,
+      1252
+    ],
+    "currentTitle": "709 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-038",
+    "name": "李雅婷",
+    "source": "012+013.jpg",
+    "crop": [
+      982,
+      986,
+      1169,
+      1252
+    ],
+    "currentTitle": "代理教師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-083",
+    "name": "蘇彥如",
+    "source": "012+013.jpg",
+    "crop": [
+      60,
+      1372,
+      246,
+      1638
+    ],
+    "currentTitle": "資源班導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-079",
+    "name": "游敬亷",
+    "source": "012+013.jpg",
+    "crop": [
+      290,
+      1372,
+      476,
+      1638
+    ],
+    "currentTitle": "特教班導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-078",
+    "name": "黃鳳敏",
+    "source": "012+013.jpg",
+    "crop": [
+      752,
+      1372,
+      938,
+      1638
+    ],
+    "currentTitle": "特教助理員",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-031",
+    "name": "劉惠珠",
+    "source": "012+013.jpg",
+    "crop": [
+      1404,
+      281,
+      1620,
+      602
+    ],
+    "currentTitle": "801 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-034",
+    "name": "羅培瑛",
+    "source": "012+013.jpg",
+    "crop": [
+      1759,
+      281,
+      1975,
+      602
+    ],
+    "currentTitle": "802 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-037",
+    "name": "陳惠晶",
+    "source": "012+013.jpg",
+    "crop": [
+      2114,
+      281,
+      2330,
+      602
+    ],
+    "currentTitle": "803 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-040",
+    "name": "張一梅",
+    "source": "012+013.jpg",
+    "crop": [
+      1404,
+      763,
+      1620,
+      1084
+    ],
+    "currentTitle": "804 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-042",
+    "name": "蔡淑禎",
+    "source": "012+013.jpg",
+    "crop": [
+      1759,
+      763,
+      1975,
+      1084
+    ],
+    "currentTitle": "805 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-048",
+    "name": "謝如琳",
+    "source": "012+013.jpg",
+    "crop": [
+      1404,
+      1251,
+      1620,
+      1572
+    ],
+    "currentTitle": "807 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-050",
+    "name": "陳毅宏",
+    "source": "012+013.jpg",
+    "crop": [
+      1759,
+      1251,
+      1975,
+      1572
+    ],
+    "currentTitle": "808 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-053",
+    "name": "陳秋梅",
+    "source": "012+013.jpg",
+    "crop": [
+      2114,
+      1251,
+      2330,
+      1572
+    ],
+    "currentTitle": "809 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-058",
+    "name": "康嘉玲",
+    "source": "014+015.jpg",
+    "crop": [
+      149,
+      281,
+      360,
+      596
+    ],
+    "currentTitle": "901 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-061",
+    "name": "陳建生",
+    "source": "014+015.jpg",
+    "crop": [
+      509,
+      281,
+      719,
+      596
+    ],
+    "currentTitle": "902 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-063",
+    "name": "劉信志",
+    "source": "014+015.jpg",
+    "crop": [
+      868,
+      281,
+      1079,
+      596
+    ],
+    "currentTitle": "903 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-065",
+    "name": "林璟薇",
+    "source": "014+015.jpg",
+    "crop": [
+      149,
+      763,
+      360,
+      1079
+    ],
+    "currentTitle": "904 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-067",
+    "name": "張秀萍",
+    "source": "014+015.jpg",
+    "crop": [
+      509,
+      763,
+      719,
+      1079
+    ],
+    "currentTitle": "905 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-069",
+    "name": "周育秀",
+    "source": "014+015.jpg",
+    "crop": [
+      868,
+      763,
+      1079,
+      1079
+    ],
+    "currentTitle": "906 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-071",
+    "name": "文明慧",
+    "source": "014+015.jpg",
+    "crop": [
+      149,
+      1252,
+      360,
+      1568
+    ],
+    "currentTitle": "907 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-073",
+    "name": "潘建銘",
+    "source": "014+015.jpg",
+    "crop": [
+      509,
+      1252,
+      719,
+      1568
+    ],
+    "currentTitle": "908 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-075",
+    "name": "陳麗芳",
+    "source": "014+015.jpg",
+    "crop": [
+      868,
+      1252,
+      1079,
+      1568
+    ],
+    "currentTitle": "909 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-008",
+    "name": "王明貴",
+    "source": "014+015.jpg",
+    "crop": [
+      1360,
+      582,
+      1553,
+      849
+    ],
+    "currentTitle": "703 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-003",
+    "name": "余婉如",
+    "source": "014+015.jpg",
+    "crop": [
+      2203,
+      582,
+      2397,
+      849
+    ],
+    "currentTitle": "專任教師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-002",
+    "name": "張雅琪",
+    "source": "014+015.jpg",
+    "crop": [
+      1360,
+      1352,
+      1553,
+      1614
+    ],
+    "currentTitle": "701 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-020",
+    "name": "張銘峰",
+    "source": "014+015.jpg",
+    "crop": [
+      1637,
+      1352,
+      1833,
+      1614
+    ],
+    "currentTitle": "707 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-032",
+    "name": "許晏聆",
+    "source": "014+015.jpg",
+    "crop": [
+      1923,
+      1352,
+      2111,
+      1614
+    ],
+    "currentTitle": "代理教師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-014",
+    "name": "陳小鈴",
+    "source": "016+017.jpg",
+    "crop": [
+      99,
+      193,
+      290,
+      456
+    ],
+    "currentTitle": "705 導師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-009",
+    "name": "徐君萍",
+    "source": "030+031.jpg",
+    "crop": [
+      186,
+      228,
+      496,
+      596
+    ],
+    "currentTitle": "專任教師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-012",
+    "name": "吳佳蓉",
+    "source": "038+039.jpg",
+    "crop": [
+      831,
+      219,
+      1067,
+      517
+    ],
+    "currentTitle": "專任教師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-015",
+    "name": "莊玉如",
+    "source": "046+047.jpg",
+    "crop": [
+      136,
+      246,
+      521,
+      544
+    ],
+    "currentTitle": "專任教師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-021",
+    "name": "黃瓘婷",
+    "source": "070+071.jpg",
+    "crop": [
+      261,
+      210,
+      558,
+      684
+    ],
+    "currentTitle": "專任教師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-024",
+    "name": "邱顯徽",
+    "source": "078+079.jpg",
+    "crop": [
+      198,
+      246,
+      459,
+      614
+    ],
+    "currentTitle": "專任教師",
+    "status": "name-labelled-photo"
+  },
+  {
+    "id": "staff-027",
+    "name": "林堯仁",
+    "source": "086+087.jpg",
+    "crop": [
+      62,
+      193,
+      397,
+      614
+    ],
+    "currentTitle": "專任教師",
+    "status": "name-labelled-photo"
+  }
+]
