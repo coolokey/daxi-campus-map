@@ -1,0 +1,33 @@
+{
+  "characterAtlasCheck": {
+    "sourceHashesMatched": true,
+    "characters": 109,
+    "teachers": 91,
+    "tiles": 2616,
+    "transparentEdges": true
+  },
+  "originalMapSha256": "6b4f14101f262fa7942209f89c84e25726b88e184f8c22769ed6586a7a44d26d",
+  "date": "2026-10-13",
+  "teacherAppearance": {
+    "source": 55,
+    "generic": 36
+  },
+  "unitTests": {
+    "files": 24,
+    "passed": 57
+  },
+  "startup": {
+    "maximumInitialBytes": 20000,
+    "allJavascriptBytes": 894586,
+    "maximumAllBytes": 900000,
+    "initialJavascriptBytes": 18449
+  },
+  "browser": {
+    "localBasePath": "http://127.0.0.1:8770/proposal/rpg/",
+    "physicalIpadTested": false,
+    "characters": true,
+    "floorsAndFiveQuestions": true,
+    "http503Recovery": true,
+    "originalRegression": true
+  }
+}

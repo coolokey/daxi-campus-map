@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "technology-pilot-ready",
+  "stage": "original-campus-rpg-characters-ready",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -39,14 +39,22 @@
     "pilotCollisionBlockedSegments": 0
   },
   "notes": [
-    "Original campus remains the default. Technology pilot is selected with its own button.",
-    "Pilot loads shared JSON plus compact runtime on demand; full navigation graph remains deferred.",
-    "Geometry is schematic guide data, not surveyed measurements. Phaser scenes are not migrated in this stage."
+    "The original illustrated campus is the only playable outdoor scene. Its existing technology door leads to source-backed floors.",
+    "All 91 staff are in the searchable roster; game NPC positions are illustrative, not live locations.",
+    "Indoor geometry is schematic guide data, not surveyed measurements. Phaser scenes are not migrated in this stage."
   ],
-  "pilotMode": "canvas-presentation-opt-in",
+  "pilotMode": "original-campus-technology-floors",
   "pilotRuntime": {
     "file": "technology-demo-runtime.json",
     "sha256": "0202ed2fcc861e703a0b10109760e55b9b794c406bcb3f60fc88dc82c4f33694",
     "bytes": 235095
+  },
+  "characters": {
+    "file": "rpg-characters.json",
+    "sha256": "bb00dbad457d15c73136c54d101cfd20c6d6bba506571c3d9826195d017dca9a",
+    "count": 109,
+    "teachers": 91,
+    "directions": 8,
+    "poses": 3
   }
 }

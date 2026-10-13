@@ -1,0 +1,12 @@
+{
+  "url": "http://127.0.0.1:8770/proposal/rpg/",
+  "results": [
+    "original colorful campus retained, alternate outdoor removed, all 109 characters registered",
+    "actual rendering uses eight directions, idle plus both walking poses, fixed character size",
+    "all 91 teachers searchable, selected teacher invited without moving player, player appearance changes and persists",
+    "characters autonomously walk on collision-checked game routes",
+    "desktop, iPad-sized and phone portrait/landscape character panels, touch map, actor caps and non-overlapping controls"
+  ],
+  "errors": [],
+  "failed": []
+}

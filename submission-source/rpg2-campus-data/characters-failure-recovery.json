@@ -1,0 +1,8 @@
+{
+  "url": "http://127.0.0.1:8770/proposal/rpg/",
+  "injectedHttpStatus": 503,
+  "visibleFallback": true,
+  "movementPreserved": true,
+  "retryRestoresAllCharacters": true,
+  "errors": []
+}
