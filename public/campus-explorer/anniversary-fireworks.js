@@ -8,7 +8,7 @@
   panel.innerHTML=`<div class="anniversary-heading"><span>大溪國中 <b>80</b> 週年</span><button id="anniversary-close" type="button">停止表演 ×</button></div>
     <p id="anniversary-status" role="status" aria-live="polite"></p>
     <div class="anniversary-track" aria-hidden="true"><i></i></div>
-    <div class="anniversary-controls"><button id="anniversary-replay" type="button">再次觀看</button><button id="anniversary-sound" type="button" aria-pressed="false">開啟音效</button><button id="anniversary-quality" type="button" aria-pressed="false">降低動畫</button><button id="anniversary-view" type="button">觀賞視角</button></div>
+    <div class="anniversary-controls"><button id="anniversary-replay" type="button">再次觀看</button><button id="anniversary-sound" type="button" aria-pressed="true" aria-label="關閉音效">音效：開啟</button><button id="anniversary-quality" type="button" aria-pressed="false">降低動畫</button><button id="anniversary-view" type="button">觀賞視角</button></div>
     <label class="anniversary-preset" for="anniversary-preset">畫質<select id="anniversary-preset"><option value="auto">自動</option><option value="high">高畫質</option><option value="standard">標準</option><option value="battery">省電</option></select></label>
     <label class="anniversary-volume" for="anniversary-volume">音量<input id="anniversary-volume" type="range" min="0" max="100" value="100"><output id="anniversary-volume-value">100%</output></label>
     <p id="anniversary-audio-status">開始表演後，自動播放真實錄音。</p><p class="anniversary-help">可繼續走動、轉頭與操作校園；Esc 停止。</p>`;
@@ -24,7 +24,7 @@
   let config={requireQuest:false,questId:'energy-core'},unlocked=false,crowdStarted=false;
   const environment={width:innerWidth,cores:navigator.hardwareConcurrency||4,memory:navigator.deviceMemory||4};
   function qualityValue(){return model.qualityFor({...environment,width:innerWidth,reduced:isReduced(),preset:$('preset').value});}
-  function soundUI(){ $('sound').textContent=soundWanted?'靜音':'開啟音效';$('sound').setAttribute('aria-pressed',String(soundWanted)); }
+  function soundUI(){ $('sound').textContent=soundWanted?'音效：開啟':'音效：關閉';$('sound').setAttribute('aria-pressed',String(soundWanted));$('sound').setAttribute('aria-label',soundWanted?'關閉音效':'開啟音效'); }
   function quiet(){soundGeneration++;soundEnabled=false;waitingForSound=false;audioEngine?.stop();audio?.suspend().catch(()=>{});crowdStarted=false;}
   async function resumeSound(){
     const generation=++soundGeneration;
@@ -63,7 +63,9 @@
   function start(){
     if(disposed)return false;
     if(config.requireQuest&&!unlocked){panel.hidden=false;$('status').textContent='完成能源核心修復任務後，即可解鎖煙火秀。';return false;}
-    if(running){const wanted=soundWanted;stop(false);soundWanted=wanted;}
+    if(running)stop(false);
+    // Every new show starts audible, even after a previous mute or load failure.
+    soundWanted=true;$('volume').value='100';$('volume-value').textContent='100%';
     previousFocus=document.activeElement;const fromCover=!!cover?.open;if(fromCover)cover.close();
     saved={background:api.scene.background.clone(),fog:api.scene.fog?.color.clone(),lights:[],exposure:api.renderer?.toneMappingExposure};api.scene.traverse(o=>{if(o.isLight)saved.lights.push([o,o.intensity]);});
     running=true;elapsed=0;last=0;cueIndex=0;cues=model.createCues();phase='';slowSum=0;slowFrames=0;lastDowngrade=0;cameraSaved=null;interacted=false;crowdStarted=false;

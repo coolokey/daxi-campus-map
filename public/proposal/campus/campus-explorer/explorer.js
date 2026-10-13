@@ -502,17 +502,22 @@
       const sx = dx / steps, sz = dz / steps, sy = dy / steps;
       let blocked = false;
       for (let step = 0; step < steps; step++) {
-        let y = position.y + sy;
-        const followsGround = typeof window!=='undefined' && window.campusWalkWorld && dy===0 && !isJumping;
-        if(followsGround)y=window.campusWalkWorld.ground({x:position.x+sx,y:position.y,z:position.z+sz});
-        // Entering a high stair edge sideways cannot teleport the character upward.
-        if(followsGround&&typeof CampusOutdoorPlan!=='undefined'&&(CampusOutdoorPlan.reserved(position)||CampusOutdoorPlan.reserved({x:position.x+sx,z:position.z+sz}))&&Math.abs(y-position.y)>.24){blocked=true;continue;}
-        const personBlocks=(x,z)=>{const hit=window.campusPeople?.blocksPlayer(position,{x,y,z})===true;if(hit)avatarPersonBlocked=true;return hit};
-        if (!checkWallCollision(position.x + sx, y, position.z)&&!personBlocks(position.x+sx,position.z)) position.x += sx;
-        else if (sx !== 0) blocked = true;
-        if (!checkWallCollision(position.x, y, position.z + sz)&&!personBlocks(position.x,position.z+sz)) position.z += sz;
-        else if (sz !== 0) blocked = true;
-        if(followsGround)y=window.campusWalkWorld.ground(position);
+        const world=typeof window!=='undefined'?window.campusWalkWorld:null,followsGround=world&&!isJumping;
+        const tryStep=(x,z)=>{
+          const surface=world?.stepHeight?world.stepHeight(position,x,z):world?.ground({x,y:position.y,z});
+          if(surface===null){blocked=true;return}
+          const y=followsGround?surface:position.y+sy;
+          if(followsGround&&typeof CampusOutdoorPlan!=='undefined'&&(CampusOutdoorPlan.reserved(position)||CampusOutdoorPlan.reserved({x,z}))&&Math.abs(y-position.y)>.24){blocked=true;return}
+          const person=window.campusPeople?.blocksPlayer(position,{x,y,z})===true;
+          if(person)avatarPersonBlocked=true;
+          if(checkWallCollision(x,y,z)||person){blocked=true;return}
+          position.x=x;position.z=z;if(followsGround)position.y=y;
+        };
+        // Validate each sliding axis with its own support height, not the height
+        // of an unaccepted diagonal destination beyond the edge of the stair.
+        if(sx!==0)tryStep(position.x+sx,position.z);
+        if(sz!==0)tryStep(position.x,position.z+sz);
+        const y=followsGround?world.ground(position):position.y+sy;
         if (!checkWallCollision(position.x, y, position.z)) position.y = y;
         else if (sy !== 0) blocked = true;
       }
