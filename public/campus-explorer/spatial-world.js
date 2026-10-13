@@ -6,6 +6,15 @@
  const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.96});
  const colors={wall:material(0xc9c5b9),blue:material(0x8da9ae),floor:material(0xa6aaa3),stair:material(0xb8bab0),wood:material(0x956941),green:material(0x315748),steel:material(0x61717a),light:material(0xfff9dd),glass:new THREE.MeshStandardMaterial({color:0x8fa5a9,transparent:true,opacity:.45})};
  colors.light.emissive.setHex(0x8a8467);colors.light.emissiveIntensity=.4;
+ const surfaces=new Map();
+ function surfaceMaterials(l){
+  if(surfaces.has(l.id))return surfaces.get(l.id);
+  const p=CampusSurfacePalette.forBuilding(l.b),own={...colors};
+  for(const [key,colour] of Object.entries(p)){
+   const m=material(colour);m.name=`campus-surface-${l.id}-${key}`;m.userData={campusSurface:key,campusBuildingId:l.id};own[key==='band'?'blue':key]=m;
+  }
+  surfaces.set(l.id,own);return own;
+ }
  const box=(group,l,u0,u1,v0,v1,y0,y1,mat,solid=false)=>{
   if(u1-u0<1e-5||v1-v0<1e-5||y1-y0<1e-5)return null;
   const r=l.rect(u0,u1,v0,v1),mesh=new THREE.Mesh(new THREE.BoxGeometry(r.x1-r.x0,y1-y0,r.z1-r.z0),mat);
@@ -16,26 +25,31 @@
  const insideFloor=(l,x,z,floor)=>{const q=l.local(x,z);return l.footprints.some(p=>p.floor===floor&&CampusSpatialPlan.contains(p,q.u,q.v))};
  // Subtract the same stair holes that groundAt uses from every slab.
  function slab(g,l,p,y){
+  const colors=surfaceMaterials(l);
   const xs=[p.u0,p.u1],zs=[p.v0,p.v1];
   for(const h of l.holes){if(h.u0>p.u0&&h.u0<p.u1)xs.push(h.u0);if(h.u1>p.u0&&h.u1<p.u1)xs.push(h.u1);if(h.v0>p.v0&&h.v0<p.v1)zs.push(h.v0);if(h.v1>p.v0&&h.v1<p.v1)zs.push(h.v1)}
   xs.sort((a,b)=>a-b);zs.sort((a,b)=>a-b);
   for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++)if(y===0||!l.holes.some(h=>CampusSpatialPlan.contains(h,(xs[i-1]+xs[i])/2,(zs[j-1]+zs[j])/2)))box(g,l,xs[i-1],xs[i],zs[j-1],zs[j],y-.18,y,colors.floor);
  }
  function roomWall(g,l,c,side,y){
+  const colors=surfaceMaterials(l),q={u:(c.u0+c.u1)/2,v:(c.v0+c.v1)/2};
+  if(side==='u0')q.u=c.u0-.15;else if(side==='u1')q.u=c.u1+.15;else if(side==='v0')q.v=c.v0-.15;else q.v=c.v1+.15;
+  const exposed=!l.footprints.some(p=>p.floor===c.floor&&CampusSpatialPlan.contains(p,q.u,q.v)),paint=exposed?colors.exterior:colors.wall;
   const alongU=side[0]==='v',fixed=side==='v0'?c.v0:side==='v1'?c.v1:side==='u0'?c.u0:c.u1;
   const start=alongU?c.u0:c.v0,end=alongU?c.u1:c.v1,center=(start+end)/2;
   const wall=(a,b,y0,y1,mat,solid=true)=>alongU?box(g,l,a,b,fixed-.09,fixed+.09,y0,y1,mat,solid):box(g,l,fixed-.09,fixed+.09,a,b,y0,y1,mat,solid);
   if(c.doorSide===side){
    const half=Math.min(.95,(end-start)/2-.16);
-   wall(start,center-half,y,y+FH,colors.wall);wall(center+half,end,y,y+FH,colors.wall);wall(center-half,center+half,y+2.3,y+FH,colors.wall);
+   wall(start,center-half,y,y+FH,paint);wall(center+half,end,y,y+FH,paint);wall(center-half,center+half,y+2.3,y+FH,paint);
   }else{
    const solid=wall(start,end,y,y+FH,colors.wall);if(solid)solid.visible=false;
-   wall(start,end,y,y+1.05,colors.blue,false);wall(start,end,y+2.65,y+FH,colors.wall,false);
+   wall(start,end,y,y+1.05,colors.blue,false);wall(start,end,y+2.65,y+FH,paint,false);
    wall(start+.2,end-.2,y+1.05,y+2.65,colors.glass,false);
    for(let u=start+.35;u<end-.2;u+=.6)wall(u-.022,u+.022,y+1.05,y+2.65,colors.steel,false);
   }
  }
  function details(g,l,r,y){
+  const colors=surfaceMaterials(l);
   const pp={...r.door,y:y+2.55},width=Math.min(2.5,r.doorSide.startsWith('v')?r.u1-r.u0-.2:r.v1-r.v0-.2);
   const label=CampusRoomLayout.nameplate(r.name,r.cat);
   const plate=new THREE.Mesh(new THREE.PlaneGeometry(width,.38),new THREE.MeshBasicMaterial({map:createRoomNameplateTexture(label.text,label.color),side:THREE.DoubleSide}));
@@ -56,6 +70,7 @@
  for(let i=WALL_COLLIDERS.length-1;i>=0;i--)if(WALL_COLLIDERS[i].buildingId)WALL_COLLIDERS.splice(i,1);
  STAIR_ZONES.length=0;
  for(const l of layouts){
+  const colors=surfaceMaterials(l);
   const roofMaterial=material(l.b.roofColor);
   const parent=scene.children.find(g=>g.userData.buildingId===l.id);
   for(const child of [...parent.children])if(child.name.startsWith('floor-')||child.userData.oldStairs||(l.b.spatialProfile.shape&&child.userData.roof)){
@@ -80,9 +95,9 @@
     const min=alongU?a:fixed-.09,max=alongU?b:fixed+.09,v0=alongU?fixed-.09:a,v1=alongU?fixed+.09:b;
     // Open corridor ends, and all 1F access edges. Upper corridor parapets stay solid.
     const open=f===1||(!l.b.spatialProfile.shape&& !alongU);
-    if(!open)box(g,l,min,max,v0,v1,y,y+1.05,colors.wall,true);
+    if(!open)box(g,l,min,max,v0,v1,y,y+1.05,colors.exterior,true);
     // Space columns away from doors and corridor ends.
-    for(let t=a+1;t<b-1;t+=6)if(f!==1)box(g,l,alongU?t-.13:fixed-.13,alongU?t+.13:fixed+.13,alongU?fixed-.13:t-.13,alongU?fixed+.13:t+.13,y,y+FH,colors.wall,true);
+    for(let t=a+1;t<b-1;t+=6)if(f!==1)box(g,l,alongU?t-.13:fixed-.13,alongU?t+.13:fixed+.13,alongU?fixed-.13:t-.13,alongU?fixed+.13:t+.13,y,y+FH,colors.exterior,true);
    }
    for(const v of vs)for(let i=1;i<us.length;i++){const u=(us[i]+us[i-1])/2;if(present(u,v-.02)!==present(u,v+.02))edge(true,v,us[i-1],us[i]);}
    for(const u of us)for(let i=1;i<vs.length;i++){const v=(vs[i]+vs[i-1])/2;if(present(u-.02,v)!==present(u+.02,v))edge(false,u,vs[i-1],vs[i]);}
@@ -97,14 +112,18 @@
    box(g,l,s.u0+.2,s.farU+.08,s.centerV-2.3,s.centerV+2.3,p.y-.16,p.y,colors.stair);
    for(const r of ramps){
     registerStairZone((r.x0+r.x1)/2,(r.z0+r.z1)/2,r.x1-r.x0,r.z1-r.z0,r.h0,r.h1,f,f+1,r.axis,r.axis==='x'?Math.sign(r.end.x-r.start.x):Math.sign(r.end.z-r.start.z));
-    for(let i=0;i<18;i++){const mid=M.rampPoint(r,(i+.5)/18),mesh=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?Math.abs(r.end.x-r.start.x)/18:1.6,.16,l.horizontal?1.6:Math.abs(r.end.z-r.start.z)/18),colors.stair);mesh.position.set(mid.x,mid.y-.08,mid.z);g.add(mesh);}
-    for(const side of [-1,1]){const a=new THREE.Vector3(r.start.x,r.start.y+.9,r.start.z),c=new THREE.Vector3(r.end.x,r.end.y+.9,r.end.z);if(l.horizontal){a.z+=side*.78;c.z+=side*.78}else{a.x+=side*.78;c.x+=side*.78}const rail=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,a.distanceTo(c),8),colors.steel);rail.position.copy(a).add(c).multiplyScalar(.5);rail.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),c.sub(a).normalize());g.add(rail);}
+    for(let i=0;i<18;i++){
+     const mid=M.rampPoint(r,(i+.5)/18),mesh=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?Math.abs(r.end.x-r.start.x)/18:1.6,.16,l.horizontal?1.6:Math.abs(r.end.z-r.start.z)/18),colors.stair);mesh.position.set(mid.x,mid.y-.08,mid.z);g.add(mesh);
+     const edge=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?.035:1.6,.018,l.horizontal?1.6:.035),colors.edge);edge.position.set(mid.x,mid.y+.005,mid.z);g.add(edge);
+    }
+    for(const side of [-1,1])for(const [height,colour,radius] of [[.9,colors.handrail,.04],[.035,colors.skirt,.055]]){const a=new THREE.Vector3(r.start.x,r.start.y+height,r.start.z),c=new THREE.Vector3(r.end.x,r.end.y+height,r.end.z);if(l.horizontal){a.z+=side*.78;c.z+=side*.78}else{a.x+=side*.78;c.x+=side*.78}const rail=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,a.distanceTo(c),8),colour);rail.position.copy(a).add(c).multiplyScalar(.5);rail.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),c.sub(a).normalize());g.add(rail);}
    }
   }
  }
  // Administrative galleries are compiled once and shared with the map and ground engine.
  const galleries=CampusSpatialPlan.galleries(layouts),front=layouts.find(l=>l.id==='admin-front'),back=layouts.find(l=>l.id==='admin-back');
  for(const l of galleries){
+  const colors=surfaceMaterials(l);
   for(let f=1;f<=l.b.floors;f++){
    const y=(f-1)*FH,g=new THREE.Group();g.name=`floor-gallery-${f}`;g.userData={buildingId:'admin-front',floorNum:f};scene.add(g);floorMeshes.push(g);
    for(const p of l.footprints.filter(p=>p.floor===f))box(g,l,p.u0,p.u1,p.v0,p.v1,y-.18,y,colors.floor);

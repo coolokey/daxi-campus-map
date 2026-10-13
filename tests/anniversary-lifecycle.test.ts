@@ -2,7 +2,7 @@ import {it,expect} from 'vitest';
 import {JSDOM} from 'jsdom';
 import {readFileSync} from 'node:fs';
 import * as THREE from 'three';
-function setup(options:{slowLoad?:boolean}={}){
+function setup(options:{slowLoad?:boolean,emptyLoad?:boolean}={}){
  const dom=new JSDOM('<body></body>',{url:'https://campus.test',runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window as any;
  const pending:Array<()=>void>=[],instances:any[]=[];let finishLoad:()=>void=()=>{},expire:()=>void=()=>{},engineVolume=1;
  w.setTimeout=(callback:()=>void)=>{expire=callback;return 1;};w.clearTimeout=()=>{};
@@ -12,7 +12,7 @@ function setup(options:{slowLoad?:boolean}={}){
  const node=()=>({gain:{value:0,setValueAtTime(){},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){}},frequency:{value:0,setValueAtTime(){}},connect(){},disconnect(){},start(){},stop(){}});
  w.AudioContext=class{state='suspended';currentTime=0;destination={};constructor(){instances.push(this)}createGain=node;createOscillator=node;resume(){return new Promise<void>(resolve=>pending.push(()=>{this.state='running';resolve()}));}suspend(){this.state='suspended';return Promise.resolve()}};
  const scene=new THREE.Scene();scene.background=new THREE.Color(0xffffff);
- Object.assign(w,{THREE,currentMode:'bird',cancelCameraTween(){},matchMedia:()=>({matches:true,addEventListener(){}}),requestAnimationFrame:()=>1,cancelAnimationFrame(){},CampusFireworkAudio:{create:()=>({load:async()=>({loaded:18,failed:[]}),play(){},stop(){},dispose(){},setVolume(value:number){engineVolume=value},stats:()=>({active:0,loaded:18,volume:engineVolume})})},CampusFireworkScene:{create:()=>({launch(){},update(){},setQuality(){},dispose(){},stats:()=>({active:0})})},campusExplorer:{scene,camera:new THREE.PerspectiveCamera(),controls:{target:new THREE.Vector3(),enabled:true,enableDamping:true,autoRotate:false,update(){}},manualTakeover(){},resetManualInput(){},setControlMode(){}}});
+ Object.assign(w,{THREE,currentMode:'bird',cancelCameraTween(){},matchMedia:()=>({matches:true,addEventListener(){}}),requestAnimationFrame:()=>1,cancelAnimationFrame(){},CampusFireworkAudio:{create:()=>({load:async()=>({loaded:options.emptyLoad?0:18,failed:options.emptyLoad?['manifest: offline']:[]}),play(){},stop(){},dispose(){},setVolume(value:number){engineVolume=value},stats:()=>({active:0,loaded:18,volume:engineVolume})})},CampusFireworkScene:{create:()=>({launch(){},update(){},setQuality(){},dispose(){},stats:()=>({active:0})})},campusExplorer:{scene,camera:new THREE.PerspectiveCamera(),controls:{target:new THREE.Vector3(),enabled:true,enableDamping:true,autoRotate:false,update(){}},manualTakeover(){},resetManualInput(){},setControlMode(){}}});
  for(const file of ['anniversary-model.js','anniversary-fireworks.js'])w.eval(readFileSync('public/campus-explorer/'+file,'utf8'));
  if(options.slowLoad)w.CampusFireworkAudio.create=()=>({load:()=>new Promise(resolve=>{finishLoad=()=>resolve({loaded:18,failed:[]})}),play(){},stop(){},dispose(){},setVolume(){},stats:()=>({active:0,loaded:0})});
  const click=(id:string)=>w.document.getElementById('anniversary-'+id).click(),flush=async()=>{for(const resolve of pending.splice(0))resolve();for(let i=0;i<8;i++)await Promise.resolve();};
@@ -95,4 +95,10 @@ it('品質與低動畫可獨立調整，銷毀後移除介面及監聽',()=>{
  s.w.campusAnniversary.dispose();expect(s.w.document.getElementById('anniversary-launch')).toBeNull();
  s.w.dispatchEvent(new s.w.CustomEvent('campus:quest-complete',{detail:{questId:'energy-core'}}));
  expect(s.w.campusAnniversary.stats().unlocked).toBe(false);s.dom.window.close();
+});
+
+it('沒有錄音可用時顯示失敗與重試提示，不假裝音效已開啟',async()=>{
+ const s=setup({emptyLoad:true});s.click('launch');await s.flush();expect(s.w.campusAnniversary.stats().soundEnabled).toBe(false);
+ expect(s.w.document.getElementById('anniversary-audio-status').textContent).toContain('音效無法啟用');expect(s.w.document.getElementById('anniversary-sound').getAttribute('aria-label')).toBe('開啟音效');
+ s.click('close');s.dom.window.close();
 });

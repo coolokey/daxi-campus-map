@@ -14,6 +14,14 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','spatial-world.js','photo-facade.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('rebuilt school floors retain distinct photo-based wall and stair materials instead of a shared white surface',()=>{
+ const surfaces=run(`(()=>{const result={};scene.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(m?.userData.campusSurface){const id=m.userData.campusBuildingId;result[id]??={};result[id][m.userData.campusSurface]={luminance:m.color.r*.2126+m.color.g*.7152+m.color.b*.0722,hex:m.color.getHex(),roughness:m.roughness}}});return result})()`);
+ expect(surfaces['admin-front']).toBeDefined();expect(surfaces['gym-bld']).toBeDefined();
+ expect(surfaces['admin-back'].stair.hex).not.toBe(surfaces['gym-bld'].stair.hex);
+ expect(surfaces['admin-front'].floor.luminance).toBeLessThan(surfaces['admin-front'].wall.luminance);
+ expect(surfaces['gym-bld'].floor.luminance).toBeLessThan(surfaces['gym-bld'].wall.luminance);
+ for(const building of Object.values(surfaces) as any[])for(const kind of ['wall','floor','stair'])if(building[kind]){expect(building[kind].luminance).toBeLessThan(.65);expect(building[kind].roughness).toBeGreaterThanOrEqual(.9)}
+});
 it('does not fetch hidden reference photos before opening their panel',()=>{
  run(`document.querySelector('#photo-image').removeAttribute('src')`);
  expect(run(`document.querySelector('#photo-image').getAttribute('src')`)).toBe(null);

@@ -3,7 +3,7 @@
   function create(context, output, options={}) {
     const fetcher=options.fetch||fetch,random=options.random||Math.random;
     const manifestURL=options.manifestURL||new URL('assets/sounds/manifest.json',document.baseURI).href;
-    const buffers=new Map(),lastSample=new Map(),active=new Map(),played=[],failed=[];
+    const buffers=new Map(),loadedKeys=new Set(),lastSample=new Map(),active=new Map(),played=[],failed=[];
     const abort=new AbortController();let pending=null,disposed=false,volume=1;
     const mix=context.createGain(),compressor=context.createDynamicsCompressor(),limiter=context.createWaveShaper(),master=context.createGain();
     compressor.threshold.value=-20;compressor.knee.value=10;compressor.ratio.value=12;compressor.attack.value=.002;compressor.release.value=.2;
@@ -16,23 +16,26 @@
     convolver.buffer=impulse;convolver.connect(wet);wet.connect(mix);
     async function load(){
       if(pending)return pending;
+      failed.length=0;
       pending=(async()=>{
         try{
           const response=await fetcher(manifestURL,{signal:abort.signal,cache:'no-cache'});if(!response.ok)throw new Error('Manifest HTTP '+response.status);
           const manifest=await response.json();
           await Promise.all(Object.entries(manifest.layers).flatMap(([kind,entries])=>entries.map(async entry=>{
+            const key=kind+'|'+entry.file+'|'+(entry.sha256||'');if(loadedKeys.has(key))return;
             try{
               const url=new URL(entry.file,manifestURL).href;
               const versioned=new URL(url);if(entry.sha256)versioned.searchParams.set('v',entry.sha256.slice(0,16));
               const response=await fetcher(versioned.href,{signal:abort.signal});if(!response.ok)throw new Error('HTTP '+response.status);
               const buffer=await context.decodeAudioData(await response.arrayBuffer());
               if(disposed)return;
-              if(!buffers.has(kind))buffers.set(kind,[]);buffers.get(kind).push({buffer,file:entry.file});
+              if(!buffers.has(kind))buffers.set(kind,[]);buffers.get(kind).push({buffer,file:entry.file});loadedKeys.add(key);
             }catch(error){if(!disposed)failed.push(entry.file+': '+error.message);}
           })));
         }catch(error){if(!disposed)failed.push('manifest: '+error.message);}
         return {loaded:[...buffers.values()].reduce((n,list)=>n+list.length,0),failed:[...failed],layers:Object.fromEntries([...buffers].map(([kind,list])=>[kind,list.length]))};
-      })();return pending;
+      })();
+      const result=await pending;if(result.failed.length)pending=null;return result;
     }
     function spatial(position,camera){return window.CampusAnniversary.spatialAudio(position||{x:0,y:0,z:0},camera||{x:0,y:0,z:0});}
     function updateSource(handle,position,camera){

@@ -508,7 +508,7 @@
           if(surface===null){blocked=true;return}
           const y=followsGround?surface:position.y+sy;
           if(followsGround&&typeof CampusOutdoorPlan!=='undefined'&&(CampusOutdoorPlan.reserved(position)||CampusOutdoorPlan.reserved({x,z}))&&Math.abs(y-position.y)>.24){blocked=true;return}
-          const person=window.campusPeople?.blocksPlayer(position,{x,y,z})===true;
+          const person=typeof window!=='undefined'&&window.campusPeople?.blocksPlayer(position,{x,y,z})===true;
           if(person)avatarPersonBlocked=true;
           if(checkWallCollision(x,y,z)||person){blocked=true;return}
           position.x=x;position.z=z;if(followsGround)position.y=y;

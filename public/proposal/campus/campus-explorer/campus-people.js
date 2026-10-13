@@ -156,7 +156,7 @@
  })}
  const ray=THREE?new THREE.Raycaster():null,projected=THREE?new THREE.Vector3():null;
  function occluded(position){if(!ray)return false;const direction=position.clone().sub(api.camera.position),distance=direction.length();ray.set(api.camera.position,direction.normalize());ray.far=distance-.4;
-  const hits=ray.intersectObjects(api.scene.children,true);ray.far=Infinity;return hits.some(hit=>{let node=hit.object;while(node){if(node.userData?.campusPerson)return false;node=node.parent}return hit.object.visible&&hit.object.material?.transparent!==true});
+  const hits=ray.intersectObjects(api.scene.children,true);ray.far=Infinity;return hits.some(hit=>{let node=hit.object;while(node){if(!node.visible||node.userData?.campusPerson)return false;node=node.parent}return hit.object.visible&&hit.object.material?.transparent!==true});
  }
  function update(delta,time){const paused=document.hidden||dialog.open||document.getElementById('guide-landing')?.open||api.motionBlocked?.();
   if(paused){for(const actor of actors)if(actor.tag)actor.tag.hidden=true;return}
