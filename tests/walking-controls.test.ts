@@ -187,3 +187,31 @@ it('an unreachable new destination replaces the old route instead of resuming th
  expect(run(`document.getElementById('hud-target-name').textContent`)).toContain('圖書');
  run(`clearNavigation()`);
 });
+it('player movement consults people collisions and automatic walking waits instead of cancelling',()=>{
+ run(`avatarGroup.position.set(-10,0,96);window.campusPeople={blocksPlayer:()=>true,update:()=>{}};window.peoplePosition=avatarGroup.position.clone();moveAvatarWithCollision(avatarGroup.position,8,0);`);
+ expect(run(`avatarGroup.position.equals(peoplePosition)`)).toBe(true);
+ run(`navigateToRoom('academic');startAutoWalk();animate();`);
+ expect(run(`isAutoWalking`)).toBe(true);
+ expect(run(`campusExplorer.getNavigationState().status`)).toBe('walking');
+ run(`for(let i=0;i<35;i++)animate();`);
+ expect(run(`isAutoWalking`)).toBe(false);
+ expect(run(`campusExplorer.getNavigationState().status`)).toBe('blocked');
+ expect(run(`document.getElementById('mode-toast').textContent`)).toContain('前方有人');
+ run(`delete window.campusPeople;clearNavigation();`);
+});
+it('real campus teacher patrols respect walls, furniture and office floor boundaries',()=>{
+ run(readFileSync(root+'staff-data.js','utf8'));
+ run(readFileSync(root+'campus-people.js','utf8'));
+ run(`window.initialTeacherPositions=new Map(campusPeople.actors.filter(a=>a.person).map(a=>[a.id,{...a.position}]));window.invalidPeople=[];
+ for(let i=0;i<200;i++){
+ campusPeople.update(.1,i*.1);
+ for(const a of campusPeople.actors){
+ if(campusCollisionIndex.hit(a.position.x,a.position.y,a.position.z))invalidPeople.push(a.id);
+ if(a.room){const q=a.layout.local(a.position.x,a.position.z);if(q.u<=a.room.u0+.6||q.u>=a.room.u1-.6||q.v<=a.room.v0+.6||q.v>=a.room.v1-.6)invalidPeople.push(a.id)}
+ for(const b of campusPeople.actors)if(a!==b&&Math.abs(a.position.y-b.position.y)<1.8&&Math.hypot(a.position.x-b.position.x,a.position.z-b.position.z)<1.05)invalidPeople.push(a.id+' overlaps '+b.id);
+ }} `);
+ expect(run(`invalidPeople`)).toEqual([]);
+ expect(run(`campusPeople.actors.filter(a=>a.person).length`)).toBe(6);
+ expect(run(`campusPeople.actors.some(a=>a.person&&Math.hypot(a.position.x-initialTeacherPositions.get(a.id).x,a.position.z-initialTeacherPositions.get(a.id).z)>.1)`)).toBe(true);
+ run(`delete window.campusPeople;`);
+},20000);

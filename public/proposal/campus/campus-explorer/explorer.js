@@ -362,13 +362,14 @@
       }
       if(spec.role==='guard'){
         const badgeMaterial=new THREE.MeshStandardMaterial({color:0xb69b5e,roughness:.9});badgeMaterial.color.convertSRGBToLinear();
-        const badge=new THREE.Mesh(new THREE.CircleGeometry(.075,6),badgeMaterial);badge.name='avatar-guard-badge';badge.position.set(-.16,1.55,.265);root.add(badge);
+        const badge=new THREE.Mesh(new THREE.CircleGeometry(.075,6),badgeMaterial);badge.userData.campusOwnedGeometry=true;badge.name='avatar-guard-badge';badge.position.set(-.16,1.55,.265);root.add(badge);
       }
       if(spec.glasses){
         const glasses=new THREE.Group();glasses.name='avatar-glasses';glasses.position.set(0,-.045,.445);
         const frame=new THREE.MeshStandardMaterial({color:0x514a43,roughness:.95});frame.color.convertSRGBToLinear();
         for(const x of [-.17,.17]){const rim=new THREE.Mesh(new THREE.TorusGeometry(.118,.015,6,20),frame);rim.position.x=x;rim.scale.y=.83;glasses.add(rim)}
         const bridge=new THREE.Mesh(new THREE.CylinderGeometry(.013,.013,.11,6),frame);bridge.rotation.z=Math.PI/2;glasses.add(bridge);
+        glasses.traverse(node=>{if(node.geometry)node.userData.campusOwnedGeometry=true});
         root.getObjectByName('avatar-head').add(glasses);
       }
       return root;
@@ -440,7 +441,9 @@
 
     // 每次最多前進 0.18 m，避免高速／掉幀時跨過薄牆。
     // 自動帶路與鍵盤、手機共用人物體積及碰撞體。
+    let avatarPersonBlocked=false,autoPeopleWait=0;
     function moveAvatarWithCollision(position, dx, dz, dy = 0) {
+      avatarPersonBlocked=false;
       const steps = Math.max(1, Math.ceil(Math.hypot(dx, dy, dz) / 0.18));
       const sx = dx / steps, sz = dz / steps, sy = dy / steps;
       let blocked = false;
@@ -450,9 +453,10 @@
         if(followsGround)y=window.campusWalkWorld.ground({x:position.x+sx,y:position.y,z:position.z+sz});
         // Entering a high stair edge sideways cannot teleport the character upward.
         if(followsGround&&typeof CampusOutdoorPlan!=='undefined'&&(CampusOutdoorPlan.reserved(position)||CampusOutdoorPlan.reserved({x:position.x+sx,z:position.z+sz}))&&Math.abs(y-position.y)>.24){blocked=true;continue;}
-        if (!checkWallCollision(position.x + sx, y, position.z)) position.x += sx;
+        const personBlocks=(x,z)=>{const hit=window.campusPeople?.blocksPlayer(position,{x,y,z})===true;if(hit)avatarPersonBlocked=true;return hit};
+        if (!checkWallCollision(position.x + sx, y, position.z)&&!personBlocks(position.x+sx,position.z)) position.x += sx;
         else if (sx !== 0) blocked = true;
-        if (!checkWallCollision(position.x, y, position.z + sz)) position.z += sz;
+        if (!checkWallCollision(position.x, y, position.z + sz)&&!personBlocks(position.x,position.z+sz)) position.z += sz;
         else if (sz !== 0) blocked = true;
         if(followsGround)y=window.campusWalkWorld.ground(position);
         if (!checkWallCollision(position.x, y, position.z)) position.y = y;
@@ -2283,6 +2287,7 @@
     };
 
     function startAutoWalk() {
+      autoPeopleWait=0;
       if(motionBlocked())return;
       cancelCameraTween();
       resetManualInput();
@@ -3198,9 +3203,14 @@
           if(distance>1e-6){
             const amount=Math.min(distance,remaining);dir.multiplyScalar(amount/distance);
             if(moveAvatarWithCollision(p,dir.x,dir.z,dir.y)){
+              if(avatarPersonBlocked){
+                autoPeopleWait+=delta;
+                if(autoPeopleWait>=3){stopAutoWalk();publishNavigation('blocked');showToast('前方有人，帶路已暫停。請稍微繞開，再開始帶路。')}
+                break;
+              }
               stopAutoWalk();publishNavigation('blocked');showToast('前方有牆壁，帶路已停止。請沿走廊或門口通行。');break;
             }
-            isMoving=true;jumpBaseY=p.y;remaining-=amount;
+            autoPeopleWait=0;isMoving=true;jumpBaseY=p.y;remaining-=amount;
             if(Math.hypot(dir.x,dir.z)>1e-6){avatarAngle=Math.atan2(dir.x,dir.z);avatarGroup.rotation.y=avatarAngle;}
             if(amount<distance-1e-6)break;
           }
@@ -3386,7 +3396,7 @@
       track:{id:'track',name:'操場及綜合球場',buildingName:'操場',floor:1,cat:'sports',node:'track-center'},
       breezeway:{id:'breezeway',name:'中央通廊',buildingName:'教學區',floor:1,cat:'special',node:'breezeway-mid'}
     });
-    window.campusExplorer = {scene,camera,renderer,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,clearNavigation,getNavigationState,setFloorFilter,setControlMode,manualTakeover,resetManualInput,motionBlocked,getAvatarAppearance,setAvatarAppearance,createCharacter,getPlayerPosition:()=>avatarGroup.position.clone()};
+    window.campusExplorer = {scene,camera,renderer,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,clearNavigation,getNavigationState,setFloorFilter,getFloorFilter:()=>currentFloorFilter,setControlMode,manualTakeover,resetManualInput,motionBlocked,getAvatarAppearance,setAvatarAppearance,createCharacter,getPlayerPosition:()=>avatarGroup.position.clone()};
     document.body.dataset.controlMode=currentMode;
     requestAnimationFrame(animate);
     checkUrlQueryTarget();

@@ -90,7 +90,8 @@ describe('人物場景安全邊界',()=>{
  });
  it('大量已核對老師在桌面最多顯示 14 位，配置不重疊',()=>{
   const s=setup(1280,w=>{for(let i=0;i<25;i++)w.CampusStaffData.people.push({id:'extra'+i,name:'核對教職員'+i,title:'教師',portrait:'assets/staff/'+i+'.jpg',destination:'academic'})});
-  s.api.update(.1,1);expect(s.api.actors.filter((a:any)=>a.root?.visible)).toHaveLength(14);
+  s.api.update(.1,1);expect(s.api.actors.filter((a:any)=>a.root?.visible).length).toBeLessThanOrEqual(14);
+  expect(s.api.actors.filter((a:any)=>a.person).length).toBeLessThanOrEqual(6);
   const positions=s.api.actors.map((a:any)=>`${a.position.x.toFixed(2)},${a.position.z.toFixed(2)}`);
   expect(new Set(positions).size).toBe(positions.length);s.dom.window.close();
  });
@@ -102,5 +103,44 @@ describe('人物場景安全邊界',()=>{
  });
  it('無有效戶外位置時不把人物生成在牆內或室內',()=>{
   const s=setup(1280,w=>{w.campusCollisionIndex.pointHit=()=>true});s.api.update(.1,1);expect(s.api.actors).toHaveLength(0);s.dom.window.close();
+ });
+});
+
+describe('老師輪替與人物避讓',()=>{
+ it('55 位老師分批輪流出現，一輪內不重複，名冊仍完整',()=>{
+  const s=setup(1280,w=>{w.CampusStaffData.people=Array.from({length:55},(_,i)=>({id:'t'+i,name:'老師'+i,portrait:'p.jpg',destination:'academic'}))});
+  const seen=new Set<string>();let maxTeachers=0;
+  for(let tick=0;tick<7000&&seen.size<55;tick++){
+   s.api.update(.1,tick*.1);
+   const teachers=s.api.actors.filter((a:any)=>a.person);maxTeachers=Math.max(maxTeachers,teachers.length);
+   teachers.forEach((a:any)=>seen.add(a.id));
+  }
+  expect(maxTeachers).toBeLessThanOrEqual(6);expect(seen.size).toBe(55);expect(s.d.querySelectorAll('#campus-people-list button')).toHaveLength(55);s.dom.window.close();
+ },15000);
+ it('相向走動不重疊，玩家高速移動不能穿過人物，不同樓層互不阻擋',()=>{
+  const s=setup();s.api.update(.1,1);
+  const students=s.api.actors.filter((a:any)=>a.spec.role==='student');
+  const [a,b]=students;a.position={x:-15,y:0,z:79};b.position={x:-13.8,y:0,z:79};
+  a.start={...a.position};b.start={...b.position};a.axis=b.axis='x';a.direction=1;b.direction=-1;a.length=b.length=4;
+  for(let i=0;i<100;i++)s.api.update(.1,2+i*.1);
+  expect(Math.hypot(a.position.x-b.position.x,a.position.z-b.position.z)).toBeGreaterThanOrEqual(1.05);
+  a.root.visible=true;
+  expect(s.api.blocksPlayer({x:a.position.x-3,y:0,z:a.position.z},{x:a.position.x+3,y:0,z:a.position.z})).toBe(true);
+  expect(s.api.blocksPlayer({x:a.position.x-3,y:3.6,z:a.position.z},{x:a.position.x+3,y:3.6,z:a.position.z})).toBe(false);s.dom.window.close();
+ });
+ it('辦公室人物留在房間內，並尊重樓層顯示',()=>{
+  const s=setup(1280,w=>{
+   w.Math.random=()=>.2;
+   w.campusExplorer.rooms.academic.aliasFor='actual-office';
+   const room={id:'actual-office',floor:2,u0:-5,u1:5,v0:-4,v1:4};
+   w.campusWalkWorld={ground:(p:any)=>p.x>20?3.6:0,layouts:[{bounds:{x0:25,x1:35,z0:36,z1:44},rooms:[room],local:(x:number,z:number)=>({u:x-30,v:z-40}),world:(u:number,v:number,y:number)=>({x:30+u,y,z:40+v})}]};
+   w.campusExplorer.getFloorFilter=()=>2;
+  });
+  const teacher=s.api.actors.find((a:any)=>a.person);expect(teacher.room?.id).toBe('actual-office');const before={...teacher.position};
+  s.w.Math.random=()=>.7;
+  for(let i=0;i<60;i++)s.api.update(.1,i*.1);
+  expect(teacher.position).not.toEqual(before);expect(teacher.position.y).toBe(3.6);
+  expect(Math.abs(teacher.position.x-30)).toBeLessThan(4.4);expect(Math.abs(teacher.position.z-40)).toBeLessThan(3.4);
+  s.w.campusExplorer.getFloorFilter=()=>1;s.api.update(.1,10);expect(teacher.root?.visible??false).toBe(false);s.dom.window.close();
  });
 });
