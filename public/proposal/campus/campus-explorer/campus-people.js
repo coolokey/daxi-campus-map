@@ -53,7 +53,7 @@
  function place(x,z,index){for(let ring=0;ring<=6;ring++)for(let n=0;n<(ring?12:1);n++){const angle=(n+index*.37)*Math.PI/6,p={x:x+Math.cos(angle)*ring*1.8,y:0,z:z+Math.sin(angle)*ring*1.8};p.y=ground(p);if(safe(p)&&!actors.some(a=>Math.hypot(a.position.x-p.x,a.position.z-p.z)<1.3))return p}return null}
  const guardPosition=place(-18,87,0);
  if(guardPosition)actors.push({id:'gate-guard',label:'警衛先生',stationary:true,position:guardPosition,spec:{role:'guard',gender:'male',hairStyle:'short',outfit:'casual',shirtColor:0x465e76,hairColor:0x45403b}});
- zones.forEach((z,i)=>{const position=place(z[0],z[1],i);if(position)actors.push({id:'student-'+i,position,start:{...position},direction:1,axis:z[2]?'x':'z',length:z[2]||z[3],speed:.55+(i%3)*.12,spec:{gender:i%2?'female':'male',outfit:'uniform',role:'student'}})});
+ zones.forEach((z,i)=>{const position=place(z[0],z[1],i);if(position)actors.push({id:'student-'+i,position,start:{...position},direction:1,axis:z[2]?'x':'z',length:z[2]||z[3],speed:.85+(i%3)*.12,nextWalk:0,spec:{gender:i%2?'female':'male',outfit:'uniform',role:'student'}})});
  const roster=people.filter(p=>p.portrait),teacherLimit=()=>Math.min(roster.length,window.innerWidth<=768?3:6);
  let bag=[],age=0,retryAt=0;
  function nextTeacher(){
@@ -65,7 +65,8 @@
  function roomPoint(layout,room){return layout.world(room.u0+.8+Math.random()*Math.max(0,room.u1-room.u0-1.6),room.v0+.8+Math.random()*Math.max(0,room.v1-room.v0-1.6),(room.floor-1)*3.6)}
  function spawnTeacher(){
   const person=nextTeacher();if(!person)return false;
-  const actor={id:person.id,person,born:age,speed:.55+Math.random()*.25,direction:Math.random()<.5?-1:1,expires:age+24+Math.random()*14,spec:{...(person.appearance||{}),gender:person.appearance?.gender||person.gender||'male',role:'teacher'}};
+  const look=String(person.id).split('').reduce((n,c)=>n+c.charCodeAt(0),0),clothingStyle=['blazer','cardigan','shirt','polo'][look%4];
+  const actor={id:person.id,person,born:age,speed:.55+Math.random()*.25,direction:Math.random()<.5?-1:1,expires:age+24+Math.random()*14,spec:{...(person.appearance||{}),gender:person.appearance?.gender||person.gender||'male',role:'teacher',clothingStyle,pantsColor:[0x514b48,0x49545c,0x716755,0x535c51][look%4]}};
   const roomId=api.rooms?.[person.destination]?.aliasFor||person.destination;
   if(Math.random()<.5){for(const layout of window.campusWalkWorld?.layouts||[]){const room=layout.rooms?.find(r=>r.id===roomId);if(!room||!layout.local||!layout.world)continue;
    actor.layout=layout;actor.room=room;
@@ -92,12 +93,51 @@
   active=actors.map(actor=>({actor,distance:Math.hypot(actor.position.x-player.x,actor.position.z-player.z)})).filter(a=>a.distance<85&&(floor==='all'||!a.actor.room||a.actor.room.floor===Number(floor))&&(!near(a.actor.position,player)||a.actor.root?.visible)).sort((a,b)=>a.distance-b.distance).slice(0,max).map(a=>a.actor);
   for(const actor of actors){const visible=active.includes(actor);if(visible)ensureRoot(actor);if(actor.root)actor.root.visible=visible;if(actor.tag)actor.tag.hidden=true}
  }
+ function clearWalk(from,to){const d=Math.hypot(to.x-from.x,to.z-from.z),steps=Math.max(1,Math.ceil(d/.18));for(let i=1;i<=steps;i++){const p={x:from.x+(to.x-from.x)*i/steps,y:from.y,z:from.z+(to.z-from.z)*i/steps};p.y=ground(p);if(Math.abs(p.y-from.y)>.24||!safe(p))return false}return true}
+ // One search frontier advances at most 400 cells per frame, shared by all students.
+ let nextWalkPlan=0,walkSearch=null,lastSearchAge=-1,plannerCandidate=null;
+ function finishWalk(actor,origin,destination,path){
+  if(path){actor.walkOrigin=origin;actor.walkDestination=destination;actor.previousZone=destination.zone;actor.walkPath=path;actor.walkIndex=1;actor.walkBlocked=0}
+  actor.nextWalk=age+1+Math.random();
+ }
+ function advanceWalkSearch(){
+  if(!walkSearch||lastSearchAge===age)return;lastSearchAge=age;
+  const job=walkSearch,points=window.CampusGridSearch.path(job.state,job.cell,job.free,400);
+  if(!points&&job.state.head<job.state.queue.length&&job.state.head<130000)return;
+  let path=null;
+  if(points){const route=points.map(p=>({x:job.origin.x+p.x,y:0,z:job.origin.z+p.z}));route.push(job.destination);if(route.every((p,i)=>!i||clearWalk(route[i-1],p)))path=route}
+  finishWalk(job.actor,job.origin,job.destination,path);walkSearch=null;
+ }
+ function planStudent(actor){
+  if(walkSearch||actor!==plannerCandidate)return;
+  if(age<actor.nextWalk||age<nextWalkPlan)return;nextWalkPlan=age+.15;
+  actor.lastPlan=age;
+  const candidates=zones.map((z,i)=>({x:z[0],y:0,z:z[1],zone:i})).filter(p=>Math.hypot(p.x-actor.position.x,p.z-actor.position.z)>=18&&p.zone!==actor.previousZone&&safe(p));
+  if(!candidates.length){actor.nextWalk=age+2;return}
+  const destination=candidates[Math.floor(Math.random()*candidates.length)],origin={...actor.position},grid=window.CampusGridSearch;
+  if(clearWalk(origin,destination))finishWalk(actor,origin,destination,[origin,destination]);
+  else if(grid){
+   const step=1,cell={x:Math.round((destination.x-origin.x)/step),z:Math.round((destination.z-origin.z)/step)};
+   const free=(x,z)=>{const p={x:origin.x+x*step,y:0,z:origin.z+z*step};return p.x>=-118&&p.x<=48&&p.z>=-62&&p.z<=83&&safe(p)};
+   walkSearch={actor,origin,destination,cell,free,state:grid.create({x:0,z:0})};
+  }else actor.nextWalk=age+2;
+ }
  function move(actor,delta,time){if(actor.stationary)return;const p=actor.position;let remaining=Math.min(delta,.1)*actor.speed,moved=false;
+  const student=actor.spec.role==='student';
+  if(student){
+   if(!actor.walkPath)planStudent(actor);
+   actor.target=actor.walkPath?.[actor.walkIndex]||null;
+   if(actor.target&&Math.hypot(actor.target.x-p.x,actor.target.z-p.z)<.08){actor.walkIndex++;actor.target=actor.walkPath[actor.walkIndex]||null;if(!actor.target){actor.walkPath=null;actor.nextWalk=age+1+Math.random()*2}}
+   if(!actor.target)remaining=0;
+  }
   if(actor.person&&actor.room&&(!actor.target||Math.hypot(actor.target.x-p.x,actor.target.z-p.z)<.2))actor.target=roomPoint(actor.layout,actor.room);
   while(remaining>0){const step=Math.min(remaining,.035),next={...p};next[actor.axis]+=step*actor.direction;next.y=ground(next);
    if(actor.target){const dx=actor.target.x-p.x,dz=actor.target.z-p.z,d=Math.hypot(dx,dz);next.x=p.x+dx/Math.max(d,.001)*step;next.z=p.z+dz/Math.max(d,.001)*step;next.y=ground(next)}
-   if((!actor.room&&Math.abs(next[actor.axis]-actor.start[actor.axis])>actor.length)||Math.abs(next.y-p.y)>.24||!allowed(actor,next)||occupied(next,actor)){actor.direction*=-1;actor.target=null;break}
-   actor.heading=Math.atan2(next.x-p.x,next.z-p.z);Object.assign(p,next);remaining-=step;moved=true;
+   if((!student&&!actor.room&&Math.abs(next[actor.axis]-actor.start[actor.axis])>actor.length)||Math.abs(next.y-p.y)>.24||!allowed(actor,next)||occupied(next,actor)){
+    if(student){actor.walkBlocked=(actor.walkBlocked||0)+Math.min(delta,.1);if(actor.walkBlocked>1.8){actor.walkPath=null;actor.target=null;actor.nextWalk=age+.5+Math.random()}}
+    else{actor.direction*=-1;actor.target=null}break;
+   }
+   actor.walkBlocked=0;actor.heading=Math.atan2(next.x-p.x,next.z-p.z);Object.assign(p,next);remaining-=step;moved=true;
   }
   if(actor.root){actor.root.position.set(p.x,p.y,p.z);if(moved)actor.root.rotation.y=actor.heading;for(let i=0;i<actor.limbs.length;i++)if(actor.limbs[i])actor.limbs[i].rotation.x=moved?Math.sin(time*5+((i===0||i===3)?0:Math.PI))*.22:0}
  }
@@ -120,7 +160,8 @@
  }
  function update(delta,time){const paused=document.hidden||dialog.open||document.getElementById('guide-landing')?.open||api.motionBlocked?.();
   if(paused){for(const actor of actors)if(actor.tag)actor.tag.hidden=true;return}
-  age+=Math.min(delta,.1);rotateTeachers();
+  age+=Math.min(delta,.1);rotateTeachers();advanceWalkSearch();
+  plannerCandidate=actors.filter(a=>a.spec.role==='student'&&!a.walkPath&&age>=a.nextWalk).sort((a,b)=>(a.lastPlan??-1)-(b.lastPlan??-1))[0];
   const player=api.getPlayerPosition?.()||api.camera?.position||{x:0,y:0,z:0};choose(time,player);
   for(const actor of actors){move(actor,delta,time);fade(actor)}
   for(const actor of active){if(!actors.includes(actor)||!actor.tag)continue;actor.tag.hidden=true;

@@ -20,6 +20,7 @@ function setup(width=1280, configure?: (w:any)=>void) {
   createCharacter:()=>new THREE.Group()};
  w.campusCollisionIndex={pointHit:()=>false};w.campusWalkWorld={ground:()=>0};
  configure?.(w);
+ w.eval(readFileSync('public/campus-explorer/grid-search.js','utf8'));
  const path='public/campus-explorer/campus-people.js';
  if(existsSync(path))w.eval(readFileSync(path,'utf8'));
  return {w,dom,d:w.document,api:w.campusPeople};
@@ -107,6 +108,18 @@ describe('人物場景安全邊界',()=>{
 });
 
 describe('老師輪替與人物避讓',()=>{
+ it('學生走向遠處的校園目的地，持續移動超過原本短距離折返範圍',()=>{
+  const s=setup(1280,w=>{let seed=17;w.Math.random=()=>{seed=(seed*16807)%2147483647;return seed/2147483647}});
+  const students=s.api.actors.filter((a:any)=>a.spec.role==='student'),initial=students.map((a:any)=>({...a.position}));
+  let maxDisplacement=0;
+  for(let tick=0;tick<550;tick++){
+   s.api.update(.1,tick*.1);
+   students.forEach((a:any,i:number)=>{maxDisplacement=Math.max(maxDisplacement,Math.hypot(a.position.x-initial[i].x,a.position.z-initial[i].z))});
+  }
+  expect(maxDisplacement).toBeGreaterThan(18);
+  expect(students.some((a:any)=>a.walkDestination&&Math.hypot(a.walkDestination.x-a.walkOrigin.x,a.walkDestination.z-a.walkOrigin.z)>=18)).toBe(true);
+  s.dom.window.close();
+ },15000);
  it('55 位老師分批輪流出現，一輪內不重複，名冊仍完整',()=>{
   const s=setup(1280,w=>{w.CampusStaffData.people=Array.from({length:55},(_,i)=>({id:'t'+i,name:'老師'+i,portrait:'p.jpg',destination:'academic'}))});
   const seen=new Set<string>();let maxTeachers=0;

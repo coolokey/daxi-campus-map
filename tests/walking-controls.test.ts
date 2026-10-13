@@ -13,6 +13,14 @@ it('creates a hat-free adult guard with a badge and long trousers',()=>{
  expect(run(`guard.getObjectByName('avatar-shorts-left').scale.y`)).toBe(.48);
  expect(run(`guard.getObjectByName('avatar-torso').material[4].map`)).toBeNull();
  expect(run(`guard.children.some(o=>/hat|cap/.test(o.name))`)).toBe(false);
+ expect(run(`!!guard.getObjectByName('security-tie')&&!!guard.getObjectByName('security-pocket-left')&&!!guard.getObjectByName('security-belt')`)).toBe(true);
+ expect(run(`guard.getObjectByName('avatar-shoulder-trim').visible`)).toBe(false);
+});
+it('teacher outfits have distinct silhouettes and hide student uniform trims',()=>{
+ run(`window.teacherStyles=['blazer','cardigan','shirt','polo'].map(clothingStyle=>campusExplorer.createCharacter({role:'teacher',clothingStyle,shirtColor:0x899b8e}));`);
+ expect(run(`teacherStyles.map(t=>t.userData.clothingStyle)`)).toEqual(['blazer','cardigan','shirt','polo']);
+ expect(run(`teacherStyles.every(t=>!t.getObjectByName('avatar-shoulder-trim').visible&&!t.getObjectByName('avatar-shorts-trim').visible&&!t.getObjectByName('avatar-sock').visible)`)).toBe(true);
+ expect(run(`!!teacherStyles[0].getObjectByName('teacher-lapel-left')&&!!teacherStyles[1].getObjectByName('teacher-cardigan-panel-left')&&!!teacherStyles[2].getObjectByName('teacher-shirt-buttons')&&!!teacherStyles[3].getObjectByName('teacher-polo-placket')`)).toBe(true);
 });
 beforeAll(()=>{
  dom=new JSDOM(readFileSync(root+'index.html','utf8'),{url:'https://example.test',runScripts:'outside-only',pretendToBeVisual:true});
@@ -200,9 +208,12 @@ it('player movement consults people collisions and automatic walking waits inste
  run(`delete window.campusPeople;clearNavigation();`);
 });
 it('real campus teacher patrols respect walls, furniture and office floor boundaries',()=>{
+ // Physics simulation in bird view avoids unrelated name-tag occlusion raycasts.
+ run(`document.body.dataset.controlMode='bird';`);
+ run(`window.walkSeed=29;Math.random=()=>{walkSeed=walkSeed*16807%2147483647;return walkSeed/2147483647};`);
  run(readFileSync(root+'staff-data.js','utf8'));
  run(readFileSync(root+'campus-people.js','utf8'));
- run(`window.initialTeacherPositions=new Map(campusPeople.actors.filter(a=>a.person).map(a=>[a.id,{...a.position}]));window.invalidPeople=[];
+ run(`window.initialTeacherPositions=new Map(campusPeople.actors.filter(a=>a.person).map(a=>[a.id,{...a.position}]));window.initialStudentPositions=new Map(campusPeople.actors.filter(a=>a.spec.role==='student').map(a=>[a.id,{...a.position}]));window.invalidPeople=[];
  for(let i=0;i<200;i++){
  campusPeople.update(.1,i*.1);
  for(const a of campusPeople.actors){
@@ -213,5 +224,11 @@ it('real campus teacher patrols respect walls, furniture and office floor bounda
  expect(run(`invalidPeople`)).toEqual([]);
  expect(run(`campusPeople.actors.filter(a=>a.person).length`)).toBe(6);
  expect(run(`campusPeople.actors.some(a=>a.person&&Math.hypot(a.position.x-initialTeacherPositions.get(a.id).x,a.position.z-initialTeacherPositions.get(a.id).z)>.1)`)).toBe(true);
+ run(`window.studentRanges=new Map();for(let i=200;i<1000;i++){campusPeople.update(.1,i*.1);for(const a of campusPeople.actors){
+ if(campusCollisionIndex.hit(a.position.x,a.position.y,a.position.z))invalidPeople.push(a.id);
+ for(const b of campusPeople.actors)if(a!==b&&Math.abs(a.position.y-b.position.y)<1.8&&Math.hypot(a.position.x-b.position.x,a.position.z-b.position.z)<1.05)invalidPeople.push(a.id+' overlaps '+b.id);
+ if(a.spec.role==='student'){const start=initialStudentPositions.get(a.id);studentRanges.set(a.id,Math.max(studentRanges.get(a.id)||0,Math.hypot(a.position.x-start.x,a.position.z-start.z)))}}}`);
+ expect(run(`invalidPeople`)).toEqual([]);
+ expect(run(`[...studentRanges.values()].filter(d=>d>18).length`)).toBeGreaterThanOrEqual(8);
  run(`delete window.campusPeople;`);
-},20000);
+},60000);

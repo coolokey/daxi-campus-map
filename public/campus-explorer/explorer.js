@@ -356,13 +356,67 @@
         const pants=root.getObjectByName('avatar-shorts-'+side);setAvatarColor(pants.material,uniform?0x3d5874:0x586267);
         if(adult){pants.position.y=-.34;pants.scale.y=.48;}
       }
+      if(adult){
+        // Adult clothes have their own cut and accessories, without school sportswear trims.
+        const style=spec.role==='guard'?'security':(spec.clothingStyle||'shirt');root.userData.clothingStyle=style;
+        root.traverse(node=>{if(['avatar-shoulder-trim','avatar-shorts-trim','avatar-sock','avatar-calf','avatar-shoe-toe'].includes(node.name))node.visible=false});
+        const cloth=color=>{const m=new THREE.MeshStandardMaterial({color,roughness:.94});m.color.convertSRGBToLinear();m.userData.campusColorCalibrated=true;return m};
+        const outer=cloth(shirt),light=cloth(0xe4ddcd),dark=cloth(spec.role==='guard'?0x293743:(spec.pantsColor||0x514b48));
+        const detail=(name,geo,mat,x,y,z,parent=root)=>{const mesh=new THREE.Mesh(geo,mat);mesh.name=name;mesh.userData.campusOwnedGeometry=true;mesh.position.set(x,y,z);mesh.castShadow=true;parent.add(mesh);return mesh};
+        const panel=(name,points,mat,z)=>{const s=new THREE.Shape();points.forEach(([x,y],i)=>i?s.lineTo(x,y):s.moveTo(x,y));s.closePath();return detail(name,new THREE.ShapeGeometry(s),mat,0,0,z)};
+        const block=(name,w,h,d,x,y,z,mat,parent)=>detail(name,new THREE.BoxGeometry(w,h,d),mat,x,y,z,parent);
+        root.traverse(node=>{
+          if(node.name.startsWith('avatar-shorts-'))setAvatarColor(node.material,spec.role==='guard'?0x293743:(spec.pantsColor||0x514b48));
+          if(node.name==='avatar-shoe')node.material=dark;
+          if(node.name==='avatar-shoe-sole'){node.scale.y=.028;node.material=dark;}
+        });
+        root.getObjectByName('avatar-collar').visible=false;
+        for(const side of ['left','right']){
+          const sleeve=root.getObjectByName('avatar-sleeve-'+side);
+          if(style!=='polo'){sleeve.position.y=-.25;sleeve.scale.y=.37;}
+        }
+        if(style==='security'){
+          // Navy trousers, pale blue button shirt, epaulettes, tie, pockets and duty belt.
+          root.getObjectByName('avatar-torso').material.forEach(m=>setAvatarColor(m,0x9eafb7));
+          for(const side of ['left','right'])setAvatarColor(root.getObjectByName('avatar-sleeve-'+side).material,0x9eafb7);
+          for(const side of [-1,1]){
+            const label=side<0?'left':'right';
+            panel('security-collar-'+label,[[side*.035,1.84],[side*.20,1.75],[side*.105,1.61]],light,.245);
+            block('security-pocket-'+label,.16,.14,.035,side*.22,1.48,.257,outer);
+            block('security-pocket-flap-'+label,.18,.035,.045,side*.22,1.56,.28,dark);
+            block('security-epaulette-'+label,.24,.045,.20,side*.40,1.76,0,dark);
+          }
+          panel('security-tie',[[0,1.77],[-.055,1.68],[-.045,1.40],[0,1.35],[.045,1.40],[.055,1.68]],dark,.283);
+          block('security-belt',.64,.085,.38,0,1.01,0,dark);
+          block('security-buckle',.10,.075,.035,0,1.01,.215,cloth(0xb49b68));
+          block('security-radio',.10,.19,.10,.36,1.14,.13,dark);
+        }else{
+          for(const side of [-1,1]){
+            const label=side<0?'left':'right';
+            panel('teacher-collar-'+label,[[side*.025,1.83],[side*.19,1.75],[side*.09,1.64]],style==='polo'?outer:light,.247);
+          }
+          if(style==='blazer'){
+            panel('teacher-inner-shirt',[[-.13,1.77],[.13,1.77],[.095,1.22],[-.095,1.22]],light,.279);
+            for(const side of [-1,1])panel('teacher-lapel-'+(side<0?'left':'right'),[[side*.15,1.82],[side*.32,1.67],[side*.20,1.58],[side*.25,1.50],[side*.025,1.18]],outer,.30);
+            block('teacher-blazer-pocket',.13,.028,.035,-.23,1.43,.275,light);
+          }else if(style==='cardigan'){
+            panel('teacher-knit-inner',[[-.12,1.77],[.12,1.77],[.11,1.1],[-.11,1.1]],light,.28);
+            for(const side of [-1,1])panel('teacher-cardigan-panel-'+(side<0?'left':'right'),[[side*.18,1.80],[side*.33,1.62],[side*.30,1.02],[side*.05,1.02],[side*.04,1.40]],outer,.30);
+          }else if(style==='polo')block('teacher-polo-placket',.065,.22,.025,0,1.62,.27,light);
+          if(style!=='polo'){
+            const buttons=new THREE.Group();buttons.name='teacher-shirt-buttons';root.add(buttons);
+            for(const y of [1.53,1.37,1.21])detail('teacher-button',new THREE.SphereGeometry(.018,8,6),style==='shirt'?dark:light,0,y,.305,buttons);
+          }
+          block('teacher-waistband',.58,.06,.34,0,1.0,0,dark);
+        }
+      }
       if(spec.hairColor!=null){
         const hairMaterial=root.getObjectByName('avatar-short-hair').material;
         setAvatarColor(hairMaterial,spec.hairColor);
       }
       if(spec.role==='guard'){
         const badgeMaterial=new THREE.MeshStandardMaterial({color:0xb69b5e,roughness:.9});badgeMaterial.color.convertSRGBToLinear();
-        const badge=new THREE.Mesh(new THREE.CircleGeometry(.075,6),badgeMaterial);badge.userData.campusOwnedGeometry=true;badge.name='avatar-guard-badge';badge.position.set(-.16,1.55,.265);root.add(badge);
+        const badge=new THREE.Mesh(new THREE.CircleGeometry(.075,6),badgeMaterial);badge.userData.campusOwnedGeometry=true;badge.name='avatar-guard-badge';badge.position.set(-.22,1.64,.29);root.add(badge);
       }
       if(spec.glasses){
         const glasses=new THREE.Group();glasses.name='avatar-glasses';glasses.position.set(0,-.045,.445);

@@ -4,6 +4,12 @@ import vm from 'node:vm';
 const context=vm.createContext({window:{}}),file='public/campus-explorer/grid-search.js';
 if(existsSync(file))vm.runInContext(readFileSync(file,'utf8'),context);
 const model=context.window as any;
+it('supports a bounded search slice and resumes the same frontier on later frames',()=>{
+ const M=model.CampusGridSearch,state=M.create({x:0,z:0}),free=(x:number,z:number)=>x>=0&&x<=30&&z>=0&&z<=30;
+ let path=null,calls=0;
+ while(!path&&calls++<200){const before=state.head;path=M.path(state,{x:30,z:30},free,8);expect(state.head-before).toBeLessThanOrEqual(8)}
+ expect(calls).toBeGreaterThan(1);expect(path.at(-1)).toEqual({x:30,z:30});
+});
 it('reuses a search frontier across destinations without repeating visited collision checks',()=>{
  const M=model.CampusGridSearch;expect(M).toBeDefined();const state=M.create({x:0,z:0});let checks=0;
  const free=(x:number,z:number)=>{checks++;return x>=0&&x<=8&&z>=0&&z<=8&&!(x===2&&z<5)};
