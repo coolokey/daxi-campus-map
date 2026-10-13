@@ -17,7 +17,7 @@
   cover?.querySelector('footer')?.append(coverEntry);document.body.append(launcher,panel,banner);
   const $=id=>panel.querySelector('#anniversary-'+id);
   let running=false,fx=null,saved=null,elapsed=0,last=0,cueIndex=0,cues=[],phase='',cameraSaved=null,interacted=false,previousFocus=null;
-  let audio=null,audioEngine=null,soundWanted=true,soundEnabled=false,soundGeneration=0,low=false,quality=null,slowSum=0,slowFrames=0,lastDowngrade=0;
+  let audio=null,audioEngine=null,soundWanted=true,soundEnabled=false,soundGeneration=0,waitingForSound=false,low=false,quality=null,slowSum=0,slowFrames=0,lastDowngrade=0;
   const listeners=[];function listen(target,type,handler){if(!target?.addEventListener)return;target.addEventListener(type,handler);listeners.push(()=>target.removeEventListener?.(type,handler));}
   const isReduced=()=>reduced.matches||low;
   let disposed=false;
@@ -25,21 +25,23 @@
   const environment={width:innerWidth,cores:navigator.hardwareConcurrency||4,memory:navigator.deviceMemory||4};
   function qualityValue(){return model.qualityFor({...environment,width:innerWidth,reduced:isReduced(),preset:$('preset').value});}
   function soundUI(){ $('sound').textContent=soundWanted?'靜音':'開啟音效';$('sound').setAttribute('aria-pressed',String(soundWanted)); }
-  function quiet(){soundGeneration++;soundEnabled=false;audioEngine?.stop();audio?.suspend().catch(()=>{});crowdStarted=false;}
+  function quiet(){soundGeneration++;soundEnabled=false;waitingForSound=false;audioEngine?.stop();audio?.suspend().catch(()=>{});crowdStarted=false;}
   async function resumeSound(){
     const generation=++soundGeneration;
+    waitingForSound=true;last=0;let timeout;
     try{
       const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)throw new Error('瀏覽器不支援 Web Audio');
       if(!audio){audio=new Audio();audioEngine=window.CampusFireworkAudio.create(audio,audio.destination,{manifestURL:new URL('assets/sounds/manifest.json',document.baseURI).href});}
       // resume is called before awaiting a fetch, while the user activation is alive (iOS).
       const resume=audio.resume().then(()=>{if(generation!==soundGeneration&&(!soundWanted||!running||document.hidden||window.proposalHidden))return audio.suspend();});$('audio-status').textContent='正在載入真實錄音……';
-      const [result]=await Promise.all([audioEngine.load(),resume]);
+      const [result]=await Promise.race([Promise.all([audioEngine.load(),resume]),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(new Error('錄音載入逾時')),8000);})]);
       if(generation!==soundGeneration){if(!soundWanted||!running||document.hidden||window.proposalHidden)audio.suspend().catch(()=>{});return;}
       soundEnabled=soundWanted&&running&&!document.hidden&&!window.proposalHidden;
       audioEngine.setVolume(Number($('volume').value)/100);
       $('audio-status').textContent=result.failed.length?`已載入 ${result.loaded}/18；缺少 ${result.failed.length} 個資源，未載入部分保持無聲。`:`已載入 ${result.loaded}/18 個真實錄音樣本。`;
       if(!soundEnabled)quiet();
     }catch(error){if(generation!==soundGeneration)return;soundWanted=false;quiet();soundUI();$('audio-status').textContent='音效無法啟用：'+error.message+'。仍可欣賞煙火。';}
+    finally{clearTimeout(timeout);if(generation===soundGeneration){waitingForSound=false;last=0;}}
   }
   function play(kind,position,extra={}){if(!soundEnabled)return null;return audioEngine?.play(kind,{position,camera:api.camera,...extra});}
   function night(amount){
@@ -76,7 +78,7 @@
     });
     panel.hidden=false;panel.classList.remove('is-finished');banner.hidden=false;document.body.classList.add('anniversary-playing');
     if(fromCover){cinematicView();if(!document.body.classList.contains('guide-collapsed'))document.getElementById('guide-toggle')?.click();}
-    quiet();if(soundWanted)void resumeSound();soundUI();updatePhase('countdown');return true;
+    quiet();if(soundWanted)void resumeSound();soundUI();updatePhase(waitingForSound?'loading':'countdown');return true;
   }
   function positionDistance(position){return Math.hypot(position.x-api.camera.position.x,position.y-api.camera.position.y,position.z-api.camera.position.z);}
   function stop(finished=false){
@@ -94,7 +96,7 @@
   }
   function updatePhase(value){
     if(phase===value)return;phase=value;panel.dataset.phase=value;
-    const copy={countdown:'準備好了嗎？生日煙火即將開始。',sparse:'序曲・第一道祝福升空',dense:'盛放・金色菊花、彩球、垂柳、環狀與扇形連發',formation:'金色光點匯聚，寫下大溪的生日祝福。',blessing:'大溪國中 80 週年校慶快樂！',fade:'將這一夜的光，留在每位大溪人的心裡。'};
+    const copy={loading:'正在準備音效，完成後同步開始倒數。',countdown:'準備好了嗎？生日煙火即將開始。',sparse:'序曲・第一道祝福升空',dense:'盛放・金色菊花、彩球、垂柳、環狀與扇形連發',formation:'金色光點匯聚，寫下大溪的生日祝福。',blessing:'大溪國中 80 週年校慶快樂！',fade:'將這一夜的光，留在每位大溪人的心裡。'};
     $('status').textContent=copy[value]||'';
     document.body.classList.toggle('anniversary-lettering',['formation','blessing','fade'].includes(value));
     banner.hidden=value!=='countdown';if(value!=='countdown')banner.textContent='';
@@ -102,6 +104,7 @@
   function update(now){
     if(!running)return;
     if(document.hidden||window.proposalHidden){last=0;return;}
+    if(waitingForSound){last=0;return;}
     const step=model.frameStep(now,last);last=now;elapsed+=step.elapsedMs;
     const next=model.phaseAt(elapsed);if(next==='finished'){stop(true);return;}updatePhase(next);
     if(next==='countdown')banner.textContent=String(Math.max(1,3-Math.floor(elapsed/1000)));

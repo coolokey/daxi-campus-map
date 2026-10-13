@@ -6,6 +6,14 @@ import { JSDOM } from 'jsdom';
 let dom:JSDOM,context:vm.Context;
 const root='public/campus-explorer/';
 const run=(s:string)=>vm.runInContext(s,context,{timeout:180000});
+it('creates a hat-free adult guard with a badge and long trousers',()=>{
+ run(`window.guard=campusExplorer.createCharacter({role:'guard',gender:'male',outfit:'casual',shirtColor:0x465e76});`);
+ expect(run(`!!guard.getObjectByName('avatar-guard-badge')`)).toBe(true);
+ expect(run(`guard.scale.x`)).toBe(.72);
+ expect(run(`guard.getObjectByName('avatar-shorts-left').scale.y`)).toBe(.48);
+ expect(run(`guard.getObjectByName('avatar-torso').material[4].map`)).toBeNull();
+ expect(run(`guard.children.some(o=>/hat|cap/.test(o.name))`)).toBe(false);
+});
 beforeAll(()=>{
  dom=new JSDOM(readFileSync(root+'index.html','utf8'),{url:'https://example.test',runScripts:'outside-only',pretendToBeVisual:true});
  const w=dom.window as any;context=dom.getInternalVMContext();

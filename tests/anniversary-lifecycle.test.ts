@@ -2,9 +2,10 @@ import {it,expect} from 'vitest';
 import {JSDOM} from 'jsdom';
 import {readFileSync} from 'node:fs';
 import * as THREE from 'three';
-function setup(){
+function setup(options:{slowLoad?:boolean}={}){
  const dom=new JSDOM('<body></body>',{url:'https://campus.test',runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window as any;
- const pending:Array<()=>void>=[],instances:any[]=[];
+ const pending:Array<()=>void>=[],instances:any[]=[];let finishLoad:()=>void=()=>{},expire:()=>void=()=>{};
+ w.setTimeout=(callback:()=>void)=>{expire=callback;return 1;};w.clearTimeout=()=>{};
  w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};
  w.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new w.Event('close'));};
  w.HTMLCanvasElement.prototype.getContext=()=>new Proxy({getImageData:()=>({data:[]})},{get:(o,k)=>k in o?o[k]:()=>{}});
@@ -13,9 +14,31 @@ function setup(){
  const scene=new THREE.Scene();scene.background=new THREE.Color(0xffffff);
  Object.assign(w,{THREE,currentMode:'bird',cancelCameraTween(){},matchMedia:()=>({matches:true,addEventListener(){}}),requestAnimationFrame:()=>1,cancelAnimationFrame(){},CampusFireworkAudio:{create:()=>({load:async()=>({loaded:18,failed:[]}),play(){},stop(){},dispose(){},setVolume(){},stats:()=>({active:0,loaded:18})})},CampusFireworkScene:{create:()=>({launch(){},update(){},setQuality(){},dispose(){},stats:()=>({active:0})})},campusExplorer:{scene,camera:new THREE.PerspectiveCamera(),controls:{target:new THREE.Vector3(),enabled:true,enableDamping:true,autoRotate:false,update(){}},manualTakeover(){},resetManualInput(){},setControlMode(){}}});
  for(const file of ['anniversary-model.js','anniversary-fireworks.js'])w.eval(readFileSync('public/campus-explorer/'+file,'utf8'));
+ if(options.slowLoad)w.CampusFireworkAudio.create=()=>({load:()=>new Promise(resolve=>{finishLoad=()=>resolve({loaded:18,failed:[]})}),play(){},stop(){},dispose(){},setVolume(){},stats:()=>({active:0,loaded:0})});
  const click=(id:string)=>w.document.getElementById('anniversary-'+id).click(),flush=async()=>{for(const resolve of pending.splice(0))resolve();for(let i=0;i<8;i++)await Promise.resolve();};
- return {dom,w,click,flush,instances};
+ return {dom,w,click,flush,instances,finishLoad:()=>finishLoad(),expire:()=>expire()};
 }
+it('慢速載入音效時不先播放煙火，準備好後才從完整倒數開始',async()=>{
+ const s=setup({slowLoad:true});s.click('launch');await s.flush();
+ s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(9000);
+ expect(s.w.campusAnniversary.stats().elapsed).toBe(0);
+ expect(s.w.campusAnniversary.stats().phase).toBe('loading');
+ s.finishLoad();await s.flush();s.w.campusAnniversary.update(10000);s.w.campusAnniversary.update(11000);
+ expect(s.w.campusAnniversary.stats().elapsed).toBe(1000);expect(s.w.campusAnniversary.stats().soundEnabled).toBe(true);
+ s.click('close');s.dom.window.close();
+});
+it('音效載入中停止或靜音，不留下等待狀態或延遲重啟聲音',async()=>{
+ const s=setup({slowLoad:true});s.click('launch');s.click('sound');await s.flush();
+ s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(2000);expect(s.w.campusAnniversary.stats().elapsed).toBe(1000);
+ s.click('close');s.finishLoad();await s.flush();expect(s.w.campusAnniversary.stats().running).toBe(false);expect(s.w.campusAnniversary.stats().soundEnabled).toBe(false);s.dom.window.close();
+});
+it('音效下載逾時仍可看煙火，遲到的下載不會中途突然開始播放',async()=>{
+ const s=setup({slowLoad:true});s.click('launch');await s.flush();s.expire();await s.flush();
+ expect(s.w.campusAnniversary.stats().soundEnabled).toBe(false);
+ s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(2000);expect(s.w.campusAnniversary.stats().elapsed).toBe(1000);
+ s.finishLoad();await s.flush();expect(s.w.campusAnniversary.stats().soundEnabled).toBe(false);
+ expect(s.w.document.getElementById('anniversary-audio-status').textContent).toContain('逾時');s.click('close');s.dom.window.close();
+});
 it('點選開始即啟用音效，預設音量 100%，停止後仍可再啟用',async()=>{
  const s=setup();expect(s.instances).toHaveLength(0);s.click('launch');await s.flush();
  expect(s.w.campusAnniversary.stats().soundEnabled).toBe(true);

@@ -43,10 +43,10 @@ describe('真實煙火錄音',()=>{
   const {engine,log}=setup(true);const result=await engine.load();
   expect(result.loaded).toBe(0);expect(result.failed.length).toBeGreaterThan(0);expect(engine.play('near')).toBeNull();expect(log).toEqual([]);
  });
- it('遠方爆裂有聲速延遲、聲源上限及停止清理',async()=>{
+ it('遠方爆裂與畫面同步，不再額外延後聲音，聲源上限及停止清理',async()=>{
   const {engine,log}=setup();await engine.load();
   engine.play('far',{position:{x:343,y:0,z:0},camera:{x:0,y:0,z:0}});
-  expect(log[0][0]).toBeGreaterThan(10.5);
+  expect(log[0][0]).toBe(10);
   for(let i=0;i<40;i++)engine.play('near');
   expect(engine.stats().active).toBeLessThanOrEqual(18);
   engine.dispose();expect(engine.stats().active).toBe(0);

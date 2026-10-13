@@ -11,7 +11,7 @@
  const dialog=make('dialog');dialog.id='campus-people-dialog';dialog.setAttribute('aria-labelledby','campus-people-title');
  const header=make('header'),heading=make('h2','', '校園師生');heading.id='campus-people-title';
  const closeButton=button('關閉','campus-people-close');header.append(heading,closeButton);
- const intro=make('p','campus-people-note',`${data.year||115} 學年度教職員名冊。場景學生為一般示意人物。`);
+ const intro=make('p','campus-people-note',`${data.year||115} 學年度教職員名冊。警衛與學生為一般示意人物。`);
  const label=make('label','','搜尋姓名或職稱');label.htmlFor='campus-people-search';
  const search=make('input');search.id='campus-people-search';search.type='search';search.placeholder='姓名、職稱';search.autocomplete='off';
  const status=make('p','campus-people-status');status.id='campus-people-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
@@ -48,19 +48,21 @@
  function ground(p){return window.campusWalkWorld?.ground(p)??0}
  // Find the initial position once. Walking never teleports to a new route point.
  function place(x,z,index){for(let ring=0;ring<=6;ring++)for(let n=0;n<(ring?12:1);n++){const angle=(n+index*.37)*Math.PI/6,p={x:x+Math.cos(angle)*ring*1.8,y:0,z:z+Math.sin(angle)*ring*1.8};p.y=ground(p);if(safe(p)&&!actors.some(a=>Math.hypot(a.position.x-p.x,a.position.z-p.z)<1.3))return p}return null}
+ const guardPosition=place(-18,87,0);
+ if(guardPosition)actors.push({id:'gate-guard',label:'警衛先生',stationary:true,position:guardPosition,spec:{role:'guard',gender:'male',hairStyle:'short',outfit:'casual',shirtColor:0x465e76,hairColor:0x45403b}});
  zones.forEach((z,i)=>{const position=place(z[0],z[1],i);if(position)actors.push({id:'student-'+i,position,start:{...position},direction:1,axis:z[2]?'x':'z',length:z[2]||z[3],speed:.55+(i%3)*.12,spec:{gender:i%2?'female':'male',outfit:'uniform',role:'student'}})});
  const destinations={academic:[-39,43],general:[-39,48],counseling:[-38,37],library:[59,-25],track:[-64,-20]};
  people.filter(p=>p.portrait).forEach((person,i)=>{let spot=destinations[person.destination];if(!spot){const r=api.rooms?.[person.destination],b=api.buildings?.find?.(b=>b.id===r?.buildingId);spot=b?[b.x-(b.w||b.width||20)/2-3,b.z]:[-39,42]}
   const offset=i%4,position=place(spot[0]-(offset%2)*2.3,spot[1]+Math.floor(offset/2)*2.3,i);if(position)actors.push({id:person.id,person,position,spec:{...(person.appearance||{}),gender:person.appearance?.gender||person.gender||'male',role:'teacher'}});
  });
  const THREE=window.THREE;
- function ensureRoot(actor){if(actor.root||!THREE||!api.createCharacter)return;actor.root=api.createCharacter(actor.spec);actor.root.userData.campusPerson=actor;actor.root.position.set(actor.position.x,actor.position.y,actor.position.z);api.scene.add(actor.root);actor.limbs=['avatar-arm-left','avatar-arm-right','avatar-leg-left','avatar-leg-right'].map(n=>actor.root.getObjectByName(n));if(actor.person){actor.tag=make('span','campus-person-tag',actor.person.name);actor.tag.hidden=true;tags.append(actor.tag)}}
+ function ensureRoot(actor){if(actor.root||!THREE||!api.createCharacter)return;actor.root=api.createCharacter(actor.spec);actor.root.userData.campusPerson=actor;actor.root.position.set(actor.position.x,actor.position.y,actor.position.z);api.scene.add(actor.root);actor.limbs=['avatar-arm-left','avatar-arm-right','avatar-leg-left','avatar-leg-right'].map(n=>actor.root.getObjectByName(n));if(actor.person||actor.label){actor.tag=make('span','campus-person-tag',actor.person?.name||actor.label);actor.tag.hidden=true;tags.append(actor.tag)}}
  let lastSelection=-1,active=[];
  function choose(time,player){if(time-lastSelection<.35&&lastSelection>=0)return;lastSelection=time;const max=window.innerWidth<=768?7:14;
   active=actors.map(actor=>({actor,distance:Math.hypot(actor.position.x-player.x,actor.position.z-player.z)})).filter(a=>a.distance<85).sort((a,b)=>a.distance-b.distance).slice(0,max).map(a=>a.actor);
   for(const actor of actors){const visible=active.includes(actor);if(visible)ensureRoot(actor);if(actor.root)actor.root.visible=visible;if(actor.tag)actor.tag.hidden=true}
  }
- function move(actor,delta,time){if(actor.person)return;const p=actor.position;let remaining=Math.min(delta,.1)*actor.speed;
+ function move(actor,delta,time){if(actor.person||actor.stationary)return;const p=actor.position;let remaining=Math.min(delta,.1)*actor.speed;
   while(remaining>0){const step=Math.min(remaining,.035),next={...p};next[actor.axis]+=step*actor.direction;next.y=ground(next);
    if(Math.abs(next[actor.axis]-actor.start[actor.axis])>actor.length||Math.abs(next.y-p.y)>.24||!safe(next)){actor.direction*=-1;break}
    Object.assign(p,next);remaining-=step;

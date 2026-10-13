@@ -56,7 +56,8 @@
       source.connect(filter);filter.connect(gain);gain.connect(pan);pan.connect(mix);pan.connect(send);send.connect(convolver);
       const cleanup=()=>{if(!active.has(source))return;active.delete(source);for(const node of [source,gain,pan,filter,send])node.disconnect();};
       active.set(source,{gain,pan,baseGain,cleanup});source.onended=cleanup;
-      const acousticDelay=kind==='launch'||kind==='crowd'?0:Math.max(0,state.distance-100)/343;
+      // Match each visual event; distance only changes loudness, filtering and pan.
+      const acousticDelay=0;
       const at=context.currentTime+acousticDelay+(settings.delay||0);
       if(small){const end=at+duration/source.playbackRate.value;gain.gain.setValueAtTime(gain.gain.value,end-.045);gain.gain.linearRampToValueAtTime(0,end);}
       try{if(small)source.start(at,0,duration);else source.start(at);}catch(error){cleanup();return null;}

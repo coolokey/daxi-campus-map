@@ -65,13 +65,13 @@ describe('校園師生名冊',()=>{
 describe('示意人物效能與碰撞',()=>{
  it('手機最多顯示 7 位，老師僅建立核對照片者，開啟名冊時停止走動',()=>{
   const s=setup(390);expect(s.api).toBeDefined();s.api.update(.1,1);
-  expect(s.api.actors.filter((a:any)=>a.person)).toHaveLength(1);expect(s.api.actors.filter((a:any)=>!a.person)).toHaveLength(12);
+  expect(s.api.actors.filter((a:any)=>a.person)).toHaveLength(1);expect(s.api.actors.filter((a:any)=>a.spec.role==='student')).toHaveLength(12);
   expect(s.api.actors.filter((a:any)=>a.root?.visible).length).toBeLessThanOrEqual(7);
   s.api.open();const before=s.api.actors.map((a:any)=>({...a.position}));s.api.update(.1,2);
   expect(s.api.actors.map((a:any)=>({...a.position}))).toEqual(before);s.dom.window.close();
  });
  it('牆面與過高落差拒絕學生移動，拖曳及長按不當作點擊',()=>{
-  const s=setup();expect(s.api).toBeDefined();s.api.update(.1,1);const student=s.api.actors.find((a:any)=>!a.person&&a.root.visible);const before={...student.position};
+  const s=setup();expect(s.api).toBeDefined();s.api.update(.1,1);const student=s.api.actors.find((a:any)=>a.spec.role==='student'&&a.root.visible);const before={...student.position};
   s.w.campusCollisionIndex.pointHit=()=>true;s.api.update(.1,2);expect(student.position).toEqual(before);
   s.w.campusCollisionIndex.pointHit=()=>false;s.w.campusWalkWorld.ground=()=>4;s.api.update(.1,3);expect(student.position).toEqual(before);
   expect(s.api.isTap({x:1,y:1,time:0},{x:20,y:1,time:100})).toBe(false);
@@ -81,6 +81,13 @@ describe('示意人物效能與碰撞',()=>{
 });
 
 describe('人物場景安全邊界',()=>{
+ it('校門口有不戴帽子、穿深藍服裝的固定警衛先生，手機亦可見',()=>{
+  const s=setup(390,w=>{w.campusExplorer.getPlayerPosition=()=>new THREE.Vector3(-10,0,90)});s.api.update(.1,1);
+  const guard=s.api.actors.find((a:any)=>a.id==='gate-guard');expect(guard).toBeDefined();
+  expect(guard.spec).toMatchObject({gender:'male',role:'guard',outfit:'casual'});expect(guard.root.visible).toBe(true);
+  expect(Math.hypot(guard.position.x+10,guard.position.z-90)).toBeLessThan(12);
+  const before={...guard.position};s.api.update(.1,2);expect(guard.position).toEqual(before);s.dom.window.close();
+ });
  it('大量已核對老師在桌面最多顯示 14 位，配置不重疊',()=>{
   const s=setup(1280,w=>{for(let i=0;i<25;i++)w.CampusStaffData.people.push({id:'extra'+i,name:'核對教職員'+i,title:'教師',portrait:'assets/staff/'+i+'.jpg',destination:'academic'})});
   s.api.update(.1,1);expect(s.api.actors.filter((a:any)=>a.root?.visible)).toHaveLength(14);

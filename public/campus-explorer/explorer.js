@@ -336,7 +336,8 @@
     function createCharacter(spec={}){
       const root=avatarGroup.clone(true),materials=new Map();
       root.name='campus-character';root.position.set(0,0,0);root.rotation.set(0,0,0);root.visible=true;
-      root.scale.setScalar(spec.role==='teacher'?.72:.65);
+      const adult=spec.role==='teacher'||spec.role==='guard';
+      root.scale.setScalar(adult?.72:.65);
       root.traverse(node=>{
         if(!node.material)return;
         const own=material=>{if(!materials.has(material))materials.set(material,material.clone());return materials.get(material)};
@@ -345,7 +346,7 @@
       const female=spec.hairStyle?spec.hairStyle==='long':spec.gender==='female';
       root.getObjectByName('avatar-long-hair').visible=female;
       root.getObjectByName('avatar-boy-fringe').visible=!female;
-      const uniform=spec.role!=='teacher'&&spec.outfit!=='casual',shirt=spec.shirtColor??0x899b8e;
+      const uniform=!adult&&spec.outfit!=='casual',shirt=spec.shirtColor??0x899b8e;
       root.getObjectByName('avatar-torso').material.forEach((material,index)=>{
         material.map=uniform&&index===4?avatarUniformTexture:null;
         setAvatarColor(material,uniform?(index===4?0xffffff:0x3d5874):shirt);material.needsUpdate=true;
@@ -353,11 +354,15 @@
       for(const name of ['avatar-collar','avatar-sleeve-left','avatar-sleeve-right'])setAvatarColor(root.getObjectByName(name).material,uniform?0x3d5874:shirt);
       for(const side of ['left','right']){
         const pants=root.getObjectByName('avatar-shorts-'+side);setAvatarColor(pants.material,uniform?0x3d5874:0x586267);
-        if(spec.role==='teacher'){pants.position.y=-.34;pants.scale.y=.48;}
+        if(adult){pants.position.y=-.34;pants.scale.y=.48;}
       }
       if(spec.hairColor!=null){
         const hairMaterial=root.getObjectByName('avatar-short-hair').material;
         setAvatarColor(hairMaterial,spec.hairColor);
+      }
+      if(spec.role==='guard'){
+        const badgeMaterial=new THREE.MeshStandardMaterial({color:0xb69b5e,roughness:.9});badgeMaterial.color.convertSRGBToLinear();
+        const badge=new THREE.Mesh(new THREE.CircleGeometry(.075,6),badgeMaterial);badge.name='avatar-guard-badge';badge.position.set(-.16,1.55,.265);root.add(badge);
       }
       if(spec.glasses){
         const glasses=new THREE.Group();glasses.name='avatar-glasses';glasses.position.set(0,-.045,.445);
