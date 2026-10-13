@@ -1,0 +1,10 @@
+{
+  "url": "http://127.0.0.1:8770/proposal/rpg/",
+  "results": [
+    "1440x900: teacher labels <=10 CSS px, no student overhead names, matching 512x640 bust, close works",
+    "390x844: teacher labels <=10 CSS px, no student overhead names, matching 512x640 bust, close works",
+    "320x568: teacher labels <=10 CSS px, no student overhead names, matching 512x640 bust, close works",
+    "844x390: teacher labels <=10 CSS px, no student overhead names, matching 512x640 bust, close works"
+  ],
+  "errors": []
+}

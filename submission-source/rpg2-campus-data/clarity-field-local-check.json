@@ -1,0 +1,19 @@
+{
+  "url": "http://127.0.0.1:8770/proposal/rpg/",
+  "results": [
+    "real keyboard enters running track and central turf at 1x",
+    "real keyboard enters running track and central turf at 1.5x",
+    "real keyboard enters running track and central turf at 2x",
+    "1440x900 DPR 1: native backing, original PNG, visible minimap beacon and correct world projection",
+    "1440x900 DPR 2: native backing, original PNG, visible minimap beacon and correct world projection",
+    "390x844 DPR 2: native backing, original PNG, visible minimap beacon and correct world projection",
+    "390x844 DPR 3: native backing, original PNG, visible minimap beacon and correct world projection"
+  ],
+  "errors": [],
+  "failed": [],
+  "sourceResolution": {
+    "width": 1525,
+    "height": 1031
+  },
+  "true4kArtwork": false
+}

@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "artVersion": "creative-style-v3",
   "source": {
     "directory": "campus-explorer",
     "sha256": {
@@ -8,7 +9,7 @@
       "explorer.js": "d12c7af8370c71f167d9ac404d68f203139700bacbda0954f128d26d04231faf"
     },
     "model": "window.campusExplorer.createCharacter",
-    "exportedAt": "2026-10-13T07:04:00.452Z"
+    "exportedAt": "2026-10-13T12:26:29.808Z"
   },
   "tile": {
     "width": 64,
@@ -33,9 +34,27 @@
   ],
   "anchor": {
     "x": 32,
-    "y": 77.01770397252233
+    "y": 76.31957617213644
   },
-  "headScale": 1.18,
+  "headScale": 1.65,
+  "proportions": {
+    "headBodyRatio": {
+      "min": 0.5974766299118541,
+      "max": 0.64584527810964,
+      "mean": 0.6418860445778029
+    },
+    "bodyScale": {
+      "x": 0.88,
+      "y": 0.68,
+      "z": 0.88
+    },
+    "headPosition": 2.0597000000000003,
+    "portraitHeadScale": 1.18
+  },
+  "portraitSize": {
+    "width": 512,
+    "height": 640
+  },
   "rotationRadians": [
     0,
     -0.7853981633974483,
@@ -47,8 +66,8 @@
     -5.497787143782138
   ],
   "camera": {
-    "halfHeight": 1.3883328458894932,
-    "centerY": 0.08398196298131944,
+    "halfHeight": 1.4818206596656942,
+    "centerY": 0.13062407122227682,
     "view": "front +Z, elevated camera, orthographic"
   },
   "characters": [
@@ -62,14 +81,30 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 6505014,
-        "shirtColor": 9546400,
+        "shirtColor": 10125208,
         "hairStyle": "short",
         "role": "teacher",
         "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "pantsColor": 7567226,
+        "neckwear": "none",
+        "accessoryColor": 10641233,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 6505014,
+        "shirtColor": 9546400,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|10125208|7567226|true|none|10641233|false|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-001.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-001.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-001.png"
     },
     {
       "id": "staff-002",
@@ -81,13 +116,28 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 10641233,
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "shirt",
+        "pantsColor": 7365199,
+        "neckwear": "tie",
+        "accessoryColor": 6912846,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|10641233|7365199|true|tie|6912846|false|false|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-002.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-002.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-002.png"
     },
     {
       "id": "staff-003",
@@ -99,13 +149,28 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 6912846,
         "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "clothingStyle": "shirt",
+        "pantsColor": 7567226,
+        "neckwear": "tie",
+        "accessoryColor": 9991007,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|6912846|7567226|true|tie|9991007|false|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-003.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-003.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-003.png"
     },
     {
       "id": "staff-004",
@@ -116,11 +181,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "shirt",
+        "shirtColor": 10641233,
+        "pantsColor": 3752783,
+        "glasses": true,
+        "neckwear": "scarf",
+        "accessoryColor": 5799024,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|10641233|3752783|true|scarf|5799024|false|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-004.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-004.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-004.png"
     },
     {
       "id": "staff-005",
@@ -131,11 +208,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "cardigan",
+        "shirtColor": 8412229,
+        "pantsColor": 3752783,
+        "glasses": false,
+        "neckwear": "tie",
+        "accessoryColor": 7767678,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|8412229|3752783|false|tie|7767678|true|true|trousers|true",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-005.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-005.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-005.png"
     },
     {
       "id": "staff-006",
@@ -147,10 +236,22 @@
         "gender": "female",
         "role": "teacher",
         "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "shirtColor": 11568976,
+        "pantsColor": 3752783,
+        "glasses": false,
+        "neckwear": "none",
+        "accessoryColor": 7825034,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|11568976|3752783|false|none|7825034|true|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-006.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-006.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-006.png"
     },
     {
       "id": "staff-007",
@@ -161,11 +262,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "clothingStyle": "shirt",
+        "shirtColor": 5799024,
+        "pantsColor": 5919568,
+        "glasses": false,
+        "neckwear": "none",
+        "accessoryColor": 8412229,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "skirt",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|5799024|5919568|false|none|8412229|true|false|skirt|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-007.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-007.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-007.png"
     },
     {
       "id": "staff-008",
@@ -177,14 +290,30 @@
         "gender": "male",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 6912846,
         "hairStyle": "short",
         "role": "teacher",
         "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "pantsColor": 5328231,
+        "neckwear": "none",
+        "accessoryColor": 11771516,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|6912846|5328231|true|none|11771516|true|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-008.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-008.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-008.png"
     },
     {
       "id": "staff-009",
@@ -196,13 +325,28 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4008230,
-        "shirtColor": 10849922,
+        "shirtColor": 7767678,
         "role": "teacher",
         "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "pantsColor": 8415840,
+        "neckwear": "none",
+        "accessoryColor": 11771516,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4008230,
+        "shirtColor": 10849922
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|7767678|8415840|false|none|11771516|false|true|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-009.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-009.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-009.png"
     },
     {
       "id": "staff-010",
@@ -214,10 +358,22 @@
         "gender": "male",
         "role": "teacher",
         "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "shirtColor": 4681593,
+        "pantsColor": 7365199,
+        "glasses": false,
+        "neckwear": "tie",
+        "accessoryColor": 7767678,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|4681593|7365199|false|tie|7767678|false|false|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-010.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-010.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-010.png"
     },
     {
       "id": "staff-011",
@@ -228,11 +384,23 @@
       "appearance": {
         "gender": "female",
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "blazer",
+        "shirtColor": 10125208,
+        "pantsColor": 3953504,
+        "glasses": false,
+        "neckwear": "tie",
+        "accessoryColor": 7825034,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "skirt",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|10125208|3953504|false|tie|7825034|false|true|skirt|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-011.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-011.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-011.png"
     },
     {
       "id": "staff-012",
@@ -244,13 +412,28 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 6639678,
-        "shirtColor": 12166799,
+        "shirtColor": 7767678,
         "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "clothingStyle": "cardigan",
+        "pantsColor": 7567226,
+        "neckwear": "none",
+        "accessoryColor": 9991007,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 6639678,
+        "shirtColor": 12166799
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|7767678|7567226|false|none|9991007|false|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-012.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-012.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-012.png"
     },
     {
       "id": "staff-013",
@@ -262,14 +445,30 @@
         "gender": "male",
         "glasses": false,
         "hairColor": 7827819,
-        "shirtColor": 8420235,
+        "shirtColor": 6642552,
         "hairStyle": "short",
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "shirt",
+        "pantsColor": 3953504,
+        "neckwear": "none",
+        "accessoryColor": 9991007,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": false,
+        "hairColor": 7827819,
+        "shirtColor": 8420235,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|6642552|3953504|false|none|9991007|false|false|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-013.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-013.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-013.png"
     },
     {
       "id": "staff-014",
@@ -279,15 +478,30 @@
       "destination": "academic",
       "appearance": {
         "gender": "female",
+        "glasses": true,
+        "hairColor": 2828073,
+        "shirtColor": 9066598,
+        "role": "teacher",
+        "clothingStyle": "polo",
+        "pantsColor": 3752783,
+        "neckwear": "tie",
+        "accessoryColor": 5202029,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
+      },
+      "sourceAppearance": {
+        "gender": "female",
         "glasses": false,
         "hairColor": 2828073,
-        "shirtColor": 9139082,
-        "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "shirtColor": 9139082
       },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|9066598|3752783|true|tie|5202029|true|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-014.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-014.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-014.png"
     },
     {
       "id": "staff-015",
@@ -299,13 +513,28 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4337962,
-        "shirtColor": 11837575,
+        "shirtColor": 9991007,
         "role": "teacher",
         "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "pantsColor": 5004885,
+        "neckwear": "scarf",
+        "accessoryColor": 6912846,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "skirt",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4337962,
+        "shirtColor": 11837575
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|9991007|5004885|true|scarf|6912846|true|false|skirt|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-015.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-015.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-015.png"
     },
     {
       "id": "staff-016",
@@ -317,14 +546,30 @@
         "gender": "male",
         "glasses": true,
         "hairColor": 2631467,
-        "shirtColor": 9340798,
+        "shirtColor": 11568976,
         "hairStyle": "short",
         "role": "teacher",
         "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "pantsColor": 3953504,
+        "neckwear": "none",
+        "accessoryColor": 5799024,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": true,
+        "hairColor": 2631467,
+        "shirtColor": 9340798,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|11568976|3953504|true|none|5799024|false|false|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-016.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-016.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-016.png"
     },
     {
       "id": "staff-017",
@@ -336,10 +581,22 @@
         "gender": "male",
         "role": "teacher",
         "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "shirtColor": 7901088,
+        "pantsColor": 5328231,
+        "glasses": false,
+        "neckwear": "scarf",
+        "accessoryColor": 5401472,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|7901088|5328231|false|scarf|5401472|false|false|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-017.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-017.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-017.png"
     },
     {
       "id": "staff-018",
@@ -351,10 +608,22 @@
         "gender": "male",
         "role": "teacher",
         "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "shirtColor": 10641233,
+        "pantsColor": 7567226,
+        "glasses": false,
+        "neckwear": "scarf",
+        "accessoryColor": 7767678,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|10641233|7567226|false|scarf|7767678|false|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-018.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-018.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-018.png"
     },
     {
       "id": "staff-019",
@@ -366,13 +635,28 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4928813,
-        "shirtColor": 9150638,
+        "shirtColor": 9066598,
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "shirt",
+        "pantsColor": 3953504,
+        "neckwear": "none",
+        "accessoryColor": 6912846,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4928813,
+        "shirtColor": 9150638
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|9066598|3953504|false|none|6912846|true|false|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-019.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-019.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-019.png"
     },
     {
       "id": "staff-020",
@@ -384,14 +668,30 @@
         "gender": "male",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 11568976,
         "hairStyle": "short",
         "role": "teacher",
         "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "pantsColor": 5328231,
+        "neckwear": "tie",
+        "accessoryColor": 7767678,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|11568976|5328231|false|tie|7767678|true|false|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-020.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-020.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-020.png"
     },
     {
       "id": "staff-021",
@@ -403,13 +703,28 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 3943204,
-        "shirtColor": 9215370,
+        "shirtColor": 10125208,
         "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "clothingStyle": "shirt",
+        "pantsColor": 8415840,
+        "neckwear": "none",
+        "accessoryColor": 4681593,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 3943204,
+        "shirtColor": 9215370
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|10125208|8415840|true|none|4681593|false|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-021.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-021.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-021.png"
     },
     {
       "id": "staff-022",
@@ -419,15 +734,30 @@
       "destination": "academic",
       "appearance": {
         "gender": "female",
+        "glasses": true,
+        "hairColor": 4074535,
+        "shirtColor": 11568976,
+        "role": "teacher",
+        "clothingStyle": "shirt",
+        "pantsColor": 8415840,
+        "neckwear": "scarf",
+        "accessoryColor": 11771516,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
+      },
+      "sourceAppearance": {
+        "gender": "female",
         "glasses": false,
         "hairColor": 4074535,
-        "shirtColor": 8097409,
-        "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "shirtColor": 8097409
       },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|11568976|8415840|true|scarf|11771516|false|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-022.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-022.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-022.png"
     },
     {
       "id": "staff-023",
@@ -439,14 +769,30 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 3484969,
-        "shirtColor": 5336705,
+        "shirtColor": 8412229,
         "hairStyle": "short",
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "polo",
+        "pantsColor": 7567226,
+        "neckwear": "scarf",
+        "accessoryColor": 5799024,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 3484969,
+        "shirtColor": 5336705,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|8412229|7567226|true|scarf|5799024|false|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-023.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-023.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-023.png"
     },
     {
       "id": "staff-024",
@@ -458,14 +804,30 @@
         "gender": "male",
         "glasses": false,
         "hairColor": 2696740,
-        "shirtColor": 7632766,
+        "shirtColor": 6912846,
         "hairStyle": "short",
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "cardigan",
+        "pantsColor": 5328231,
+        "neckwear": "tie",
+        "accessoryColor": 9066598,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": false,
+        "hairColor": 2696740,
+        "shirtColor": 7632766,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|6912846|5328231|false|tie|9066598|false|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-024.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-024.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-024.png"
     },
     {
       "id": "staff-025",
@@ -475,16 +837,32 @@
       "destination": "academic",
       "appearance": {
         "gender": "male",
+        "glasses": true,
+        "hairColor": 2696742,
+        "shirtColor": 5401472,
+        "hairStyle": "short",
+        "role": "teacher",
+        "clothingStyle": "shirt",
+        "pantsColor": 3752783,
+        "neckwear": "scarf",
+        "accessoryColor": 8412229,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "skirt",
+        "vest": true
+      },
+      "sourceAppearance": {
+        "gender": "male",
         "glasses": false,
         "hairColor": 2696742,
         "shirtColor": 7896712,
-        "hairStyle": "short",
-        "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "hairStyle": "short"
       },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|5401472|3752783|true|scarf|8412229|false|false|skirt|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-025.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-025.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-025.png"
     },
     {
       "id": "staff-026",
@@ -496,14 +874,30 @@
         "gender": "male",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 10641233,
         "hairStyle": "short",
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "polo",
+        "pantsColor": 5328231,
+        "neckwear": "scarf",
+        "accessoryColor": 7901088,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "skirt",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|10641233|5328231|true|scarf|7901088|false|true|skirt|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-026.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-026.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-026.png"
     },
     {
       "id": "staff-027",
@@ -515,14 +909,30 @@
         "gender": "male",
         "glasses": true,
         "hairColor": 3748138,
-        "shirtColor": 7900310,
+        "shirtColor": 9991007,
         "hairStyle": "short",
         "role": "teacher",
         "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "pantsColor": 7567226,
+        "neckwear": "none",
+        "accessoryColor": 6912846,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "skirt",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": true,
+        "hairColor": 3748138,
+        "shirtColor": 7900310,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|9991007|7567226|true|none|6912846|true|true|skirt|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-027.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-027.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-027.png"
     },
     {
       "id": "staff-028",
@@ -533,11 +943,23 @@
       "appearance": {
         "gender": "female",
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "blazer",
+        "shirtColor": 9991007,
+        "pantsColor": 8415840,
+        "glasses": true,
+        "neckwear": "none",
+        "accessoryColor": 6642552,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|9991007|8415840|true|none|6642552|true|false|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-028.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-028.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-028.png"
     },
     {
       "id": "staff-029",
@@ -548,11 +970,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "clothingStyle": "polo",
+        "shirtColor": 8412229,
+        "pantsColor": 5328231,
+        "glasses": false,
+        "neckwear": "tie",
+        "accessoryColor": 7767678,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "skirt",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|8412229|5328231|false|tie|7767678|false|false|skirt|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-029.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-029.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-029.png"
     },
     {
       "id": "staff-030",
@@ -564,14 +998,30 @@
         "gender": "male",
         "glasses": true,
         "hairColor": 3813933,
-        "shirtColor": 9537914,
+        "shirtColor": 5799024,
         "hairStyle": "short",
         "role": "teacher",
         "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "pantsColor": 5004885,
+        "neckwear": "none",
+        "accessoryColor": 6642552,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "skirt",
+        "vest": true
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": true,
+        "hairColor": 3813933,
+        "shirtColor": 9537914,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|5799024|5004885|true|none|6642552|false|false|skirt|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-030.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-030.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-030.png"
     },
     {
       "id": "staff-031",
@@ -583,14 +1033,30 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 7901088,
         "hairStyle": "short",
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "shirt",
+        "pantsColor": 3752783,
+        "neckwear": "none",
+        "accessoryColor": 5799024,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|7901088|3752783|true|none|5799024|false|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-031.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-031.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-031.png"
     },
     {
       "id": "staff-032",
@@ -602,13 +1068,28 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 8412229,
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "polo",
+        "pantsColor": 3752783,
+        "neckwear": "scarf",
+        "accessoryColor": 6642552,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "skirt",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|8412229|3752783|true|scarf|6642552|false|true|skirt|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-032.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-032.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-032.png"
     },
     {
       "id": "staff-033",
@@ -619,11 +1100,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "blazer",
+        "shirtColor": 8412229,
+        "pantsColor": 3752783,
+        "glasses": true,
+        "neckwear": "none",
+        "accessoryColor": 9066598,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|8412229|3752783|true|none|9066598|false|false|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-033.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-033.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-033.png"
     },
     {
       "id": "staff-034",
@@ -635,14 +1128,30 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 5401472,
         "hairStyle": "short",
         "role": "teacher",
         "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "pantsColor": 5919568,
+        "neckwear": "tie",
+        "accessoryColor": 10641233,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|5401472|5919568|true|tie|10641233|false|true|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-034.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-034.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-034.png"
     },
     {
       "id": "staff-035",
@@ -653,11 +1162,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "blazer",
+        "shirtColor": 5401472,
+        "pantsColor": 5004885,
+        "glasses": true,
+        "neckwear": "none",
+        "accessoryColor": 11771516,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "skirt",
+        "vest": true
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|5401472|5004885|true|none|11771516|false|true|skirt|true",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-035.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-035.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-035.png"
     },
     {
       "id": "staff-036",
@@ -668,11 +1189,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "polo",
+        "shirtColor": 11771516,
+        "pantsColor": 7365199,
+        "glasses": false,
+        "neckwear": "none",
+        "accessoryColor": 11771516,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|11771516|7365199|false|none|11771516|false|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-036.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-036.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-036.png"
     },
     {
       "id": "staff-037",
@@ -684,14 +1217,30 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 5799024,
         "hairStyle": "short",
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "blazer",
+        "pantsColor": 7567226,
+        "neckwear": "none",
+        "accessoryColor": 8412229,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|5799024|7567226|false|none|8412229|true|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-037.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-037.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-037.png"
     },
     {
       "id": "staff-038",
@@ -703,13 +1252,28 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 9066598,
         "role": "teacher",
         "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "pantsColor": 5919568,
+        "neckwear": "none",
+        "accessoryColor": 8412229,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|9066598|5919568|false|none|8412229|true|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-038.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-038.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-038.png"
     },
     {
       "id": "staff-039",
@@ -720,11 +1284,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "polo",
+        "shirtColor": 11568976,
+        "pantsColor": 8415840,
+        "glasses": true,
+        "neckwear": "none",
+        "accessoryColor": 9066598,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|11568976|8415840|true|none|9066598|false|true|trousers|true",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-039.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-039.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-039.png"
     },
     {
       "id": "staff-040",
@@ -734,15 +1310,30 @@
       "destination": "academic",
       "appearance": {
         "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 6912846,
+        "role": "teacher",
+        "clothingStyle": "blazer",
+        "pantsColor": 7365199,
+        "neckwear": "none",
+        "accessoryColor": 5401472,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
+      },
+      "sourceAppearance": {
+        "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
-        "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "shirtColor": 7113351
       },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|6912846|7365199|true|none|5401472|true|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-040.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-040.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-040.png"
     },
     {
       "id": "staff-041",
@@ -753,11 +1344,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "cardigan",
+        "shirtColor": 5202029,
+        "pantsColor": 7365199,
+        "glasses": true,
+        "neckwear": "scarf",
+        "accessoryColor": 8412229,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "skirt",
+        "vest": true
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|5202029|7365199|true|scarf|8412229|true|true|skirt|true",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-041.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-041.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-041.png"
     },
     {
       "id": "staff-042",
@@ -769,13 +1372,28 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 10125208,
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "blazer",
+        "pantsColor": 5919568,
+        "neckwear": "scarf",
+        "accessoryColor": 8412229,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "skirt",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|10125208|5919568|true|scarf|8412229|false|true|skirt|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-042.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-042.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-042.png"
     },
     {
       "id": "staff-043",
@@ -786,11 +1404,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "clothingStyle": "cardigan",
+        "shirtColor": 5799024,
+        "pantsColor": 5328231,
+        "glasses": true,
+        "neckwear": "none",
+        "accessoryColor": 11568976,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|5799024|5328231|true|none|11568976|false|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-043.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-043.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-043.png"
     },
     {
       "id": "staff-044",
@@ -801,11 +1431,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "blazer",
+        "shirtColor": 5799024,
+        "pantsColor": 8415840,
+        "glasses": false,
+        "neckwear": "none",
+        "accessoryColor": 5202029,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|5799024|8415840|false|none|5202029|false|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-044.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-044.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-044.png"
     },
     {
       "id": "staff-045",
@@ -817,14 +1459,30 @@
         "gender": "male",
         "glasses": true,
         "hairColor": 3814444,
-        "shirtColor": 10186860,
+        "shirtColor": 7767678,
         "hairStyle": "short",
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "polo",
+        "pantsColor": 3953504,
+        "neckwear": "none",
+        "accessoryColor": 9991007,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": true,
+        "hairColor": 3814444,
+        "shirtColor": 10186860,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|7767678|3953504|true|none|9991007|false|false|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-045.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-045.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-045.png"
     },
     {
       "id": "staff-046",
@@ -835,11 +1493,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "cardigan",
+        "shirtColor": 9066598,
+        "pantsColor": 7365199,
+        "glasses": true,
+        "neckwear": "none",
+        "accessoryColor": 5799024,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|9066598|7365199|true|none|5799024|false|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-046.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-046.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-046.png"
     },
     {
       "id": "staff-047",
@@ -850,11 +1520,23 @@
       "appearance": {
         "gender": "female",
         "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "clothingStyle": "polo",
+        "shirtColor": 11771516,
+        "pantsColor": 5004885,
+        "glasses": true,
+        "neckwear": "tie",
+        "accessoryColor": 4681593,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|11771516|5004885|true|tie|4681593|false|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-047.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-047.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-047.png"
     },
     {
       "id": "staff-048",
@@ -864,16 +1546,32 @@
       "destination": "academic",
       "appearance": {
         "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 5799024,
+        "hairStyle": "short",
+        "role": "teacher",
+        "clothingStyle": "polo",
+        "pantsColor": 7567226,
+        "neckwear": "none",
+        "accessoryColor": 4681593,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
+      },
+      "sourceAppearance": {
+        "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
         "shirtColor": 7113351,
-        "hairStyle": "short",
-        "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "hairStyle": "short"
       },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|5799024|7567226|true|none|4681593|true|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-048.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-048.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-048.png"
     },
     {
       "id": "staff-049",
@@ -885,13 +1583,28 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 7901088,
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "polo",
+        "pantsColor": 5328231,
+        "neckwear": "tie",
+        "accessoryColor": 10641233,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|7901088|5328231|false|tie|10641233|false|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-049.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-049.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-049.png"
     },
     {
       "id": "staff-050",
@@ -903,14 +1616,30 @@
         "gender": "male",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 7901088,
         "hairStyle": "short",
         "role": "teacher",
         "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "pantsColor": 7365199,
+        "neckwear": "scarf",
+        "accessoryColor": 5202029,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "skirt",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|7901088|7365199|false|scarf|5202029|false|false|skirt|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-050.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-050.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-050.png"
     },
     {
       "id": "staff-051",
@@ -922,10 +1651,22 @@
         "gender": "male",
         "role": "teacher",
         "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "shirtColor": 5799024,
+        "pantsColor": 8415840,
+        "glasses": true,
+        "neckwear": "none",
+        "accessoryColor": 10125208,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "skirt",
+        "vest": true
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|5799024|8415840|true|none|10125208|true|false|skirt|true",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-051.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-051.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-051.png"
     },
     {
       "id": "staff-052",
@@ -937,13 +1678,28 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 9991007,
         "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "clothingStyle": "polo",
+        "pantsColor": 7567226,
+        "neckwear": "tie",
+        "accessoryColor": 7825034,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|9991007|7567226|true|tie|7825034|false|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-052.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-052.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-052.png"
     },
     {
       "id": "staff-053",
@@ -953,15 +1709,30 @@
       "destination": "academic",
       "appearance": {
         "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 10641233,
+        "role": "teacher",
+        "clothingStyle": "shirt",
+        "pantsColor": 3752783,
+        "neckwear": "none",
+        "accessoryColor": 6642552,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
+      },
+      "sourceAppearance": {
+        "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
-        "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "shirtColor": 7113351
       },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|10641233|3752783|true|none|6642552|false|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-053.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-053.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-053.png"
     },
     {
       "id": "staff-054",
@@ -972,11 +1743,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "polo",
+        "shirtColor": 4681593,
+        "pantsColor": 5004885,
+        "glasses": true,
+        "neckwear": "none",
+        "accessoryColor": 7825034,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|4681593|5004885|true|none|7825034|false|false|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-054.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-054.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-054.png"
     },
     {
       "id": "staff-055",
@@ -988,13 +1771,28 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 8412229,
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "cardigan",
+        "pantsColor": 7365199,
+        "neckwear": "none",
+        "accessoryColor": 5401472,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|8412229|7365199|true|none|5401472|true|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-055.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-055.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-055.png"
     },
     {
       "id": "staff-056",
@@ -1006,10 +1804,22 @@
         "gender": "male",
         "role": "teacher",
         "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "shirtColor": 4681593,
+        "pantsColor": 3953504,
+        "glasses": true,
+        "neckwear": "none",
+        "accessoryColor": 11568976,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|4681593|3953504|true|none|11568976|false|false|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-056.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-056.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-056.png"
     },
     {
       "id": "staff-057",
@@ -1020,11 +1830,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "blazer",
+        "shirtColor": 5799024,
+        "pantsColor": 5328231,
+        "glasses": true,
+        "neckwear": "scarf",
+        "accessoryColor": 7901088,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|5799024|5328231|true|scarf|7901088|true|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-057.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-057.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-057.png"
     },
     {
       "id": "staff-058",
@@ -1036,13 +1858,28 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 5202029,
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "cardigan",
+        "pantsColor": 5919568,
+        "neckwear": "scarf",
+        "accessoryColor": 7767678,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|5202029|5919568|false|scarf|7767678|true|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-058.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-058.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-058.png"
     },
     {
       "id": "staff-059",
@@ -1054,14 +1891,30 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 10256479,
-        "shirtColor": 11904399,
+        "shirtColor": 5401472,
         "hairStyle": "short",
         "role": "teacher",
         "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "pantsColor": 5004885,
+        "neckwear": "none",
+        "accessoryColor": 10125208,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 10256479,
+        "shirtColor": 11904399,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|5401472|5004885|false|none|10125208|false|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-059.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-059.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-059.png"
     },
     {
       "id": "staff-060",
@@ -1072,11 +1925,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "cardigan",
+        "shirtColor": 7767678,
+        "pantsColor": 5004885,
+        "glasses": true,
+        "neckwear": "none",
+        "accessoryColor": 11771516,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "skirt",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|7767678|5004885|true|none|11771516|false|true|skirt|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-060.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-060.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-060.png"
     },
     {
       "id": "staff-061",
@@ -1086,16 +1951,32 @@
       "destination": "academic",
       "appearance": {
         "gender": "male",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 6642552,
+        "hairStyle": "short",
+        "role": "teacher",
+        "clothingStyle": "shirt",
+        "pantsColor": 7567226,
+        "neckwear": "none",
+        "accessoryColor": 10125208,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": true
+      },
+      "sourceAppearance": {
+        "gender": "male",
         "glasses": false,
         "hairColor": 4076334,
         "shirtColor": 7113351,
-        "hairStyle": "short",
-        "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "hairStyle": "short"
       },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|6642552|7567226|true|none|10125208|false|false|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-061.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-061.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-061.png"
     },
     {
       "id": "staff-062",
@@ -1106,11 +1987,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "polo",
+        "shirtColor": 5202029,
+        "pantsColor": 5004885,
+        "glasses": false,
+        "neckwear": "none",
+        "accessoryColor": 7901088,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|5202029|5004885|false|none|7901088|true|true|trousers|true",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-062.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-062.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-062.png"
     },
     {
       "id": "staff-063",
@@ -1122,14 +2015,30 @@
         "gender": "male",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 7825034,
         "hairStyle": "short",
         "role": "teacher",
         "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "pantsColor": 5328231,
+        "neckwear": "none",
+        "accessoryColor": 7825034,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|7825034|5328231|true|none|7825034|true|false|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-063.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-063.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-063.png"
     },
     {
       "id": "staff-064",
@@ -1140,11 +2049,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "cardigan",
+        "shirtColor": 5401472,
+        "pantsColor": 3953504,
+        "glasses": false,
+        "neckwear": "tie",
+        "accessoryColor": 11771516,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|5401472|3953504|false|tie|11771516|false|true|trousers|true",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-064.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-064.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-064.png"
     },
     {
       "id": "staff-065",
@@ -1156,13 +2077,28 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 7901088,
         "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "clothingStyle": "cardigan",
+        "pantsColor": 5004885,
+        "neckwear": "none",
+        "accessoryColor": 4681593,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|7901088|5004885|true|none|4681593|false|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-065.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-065.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-065.png"
     },
     {
       "id": "staff-066",
@@ -1173,11 +2109,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "polo",
+        "shirtColor": 4681593,
+        "pantsColor": 5328231,
+        "glasses": false,
+        "neckwear": "none",
+        "accessoryColor": 9991007,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|4681593|5328231|false|none|9991007|false|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-066.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-066.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-066.png"
     },
     {
       "id": "staff-067",
@@ -1189,13 +2137,28 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 5401472,
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "blazer",
+        "pantsColor": 7567226,
+        "neckwear": "scarf",
+        "accessoryColor": 11568976,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|5401472|7567226|false|scarf|11568976|true|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-067.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-067.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-067.png"
     },
     {
       "id": "staff-068",
@@ -1207,14 +2170,30 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 3420460,
-        "shirtColor": 10521989,
+        "shirtColor": 5401472,
         "hairStyle": "short",
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "shirt",
+        "pantsColor": 3752783,
+        "neckwear": "none",
+        "accessoryColor": 5799024,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 3420460,
+        "shirtColor": 10521989,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|5401472|3752783|true|none|5799024|true|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-068.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-068.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-068.png"
     },
     {
       "id": "staff-069",
@@ -1224,15 +2203,30 @@
       "destination": "academic",
       "appearance": {
         "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 9991007,
+        "role": "teacher",
+        "clothingStyle": "shirt",
+        "pantsColor": 8415840,
+        "neckwear": "tie",
+        "accessoryColor": 11568976,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": true
+      },
+      "sourceAppearance": {
+        "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
-        "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "shirtColor": 7113351
       },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|9991007|8415840|true|tie|11568976|false|false|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-069.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-069.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-069.png"
     },
     {
       "id": "staff-070",
@@ -1244,14 +2238,30 @@
         "gender": "male",
         "glasses": true,
         "hairColor": 4141352,
-        "shirtColor": 8095902,
+        "shirtColor": 9066598,
         "hairStyle": "short",
         "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "clothingStyle": "shirt",
+        "pantsColor": 8415840,
+        "neckwear": "scarf",
+        "accessoryColor": 10125208,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": true,
+        "hairColor": 4141352,
+        "shirtColor": 8095902,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "shirt|9066598|8415840|true|scarf|10125208|true|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-070.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-070.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-070.png"
     },
     {
       "id": "staff-071",
@@ -1263,13 +2273,28 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 5401472,
         "role": "teacher",
         "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "pantsColor": 5328231,
+        "neckwear": "scarf",
+        "accessoryColor": 8412229,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|5401472|5328231|false|scarf|8412229|false|false|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-071.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-071.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-071.png"
     },
     {
       "id": "staff-072",
@@ -1280,11 +2305,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "blazer",
+        "shirtColor": 5799024,
+        "pantsColor": 7365199,
+        "glasses": false,
+        "neckwear": "scarf",
+        "accessoryColor": 6912846,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|5799024|7365199|false|scarf|6912846|true|false|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-072.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-072.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-072.png"
     },
     {
       "id": "staff-073",
@@ -1296,13 +2333,28 @@
         "gender": "male",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 10641233,
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "cardigan",
+        "pantsColor": 3752783,
+        "neckwear": "none",
+        "accessoryColor": 7825034,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|10641233|3752783|true|none|7825034|false|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-073.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-073.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-073.png"
     },
     {
       "id": "staff-074",
@@ -1312,15 +2364,30 @@
       "destination": "academic",
       "appearance": {
         "gender": "female",
+        "glasses": true,
+        "hairColor": 3811621,
+        "shirtColor": 11771516,
+        "role": "teacher",
+        "clothingStyle": "polo",
+        "pantsColor": 7365199,
+        "neckwear": "none",
+        "accessoryColor": 9066598,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": true
+      },
+      "sourceAppearance": {
+        "gender": "female",
         "glasses": false,
         "hairColor": 3811621,
-        "shirtColor": 9867912,
-        "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "shirtColor": 9867912
       },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|11771516|7365199|true|none|9066598|true|true|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-074.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-074.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-074.png"
     },
     {
       "id": "staff-075",
@@ -1332,13 +2399,28 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 4681593,
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "blazer",
+        "pantsColor": 5004885,
+        "neckwear": "tie",
+        "accessoryColor": 7901088,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|4681593|5004885|true|tie|7901088|true|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-075.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-075.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-075.png"
     },
     {
       "id": "staff-076",
@@ -1349,11 +2431,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "polo",
+        "shirtColor": 8412229,
+        "pantsColor": 5004885,
+        "glasses": false,
+        "neckwear": "scarf",
+        "accessoryColor": 5202029,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|8412229|5004885|false|scarf|5202029|false|false|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-076.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-076.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-076.png"
     },
     {
       "id": "staff-077",
@@ -1364,11 +2458,23 @@
       "appearance": {
         "gender": "female",
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "blazer",
+        "shirtColor": 6912846,
+        "pantsColor": 5004885,
+        "glasses": false,
+        "neckwear": "tie",
+        "accessoryColor": 7901088,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|6912846|5004885|false|tie|7901088|true|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-077.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-077.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-077.png"
     },
     {
       "id": "staff-078",
@@ -1380,14 +2486,30 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 10125208,
         "hairStyle": "short",
         "role": "teacher",
         "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "pantsColor": 5328231,
+        "neckwear": "none",
+        "accessoryColor": 4681593,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|10125208|5328231|false|none|4681593|false|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-078.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-078.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-078.png"
     },
     {
       "id": "staff-079",
@@ -1399,14 +2521,30 @@
         "gender": "male",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 7767678,
         "hairStyle": "short",
         "role": "teacher",
         "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "pantsColor": 3953504,
+        "neckwear": "none",
+        "accessoryColor": 7767678,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "male",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|7767678|3953504|true|none|7767678|true|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-079.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-079.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-079.png"
     },
     {
       "id": "staff-080",
@@ -1417,11 +2555,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "blazer",
+        "shirtColor": 7901088,
+        "pantsColor": 5004885,
+        "glasses": false,
+        "neckwear": "none",
+        "accessoryColor": 5401472,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|7901088|5004885|false|none|5401472|true|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-080.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-080.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-080.png"
     },
     {
       "id": "staff-081",
@@ -1433,13 +2583,28 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 10641233,
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "blazer",
+        "pantsColor": 5919568,
+        "neckwear": "tie",
+        "accessoryColor": 8412229,
+        "backpack": true,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|10641233|5919568|false|tie|8412229|true|false|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-081.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-081.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-081.png"
     },
     {
       "id": "staff-082",
@@ -1450,11 +2615,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "cardigan",
+        "shirtColor": 5202029,
+        "pantsColor": 3752783,
+        "glasses": false,
+        "neckwear": "none",
+        "accessoryColor": 10125208,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|5202029|3752783|false|none|10125208|false|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-082.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-082.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-082.png"
     },
     {
       "id": "staff-083",
@@ -1466,14 +2643,30 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 6642552,
         "hairStyle": "short",
         "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "clothingStyle": "polo",
+        "pantsColor": 8415840,
+        "neckwear": "tie",
+        "accessoryColor": 9066598,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": true
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351,
+        "hairStyle": "short"
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|6642552|8415840|true|tie|9066598|false|false|trousers|true",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-083.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-083.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-083.png"
     },
     {
       "id": "staff-084",
@@ -1485,13 +2678,28 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 11568976,
         "role": "teacher",
         "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "pantsColor": 3752783,
+        "neckwear": "scarf",
+        "accessoryColor": 11771516,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|11568976|3752783|false|scarf|11771516|false|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-084.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-084.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-084.png"
     },
     {
       "id": "staff-085",
@@ -1502,11 +2710,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "blazer",
+        "shirtColor": 5401472,
+        "pantsColor": 5328231,
+        "glasses": false,
+        "neckwear": "none",
+        "accessoryColor": 5202029,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|5401472|5328231|false|none|5202029|true|true|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-085.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-085.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-085.png"
     },
     {
       "id": "staff-086",
@@ -1518,13 +2738,28 @@
         "gender": "female",
         "glasses": true,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 9066598,
         "role": "teacher",
-        "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "clothingStyle": "blazer",
+        "pantsColor": 5328231,
+        "neckwear": "none",
+        "accessoryColor": 10641233,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": true,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|9066598|5328231|true|none|10641233|false|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-086.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-086.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-086.png"
     },
     {
       "id": "staff-087",
@@ -1535,11 +2770,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "blazer",
-        "pantsColor": 5327688
+        "clothingStyle": "cardigan",
+        "shirtColor": 7825034,
+        "pantsColor": 5004885,
+        "glasses": false,
+        "neckwear": "scarf",
+        "accessoryColor": 9066598,
+        "backpack": false,
+        "brooch": false,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "cardigan|7825034|5004885|false|scarf|9066598|false|false|trousers|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-087.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-087.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-087.png"
     },
     {
       "id": "staff-088",
@@ -1551,13 +2798,28 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 6642552,
         "role": "teacher",
-        "clothingStyle": "cardigan",
-        "pantsColor": 4805724
+        "clothingStyle": "polo",
+        "pantsColor": 5919568,
+        "neckwear": "none",
+        "accessoryColor": 11771516,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|6642552|5919568|false|none|11771516|true|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-088.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-088.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-088.png"
     },
     {
       "id": "staff-089",
@@ -1569,13 +2831,28 @@
         "gender": "female",
         "glasses": false,
         "hairColor": 4076334,
-        "shirtColor": 7113351,
+        "shirtColor": 5799024,
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "blazer",
+        "pantsColor": 3953504,
+        "neckwear": "none",
+        "accessoryColor": 9991007,
+        "backpack": false,
+        "brooch": true,
+        "bottomStyle": "trousers",
+        "vest": false
       },
+      "sourceAppearance": {
+        "gender": "female",
+        "glasses": false,
+        "hairColor": 4076334,
+        "shirtColor": 7113351
+      },
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "blazer|5799024|3953504|false|none|9991007|false|true|trousers|false",
       "appearanceStatus": "source",
-      "atlas": "assets/characters/guide-rpg/staff-089.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-089.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-089.png"
     },
     {
       "id": "staff-090",
@@ -1586,11 +2863,23 @@
       "appearance": {
         "gender": "male",
         "role": "teacher",
-        "clothingStyle": "shirt",
-        "pantsColor": 7432021
+        "clothingStyle": "polo",
+        "shirtColor": 11771516,
+        "pantsColor": 7567226,
+        "glasses": true,
+        "neckwear": "tie",
+        "accessoryColor": 5202029,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "skirt",
+        "vest": true
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|11771516|7567226|true|tie|5202029|true|true|skirt|true",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-090.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-090.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-090.png"
     },
     {
       "id": "staff-091",
@@ -1602,10 +2891,22 @@
         "gender": "female",
         "role": "teacher",
         "clothingStyle": "polo",
-        "pantsColor": 5463121
+        "shirtColor": 10125208,
+        "pantsColor": 3953504,
+        "glasses": true,
+        "neckwear": "none",
+        "accessoryColor": 6912846,
+        "backpack": true,
+        "brooch": true,
+        "bottomStyle": "skirt",
+        "vest": false
       },
+      "sourceAppearance": {},
+      "styleOrigin": "creative-rpg",
+      "styleSignature": "polo|10125208|3953504|true|none|6912846|true|true|skirt|false",
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/staff-091.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/staff-091.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/staff-091.png"
     },
     {
       "id": "student-0",
@@ -1617,7 +2918,8 @@
         "role": "student"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/student-0.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/student-0.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/student-0.png"
     },
     {
       "id": "student-1",
@@ -1629,7 +2931,8 @@
         "role": "student"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/student-1.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/student-1.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/student-1.png"
     },
     {
       "id": "student-2",
@@ -1641,7 +2944,8 @@
         "role": "student"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/student-2.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/student-2.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/student-2.png"
     },
     {
       "id": "student-3",
@@ -1653,7 +2957,8 @@
         "role": "student"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/student-3.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/student-3.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/student-3.png"
     },
     {
       "id": "student-4",
@@ -1665,7 +2970,8 @@
         "role": "student"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/student-4.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/student-4.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/student-4.png"
     },
     {
       "id": "student-5",
@@ -1677,7 +2983,8 @@
         "role": "student"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/student-5.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/student-5.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/student-5.png"
     },
     {
       "id": "student-6",
@@ -1689,7 +2996,8 @@
         "role": "student"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/student-6.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/student-6.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/student-6.png"
     },
     {
       "id": "student-7",
@@ -1701,7 +3009,8 @@
         "role": "student"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/student-7.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/student-7.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/student-7.png"
     },
     {
       "id": "student-8",
@@ -1713,7 +3022,8 @@
         "role": "student"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/student-8.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/student-8.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/student-8.png"
     },
     {
       "id": "student-9",
@@ -1725,7 +3035,8 @@
         "role": "student"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/student-9.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/student-9.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/student-9.png"
     },
     {
       "id": "student-10",
@@ -1737,7 +3048,8 @@
         "role": "student"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/student-10.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/student-10.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/student-10.png"
     },
     {
       "id": "student-11",
@@ -1749,7 +3061,8 @@
         "role": "student"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/student-11.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/student-11.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/student-11.png"
     },
     {
       "id": "gate-guard",
@@ -1764,7 +3077,8 @@
         "hairColor": 4538427
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/gate-guard.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/gate-guard.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/gate-guard.png"
     },
     {
       "id": "player-male-uniform",
@@ -1776,7 +3090,8 @@
         "role": "player"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/player-male-uniform.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/player-male-uniform.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/player-male-uniform.png"
     },
     {
       "id": "player-male-casual",
@@ -1788,7 +3103,8 @@
         "role": "player"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/player-male-casual.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/player-male-casual.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/player-male-casual.png"
     },
     {
       "id": "player-female-uniform",
@@ -1800,7 +3116,8 @@
         "role": "player"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/player-female-uniform.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/player-female-uniform.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/player-female-uniform.png"
     },
     {
       "id": "player-female-casual",
@@ -1812,7 +3129,8 @@
         "role": "player"
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/player-female-casual.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/player-female-casual.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/player-female-casual.png"
     },
     {
       "id": "robot-patrol",
@@ -1824,7 +3142,8 @@
         "accentColor": 3165542
       },
       "appearanceStatus": "generic",
-      "atlas": "assets/characters/guide-rpg/robot-patrol.png"
+      "atlas": "assets/characters/guide-rpg/style-v3/robot-patrol.png",
+      "portrait": "assets/characters/guide-rpg/style-v3/portraits/robot-patrol.png"
     }
   ]
 }
