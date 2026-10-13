@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "stage": "shared-data-ready",
+  "playablePilot": false,
+  "dataVersion": "115-0302e9dea7ba8a16",
+  "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
+  "coordinateUnit": "guide-unit",
+  "measured": false,
+  "files": {
+    "campus": {
+      "file": "campus-115.23458bf4a5cd.json",
+      "bytes": 184390,
+      "sha256": "23458bf4a5cdd75e3a2dfd5ef7275aa992c4cedd5757300712137b4533b85ec7"
+    },
+    "navigation": {
+      "file": "navigation-115.ddbc10409c5f.json",
+      "bytes": 6909936,
+      "sha256": "ddbc10409c5ffbda302e68cba288e596cc6405718b7047cc588d341b2bc1172b"
+    },
+    "technologyPilot": {
+      "file": "technology-pilot.3ec75a16084a.json",
+      "bytes": 89151,
+      "sha256": "3ec75a16084ae6a12063f21342b482753adc73422af77cbe02744738c91980a5"
+    }
+  },
+  "counts": {
+    "buildings": 12,
+    "rooms": 92,
+    "unknownRoomNames": 21,
+    "stairs": 13,
+    "candidateEntrances": 30,
+    "navigationNodes": 17313,
+    "navigationEdges": 17411,
+    "collisionVolumes": 1237
+  },
+  "checks": {
+    "sourceVersionMatched": true,
+    "allRoomsReachable": true,
+    "pilotCollisionBlockedSegments": 0
+  },
+  "notes": [
+    "The existing game does not yet load this dataset.",
+    "Full graph is deferred data; the existing entry page does not download it.",
+    "A future stage will connect the Phaser/Canvas scene adapters and task flow without changing existing URLs."
+  ]
+}
