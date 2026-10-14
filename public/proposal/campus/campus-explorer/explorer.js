@@ -2430,7 +2430,7 @@
       if(mode==='bird')stopAutoWalk();
       currentMode = mode;
       document.body.dataset.controlMode=mode;
-      syncInteriorCeilings();
+      syncInteriorFloors();
       controls.enabled=mode==="bird";
       camera.near=mode==='bird'?1:.08;camera.fov=mode==='bird'?45:60;camera.updateProjectionMatrix();
       const btnIcon = document.getElementById("btn-mode-icon");
@@ -2871,7 +2871,19 @@
 
     let currentFloorFilter = "all";
     function syncInteriorCeilings() {
-      for(const group of floorMeshes)if(group.userData.campusCeiling)group.visible=(currentMode!=="bird"||currentFloorFilter==="all")&&(currentFloorFilter==="all"||group.userData.floorNum<=Number(currentFloorFilter));
+      for(const group of floorMeshes)if(group.userData.campusCeiling)group.visible=currentMode!=="bird"||currentFloorFilter==="all";
+    }
+    function syncInteriorFloors() {
+      // Floor cutaways are a bird-view display choice. Walking and descending
+      // must never leave collidable walls invisible above the selected floor.
+      const displayFloor=currentMode==='bird'?currentFloorFilter:'all';
+      for(const group of floorMeshes){
+        if(group.userData.campusCeiling)continue;
+        const total=BUILDINGS_CONFIG.find(b=>b.id===group.userData.buildingId)?.floors||4;
+        group.visible=CampusFloorExhibitModel.meshVisible(group.userData,displayFloor,total);
+        group.traverse(o=>{if(o!==group&&o.userData.roof)o.visible=CampusFloorExhibitModel.meshVisible({roof:true},displayFloor,total)});
+      }
+      syncInteriorCeilings();
     }
     function setFloorFilter(floorVal) {
       currentFloorFilter = floorVal;
@@ -2884,17 +2896,7 @@
         btn.classList.toggle("active", btn.dataset.f === String(floorVal));
       });
 
-      floorMeshes.forEach(grp => {
-        if (grp.userData.campusCeiling) return; // Synced separately, including view changes.
-        if (floorVal === "all") {
-          grp.visible = true;
-        } else {
-          grp.visible = CampusFloorExhibitModel.meshVisible(grp.userData,floorVal,BUILDINGS_CONFIG.find(b=>b.id===grp.userData.buildingId)?.floors||4);
-        }
-        grp.traverse(o=>{if(o!==grp&&o.userData.roof)o.visible=CampusFloorExhibitModel.meshVisible({roof:true},floorVal,BUILDINGS_CONFIG.find(b=>b.id===grp.userData.buildingId)?.floors||4)});
-      });
-
-      syncInteriorCeilings();
+      syncInteriorFloors();
       roomBadgeElements.forEach(rb => {
         if (floorVal === "all") {
           rb.element.style.display = "flex";
