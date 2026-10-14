@@ -64,6 +64,31 @@ describe('校園師生名冊',()=>{
  });
 });
 describe('示意人物效能與碰撞',()=>{
+ it.each([1280,390])('主角對話在 %i px 畫面依人物與攝影機投影定位，走動後同步跟隨',width=>{
+  const player=new THREE.Vector3(-10,0,78),s=setup(width,w=>{
+   w.innerHeight=844;w.campusExplorer.getPlayerPosition=()=>player;
+   w.campusExplorer.renderer.domElement.getBoundingClientRect=()=>({left:12,top:20,width,height:800});
+   const camera=w.campusExplorer.camera;camera.aspect=width/800;camera.fov=60;camera.updateProjectionMatrix();camera.position.set(-10,5,90);camera.lookAt(-10,1.8,78);camera.updateMatrixWorld();
+  });
+  const teacher=s.api.actors.find((a:any)=>a.person);teacher.position={x:-12,y:0,z:78};teacher.idleUntil=100;
+  expect(s.api.interact(teacher.id)).toBe(true);s.api.update(.1,1);
+  const bubble=s.d.querySelector('.campus-speech-player');expect(bubble.hidden).toBe(false);
+  const projected=player.clone().add(new THREE.Vector3(0,2.05,0)).project(s.w.campusExplorer.camera);
+  expect(parseFloat(bubble.style.left)).toBeCloseTo(12+(projected.x+1)*width/2);expect(parseFloat(bubble.style.top)).toBeCloseTo(20+(1-projected.y)*400);
+  const before=bubble.style.left;player.x+=.4;s.api.update(.1,1.1);expect(bubble.style.left).not.toBe(before);
+  s.d.body.dataset.controlMode='bird';s.api.update(.1,1.2);expect(bubble.hidden).toBe(true);s.dom.window.close();
+ });
+ it('第一人稱的主角回話放在交談對象附近，離開畫面時隱藏',()=>{
+  const s=setup(390,w=>{
+   w.document.body.dataset.controlMode='firstperson';w.campusExplorer.getPlayerPosition=()=>new THREE.Vector3(-10,0,78);
+   w.campusExplorer.renderer.domElement.getBoundingClientRect=()=>({left:0,top:0,width:390,height:844});
+   const camera=w.campusExplorer.camera;camera.aspect=390/844;camera.fov=60;camera.updateProjectionMatrix();camera.position.set(-10,1.7,78);camera.lookAt(-10,1.7,75);camera.updateMatrixWorld();
+  });
+  const teacher=s.api.actors.find((a:any)=>a.person);teacher.position={x:-10,y:0,z:75.5};teacher.idleUntil=100;
+  expect(s.api.interact(teacher.id)).toBe(true);s.api.update(.1,1);
+  const bubble=s.d.querySelector('.campus-speech-player');expect(bubble.hidden).toBe(false);expect(parseFloat(bubble.style.top)).toBeGreaterThan(100);expect(parseFloat(bubble.style.top)).toBeLessThan(500);
+  s.w.campusExplorer.camera.lookAt(-10,1.7,82);s.w.campusExplorer.camera.updateMatrixWorld();s.api.update(.1,1.1);expect(bubble.hidden).toBe(true);s.dom.window.close();
+ });
  it('uses the full-sized NPC collision envelope and sweeps a route instead of checking only its endpoint',()=>{
   const s=setup(1280,w=>{w.campusPeopleCollisionIndex={hit:(x:number)=>x>-19.1&&x< -18.9};});
   const actor=s.api.actors.find((a:any)=>a.spec.role==='student');

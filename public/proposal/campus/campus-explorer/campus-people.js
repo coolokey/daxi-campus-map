@@ -212,9 +212,20 @@
    if(actor!==playerSpeaker&&(!actor.root?.visible||Math.hypot(actor.position.x-player.x,actor.position.z-player.z)>18))continue;
    if(!actor.bubble){actor.bubble=make('div','campus-speech'+(actor===playerSpeaker?' campus-speech-player':''));actor.bubble.setAttribute('aria-hidden','true');document.body.append(actor.bubble);}
    actor.bubble.textContent=personLabel(actor)+'：'+actor.speech.text;
-   if(actor!==playerSpeaker){const point=new THREE.Vector3(actor.position.x,actor.position.y+(actor.person?2.3:2.05),actor.position.z),screen=point.clone().project(api.camera);if(screen.z< -1||screen.z>1||Math.abs(screen.x)>1||Math.abs(screen.y)>1)continue;
+   // In first person the avatar is behind the camera. Anchor its reply beside
+   // the visible conversation partner instead of projecting the camera itself.
+   const firstPersonReply=actor===playerSpeaker&&document.body.dataset.controlMode==='firstperson';
+   const anchor=firstPersonReply?conversations.find(c=>c.members.includes(playerSpeaker))?.members.find(a=>a!==playerSpeaker):actor;
+   if(!anchor)continue;
+   {const point=new THREE.Vector3(anchor.position.x,anchor.position.y+(anchor.person?2.3:2.05),anchor.position.z),screen=point.clone().project(api.camera);if(screen.z< -1||screen.z>1||Math.abs(screen.x)>1||Math.abs(screen.y)>1)continue;
     if(actor.nextSpeechOcclusion===undefined||time>=actor.nextSpeechOcclusion){actor.speechOccluded=occluded(point);actor.nextSpeechOcclusion=time+.25;}if(actor.speechOccluded)continue;
-    const rect=api.renderer.domElement.getBoundingClientRect();actor.bubble.style.left=`${rect.left+(screen.x+1)*rect.width/2}px`;actor.bubble.style.top=`${rect.top+(1-screen.y)*rect.height/2}px`;
+    const rect=api.renderer.domElement.getBoundingClientRect();let left=rect.left+(screen.x+1)*rect.width/2,top=rect.top+(1-screen.y)*rect.height/2;
+    if(firstPersonReply){left+=(screen.x>0?-1:1)*Math.min(80,rect.width*.18);top+=48;}
+    actor.bubble.hidden=false;
+    const halfWidth=actor.bubble.offsetWidth/2,headroom=actor.bubble.offsetHeight*1.1+8;
+    left=Math.max(rect.left+halfWidth+8,Math.min(rect.left+rect.width-halfWidth-8,left));
+    top=Math.max(rect.top+headroom,Math.min(rect.top+rect.height-8,top));
+    actor.bubble.style.left=`${left}px`;actor.bubble.style.top=`${top}px`;
    }
    actor.bubble.hidden=false;if(actor.tag)actor.tag.hidden=true;
   }
