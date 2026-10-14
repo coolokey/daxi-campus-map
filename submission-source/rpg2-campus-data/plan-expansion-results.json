@@ -1,0 +1,12 @@
+{
+  "url": "http://127.0.0.1:8773/proposal/rpg/",
+  "results": [
+    "Real keyboard: original campus → technology 1F → 2F physics classroom → chibi teacher dialogue/portrait → five-question task → same room",
+    "Real keyboard: original campus → art 1F → 2F → 3F → 4F art classroom with automatic next-doorway guidance",
+    "Real keyboard: art upper floor → downstairs → original campus → administration front/back breezeway and stairs → front wing 3F",
+    "Indoor 1 / 1.5 / 2 scale changes preserve floor and refresh collision-aware route",
+    "iPad/phone/320px/landscape directory, touch close and withheld conflicting grade 7 data"
+  ],
+  "errors": [],
+  "failed": []
+}

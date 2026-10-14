@@ -1,0 +1,1100 @@
+{
+  "version": 1,
+  "schoolYear": 115,
+  "plan": {
+    "file": "assets/maps/campus-plan-115.jpg",
+    "sha256": "0f256351b68298b331dceacfb183a3c4e549ca8f12cf34e3bbbb7b4b36710583",
+    "width": 1612,
+    "height": 1092
+  },
+  "buildings": [
+    {
+      "buildingId": "gym-bld",
+      "name": "學生活動中心 / 體育館",
+      "planBounds": [
+        298,
+        797,
+        554,
+        998
+      ],
+      "enabledLevels": [
+        1
+      ],
+      "artAnchor": [
+        520,
+        855
+      ],
+      "geometryStatus": "schematic",
+      "note": "活動中心僅開放正式圖可確認的 1F；2F／3F 保留待核對。"
+    },
+    {
+      "buildingId": "recycle-bld",
+      "name": "資源回收室",
+      "planBounds": [
+        197,
+        801,
+        251,
+        881
+      ],
+      "enabledLevels": [
+        1
+      ],
+      "artAnchor": [
+        300,
+        805
+      ],
+      "geometryStatus": "schematic",
+      "note": "樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。"
+    },
+    {
+      "buildingId": "admin-front",
+      "name": "行政大樓 (前棟)",
+      "planBounds": [
+        771,
+        788,
+        940,
+        864
+      ],
+      "enabledLevels": [
+        1,
+        2,
+        3
+      ],
+      "artAnchor": [
+        900,
+        740
+      ],
+      "geometryStatus": "schematic",
+      "note": "樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。"
+    },
+    {
+      "buildingId": "admin-back",
+      "name": "行政大樓 (後棟)",
+      "planBounds": [
+        772,
+        692,
+        939,
+        769
+      ],
+      "enabledLevels": [
+        1,
+        2,
+        3
+      ],
+      "artAnchor": [
+        900,
+        515
+      ],
+      "geometryStatus": "schematic",
+      "note": "樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。"
+    },
+    {
+      "buildingId": "health-bld",
+      "name": "健康中心 / 合作社棟",
+      "planBounds": [
+        992,
+        570,
+        1101,
+        630
+      ],
+      "enabledLevels": [
+        1,
+        2
+      ],
+      "artAnchor": [
+        1015,
+        490
+      ],
+      "geometryStatus": "schematic",
+      "note": "樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。"
+    },
+    {
+      "buildingId": "grade8-front",
+      "name": "八年級教學棟 (南棟)",
+      "planBounds": [
+        986,
+        893,
+        1130,
+        981
+      ],
+      "enabledLevels": [
+        1,
+        2,
+        3
+      ],
+      "artAnchor": [
+        1030,
+        870
+      ],
+      "geometryStatus": "schematic",
+      "note": "樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。"
+    },
+    {
+      "buildingId": "grade9-back",
+      "name": "九年級教學棟",
+      "planBounds": [
+        992,
+        722,
+        1101,
+        831
+      ],
+      "enabledLevels": [
+        1,
+        2,
+        3
+      ],
+      "artAnchor": [
+        1030,
+        720
+      ],
+      "geometryStatus": "schematic",
+      "note": "樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。"
+    },
+    {
+      "buildingId": "grade8-mid",
+      "name": "八年級中棟 / 專科棟",
+      "planBounds": [
+        1128,
+        723,
+        1238,
+        892
+      ],
+      "enabledLevels": [
+        1,
+        2,
+        3
+      ],
+      "artAnchor": [
+        1205,
+        750
+      ],
+      "geometryStatus": "schematic",
+      "note": "樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。"
+    },
+    {
+      "buildingId": "new-grade7",
+      "name": "七年級新大樓與特教園地",
+      "planBounds": [
+        1286,
+        237,
+        1539,
+        351
+      ],
+      "enabledLevels": [],
+      "artAnchor": [
+        1205,
+        170
+      ],
+      "geometryStatus": "schematic",
+      "note": "七年級 704、708 等教室樓層與導覽資料衝突，整棟暫不開放。"
+    },
+    {
+      "buildingId": "multi-building",
+      "name": "綜合大樓 / 圖書館",
+      "planBounds": [
+        1287,
+        360,
+        1526,
+        544
+      ],
+      "enabledLevels": [
+        1,
+        2
+      ],
+      "artAnchor": [
+        1205,
+        360
+      ],
+      "geometryStatus": "schematic",
+      "note": "樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。"
+    },
+    {
+      "buildingId": "tech-building",
+      "name": "科技館",
+      "planBounds": [
+        1287,
+        607,
+        1463,
+        754
+      ],
+      "enabledLevels": [
+        1,
+        2
+      ],
+      "artAnchor": [
+        1268,
+        542
+      ],
+      "geometryStatus": "schematic",
+      "note": "樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。"
+    },
+    {
+      "buildingId": "art-building",
+      "name": "藝術館",
+      "planBounds": [
+        1287,
+        798,
+        1379,
+        935
+      ],
+      "enabledLevels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "artAnchor": [
+        1210,
+        825
+      ],
+      "geometryStatus": "schematic",
+      "note": "樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。"
+    }
+  ],
+  "roomOverrides": [
+    {
+      "roomId": "tech-building:TC-NE-2",
+      "name": "科技創作教室 (2F)",
+      "evidence": "正式圖科技館右上方 2F 標示"
+    }
+  ],
+  "rooms": [
+    {
+      "roomId": "gym-bld:GYM-1",
+      "buildingId": "gym-bld",
+      "floorId": "gym-bld:floor-1",
+      "sourceName": "活動中心大禮堂 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "gym-bld:GYM-F",
+      "buildingId": "gym-bld",
+      "floorId": "gym-bld:floor-1",
+      "sourceName": "消防機房 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "gym-bld:GYM-2",
+      "buildingId": "gym-bld",
+      "floorId": "gym-bld:floor-2",
+      "sourceName": "體育重訓室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "gym-bld:GYM-3",
+      "buildingId": "gym-bld",
+      "floorId": "gym-bld:floor-3",
+      "sourceName": "活動中心看台區 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "recycle-bld:REC-1",
+      "buildingId": "recycle-bld",
+      "floorId": "recycle-bld:floor-1",
+      "sourceName": "資源回收室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-front:ADM-F-1",
+      "buildingId": "admin-front",
+      "floorId": "admin-front:floor-1",
+      "sourceName": "八、九年級導師室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-front:ADM-F-2W",
+      "buildingId": "admin-front",
+      "floorId": "admin-front:floor-2",
+      "sourceName": "校長室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-front:ADM-F-2C",
+      "buildingId": "admin-front",
+      "floorId": "admin-front:floor-2",
+      "sourceName": "校長室旁空間（名稱待確認） (2F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-front:ADM-F-2E",
+      "buildingId": "admin-front",
+      "floorId": "admin-front:floor-2",
+      "sourceName": "教務處 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-front:ADM-F-3W",
+      "buildingId": "admin-front",
+      "floorId": "admin-front:floor-3",
+      "sourceName": "語言教室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-front:ADM-F-3E",
+      "buildingId": "admin-front",
+      "floorId": "admin-front:floor-3",
+      "sourceName": "專任辦公室三 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-back:ADM-B-1W",
+      "buildingId": "admin-back",
+      "floorId": "admin-back:floor-1",
+      "sourceName": "學務處 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-back:ADM-B-1C",
+      "buildingId": "admin-back",
+      "floorId": "admin-back:floor-1",
+      "sourceName": "教練室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-back:ADM-B-1E1",
+      "buildingId": "admin-back",
+      "floorId": "admin-back:floor-1",
+      "sourceName": "東側空間一（名稱待確認） (1F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-back:ADM-B-1E2",
+      "buildingId": "admin-back",
+      "floorId": "admin-back:floor-1",
+      "sourceName": "東側空間二（名稱待確認） (1F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-back:ADM-B-2W",
+      "buildingId": "admin-back",
+      "floorId": "admin-back:floor-2",
+      "sourceName": "總務處 / 人事室 / 會計室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-back:ADM-B-3W",
+      "buildingId": "admin-back",
+      "floorId": "admin-back:floor-3",
+      "sourceName": "專任辦公室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "admin-back:ADM-B-3E",
+      "buildingId": "admin-back",
+      "floorId": "admin-back:floor-3",
+      "sourceName": "教師研習中心 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "health-bld:511",
+      "buildingId": "health-bld",
+      "floorId": "health-bld:floor-1",
+      "sourceName": "健康中心 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "health-bld:512",
+      "buildingId": "health-bld",
+      "floorId": "health-bld:floor-1",
+      "sourceName": "員生合作社 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "health-bld:521",
+      "buildingId": "health-bld",
+      "floorId": "health-bld:floor-2",
+      "sourceName": "空間 521（名稱待確認） (2F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "health-bld:522",
+      "buildingId": "health-bld",
+      "floorId": "health-bld:floor-2",
+      "sourceName": "空間 522（名稱待確認） (2F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-front:411–414",
+      "buildingId": "grade8-front",
+      "floorId": "grade8-front:floor-1",
+      "sourceName": "非營利幼兒園 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-front:421",
+      "buildingId": "grade8-front",
+      "floorId": "grade8-front:floor-2",
+      "sourceName": "807 教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-front:422",
+      "buildingId": "grade8-front",
+      "floorId": "grade8-front:floor-2",
+      "sourceName": "801 教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-front:423",
+      "buildingId": "grade8-front",
+      "floorId": "grade8-front:floor-2",
+      "sourceName": "802 教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-front:424",
+      "buildingId": "grade8-front",
+      "floorId": "grade8-front:floor-2",
+      "sourceName": "803 教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-front:431",
+      "buildingId": "grade8-front",
+      "floorId": "grade8-front:floor-3",
+      "sourceName": "空間 431（名稱待確認） (3F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-front:432",
+      "buildingId": "grade8-front",
+      "floorId": "grade8-front:floor-3",
+      "sourceName": "806 教室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-front:433",
+      "buildingId": "grade8-front",
+      "floorId": "grade8-front:floor-3",
+      "sourceName": "808 教室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-front:434",
+      "buildingId": "grade8-front",
+      "floorId": "grade8-front:floor-3",
+      "sourceName": "桌遊教室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade9-back:213",
+      "buildingId": "grade9-back",
+      "floorId": "grade9-back:floor-1",
+      "sourceName": "906 教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade9-back:212",
+      "buildingId": "grade9-back",
+      "floorId": "grade9-back:floor-1",
+      "sourceName": "907 教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade9-back:211",
+      "buildingId": "grade9-back",
+      "floorId": "grade9-back:floor-1",
+      "sourceName": "908 教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade9-back:223",
+      "buildingId": "grade9-back",
+      "floorId": "grade9-back:floor-2",
+      "sourceName": "社團教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade9-back:222",
+      "buildingId": "grade9-back",
+      "floorId": "grade9-back:floor-2",
+      "sourceName": "904 教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade9-back:221",
+      "buildingId": "grade9-back",
+      "floorId": "grade9-back:floor-2",
+      "sourceName": "905 教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade9-back:233",
+      "buildingId": "grade9-back",
+      "floorId": "grade9-back:floor-3",
+      "sourceName": "901 教室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade9-back:232",
+      "buildingId": "grade9-back",
+      "floorId": "grade9-back:floor-3",
+      "sourceName": "902 教室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade9-back:231",
+      "buildingId": "grade9-back",
+      "floorId": "grade9-back:floor-3",
+      "sourceName": "903 教室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:315",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-1",
+      "sourceName": "空間 315（名稱待確認） (1F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:314",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-1",
+      "sourceName": "空間 314（名稱待確認） (1F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:313",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-1",
+      "sourceName": "909 教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:312",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-1",
+      "sourceName": "木藝教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:311",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-1",
+      "sourceName": "木藝教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:325",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-2",
+      "sourceName": "空間 325（名稱待確認） (2F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:324",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-2",
+      "sourceName": "空間 324（名稱待確認） (2F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:323",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-2",
+      "sourceName": "空間 323（名稱待確認） (2F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:322",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-2",
+      "sourceName": "805 教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:321",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-2",
+      "sourceName": "804 教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:335",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-3",
+      "sourceName": "空間 335（名稱待確認） (3F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:333–334",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-3",
+      "sourceName": "表藝教室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:332",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-3",
+      "sourceName": "空間 332（名稱待確認） (3F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "grade8-mid:331",
+      "buildingId": "grade8-mid",
+      "floorId": "grade8-mid:floor-3",
+      "sourceName": "809 教室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "new-grade7:A12",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-1",
+      "sourceName": "709 體育班 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A13",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-1",
+      "sourceName": "701 教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A14",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-1",
+      "sourceName": "資源班 3／4 教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A15",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-1",
+      "sourceName": "特教教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A21",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-2",
+      "sourceName": "空間 A21（名稱待確認） (2F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A22",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-2",
+      "sourceName": "702 教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A23",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-2",
+      "sourceName": "703 教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A24",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-2",
+      "sourceName": "704 教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A25",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-2",
+      "sourceName": "705 教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A31",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-3",
+      "sourceName": "空間 A31（名稱待確認） (3F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A32",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-3",
+      "sourceName": "706 質數研究室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A33",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-3",
+      "sourceName": "707 教室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A34",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-3",
+      "sourceName": "708 教室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "new-grade7:A35",
+      "buildingId": "new-grade7",
+      "floorId": "new-grade7:floor-3",
+      "sourceName": "導師室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": false
+    },
+    {
+      "roomId": "multi-building:615",
+      "buildingId": "multi-building",
+      "floorId": "multi-building:floor-1",
+      "sourceName": "餐飲教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "multi-building:611",
+      "buildingId": "multi-building",
+      "floorId": "multi-building:floor-1",
+      "sourceName": "圖書室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "multi-building:614",
+      "buildingId": "multi-building",
+      "floorId": "multi-building:floor-1",
+      "sourceName": "特教教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "multi-building:613",
+      "buildingId": "multi-building",
+      "floorId": "multi-building:floor-1",
+      "sourceName": "特教辦公室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "multi-building:612",
+      "buildingId": "multi-building",
+      "floorId": "multi-building:floor-1",
+      "sourceName": "特教相關教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "multi-building:HST-1",
+      "buildingId": "multi-building",
+      "floorId": "multi-building:floor-1",
+      "sourceName": "校史室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "multi-building:621",
+      "buildingId": "multi-building",
+      "floorId": "multi-building:floor-2",
+      "sourceName": "大電腦教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "multi-building:622",
+      "buildingId": "multi-building",
+      "floorId": "multi-building:floor-2",
+      "sourceName": "空間 622（名稱待確認） (2F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "multi-building:623",
+      "buildingId": "multi-building",
+      "floorId": "multi-building:floor-2",
+      "sourceName": "空間 623（名稱待確認） (2F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "multi-building:624",
+      "buildingId": "multi-building",
+      "floorId": "multi-building:floor-2",
+      "sourceName": "輔導室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "tech-building:TC-NW-1",
+      "buildingId": "tech-building",
+      "floorId": "tech-building:floor-1",
+      "sourceName": "視聽教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "tech-building:TC-N-1",
+      "buildingId": "tech-building",
+      "floorId": "tech-building:floor-1",
+      "sourceName": "生科教室一 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "tech-building:TC-SW-1",
+      "buildingId": "tech-building",
+      "floorId": "tech-building:floor-1",
+      "sourceName": "空間 TC-SW-1（名稱待確認） (1F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "tech-building:TC-NE-1",
+      "buildingId": "tech-building",
+      "floorId": "tech-building:floor-1",
+      "sourceName": "生科教室二 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "tech-building:TC-SE-1",
+      "buildingId": "tech-building",
+      "floorId": "tech-building:floor-1",
+      "sourceName": "電腦教室一 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "tech-building:TC-NW-2",
+      "buildingId": "tech-building",
+      "floorId": "tech-building:floor-2",
+      "sourceName": "空間 TC-NW-2（名稱待確認） (2F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "tech-building:TC-N-2",
+      "buildingId": "tech-building",
+      "floorId": "tech-building:floor-2",
+      "sourceName": "理化實驗室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "tech-building:TC-SW-2",
+      "buildingId": "tech-building",
+      "floorId": "tech-building:floor-2",
+      "sourceName": "空間 TC-SW-2（名稱待確認） (2F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "tech-building:TC-NE-2",
+      "buildingId": "tech-building",
+      "floorId": "tech-building:floor-2",
+      "sourceName": "科技教室（名稱待確認） (2F)",
+      "nameStatus": "pending",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "tech-building:TC-SE-2",
+      "buildingId": "tech-building",
+      "floorId": "tech-building:floor-2",
+      "sourceName": "電腦教室二 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "art-building:ART-1",
+      "buildingId": "art-building",
+      "floorId": "art-building:floor-1",
+      "sourceName": "樂活教室 (1F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "art-building:ART-2",
+      "buildingId": "art-building",
+      "floorId": "art-building:floor-2",
+      "sourceName": "音樂教室 (2F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "art-building:ART-3",
+      "buildingId": "art-building",
+      "floorId": "art-building:floor-3",
+      "sourceName": "音樂教室 (3F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    },
+    {
+      "roomId": "art-building:ART-4",
+      "buildingId": "art-building",
+      "floorId": "art-building:floor-4",
+      "sourceName": "美術教室 (4F)",
+      "nameStatus": "guide-source-needs-room-check",
+      "geometryStatus": "schematic",
+      "enabled": true
+    }
+  ],
+  "mentors": [
+    {
+      "roomId": "tech-building:TC-N-2",
+      "characterId": "staff-014",
+      "name": "陳小鈴老師",
+      "questId": "energy-core",
+      "placementStatus": "game-placement-not-actual-office"
+    }
+  ]
+}
