@@ -6,6 +6,7 @@
  const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.96});
  const colors={wall:material(0xc9c5b9),blue:material(0x8da9ae),floor:material(0xa6aaa3),stair:material(0xb8bab0),wood:material(0x956941),green:material(0x315748),steel:material(0x61717a),light:material(0xfff9dd),glass:new THREE.MeshStandardMaterial({color:0x8fa5a9,transparent:true,opacity:.45})};
  colors.light.emissive.setHex(0x8a8467);colors.light.emissiveIntensity=.4;
+ const safetyMeshMaterial=new THREE.LineBasicMaterial({color:0x7f8880,transparent:true,opacity:.45});
  const surfaces=new Map();
  function surfaceMaterials(l){
   if(surfaces.has(l.id))return surfaces.get(l.id);
@@ -24,12 +25,12 @@
  };
  const insideFloor=(l,x,z,floor)=>{const q=l.local(x,z);return l.footprints.some(p=>p.floor===floor&&CampusSpatialPlan.contains(p,q.u,q.v))};
  // Subtract the same stair holes that groundAt uses from every slab.
- function slab(g,l,p,y){
+ function slab(g,l,p,y,paint=null,cutAtGround=false){
   const colors=surfaceMaterials(l);
   const xs=[p.u0,p.u1],zs=[p.v0,p.v1];
   for(const h of l.holes){if(h.u0>p.u0&&h.u0<p.u1)xs.push(h.u0);if(h.u1>p.u0&&h.u1<p.u1)xs.push(h.u1);if(h.v0>p.v0&&h.v0<p.v1)zs.push(h.v0);if(h.v1>p.v0&&h.v1<p.v1)zs.push(h.v1)}
   xs.sort((a,b)=>a-b);zs.sort((a,b)=>a-b);
-  for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++)if(y===0||!l.holes.some(h=>CampusSpatialPlan.contains(h,(xs[i-1]+xs[i])/2,(zs[j-1]+zs[j])/2)))box(g,l,xs[i-1],xs[i],zs[j-1],zs[j],y-.18,y,colors.floor);
+  for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++)if((y===0&&!cutAtGround)||!l.holes.some(h=>CampusSpatialPlan.contains(h,(xs[i-1]+xs[i])/2,(zs[j-1]+zs[j])/2)))box(g,l,xs[i-1],xs[i],zs[j-1],zs[j],y-.18,y,paint||colors.floor);
  }
  function roomWall(g,l,c,side,y){
   const colors=surfaceMaterials(l),q={u:(c.u0+c.u1)/2,v:(c.v0+c.v1)/2};
@@ -47,6 +48,9 @@
    wall(start+.2,end-.2,y+1.05,y+2.65,colors.glass,false);
    for(let u=start+.35;u<end-.2;u+=.6)wall(u-.022,u+.022,y+1.05,y+2.65,colors.steel,false);
   }
+  const trim=(a,b)=>alongU?box(g,l,a,b,fixed-.104,fixed+.104,y+.005,y+.125,colors.skirt):box(g,l,fixed-.104,fixed+.104,a,b,y+.005,y+.125,colors.skirt);
+  if(c.doorSide===side){const half=Math.min(.95,(end-start)/2-.16);trim(start,center-half);trim(center+half,end)}else trim(start,end);
+
  }
  function details(g,l,r,y){
   const colors=surfaceMaterials(l);
@@ -101,22 +105,69 @@
    }
    for(const v of vs)for(let i=1;i<us.length;i++){const u=(us[i]+us[i-1])/2;if(present(u,v-.02)!==present(u,v+.02))edge(true,v,us[i-1],us[i]);}
    for(const u of us)for(let i=1;i<vs.length;i++){const v=(vs[i]+vs[i-1])/2;if(present(u-.02,v)!==present(u+.02,v))edge(false,u,vs[i-1],vs[i]);}
+   const ceiling=new THREE.Group();ceiling.name=`corridor-ceiling-${l.id}-${f}`;ceiling.userData={buildingId:l.id,floorNum:f,campusCeiling:true};scene.add(ceiling);floorMeshes.push(ceiling);
    for(const p of l.corridors.filter(p=>p.floor===f)){
-    const longU=p.u1-p.u0>=p.v1-p.v0;
-    for(let t=(longU?p.u0:p.v0)+1.2;t<(longU?p.u1:p.v1);t+=1.2)box(g,l,longU?t-.008:p.u0,longU?t+.008:p.u1,longU?p.v0:t-.008,longU?p.v1:t+.008,y+.002,y+.01,colors.steel);
+    const longU=p.u1-p.u0>=p.v1-p.v0,lo=longU?p.u0:p.v0,hi=longU?p.u1:p.v1;
+    // Keep the same stair holes clear in the ceiling as in the floor above.
+    slab(ceiling,l,p,y+FH-.22,colors.ceiling,true);
+    for(let t=lo+1.2;t<hi;t+=1.2)box(g,l,longU?t-.005:p.u0,longU?t+.005:p.u1,longU?p.v0:t-.005,longU?p.v1:t+.005,y+.002,y+.008,colors.grout);
+    const acrossLo=longU?p.v0:p.u0,acrossHi=longU?p.v1:p.u1;
+    for(let t=acrossLo+1.2;t<acrossHi;t+=1.2)box(g,l,longU?p.u0:t-.005,longU?p.u1:t+.005,longU?t-.005:p.v0,longU?t+.005:p.v1,y+.002,y+.008,colors.grout);
+    for(let t=lo+2;t<hi-.6;t+=5){
+     const u=longU?t:(p.u0+p.u1)/2,v=longU?(p.v0+p.v1)/2:t;
+     // Skip any fixture whose footprint would extend over a stair opening.
+     const beam={u0:longU?u-.12:p.u0,u1:longU?u+.12:p.u1,v0:longU?p.v0:v-.12,v1:longU?p.v1:v+.12},lamp={u0:longU?u-.7:u-.09,u1:longU?u+.7:u+.09,v0:longU?v-.09:v-.7,v1:longU?v+.09:v+.7};
+     if(l.holes.some(h=>[beam,lamp].some(q=>q.u0<h.u1&&q.u1>h.u0&&q.v0<h.v1&&q.v1>h.v0)))continue;
+     box(ceiling,l,longU?u-.12:p.u0,longU?u+.12:p.u1,longU?p.v0:v-.12,longU?p.v1:v+.12,y+FH-.58,y+FH-.4,colors.ceiling);
+     box(ceiling,l,longU?u-.7:u-.09,longU?u+.7:u+.09,longU?v-.09:v-.7,longU?v+.09:v+.7,y+FH-.64,y+FH-.59,colors.light);
+    }
    }
   }
   for(const s of l.stairs)for(let f=1;f<l.b.floors;f++){
    const g=new THREE.Group();g.name=`floor-stairs-${f+1}`;g.userData={buildingId:l.id,floorNum:f+1};scene.add(g);floorMeshes.push(g);
    const ramps=l.ramps.filter(r=>r.stairId===s.id&&r.floor===f),p=l.platforms.find(p=>p.stairId===s.id&&p.floor===f);
    box(g,l,s.u0+.2,s.farU+.08,s.centerV-2.3,s.centerV+2.3,p.y-.16,p.y,colors.stair);
+   box(g,l,s.u0+.2,s.u0+.27,s.centerV-2.25,s.centerV+2.25,p.y+.85,p.y+.93,colors.handrail);
+   for(let v=s.centerV-2.2;v<=s.centerV+2.2;v+=.55)box(g,l,s.u0+.215,s.u0+.255,v-.022,v+.022,p.y,p.y+.9,colors.steel);
+   if(l.id==='gym-bld'){
+    for(let v=s.centerV-1.9;v<s.centerV+2.3;v+=.4)box(g,l,s.u0+.2,s.farU+.08,v-.004,v+.004,p.y+.002,p.y+.008,colors.grout);
+    for(let u=s.u0+.6;u<s.farU+.08;u+=.4)box(g,l,u-.004,u+.004,s.centerV-2.3,s.centerV+2.3,p.y+.002,p.y+.008,colors.grout);
+   }
+
+
    for(const r of ramps){
     registerStairZone((r.x0+r.x1)/2,(r.z0+r.z1)/2,r.x1-r.x0,r.z1-r.z0,r.h0,r.h1,f,f+1,r.axis,r.axis==='x'?Math.sign(r.end.x-r.start.x):Math.sign(r.end.z-r.start.z));
-    for(let i=0;i<18;i++){
-     const mid=M.rampPoint(r,(i+.5)/18),mesh=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?Math.abs(r.end.x-r.start.x)/18:1.6,.16,l.horizontal?1.6:Math.abs(r.end.z-r.start.z)/18),colors.stair);mesh.position.set(mid.x,mid.y-.08,mid.z);g.add(mesh);
-     const edge=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?.035:1.6,.018,l.horizontal?1.6:.035),colors.edge);edge.position.set(mid.x,mid.y+.005,mid.z);g.add(edge);
+    // Closed risers follow the existing smooth walk ramp; dimensions are schematic.
+    const count=Math.ceil((r.h1-r.h0)/.15),runLength=Math.hypot(r.end.x-r.start.x,r.end.z-r.start.z),depth=runLength/count;
+    const stepBox=(point,width,height,length,colour)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?length:width,height,l.horizontal?width:length),colour);mesh.position.set(point.x,point.y,point.z);mesh.castShadow=mesh.receiveShadow=true;g.add(mesh);return mesh};
+    for(let i=0;i<count;i++){
+     const mid=M.rampPoint(r,(i+.5)/count),front=M.rampPoint(r,i/count),top=r.h0+(i+1)/count*(r.h1-r.h0),bottom=r.h0-.12;
+     stepBox({...mid,y:(top+bottom)/2},1.6,top-bottom,depth,colors.stair);
+     stepBox({...front,y:top+.009},1.6,.018,.035,colors.edge);
+     if(l.id==='gym-bld'){
+      // Visible tile joints, anti-slip grooves and blue stepped side paint (photo 18).
+      for(const offset of [-.4,0,.4]){const q={...mid,y:top+.004};q[l.horizontal?'z':'x']+=offset;stepBox(q,.007,.008,depth,colors.grout);}
+      for(const t of [.05,.12]){const q=M.rampPoint(r,(i+t)/count);stepBox({...q,y:top+.006},1.45,.009,.008,colors.edge);}
+      for(const side of [-1,1]){const q={...mid,y:top-.06};q[l.horizontal?'z':'x']+=side*.79;stepBox(q,.07,.12,depth,colors.skirt);}
+     }
     }
-    for(const side of [-1,1])for(const [height,colour,radius] of [[.9,colors.handrail,.04],[.035,colors.skirt,.055]]){const a=new THREE.Vector3(r.start.x,r.start.y+height,r.start.z),c=new THREE.Vector3(r.end.x,r.end.y+height,r.end.z);if(l.horizontal){a.z+=side*.78;c.z+=side*.78}else{a.x+=side*.78;c.x+=side*.78}const rail=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,a.distanceTo(c),8),colour);rail.position.copy(a).add(c).multiplyScalar(.5);rail.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),c.sub(a).normalize());g.add(rail);}
+    for(const side of [-1,1]){
+     const shift=p=>{const q=new THREE.Vector3(p.x,p.y,p.z);q[l.horizontal?'z':'x']+=side*.78;return q};
+     const rail=(a,c,colour,radius)=>{const mesh=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,a.distanceTo(c),8),colour);mesh.position.copy(a).add(c).multiplyScalar(.5);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),c.clone().sub(a).normalize());g.add(mesh)};
+     const a=shift(r.start),c=shift(r.end);a.y+=.9;c.y+=.9;rail(a,c,colors.handrail,.04);
+     const posts=Math.max(2,Math.ceil(runLength/.8));for(let j=0;j<=posts;j++){const q=shift(M.rampPoint(r,j/posts));rail(q,q.clone().add(new THREE.Vector3(0,.9,0)),colors.steel,.022);}
+     // Administrative stair safety mesh is schematic, without reproducing notices.
+     if(l.id==='admin-back'){
+      const points=[];
+      // Diamond weave in the stair-side plane, clipped to the guard height.
+      for(const direction of [-1,1])for(let k=-runLength-.7;k<runLength+.7;k+=.24){
+       const x0=Math.max(0,direction===1?k:k-.7),x1=Math.min(runLength,direction===1?k+.7:k);if(x1<=x0)continue;
+       const a=shift(M.rampPoint(r,x0/runLength)),c=shift(M.rampPoint(r,x1/runLength));a.y+=.12+direction*(x0-k);c.y+=.12+direction*(x1-k);points.push(a.x,a.y,a.z,c.x,c.y,c.z);
+      }
+      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(points,3));g.add(new THREE.LineSegments(geo,safetyMeshMaterial));
+     }
+    }
+
    }
   }
  }
@@ -132,7 +183,7 @@
  }
  layouts.push(...galleries);
  // Static batching retains low draw calls despite the extra circulation details.
- for(const g of scene.children.filter(g=>g.type==='Group'&&g.name.startsWith('floor-'))){
+ for(const g of scene.children.filter(g=>g.type==='Group'&&(g.name.startsWith('floor-')||g.userData.campusCeiling))){
   const batches=new Map();for(const mesh of [...g.children])if(mesh.isMesh&&mesh.visible&&!mesh.userData.roof&&!mesh.material.map&&!Array.isArray(mesh.material)){
    mesh.updateMatrix();const geo=(mesh.geometry.index?mesh.geometry.toNonIndexed():mesh.geometry.clone()).applyMatrix4(mesh.matrix);if(!batches.has(mesh.material))batches.set(mesh.material,{p:[],n:[],uv:[]});const data=batches.get(mesh.material);
    for(const [name,key] of [['position','p'],['normal','n'],['uv','uv']]){const a=geo.getAttribute(name);if(a)for(const v of a.array)data[key].push(v)}geo.dispose();mesh.geometry.dispose();g.remove(mesh);

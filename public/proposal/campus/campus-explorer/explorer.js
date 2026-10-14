@@ -2410,6 +2410,7 @@
       if(mode==='bird')stopAutoWalk();
       currentMode = mode;
       document.body.dataset.controlMode=mode;
+      syncInteriorCeilings();
       controls.enabled=mode==="bird";
       camera.near=mode==='bird'?1:.08;camera.fov=mode==='bird'?45:60;camera.updateProjectionMatrix();
       const btnIcon = document.getElementById("btn-mode-icon");
@@ -2849,6 +2850,9 @@
     }
 
     let currentFloorFilter = "all";
+    function syncInteriorCeilings() {
+      for(const group of floorMeshes)if(group.userData.campusCeiling)group.visible=(currentMode!=="bird"||currentFloorFilter==="all")&&(currentFloorFilter==="all"||group.userData.floorNum<=Number(currentFloorFilter));
+    }
     function setFloorFilter(floorVal) {
       currentFloorFilter = floorVal;
       const floorBadgeEl = document.getElementById("minimap-floor-badge");
@@ -2861,6 +2865,7 @@
       });
 
       floorMeshes.forEach(grp => {
+        if (grp.userData.campusCeiling) return; // Synced separately, including view changes.
         if (floorVal === "all") {
           grp.visible = true;
         } else {
@@ -2869,6 +2874,7 @@
         grp.traverse(o=>{if(o!==grp&&o.userData.roof)o.visible=CampusFloorExhibitModel.meshVisible({roof:true},floorVal,BUILDINGS_CONFIG.find(b=>b.id===grp.userData.buildingId)?.floors||4)});
       });
 
+      syncInteriorCeilings();
       roomBadgeElements.forEach(rb => {
         if (floorVal === "all") {
           rb.element.style.display = "flex";

@@ -105,3 +105,18 @@ it('shows the original sports mosaic above the rear windows without stretching i
  expect(mural.y-mural.h/2).toBeGreaterThan(2);
  expect(mural.uv.every((n:number)=>n>0&&n<1)).toBe(true);
 });
+
+it('stair flights have closed risers below each tread instead of floating thin planks',()=>{
+ const hits=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-back'),r=l.ramps[0],p=CampusWalkMath.rampPoint(r,.5),g=scene.children.find(g=>g.name==='floor-stairs-2'&&g.userData.buildingId===l.id),meshes=g.children.filter(m=>m.isMesh&&m.material.userData.campusSurface==='stair');g.updateMatrixWorld(true);const origin=new THREE.Vector3(p.x,r.h0+.1,p.z),direction=l.horizontal?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0);origin.addScaledVector(direction,-1.2);return new THREE.Raycaster(origin,direction,0,2.4).intersectObjects(meshes).length})()`);
+ expect(hits).toBeGreaterThan(0);
+});
+it('corridor ceilings remain above walking height and hide for floor cutaway viewing',()=>{
+ expect(run(`!!scene.getObjectByName('corridor-ceiling-admin-front-2')`)).toBe(true);
+ const result=run(`(()=>{setControlMode('avatar');setFloorFilter('2');const g=scene.getObjectByName('corridor-ceiling-admin-front-2'),walking=g.visible;const bounds=new THREE.Box3().setFromObject(g);setControlMode('bird');const bird=g.visible;setControlMode('firstperson');const firstperson=g.visible;setFloorFilter('all');return {walking,bird,firstperson,bottom:bounds.min.y}})()`);
+ expect(result.walking).toBe(true);expect(result.bird).toBe(false);expect(result.firstperson).toBe(true);expect(result.bottom).toBeGreaterThan(3.6+2.6);
+});
+
+it('corridor ceilings, beams and lamps do not bridge any stair opening',()=>{
+ const blocked=run(`(()=>{const errors=[];scene.updateMatrixWorld(true);for(const l of campusWalkWorld.layouts.filter(l=>l.holes?.length))for(const h of l.holes){const p=l.world((h.u0+h.u1)/2,(h.v0+h.v1)/2),g=scene.getObjectByName('corridor-ceiling-'+l.id+'-1');if(!g)continue;const ray=new THREE.Raycaster(new THREE.Vector3(p.x,.1,p.z),new THREE.Vector3(0,1,0),0,3.5);if(ray.intersectObjects(g.children,true).length)errors.push(l.id)}return errors})()`);
+ expect(blocked).toEqual([]);
+});
