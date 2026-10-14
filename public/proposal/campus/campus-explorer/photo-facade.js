@@ -27,6 +27,7 @@
   registerWallCollider(x-.125,x+.125,frontZ+1.45,frontZ+1.75,0,3.25);
  }
  window.campusCollisionIndex=CampusCollisionGrid.create(WALL_COLLIDERS,AVATAR_COLLISION_RADIUS,AVATAR_HEIGHT);
+ window.campusPeopleCollisionIndex=CampusCollisionGrid.create(WALL_COLLIDERS,.64,2.15);
  box(entrance,6.2,.18,2.05,b.x,3.3,frontZ+.85,cream);
  // Open sliding glass leaves flank the central clear passage.
  const glass=new THREE.MeshStandardMaterial({color:0x9bbbc2,transparent:true,opacity:.35,roughness:.2});

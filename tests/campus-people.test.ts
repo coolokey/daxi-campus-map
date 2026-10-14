@@ -64,6 +64,46 @@ describe('校園師生名冊',()=>{
  });
 });
 describe('示意人物效能與碰撞',()=>{
+ it('uses the full-sized NPC collision envelope and sweeps a route instead of checking only its endpoint',()=>{
+  const s=setup(1280,w=>{w.campusPeopleCollisionIndex={hit:(x:number)=>x>-19.1&&x< -18.9};});
+  const actor=s.api.actors.find((a:any)=>a.spec.role==='student');
+  expect(s.api.canMove(actor,{x:-20,y:0,z:75},{x:-18,y:0,z:75})).toBe(false);
+  expect(s.api.canMove(actor,{x:-20,y:0,z:75},{x:-20,y:0,z:77})).toBe(true);s.dom.window.close();
+ });
+ it('lets nearby students pause and chat without teleporting or overlapping',()=>{
+  const s=setup(1280,w=>{w.Math.random=()=>.2});
+  for(let i=0;i<20;i++)s.api.update(.1,i*.1);
+  const chat=s.api.conversations.find((c:any)=>c.members.every((a:any)=>a.spec.role==='student'));
+  expect(chat).toBeDefined();const before=chat.members.map((a:any)=>({...a.position}));
+  for(let i=0;i<10;i++)s.api.update(.1,2+i*.1);
+  expect(chat.members.map((a:any)=>({...a.position}))).toEqual(before);
+  expect(s.d.getElementById('campus-dialogue-log').textContent).not.toBe('');s.dom.window.close();
+ });
+ it('greets a teacher on approach and replies once, without repeating while the player stays nearby',()=>{
+  const player=new THREE.Vector3(-9,0,78),s=setup(1280,w=>{w.campusExplorer.getPlayerPosition=()=>player;});
+  const teacher=s.api.actors.find((a:any)=>a.person);teacher.position={x:-11,y:0,z:78};teacher.start={...teacher.position};
+  for(let i=0;i<45;i++)s.api.update(.1,i*.1);
+  const log=s.d.getElementById('campus-dialogue-log');expect(log.textContent).toContain('老師好');expect(log.textContent).toContain('同學好');
+  const count=log.children.length;for(let i=0;i<70;i++)s.api.update(.1,5+i*.1);
+  expect(Array.from(log.children).filter((p:any)=>p.textContent.includes('老師好')).length).toBe(1);expect(log.children.length).toBeGreaterThanOrEqual(count);s.dom.window.close();
+ });
+ it('does not greet or start a chat through a wall or across floors',()=>{
+  const s=setup(1280,w=>{w.Math.random=()=>.2;w.campusCollisionIndex.pointHit=()=>false});s.api.update(.1,1);
+  const [a,b]=s.api.actors.filter((a:any)=>a.spec.role==='student');a.position={x:-15,y:0,z:79};b.position={x:-12.5,y:0,z:79};
+  s.w.campusCollisionIndex.pointHit=()=>true;expect(s.api.canConverse(a.position,b.position)).toBe(false);
+  s.w.campusCollisionIndex.pointHit=()=>false;b.position.y=3.6;expect(s.api.canConverse(a.position,b.position)).toBe(false);s.dom.window.close();
+ });
+ it('supports teacher-to-teacher and student-to-teacher exchanges as distinct campus activities',()=>{
+  for(const teacherPair of [true,false]){
+   const s=setup(1280,w=>{w.Math.random=()=>.2;w.campusExplorer.getPlayerPosition=()=>new THREE.Vector3(-20,0,90);if(teacherPair)w.CampusStaffData.people[1].portrait='b.jpg';});
+   for(const a of s.api.actors){if(!a.stationary)a.position={x:100,y:0,z:100};a.idleUntil=100;}
+   const teacher=s.api.actors.find((a:any)=>a.person),partner=teacherPair?s.api.actors.filter((a:any)=>a.person)[1]:s.api.actors.find((a:any)=>a.spec.role==='student');
+   teacher.position={x:-15,y:0,z:79};partner.position={x:-12.6,y:0,z:79};
+   for(let i=0;i<40;i++)s.api.update(.1,i*.1);
+   const log=s.d.getElementById('campus-dialogue-log').textContent;
+   expect(log).toContain(teacherPair?'辛苦了':'同學好');expect(log).toContain(teacherPair?'一起加油':'老師好');s.dom.window.close();
+  }
+ });
  it('手機最多顯示 7 位，老師僅建立核對照片者，開啟名冊時停止走動',()=>{
   const s=setup(390);expect(s.api).toBeDefined();s.api.update(.1,1);
   expect(s.api.actors.filter((a:any)=>a.person)).toHaveLength(1);expect(s.api.actors.filter((a:any)=>a.spec.role==='student')).toHaveLength(12);
@@ -154,7 +194,8 @@ describe('老師輪替與人物避讓',()=>{
   for(let i=0;i<60;i++)s.api.update(.1,i*.1);
   expect(teacher.position).not.toEqual(before);expect(teacher.position.y).toBe(3.6);
   expect(Math.abs(teacher.position.x-30)).toBeLessThan(4.4);expect(Math.abs(teacher.position.z-40)).toBeLessThan(3.4);
-  s.w.campusExplorer.getFloorFilter=()=>1;s.api.update(.1,10);expect(teacher.root?.visible??false).toBe(false);s.dom.window.close();
+  s.w.campusExplorer.getFloorFilter=()=>1;s.api.update(.1,10);expect(teacher.root?.visible??false).toBe(true);
+  s.d.body.dataset.controlMode='bird';s.api.update(.1,11);expect(teacher.root?.visible??false).toBe(false);s.dom.window.close();
  });
 });
 

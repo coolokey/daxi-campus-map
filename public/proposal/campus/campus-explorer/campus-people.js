@@ -11,7 +11,7 @@
  const dialog=make('dialog');dialog.id='campus-people-dialog';dialog.setAttribute('aria-labelledby','campus-people-title');
  const header=make('header'),heading=make('h2','', '校園師生');heading.id='campus-people-title';
  const closeButton=button('關閉','campus-people-close');header.append(heading,closeButton);
- const intro=make('p','campus-people-note',`${data.year||115} 學年度教職員名冊。已核對照片的 ${people.filter(p=>p.portrait).length} 位老師分批輪替，在校園或辦公室內走動，位置為導覽示意。警衛與學生為一般示意人物。`);
+ const intro=make('p','campus-people-note',`${data.year||115} 學年度教職員名冊。已核對照片的 ${people.filter(p=>p.portrait).length} 位老師分批輪替，在校園或辦公室內走動，位置為導覽示意。警衛與學生為一般示意人物，聊天與問候為校園情境示意。`);
  const label=make('label','','搜尋姓名或職稱');label.htmlFor='campus-people-search';
  const search=make('input');search.id='campus-people-search';search.type='search';search.placeholder='姓名、職稱';search.autocomplete='off';
  const status=make('p','campus-people-status');status.id='campus-people-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
@@ -42,18 +42,18 @@
  const tags=make('div','campus-people-tags');tags.setAttribute('aria-hidden','true');document.body.append(tags);
  const actors=[];
  const zones=[[-17,79,4,0],[-4,78,3,0],[-12,70,4,0],[-1,72,2,0],[-92,-22,4,0],[-82,-15,3,0],[-78,-30,4,0],[-92,-37,3,0],[-34,47,3,0],[-40,37,2,0],[-6,75,0,3],[-24,71,0,3]];
- const blockedPoint=p=>!Number.isFinite(p.y)||!!(window.campusCollisionIndex?.hit?.(p.x,p.y,p.z)||window.campusCollisionIndex?.pointHit?.(p.x,p.y+1,p.z));
- const clearance=1.1;
+ const blockedPoint=p=>!Number.isFinite(p.y)||!!((window.campusPeopleCollisionIndex||window.campusCollisionIndex)?.hit?.(p.x,p.y,p.z)||window.campusCollisionIndex?.pointHit?.(p.x,p.y+1,p.z));
+ const clearance=1.36;
  const near=(a,b)=>Math.abs(a.y-b.y)<1.8&&Math.hypot(a.x-b.x,a.z-b.z)<clearance;
  function occupied(p,except){return actors.some(a=>a!==except&&near(a.position,p))||near(api.getPlayerPosition?.()||api.camera.position,p)}
  function outdoors(p){return !(window.campusWalkWorld?.layouts||[]).some(l=>p.x>l.bounds.x0-.8&&p.x<l.bounds.x1+.8&&p.z>l.bounds.z0-.8&&p.z<l.bounds.z1+.8)}
  function safe(p){return outdoors(p)&&!blockedPoint(p)&&Math.abs(p.y)<.25}
  function ground(p){return window.campusWalkWorld?.ground(p)??0}
  // Find the initial position once. Walking never teleports to a new route point.
- function place(x,z,index){for(let ring=0;ring<=6;ring++)for(let n=0;n<(ring?12:1);n++){const angle=(n+index*.37)*Math.PI/6,p={x:x+Math.cos(angle)*ring*1.8,y:0,z:z+Math.sin(angle)*ring*1.8};p.y=ground(p);if(safe(p)&&!actors.some(a=>Math.hypot(a.position.x-p.x,a.position.z-p.z)<1.3))return p}return null}
+ function place(x,z,index){for(let ring=0;ring<=6;ring++)for(let n=0;n<(ring?12:1);n++){const angle=(n+index*.37)*Math.PI/6,p={x:x+Math.cos(angle)*ring*1.8,y:0,z:z+Math.sin(angle)*ring*1.8};p.y=ground(p);if(safe(p)&&!actors.some(a=>Math.hypot(a.position.x-p.x,a.position.z-p.z)<clearance))return p}return null}
  const guardPosition=place(-18,87,0);
  if(guardPosition)actors.push({id:'gate-guard',label:'警衛先生',stationary:true,position:guardPosition,spec:{role:'guard',gender:'male',hairStyle:'short',outfit:'casual',shirtColor:0x465e76,hairColor:0x45403b}});
- zones.forEach((z,i)=>{const position=place(z[0],z[1],i);if(position)actors.push({id:'student-'+i,position,start:{...position},direction:1,axis:z[2]?'x':'z',length:z[2]||z[3],speed:.85+(i%3)*.12,nextWalk:0,spec:{gender:i%2?'female':'male',outfit:'uniform',role:'student'}})});
+ zones.forEach((z,i)=>{const companion=i%4===1?actors.filter(a=>a.spec.role==='student').at(-1):null;const position=(companion&&place(companion.position.x+2.4,companion.position.z,i))||place(z[0],z[1],i);if(position)actors.push({id:'student-'+i,position,start:{...position},direction:1,axis:z[2]?'x':'z',length:z[2]||z[3],speed:.85+(i%3)*.12,nextWalk:0,spec:{gender:i%2?'female':'male',outfit:'uniform',role:'student'}})});
  const roster=people.filter(p=>p.portrait),teacherLimit=()=>Math.min(roster.length,window.innerWidth<=768?3:6);
  let bag=[],age=0,retryAt=0;
  function nextTeacher(){
@@ -75,25 +75,26 @@
   }}
   if(!actor.position){for(let n=0;n<zones.length;n++){const zone=zones[Math.floor(Math.random()*zones.length)],p=place(zone[0],zone[1],n);if(p&&!occupied(p)){actor.position=p;break}}}
   if(!actor.position){bag.unshift(person);return false}
-  actor.start={...actor.position};actor.axis=Math.random()<.5?'x':'z';actor.length=3;actors.push(actor);return true;
+  actor.start={...actor.position};actor.axis=Math.random()<.5?'x':'z';actor.length=3;actor.nextWalk=0;actors.push(actor);return true;
  }
- function removeActor(actor){actor.tag?.remove();if(actor.root){api.scene.remove(actor.root);const materials=new Set();actor.root.traverse(n=>{if(n.userData.campusOwnedGeometry)n.geometry?.dispose();for(const m of Array.isArray(n.material)?n.material:[n.material])if(m)materials.add(m)});materials.forEach(m=>m.dispose())}actors.splice(actors.indexOf(actor),1)}
+ function removeActor(actor){if(walkSearch?.actor===actor)walkSearch=null;actor.tag?.remove();actor.bubble?.remove();if(actor.root){api.scene.remove(actor.root);const materials=new Set();actor.root.traverse(n=>{if(n.userData.campusOwnedGeometry)n.geometry?.dispose();for(const m of Array.isArray(n.material)?n.material:[n.material])if(m)materials.add(m)});materials.forEach(m=>m.dispose())}actors.splice(actors.indexOf(actor),1)}
  function rotateTeachers(){
   const teachers=actors.filter(a=>a.person),limit=teacherLimit();
-  for(const actor of teachers){if(actors.filter(a=>a.person).length>limit||age>=actor.expires)removeActor(actor)}
+  for(const actor of teachers){if(actors.filter(a=>a.person).length>limit||(age>=actor.expires&&!actor.conversation))removeActor(actor)}
   if(age<retryAt)return;
   while(actors.filter(a=>a.person).length<limit)if(!spawnTeacher()){retryAt=age+2;break}
  }
  rotateTeachers();
  const THREE=window.THREE;
- function ensureRoot(actor){if(actor.root||!THREE||!api.createCharacter)return;actor.root=api.createCharacter(actor.spec);actor.root.userData.campusPerson=actor;actor.root.position.set(actor.position.x,actor.position.y,actor.position.z);api.scene.add(actor.root);actor.limbs=['avatar-arm-left','avatar-arm-right','avatar-leg-left','avatar-leg-right'].map(n=>actor.root.getObjectByName(n));if(actor.person||actor.label){actor.tag=make('span','campus-person-tag',actor.person?.name||actor.label);actor.tag.hidden=true;tags.append(actor.tag)}}
+ function ensureRoot(actor){if(actor.root||!THREE||!api.createCharacter)return;actor.root=api.createCharacter(actor.spec);actor.root.userData.campusPerson=actor;actor.root.position.set(actor.position.x,actor.position.y,actor.position.z);api.scene.add(actor.root);actor.root.rotation.y=actor.heading||0;actor.limbs=['avatar-arm-left','avatar-arm-right','avatar-leg-left','avatar-leg-right'].map(n=>actor.root.getObjectByName(n));if(actor.person||actor.label){actor.tag=make('span','campus-person-tag',actor.person?.name||actor.label);actor.tag.hidden=true;tags.append(actor.tag)}}
  let lastSelection=-1,active=[];
  function choose(time,player){if(time-lastSelection<.35&&lastSelection>=0)return;lastSelection=time;const max=window.innerWidth<=768?7:14;
-  const floor=api.getFloorFilter?.()??'all';
+  const floor=document.body.dataset.controlMode==='bird'?(api.getFloorFilter?.()??'all'):'all';
   active=actors.map(actor=>({actor,distance:Math.hypot(actor.position.x-player.x,actor.position.z-player.z)})).filter(a=>a.distance<85&&(floor==='all'||!a.actor.room||a.actor.room.floor===Number(floor))&&(!near(a.actor.position,player)||a.actor.root?.visible)).sort((a,b)=>a.distance-b.distance).slice(0,max).map(a=>a.actor);
   for(const actor of actors){const visible=active.includes(actor);if(visible)ensureRoot(actor);if(actor.root)actor.root.visible=visible;if(actor.tag)actor.tag.hidden=true}
  }
- function clearWalk(from,to){const d=Math.hypot(to.x-from.x,to.z-from.z),steps=Math.max(1,Math.ceil(d/.18));for(let i=1;i<=steps;i++){const p={x:from.x+(to.x-from.x)*i/steps,y:from.y,z:from.z+(to.z-from.z)*i/steps};p.y=ground(p);if(Math.abs(p.y-from.y)>.24||!safe(p))return false}return true}
+ function canMove(actor,from,to){const d=Math.hypot(to.x-from.x,to.z-from.z),steps=Math.max(1,Math.ceil(d/.06));for(let i=0;i<=steps;i++){const p={x:from.x+(to.x-from.x)*i/steps,y:from.y,z:from.z+(to.z-from.z)*i/steps};p.y=ground(p);if(Math.abs(p.y-from.y)>.24||!(actor?allowed(actor,p):safe(p)))return false}return true}
+ function clearWalk(from,to){return canMove(null,from,to)}
  // One search frontier advances at most 400 cells per frame, shared by all students.
  let nextWalkPlan=0,walkSearch=null,lastSearchAge=-1,plannerCandidate=null;
  function finishWalk(actor,origin,destination,path){
@@ -108,7 +109,7 @@
   if(points){const route=points.map(p=>({x:job.origin.x+p.x,y:0,z:job.origin.z+p.z}));route.push(job.destination);if(route.every((p,i)=>!i||clearWalk(route[i-1],p)))path=route}
   finishWalk(job.actor,job.origin,job.destination,path);walkSearch=null;
  }
- function planStudent(actor){
+ function planWalk(actor){
   if(walkSearch||actor!==plannerCandidate)return;
   if(age<actor.nextWalk||age<nextWalkPlan)return;nextWalkPlan=age+.15;
   actor.lastPlan=age;
@@ -122,24 +123,28 @@
    walkSearch={actor,origin,destination,cell,free,state:grid.create({x:0,z:0})};
   }else actor.nextWalk=age+2;
  }
- function move(actor,delta,time){if(actor.stationary)return;const p=actor.position;let remaining=Math.min(delta,.1)*actor.speed,moved=false;
-  const student=actor.spec.role==='student';
-  if(student){
-   if(!actor.walkPath)planStudent(actor);
+ function syncActor(actor,moved,time){if(!actor.root)return;const p=actor.position;actor.root.position.set(p.x,p.y,p.z);actor.root.rotation.y=actor.heading||0;for(let i=0;i<actor.limbs.length;i++)if(actor.limbs[i])actor.limbs[i].rotation.x=moved?Math.sin(time*5+((i===0||i===3)?0:Math.PI))*.22:0}
+ function roomTarget(actor){for(let i=0;i<20;i++){const p=roomPoint(actor.layout,actor.room);if(Math.hypot(p.x-actor.position.x,p.z-actor.position.z)>.7&&canMove(actor,actor.position,p)&&!occupied(p,actor))return p}return null}
+ function move(actor,delta,time){
+  if(actor.stationary||actor.conversation||age<(actor.idleUntil||0)){syncActor(actor,false,time);return}
+  const p=actor.position,walker=!actor.room;let remaining=Math.min(delta,.1)*actor.speed,moved=false;
+  actor.activity='walking';
+  if(walker){
+   if(!actor.walkPath)planWalk(actor);
    actor.target=actor.walkPath?.[actor.walkIndex]||null;
-   if(actor.target&&Math.hypot(actor.target.x-p.x,actor.target.z-p.z)<.08){actor.walkIndex++;actor.target=actor.walkPath[actor.walkIndex]||null;if(!actor.target){actor.walkPath=null;actor.nextWalk=age+1+Math.random()*2}}
+   if(actor.target&&Math.hypot(actor.target.x-p.x,actor.target.z-p.z)<.08){actor.walkIndex++;actor.target=actor.walkPath[actor.walkIndex]||null;if(!actor.target){actor.walkPath=null;actor.nextWalk=age+2+Math.random()*3;actor.idleUntil=actor.nextWalk;actor.activity='idle'}}
    if(!actor.target)remaining=0;
   }
-  if(actor.person&&actor.room&&(!actor.target||Math.hypot(actor.target.x-p.x,actor.target.z-p.z)<.2))actor.target=roomPoint(actor.layout,actor.room);
+  if(actor.room&&(!actor.target||Math.hypot(actor.target.x-p.x,actor.target.z-p.z)<.2))actor.target=roomTarget(actor);
   while(remaining>0){const step=Math.min(remaining,.035),next={...p};next[actor.axis]+=step*actor.direction;next.y=ground(next);
    if(actor.target){const dx=actor.target.x-p.x,dz=actor.target.z-p.z,d=Math.hypot(dx,dz);next.x=p.x+dx/Math.max(d,.001)*step;next.z=p.z+dz/Math.max(d,.001)*step;next.y=ground(next)}
-   if((!student&&!actor.room&&Math.abs(next[actor.axis]-actor.start[actor.axis])>actor.length)||Math.abs(next.y-p.y)>.24||!allowed(actor,next)||occupied(next,actor)){
-    if(student){actor.walkBlocked=(actor.walkBlocked||0)+Math.min(delta,.1);if(actor.walkBlocked>1.8){actor.walkPath=null;actor.target=null;actor.nextWalk=age+.5+Math.random()}}
-    else{actor.direction*=-1;actor.target=null}break;
+   if(!canMove(actor,p,next)||occupied(next,actor)){
+    if(walker){actor.walkBlocked=(actor.walkBlocked||0)+Math.min(delta,.1);if(actor.walkBlocked>1.8){actor.walkPath=null;actor.target=null;actor.nextWalk=age+.5+Math.random()}}
+    else{actor.direction*=-1;actor.target=null;actor.idleUntil=age+.6}break;
    }
    actor.walkBlocked=0;actor.heading=Math.atan2(next.x-p.x,next.z-p.z);Object.assign(p,next);remaining-=step;moved=true;
   }
-  if(actor.root){actor.root.position.set(p.x,p.y,p.z);if(moved)actor.root.rotation.y=actor.heading;for(let i=0;i<actor.limbs.length;i++)if(actor.limbs[i])actor.limbs[i].rotation.x=moved?Math.sin(time*5+((i===0||i===3)?0:Math.PI))*.22:0}
+  syncActor(actor,moved,time);
  }
  function fade(actor){if(!actor.person||!actor.root)return;
   if(!actor.fadeMaterials){const materials=new Set();actor.root.traverse(n=>{for(const m of Array.isArray(n.material)?n.material:[n.material])if(m)materials.add(m)});actor.fadeMaterials=[...materials].map(m=>({m,opacity:m.opacity,transparent:m.transparent}))}
@@ -158,13 +163,69 @@
  function occluded(position){if(!ray)return false;const direction=position.clone().sub(api.camera.position),distance=direction.length();ray.set(api.camera.position,direction.normalize());ray.far=distance-.4;
   const hits=ray.intersectObjects(api.scene.children,true);ray.far=Infinity;return hits.some(hit=>{let node=hit.object;while(node){if(!node.visible||node.userData?.campusPerson)return false;node=node.parent}return hit.object.visible&&hit.object.material?.transparent!==true});
  }
+ // Conversations reserve existing, collision-safe positions. No actor is
+ // teleported into a group; both participants stop and face one another.
+ const conversations=[],playerSpeaker={id:'player',label:'你',spec:{role:'student'},position:{x:0,y:0,z:0}};
+ const dialogueLog=make('div');dialogueLog.id='campus-dialogue-log';dialogueLog.className='campus-dialogue-log';dialogueLog.setAttribute('role','log');dialogueLog.setAttribute('aria-live','polite');dialogueLog.setAttribute('aria-label','校園互動對話');document.body.append(dialogueLog);
+ let nextSocial=.5,nextGreeting=0;
+ function canConverse(a,b){if(Math.abs(a.y-b.y)>.35)return false;const d=Math.hypot(a.x-b.x,a.z-b.z),n=Math.max(1,Math.ceil(d/.08));for(let i=0;i<=n;i++){const t=i/n;if(window.campusCollisionIndex?.pointHit?.(a.x+(b.x-a.x)*t,a.y+1.35,a.z+(b.z-a.z)*t))return false}return true}
+ const personLabel=a=>a===playerSpeaker?'你':a.person?.name||a.label||(a.spec.role==='teacher'?'老師':'同學');
+ function say(actor,text){actor.speech={text,until:age+2.2};const line=make('p','',personLabel(actor)+'：'+text);dialogueLog.append(line);while(dialogueLog.children.length>12)dialogueLog.firstElementChild.remove();}
+ function endConversation(c){for(const a of c.members)a.speech=null;for(const a of c.members)if(a!==playerSpeaker&&a.conversation===c){a.conversation=null;a.activity='idle';a.idleUntil=age+.6;}const i=conversations.indexOf(c);if(i>=0)conversations.splice(i,1);}
+ function startConversation(a,b,lines,greeting=false){
+  if(!a||!b||a.conversation||b.conversation||!canConverse(a.position,b.position))return null;
+  if(conversations.length>=(window.innerWidth<=768?1:2))return null;
+  const c={members:[a,b],lines,index:0,nextAt:age,finishAt:age+lines.length*2.2,greeting};conversations.push(c);
+  for(const actor of c.members)if(actor!==playerSpeaker){actor.conversation=c;actor.activity=greeting?'greeting':'chat';actor.nextSocial=c.finishAt+18+Math.random()*12;if(actor.person)actor.expires=Math.max(actor.expires,c.finishAt+1);}
+  return c;
+ }
+ function greet(actor){
+  if(!actor||document.body.dataset.controlMode==='bird'||age<nextGreeting||actor.greetArmed===false)return false;
+  playerSpeaker.position=api.getPlayerPosition?.()||playerSpeaker.position;
+  if(Math.hypot(actor.position.x-playerSpeaker.position.x,actor.position.z-playerSpeaker.position.z)>2.8||!canConverse(actor.position,playerSpeaker.position))return false;
+  if(actor.conversation)endConversation(actor.conversation);
+  // A player greeting takes priority over ambient small talk on small screens.
+  if(conversations.length>=(window.innerWidth<=768?1:2)){const ambient=conversations.find(c=>!c.greeting);if(ambient)endConversation(ambient);}
+  const guard=actor.spec.role==='guard',teacher=!!actor.person,lines=[{speaker:playerSpeaker,text:teacher?'老師好！':guard?'警衛先生好！':'嗨，同學好！'},{speaker:actor,text:teacher?'同學好！今天也要加油。':guard?'同學好，進出校門注意安全。':'你好！一起加油！'}];
+  if(!startConversation(playerSpeaker,actor,lines,true))return false;actor.greetArmed=false;nextGreeting=age+12;return true;
+ }
+ function updateSocial(player){
+  playerSpeaker.position=player;
+  for(const actor of actors)if(Math.hypot(actor.position.x-player.x,actor.position.z-player.z)>4)actor.greetArmed=true;
+  if(document.body.dataset.controlMode!=='bird'&&age>=nextGreeting){const nearby=actors.filter(a=>(a.person||a.spec.role==='guard')&&a.greetArmed!==false&&Math.hypot(a.position.x-player.x,a.position.z-player.z)<2.8).sort((a,b)=>Math.hypot(a.position.x-player.x,a.position.z-player.z)-Math.hypot(b.position.x-player.x,b.position.z-player.z));for(const actor of nearby)if(greet(actor))break;}
+  if(age>=nextSocial){nextSocial=age+3;const pool=actors.filter(a=>!a.stationary&&!a.conversation&&age>=(a.nextSocial||0)&&Math.hypot(a.position.x-player.x,a.position.z-player.z)<24&&(!a.person||age<a.expires-1));let paired=false;
+   for(let i=0;i<pool.length&&!paired;i++)for(let j=i+1;j<pool.length;j++){const a=pool[i],b=pool[j],d=Math.hypot(a.position.x-b.position.x,a.position.z-b.position.z);if(d<1.6||d>3.5||!canConverse(a.position,b.position))continue;
+    const teacherA=!!a.person,teacherB=!!b.person;let lines;
+    if(teacherA&&teacherB)lines=[{speaker:a,text:'老師好，辛苦了！'},{speaker:b,text:'您也是，一起加油。'},{speaker:a,text:'下節課見！'}];
+    else if(teacherA||teacherB){const teacher=teacherA?a:b,student=teacherA?b:a;lines=[{speaker:student,text:'老師好！'},{speaker:teacher,text:'同學好！有問題都可以問老師。'},{speaker:student,text:'謝謝老師！'}];}
+    else lines=[{speaker:a,text:'下課一起去操場嗎？'},{speaker:b,text:'好啊，等一下見！'},{speaker:a,text:'上課也一起加油！'}];
+    paired=!!startConversation(a,b,lines);if(paired)break;
+   }
+  }
+  for(const c of [...conversations]){const [a,b]=c.members;if(c.members.some(a=>a!==playerSpeaker&&!actors.includes(a))||!canConverse(a.position,b.position)||(c.greeting&&Math.hypot(a.position.x-b.position.x,a.position.z-b.position.z)>5)||age>=c.finishAt){endConversation(c);continue;}
+   for(const [actor,other] of [[a,b],[b,a]])if(actor!==playerSpeaker)actor.heading=Math.atan2(other.position.x-actor.position.x,other.position.z-actor.position.z);
+   if(age>=c.nextAt&&c.index<c.lines.length){const line=c.lines[c.index++];say(line.speaker,line.text);c.nextAt=age+2.2;}
+  }
+ }
+ function renderSpeech(player,time){
+  const speakers=[...actors,playerSpeaker];for(const actor of speakers){if(actor.bubble)actor.bubble.hidden=true;if(!actor.speech||age>=actor.speech.until||document.body.dataset.controlMode==='bird')continue;
+   if(actor!==playerSpeaker&&(!actor.root?.visible||Math.hypot(actor.position.x-player.x,actor.position.z-player.z)>18))continue;
+   if(!actor.bubble){actor.bubble=make('div','campus-speech'+(actor===playerSpeaker?' campus-speech-player':''));actor.bubble.setAttribute('aria-hidden','true');document.body.append(actor.bubble);}
+   actor.bubble.textContent=personLabel(actor)+'：'+actor.speech.text;
+   if(actor!==playerSpeaker){const point=new THREE.Vector3(actor.position.x,actor.position.y+(actor.person?2.3:2.05),actor.position.z),screen=point.clone().project(api.camera);if(screen.z< -1||screen.z>1||Math.abs(screen.x)>1||Math.abs(screen.y)>1)continue;
+    if(actor.nextSpeechOcclusion===undefined||time>=actor.nextSpeechOcclusion){actor.speechOccluded=occluded(point);actor.nextSpeechOcclusion=time+.25;}if(actor.speechOccluded)continue;
+    const rect=api.renderer.domElement.getBoundingClientRect();actor.bubble.style.left=`${rect.left+(screen.x+1)*rect.width/2}px`;actor.bubble.style.top=`${rect.top+(1-screen.y)*rect.height/2}px`;
+   }
+   actor.bubble.hidden=false;if(actor.tag)actor.tag.hidden=true;
+  }
+ }
  function update(delta,time){const paused=document.hidden||dialog.open||document.getElementById('guide-landing')?.open||api.motionBlocked?.();
-  if(paused){for(const actor of actors)if(actor.tag)actor.tag.hidden=true;return}
+  if(paused){for(const actor of [...actors,playerSpeaker]){if(actor.tag)actor.tag.hidden=true;if(actor.bubble)actor.bubble.hidden=true;}return}
   age+=Math.min(delta,.1);rotateTeachers();advanceWalkSearch();
-  plannerCandidate=actors.filter(a=>a.spec.role==='student'&&!a.walkPath&&age>=a.nextWalk).sort((a,b)=>(a.lastPlan??-1)-(b.lastPlan??-1))[0];
-  const player=api.getPlayerPosition?.()||api.camera?.position||{x:0,y:0,z:0};choose(time,player);
+  plannerCandidate=actors.filter(a=>!a.stationary&&!a.room&&!a.conversation&&!a.walkPath&&age>=(a.nextWalk||0)).sort((a,b)=>(a.lastPlan??-1)-(b.lastPlan??-1))[0];
+  const player=api.getPlayerPosition?.()||api.camera?.position||{x:0,y:0,z:0};choose(time,player);updateSocial(player);
   for(const actor of actors){move(actor,delta,time);fade(actor)}
-  for(const actor of active){if(!actors.includes(actor)||!actor.tag)continue;actor.tag.hidden=true;
+  for(const actor of active){if(!actors.includes(actor)||!actor.tag)continue;actor.tag.hidden=true;if(actor.speech&&age<actor.speech.until)continue;
    if(document.body.dataset.controlMode==='bird'||Math.hypot(actor.position.x-player.x,actor.position.z-player.z)>12)continue;
    projected.set(actor.position.x,actor.position.y+2.05,actor.position.z).project(api.camera);
    if(projected.z< -1||projected.z>1||Math.abs(projected.x)>1||Math.abs(projected.y)>1)continue;
@@ -174,6 +235,7 @@
    if(actor.isOccluded)continue;
    const rect=api.renderer.domElement.getBoundingClientRect();actor.tag.style.left=`${rect.left+(projected.x+1)*rect.width/2}px`;actor.tag.style.top=`${rect.top+(1-projected.y)*rect.height/2}px`;actor.tag.hidden=false;
   }
+  renderSpeech(player,time);
  }
  function isTap(start,end){return !!start&&Math.hypot(end.x-start.x,end.y-start.y)<=6&&end.time-start.time<=450}
  let pointer=null;const canvas=api.renderer?.domElement;
@@ -183,8 +245,8 @@
  canvas?.addEventListener('pointerup',event=>{const start=pointer;pointer=null;if(!start||start.moved||event.pointerId!==start.id||!isTap(start,{x:event.clientX,y:event.clientY,time:event.timeStamp})||!ray||dialog.open||document.body.dataset.controlMode==='bird')return;
   const rect=canvas.getBoundingClientRect();if(!rect.width||!rect.height)return;ray.setFromCamera({x:(event.clientX-rect.left)/rect.width*2-1,y:1-(event.clientY-rect.top)/rect.height*2},api.camera);
   // Raycast the whole scene so a wall in front of a teacher prevents selection.
-  const hits=ray.intersectObjects(api.scene.children,true);for(const hit of hits){if(!hit.object.visible)continue;let node=hit.object,actor=null,hidden=false;while(node){if(!node.visible)hidden=true;if(node.userData?.campusPerson)actor=node.userData.campusPerson;node=node.parent}if(hidden)continue;if(actor?.person){open(actor.person.id);return}if(hit.object.material?.transparent!==true)return}
+  const hits=ray.intersectObjects(api.scene.children,true);for(const hit of hits){if(!hit.object.visible)continue;let node=hit.object,actor=null,hidden=false;while(node){if(!node.visible)hidden=true;if(node.userData?.campusPerson)actor=node.userData.campusPerson;node=node.parent}if(hidden)continue;if(actor?.person){open(actor.person.id);return}if(actor){greet(actor);return}if(hit.object.material?.transparent!==true)return}
  });
- renderList();renderProfile(null);window.campusPeople={update,open,close,actors,isTap,blocksPlayer};
+ renderList();renderProfile(null);window.campusPeople={update,open,close,actors,isTap,blocksPlayer,canMove,canConverse,conversations,interact:id=>greet(actors.find(a=>a.id===id))};
 })();
 

@@ -14,6 +14,11 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','spatial-world.js','photo-facade.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('uses a larger, taller collision envelope for the rendered staff and student models',()=>{
+ expect(run(`!!window.campusPeopleCollisionIndex`)).toBe(true);
+ expect(run(`WALL_COLLIDERS.filter(c=>c.maxY-c.minY>.25).every(c=>campusPeopleCollisionIndex.hit((c.minX+c.maxX)/2,c.minY,(c.minZ+c.maxZ)/2))`)).toBe(true);
+ expect(run(`WALL_COLLIDERS.some(c=>{const p={x:c.minX-.53,y:c.minY,z:(c.minZ+c.maxZ)/2};return !campusCollisionIndex.hit(p.x,p.y,p.z)&&campusPeopleCollisionIndex.hit(p.x,p.y,p.z)})`)).toBe(true);
+});
 it('keeps physical walls and ceilings visible while walking after selecting a lower floor',()=>{
  const result=run(`(()=>{const floor=()=>scene.children.find(g=>g.name==='floor-3'&&g.userData.buildingId==='admin-front'),ceiling=()=>scene.getObjectByName('corridor-ceiling-admin-front-3');setControlMode('bird');setFloorFilter('1');const cutaway=floor().visible;setControlMode('avatar');const walking=floor().visible;setFloorFilter('2');const descending=floor().visible&&ceiling().visible;setControlMode('firstperson');const firstperson=floor().visible;setControlMode('bird');const restored=floor().visible;setFloorFilter('all');return {cutaway,walking,descending,firstperson,restored}})()`);
  expect(result).toEqual({cutaway:false,walking:true,descending:true,firstperson:true,restored:false});

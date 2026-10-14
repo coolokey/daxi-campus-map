@@ -237,6 +237,9 @@
  }
  const cameraIndex=CampusCollisionGrid.create(cameraVolumes,0,0);
  window.campusCollisionIndex=CampusCollisionGrid.create(WALL_COLLIDERS,AVATAR_COLLISION_RADIUS,AVATAR_HEIGHT);
+ // Adults are wider and taller than the player. Their own broad-phase grid
+ // includes the whole animated body instead of letting shoulders enter walls.
+ window.campusPeopleCollisionIndex=CampusCollisionGrid.create(WALL_COLLIDERS,.64,2.15);
  function floorAt(position){
   const y=position.y,l=layouts.find(l=>M.inside(l.bounds,position.x,position.z)&&insideFloor(l,position.x,position.z,Math.max(1,Math.round(y/FH)+1)));
   if(l)return M.groundAt(l,position.x,position.z,y);
