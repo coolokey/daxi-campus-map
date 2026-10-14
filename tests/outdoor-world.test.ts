@@ -120,3 +120,22 @@ it('corridor ceilings, beams and lamps do not bridge any stair opening',()=>{
  const blocked=run(`(()=>{const errors=[];scene.updateMatrixWorld(true);for(const l of campusWalkWorld.layouts.filter(l=>l.holes?.length))for(const h of l.holes){const p=l.world((h.u0+h.u1)/2,(h.v0+h.v1)/2),g=scene.getObjectByName('corridor-ceiling-'+l.id+'-1');if(!g)continue;const ray=new THREE.Raycaster(new THREE.Vector3(p.x,.1,p.z),new THREE.Vector3(0,1,0),0,3.5);if(ray.intersectObjects(g.children,true).length)errors.push(l.id)}return errors})()`);
  expect(blocked).toEqual([]);
 });
+
+it('all switchback and exit landings support a whole character footprint and leave clearance from walls',()=>{
+ const failures=run(`(()=>{const failures=[],radius=AVATAR_COLLISION_RADIUS;for(const l of campusWalkWorld.layouts)for(const s of l.stairs)for(let f=1;f<l.b.floors;f++)for(const [kind,u,v,y] of [['turn',s.turnU,s.centerV,(f-.5)*FH],['lower',s.innerU,s.centerV+s.sign*1.25,(f-1)*FH],['upper',s.innerU,s.centerV-s.sign*1.25,f*FH]]){const center=l.world(u,v,y);if(checkWallCollision(center.x,center.y,center.z))failures.push({building:l.id,stair:s.id,f,kind,reason:'wall'});for(let i=0;i<16;i++){const a=i*Math.PI/8,x=center.x+Math.cos(a)*radius,z=center.z+Math.sin(a)*radius;if(Math.abs(campusWalkWorld.ground({x,y,z})-y)>.025)failures.push({building:l.id,stair:s.id,f,kind,reason:'unsupported footprint',x,z})}}return failures})()`);
+ expect(failures).toEqual([]);
+});
+it('switchback navigation traverses the interior of each landing rather than pivoting on the tread edge',()=>{
+ const invalid=run(`(()=>{const invalid=[];for(const l of campusWalkWorld.layouts)for(const s of l.stairs)for(let f=1;f<l.b.floors;f++){const a=campusWalkWorld.graph[s.id+'-turn-in-'+f],b=campusWalkWorld.graph[s.id+'-turn-'+f];if(!a||!b||!a.neighbors.includes(b.id))invalid.push(s.id);else if(Math.abs(l.local(a.x,a.z).u-s.turnU)>.001||Math.abs(l.local(b.x,b.z).u-s.turnU)>.001)invalid.push(s.id)}return invalid})()`);
+ expect(invalid).toEqual([]);
+});
+
+it('upper stair openings have real guard barriers while both flight entrances remain unobstructed',()=>{
+ const failures=run(`(()=>{const failures=[];for(const l of campusWalkWorld.layouts)for(const s of l.stairs){const y=FH,guard=l.world(s.nearU+.04,s.centerV,y),lower=l.world(s.nearU,s.centerV+s.sign*1.25,y),upper=l.world(s.nearU,s.centerV-s.sign*1.25,y);if(!checkWallCollision(guard.x,guard.y,guard.z))failures.push(s.id+' missing guard');if(checkWallCollision(lower.x,lower.y,lower.z)||checkWallCollision(upper.x,upper.y,upper.z))failures.push(s.id+' blocked flight')}return failures})()`);
+ expect(failures).toEqual([]);
+});
+
+it('retained curved tower facades stay outside the building instead of passing through the actual stairs',()=>{
+ const violations=run(`(()=>{const bad=[];scene.updateMatrixWorld(true);for(const id of ['gym-bld','grade8-front']){const cfg=BUILDINGS_CONFIG.find(b=>b.id===id),g=scene.children.find(g=>g.userData.buildingId===id&&!g.name.startsWith('floor-')),front=cfg.x+cfg.width/2,west=cfg.x-cfg.width/2;for(const m of g.children.filter(m=>m.isMesh&&m.geometry.type==='CylinderGeometry'&&m.geometry.parameters.radiusTop>=4.6)){const box=new THREE.Box3().setFromObject(m);if(id==='gym-bld'?box.min.x<front-.01:box.max.x>west+.01)bad.push({id,min:box.min.x,max:box.max.x})}}return bad})()`);
+ expect(violations).toEqual([]);
+});

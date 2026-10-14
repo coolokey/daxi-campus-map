@@ -23,6 +23,14 @@
   if(solid){registerWallCollider(r.x0,r.x1,r.z0,r.z1,y0,y1);WALL_COLLIDERS.at(-1).buildingId=l.id;}
   return mesh;
  };
+ // Level guards around the stair void leave both flight mouths open.
+ function landingGuard(g,l,u0,u1,v0,v1,y,colors){
+  const barrier=box(g,l,u0,u1,v0,v1,y,y+.98,colors.steel,true);if(barrier)barrier.visible=false;
+  box(g,l,u0,u1,v0,v1,y+.91,y+.98,colors.handrail);
+  box(g,l,u0,u1,v0,v1,y+.45,y+.49,colors.steel);
+  const alongU=u1-u0>v1-v0,length=alongU?u1-u0:v1-v0,count=Math.max(1,Math.ceil(length/.6));
+  for(let i=0;i<=count;i++){const u=alongU?u0+(u1-u0)*i/count:(u0+u1)/2,v=alongU?(v0+v1)/2:v0+(v1-v0)*i/count;box(g,l,u-.022,u+.022,v-.022,v+.022,y,y+.95,colors.steel);}
+ }
  const insideFloor=(l,x,z,floor)=>{const q=l.local(x,z);return l.footprints.some(p=>p.floor===floor&&CampusSpatialPlan.contains(p,q.u,q.v))};
  // Subtract the same stair holes that groundAt uses from every slab.
  function slab(g,l,p,y,paint=null,cutAtGround=false){
@@ -90,6 +98,12 @@
     for(const side of ['u0','u1','v0','v1'])roomWall(g,l,r,side,y);
     if(r.kind==='room')details(g,l,r,y);
    }
+   if(f>1)for(const s of l.stairs){
+    const h=s.hole;
+    for(const v of [h.v0-.04,h.v1+.04])landingGuard(g,l,h.u0-.04,h.u1+.04,v-.03,v+.03,y,colors);
+    landingGuard(g,l,h.u0-.07,h.u0-.01,h.v0-.04,h.v1+.04,y,colors);
+    for(const [a,b] of [[-2.34,-2.05],[-.45,.45],[2.05,2.34]])landingGuard(g,l,s.nearU+.01,s.nearU+.07,s.centerV+a,s.centerV+b,y,colors);
+   }
    // Corridor edges: split against footprint intersections so internal joints stay open.
    const parts=l.footprints.filter(p=>p.floor===f),us=[...new Set(parts.flatMap(p=>[p.u0,p.u1]))].sort((a,b)=>a-b),vs=[...new Set(parts.flatMap(p=>[p.v0,p.v1]))].sort((a,b)=>a-b);
    const present=(u,v)=>parts.some(p=>u>p.u0+1e-5&&u<p.u1-1e-5&&v>p.v0+1e-5&&v<p.v1-1e-5);
@@ -126,7 +140,7 @@
   for(const s of l.stairs)for(let f=1;f<l.b.floors;f++){
    const g=new THREE.Group();g.name=`floor-stairs-${f+1}`;g.userData={buildingId:l.id,floorNum:f+1};scene.add(g);floorMeshes.push(g);
    const ramps=l.ramps.filter(r=>r.stairId===s.id&&r.floor===f),p=l.platforms.find(p=>p.stairId===s.id&&p.floor===f);
-   box(g,l,s.u0+.2,s.farU+.08,s.centerV-2.3,s.centerV+2.3,p.y-.16,p.y,colors.stair);
+   box(g,l,p.u0,p.u1,p.v0,p.v1,p.y-.16,p.y,colors.stair);
    box(g,l,s.u0+.2,s.u0+.27,s.centerV-2.25,s.centerV+2.25,p.y+.85,p.y+.93,colors.handrail);
    for(let v=s.centerV-2.2;v<=s.centerV+2.2;v+=.55)box(g,l,s.u0+.215,s.u0+.255,v-.022,v+.022,p.y,p.y+.9,colors.steel);
    if(l.id==='gym-bld'){
@@ -239,7 +253,10 @@
   for(const s of l.stairs)for(let f=1;f<l.b.floors;f++){
    let previous=`${s.id}-lower-${f}`;
    for(const [ri,r] of l.ramps.filter(r=>r.stairId===s.id&&r.floor===f).entries()){
-    if(ri===1){const turn=node(`${s.id}-turn-${f}`,l.world(s.farU,s.centerV-s.sign*1.25,(f-.5)*FH),l.id);link(previous,turn);previous=turn;}
+    if(ri===1){
+     const enter=node(`${s.id}-turn-in-${f}`,l.world(s.turnU,s.centerV+s.sign*1.25,(f-.5)*FH),l.id);link(previous,enter);
+     const turn=node(`${s.id}-turn-${f}`,l.world(s.turnU,s.centerV-s.sign*1.25,(f-.5)*FH),l.id);link(enter,turn);previous=turn;
+    }
     for(let i=0;i<=18;i++){const n=node(`${s.id}-ramp-${f}-${ri}-${i}`,M.rampPoint(r,i/18),l.id);link(previous,n);previous=n;}
    }
    link(previous,`${s.id}-upper-${f+1}`);

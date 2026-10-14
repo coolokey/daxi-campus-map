@@ -33,3 +33,25 @@ describe('115 平面圖共用配置',()=>{
   expect(vertices).toHaveLength(36);for(let i=0;i<vertices.length;i+=3){expect(vertices[i+1]).toBeCloseTo(.05);expect(vertices[i]<=5.25&&vertices[i+2]>=-.25).toBe(true)}
  });
 });
+
+it('every switchback has usable turning and floor landings without squeezing the walking corridor',()=>{
+ const {buildings,math}=load();
+ for(const b of buildings)for(const stair of math.layout(b).stairs){
+  expect(stair.u1-stair.u0,b.id+' shaft').toBeGreaterThanOrEqual(8-1e-6);
+  expect(stair.farU-(stair.u0+.2),b.id+' turning depth').toBeGreaterThanOrEqual(1.7);
+  expect(stair.u1-stair.nearU,b.id+' exit landing').toBeGreaterThanOrEqual(1.7);
+  expect(stair.innerU-stair.nearU,b.id+' exit clearance').toBeGreaterThanOrEqual(.8);
+  expect(stair.turnU, b.id+' turn stays inside landing').toBeGreaterThan(stair.u0+.6);
+  expect(stair.turnU).toBeLessThan(stair.farU-.6);
+ }
+});
+it('grade seven stair openings stay inside the stair bay instead of cutting the main corridor',()=>{
+ const {buildings,math}=load(),l=math.layout(buildings.find((b:any)=>b.id==='new-grade7'));
+ for(const h of l.holes)for(const c of l.corridors)expect(h.u0<c.u1&&h.u1>c.u0&&h.v0<c.v1&&h.v1>c.v0).toBe(false);
+});
+
+it('no stair opening removes any part of a main corridor in any building',()=>{
+ const {buildings,math}=load();const cuts:any[]=[];
+ for(const b of buildings){const l=math.layout(b);for(const h of l.holes)for(const c of l.corridors)if(h.u0<c.u1-1e-6&&h.u1>c.u0+1e-6&&h.v0<c.v1-1e-6&&h.v1>c.v0+1e-6)cuts.push({building:b.id,h,c});}
+ expect(cuts).toEqual([]);
+});
