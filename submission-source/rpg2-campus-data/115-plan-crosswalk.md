@@ -14,7 +14,7 @@
 | grade8-front | 八年級教學棟 (南棟) | 1F、2F、3F | 樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。 |
 | grade9-back | 九年級教學棟 | 1F、2F、3F | 樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。 |
 | grade8-mid | 八年級中棟 / 專科棟 | 1F、2F、3F | 樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。 |
-| new-grade7 | 七年級新大樓與特教園地 | 暫緩 | 七年級 704、708 等教室樓層與導覽資料衝突，整棟暫不開放。 |
+| new-grade7 | 七年級新大樓與特教園地 | 1F、2F、3F | 已放大核對側翼橫向 1F／2F／3F 標示：704 在 2F、708 在 3F，與導覽資料一致。 |
 | multi-building | 綜合大樓 / 圖書館 | 1F、2F | 樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。 |
 | tech-building | 科技館 | 1F、2F | 樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。 |
 | art-building | 藝術館 | 1F、2F、3F、4F | 樓層可由正式圖核對；室內尺寸、門與梯段沿用導覽示意，非實測。 |
@@ -77,20 +77,20 @@
 | grade8-mid:333–334 | 表藝教室 (3F) | grade8-mid:floor-3 | 開放示意／guide-source-needs-room-check |
 | grade8-mid:332 | 空間 332（名稱待確認） (3F) | grade8-mid:floor-3 | 開放示意／pending |
 | grade8-mid:331 | 809 教室 (3F) | grade8-mid:floor-3 | 開放示意／guide-source-needs-room-check |
-| new-grade7:A12 | 709 體育班 (1F) | new-grade7:floor-1 | 暫緩／guide-source-needs-room-check |
-| new-grade7:A13 | 701 教室 (1F) | new-grade7:floor-1 | 暫緩／guide-source-needs-room-check |
-| new-grade7:A14 | 資源班 3／4 教室 (1F) | new-grade7:floor-1 | 暫緩／guide-source-needs-room-check |
-| new-grade7:A15 | 特教教室 (1F) | new-grade7:floor-1 | 暫緩／guide-source-needs-room-check |
-| new-grade7:A21 | 空間 A21（名稱待確認） (2F) | new-grade7:floor-2 | 暫緩／pending |
-| new-grade7:A22 | 702 教室 (2F) | new-grade7:floor-2 | 暫緩／guide-source-needs-room-check |
-| new-grade7:A23 | 703 教室 (2F) | new-grade7:floor-2 | 暫緩／guide-source-needs-room-check |
-| new-grade7:A24 | 704 教室 (2F) | new-grade7:floor-2 | 暫緩／guide-source-needs-room-check |
-| new-grade7:A25 | 705 教室 (2F) | new-grade7:floor-2 | 暫緩／guide-source-needs-room-check |
-| new-grade7:A31 | 空間 A31（名稱待確認） (3F) | new-grade7:floor-3 | 暫緩／pending |
-| new-grade7:A32 | 706 質數研究室 (3F) | new-grade7:floor-3 | 暫緩／guide-source-needs-room-check |
-| new-grade7:A33 | 707 教室 (3F) | new-grade7:floor-3 | 暫緩／guide-source-needs-room-check |
-| new-grade7:A34 | 708 教室 (3F) | new-grade7:floor-3 | 暫緩／guide-source-needs-room-check |
-| new-grade7:A35 | 導師室 (3F) | new-grade7:floor-3 | 暫緩／guide-source-needs-room-check |
+| new-grade7:A12 | 709 體育班 (1F) | new-grade7:floor-1 | 開放示意／guide-source-needs-room-check |
+| new-grade7:A13 | 701 教室 (1F) | new-grade7:floor-1 | 開放示意／guide-source-needs-room-check |
+| new-grade7:A14 | 資源班 3／4 教室 (1F) | new-grade7:floor-1 | 開放示意／guide-source-needs-room-check |
+| new-grade7:A15 | 特教教室 (1F) | new-grade7:floor-1 | 開放示意／guide-source-needs-room-check |
+| new-grade7:A21 | 空間 A21（名稱待確認） (2F) | new-grade7:floor-2 | 開放示意／pending |
+| new-grade7:A22 | 702 教室 (2F) | new-grade7:floor-2 | 開放示意／guide-source-needs-room-check |
+| new-grade7:A23 | 703 教室 (2F) | new-grade7:floor-2 | 開放示意／guide-source-needs-room-check |
+| new-grade7:A24 | 704 教室 (2F) | new-grade7:floor-2 | 開放示意／guide-source-needs-room-check |
+| new-grade7:A25 | 705 教室 (2F) | new-grade7:floor-2 | 開放示意／guide-source-needs-room-check |
+| new-grade7:A31 | 空間 A31（名稱待確認） (3F) | new-grade7:floor-3 | 開放示意／pending |
+| new-grade7:A32 | 706 質數研究室 (3F) | new-grade7:floor-3 | 開放示意／guide-source-needs-room-check |
+| new-grade7:A33 | 707 教室 (3F) | new-grade7:floor-3 | 開放示意／guide-source-needs-room-check |
+| new-grade7:A34 | 708 教室 (3F) | new-grade7:floor-3 | 開放示意／guide-source-needs-room-check |
+| new-grade7:A35 | 導師室 (3F) | new-grade7:floor-3 | 開放示意／guide-source-needs-room-check |
 | multi-building:615 | 餐飲教室 (1F) | multi-building:floor-1 | 開放示意／guide-source-needs-room-check |
 | multi-building:611 | 圖書室 (1F) | multi-building:floor-1 | 開放示意／guide-source-needs-room-check |
 | multi-building:614 | 特教教室 (1F) | multi-building:floor-1 | 開放示意／guide-source-needs-room-check |

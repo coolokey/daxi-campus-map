@@ -41,7 +41,7 @@
   "notes": [
     "The original illustrated campus and public URL are retained. Annual plan checks gate enabled floors.",
     "Indoor floor geometry and outdoor game entrance anchors are schematic, not measured campus geometry.",
-    "Grade 7 is withheld because source room levels conflict with the 115 plan; activity centre upper floors are unverified.",
+    "Grade 7 side-wing labels were checked horizontally: 704 is 2F and 708 is 3F. Activity centre upper floors remain unverified.",
     "Room names marked pending remain pending. NPCs are game characters, not live people or online players."
   ],
   "pilotMode": "original-campus-technology-floors",
@@ -91,11 +91,10 @@
   "plan115": {
     "file": "campus-plan-115.json",
     "buildingRecords": 12,
-    "enabledBuildingRecords": 11,
-    "enabledFloors": 27,
+    "enabledBuildingRecords": 12,
+    "enabledFloors": 30,
     "sourcePlanSha256": "0f256351b68298b331dceacfb183a3c4e549ca8f12cf34e3bbbb7b4b36710583",
     "deferred": [
-      "new-grade7",
       "gym-bld:floor-2",
       "gym-bld:floor-3"
     ],

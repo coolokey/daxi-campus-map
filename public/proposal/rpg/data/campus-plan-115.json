@@ -180,13 +180,17 @@
         1539,
         351
       ],
-      "enabledLevels": [],
+      "enabledLevels": [
+        1,
+        2,
+        3
+      ],
       "artAnchor": [
         1205,
         170
       ],
       "geometryStatus": "schematic",
-      "note": "七年級 704、708 等教室樓層與導覽資料衝突，整棟暫不開放。"
+      "note": "已放大核對側翼橫向 1F／2F／3F 標示：704 在 2F、708 在 3F，與導覽資料一致。"
     },
     {
       "buildingId": "multi-building",
@@ -252,6 +256,11 @@
     }
   ],
   "roomOverrides": [
+    {
+      "roomId": "new-grade7:A32",
+      "name": "706 教室 (3F)",
+      "evidence": "正式圖 A32 標示 706；取消來源中的遊戲主題別名"
+    },
     {
       "roomId": "tech-building:TC-NE-2",
       "name": "科技創作教室 (2F)",
@@ -752,7 +761,7 @@
       "sourceName": "709 體育班 (1F)",
       "nameStatus": "guide-source-needs-room-check",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A13",
@@ -761,7 +770,7 @@
       "sourceName": "701 教室 (1F)",
       "nameStatus": "guide-source-needs-room-check",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A14",
@@ -770,7 +779,7 @@
       "sourceName": "資源班 3／4 教室 (1F)",
       "nameStatus": "guide-source-needs-room-check",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A15",
@@ -779,7 +788,7 @@
       "sourceName": "特教教室 (1F)",
       "nameStatus": "guide-source-needs-room-check",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A21",
@@ -788,7 +797,7 @@
       "sourceName": "空間 A21（名稱待確認） (2F)",
       "nameStatus": "pending",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A22",
@@ -797,7 +806,7 @@
       "sourceName": "702 教室 (2F)",
       "nameStatus": "guide-source-needs-room-check",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A23",
@@ -806,7 +815,7 @@
       "sourceName": "703 教室 (2F)",
       "nameStatus": "guide-source-needs-room-check",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A24",
@@ -815,7 +824,7 @@
       "sourceName": "704 教室 (2F)",
       "nameStatus": "guide-source-needs-room-check",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A25",
@@ -824,7 +833,7 @@
       "sourceName": "705 教室 (2F)",
       "nameStatus": "guide-source-needs-room-check",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A31",
@@ -833,7 +842,7 @@
       "sourceName": "空間 A31（名稱待確認） (3F)",
       "nameStatus": "pending",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A32",
@@ -842,7 +851,7 @@
       "sourceName": "706 質數研究室 (3F)",
       "nameStatus": "guide-source-needs-room-check",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A33",
@@ -851,7 +860,7 @@
       "sourceName": "707 教室 (3F)",
       "nameStatus": "guide-source-needs-room-check",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A34",
@@ -860,7 +869,7 @@
       "sourceName": "708 教室 (3F)",
       "nameStatus": "guide-source-needs-room-check",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "new-grade7:A35",
@@ -869,7 +878,7 @@
       "sourceName": "導師室 (3F)",
       "nameStatus": "guide-source-needs-room-check",
       "geometryStatus": "schematic",
-      "enabled": false
+      "enabled": true
     },
     {
       "roomId": "multi-building:615",
