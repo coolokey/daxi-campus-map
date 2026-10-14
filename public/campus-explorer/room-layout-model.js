@@ -13,6 +13,16 @@ const CampusRoomLayout = (() => {
  function category(name,cat){const match=clean(name).match(/^([789])\d{2}(?:\s|$)/);return match?`grade${match[1]}`:cat==='admin'?'admin':cat==='special'?'special':'other';}
  const colors={grade7:'#63b54f',grade8:'#409ed1',grade9:'#e86482',admin:'#8470dc',special:'#b95bc2',other:'#69889a'};
  function nameplate(name,cat){const text=clean(name).replace(/\s*\(\d+F\)/,''),color=colors[category(text,cat)];return{text,color,key:text+'|'+color};}
+ function projectingNameplate(name,cat){
+  const text=nameplate(name,cat).text.replace(/\s*\/\s*/g,'／'),grade=text.match(/^([789]\d{2})(?:\s|$)/),unknown=/名稱待確認/.test(text);
+  let title=text,subtitle='',lines;
+  if(grade){title=grade[1];subtitle=text.slice(3).trim()||'教室';}
+  else if(unknown){title=text.replace(/（名稱待確認）/g,'').replace(/\s+/g,'');subtitle='名稱待確認';}
+  const chunks=s=>Array.from(s).reduce((a,c,i)=>{if(i%6===0)a.push('');a[a.length-1]+=c;return a},[]);
+  if(title.includes('／'))lines=title.split('／').flatMap(chunks);
+  else{const suffix=title.match(/^(.+?)(導師室|辦公室[一二三]?|研究室|教室|中心)$/);lines=title.length>6&&suffix&&suffix[1].length<=6?[suffix[1],suffix[2]]:chunks(title);}
+  return {text,lines,subtitle,color:'#173c7a',key:'projecting|'+text};
+ }
  // Furnishings are schematic. Door-oriented coordinates keep the center aisle
  // shared by navigation, rendered furniture and physical collision.
  function roomKind(r){
@@ -72,5 +82,5 @@ const CampusRoomLayout = (() => {
   if(!parts.length)add('wall-equipment',0,d-.25,Math.min(1,w-.4),.2,.9,1.7,'steel');
   return {kind,parts,aisleWidth:1.3};
  }
- return {key,normalize,parse,category,colors,nameplate,roomKind,furnishings};
+ return {key,normalize,parse,category,colors,nameplate,projectingNameplate,roomKind,furnishings};
 })();

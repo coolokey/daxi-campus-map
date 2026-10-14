@@ -3,6 +3,12 @@ import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 const model=()=>runInNewContext(readFileSync(new URL('../public/campus-explorer/room-layout-model.js',import.meta.url),'utf8')+';CampusRoomLayout');
 describe('教室年度配置',()=>{
+ it('uses readable blue-and-white corridor signs with prominent class numbers and truthful unknown-room labels',()=>{
+  const m=model(),grade=m.projectingNameplate('901 教室 (3F)','grade9');
+  expect(grade.lines).toEqual(['901']);expect(grade.subtitle).toBe('教室');expect(grade.color).toBe('#173c7a');
+  const office=m.projectingNameplate('總務處 / 人事室 / 會計室','admin');expect(office.lines.join('')).toBe('總務處人事室會計室');expect(office.lines.every((s:string)=>s.length<=6)).toBe(true);
+  const unknown=m.projectingNameplate('空間 521（名稱待確認）','special');expect(unknown.lines.join('')).toBe('空間521');expect(unknown.subtitle).toBe('名稱待確認');
+ });
  it('places classroom teaching equipment and desks while preserving an entrance-to-center aisle',()=>{
   const m=model(),r={id:'901',name:'901 教室',cat:'grade9',u0:0,u1:8,v0:0,v1:8,u:4,v:4,doorSide:'v0'},p=m.furnishings(r);
   for(const role of ['blackboard','platform','teacher-desk','student-desk','student-chair'])expect(p.parts.some((b:any)=>b.role===role)).toBe(true);

@@ -68,7 +68,22 @@
   const pp={...r.door,y:y+2.55},width=Math.min(2.5,r.doorSide.startsWith('v')?r.u1-r.u0-.2:r.v1-r.v0-.2);
   const label=CampusRoomLayout.nameplate(r.name,r.cat);
   const plate=new THREE.Mesh(new THREE.PlaneGeometry(width,.38),new THREE.MeshBasicMaterial({map:createRoomNameplateTexture(label.text,label.color),side:THREE.DoubleSide}));
-  plate.position.set(pp.x,pp.y,pp.z);plate.rotation.y=r.doorSide.startsWith('u')?(l.horizontal?Math.PI/2:0):(l.horizontal?0:Math.PI/2);plate.userData.roomId=r.id;plate.userData.nameplateKey=label.key;g.add(plate);
+  const axis=r.doorSide[0],out=r.doorSide.endsWith('0')?-1:1,normal=l.world(axis==='u'?out:0,axis==='v'?out:0),origin=l.world(0,0),nx=normal.x-origin.x,nz=normal.z-origin.z;
+  // The old plaque sat inside the opaque wall above the door. Offset its face
+  // beyond the wall thickness, with its readable side facing the corridor.
+  plate.position.set(pp.x+nx*.115,pp.y,pp.z+nz*.115);plate.rotation.y=Math.atan2(nx,nz);plate.userData={roomId:r.id,nameplateKey:label.key,nameplateStyle:'wall'};g.add(plate);
+  const wallLength=axis==='u'?r.v1-r.v0:r.u1-r.u0,half=Math.min(.95,wallLength/2-.16),jamb=-Math.min(wallLength/2-.13,half+.15);
+  const tangent=l.world(axis==='v'?1:0,axis==='u'?1:0),tx=tangent.x-origin.x,tz=tangent.z-origin.z;
+  const center={x:r.door.x+tx*jamb+nx*.57,z:r.door.z+tz*jamb+nz*.57},signLabel=CampusRoomLayout.projectingNameplate(r.name,r.cat);
+  const frame=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?(axis==='u'?.9:.065):(axis==='u'?.065:.9),.47,l.horizontal?(axis==='u'?.065:.9):(axis==='u'?.9:.065)),colors.steel);
+  frame.name='door-sign-frame-'+r.id;frame.position.set(center.x,y+2.65,center.z);g.add(frame);
+  const fw=frame.geometry.parameters.width,fd=frame.geometry.parameters.depth;cameraVolume({x0:center.x-fw/2,x1:center.x+fw/2,z0:center.z-fd/2,z1:center.z+fd/2},y+2.415,y+2.885);
+  const mount=new THREE.Mesh(new THREE.BoxGeometry(nx?.12:.16,.54,nz?.12:.16),colors.steel);mount.position.set(center.x-nx*.45,y+2.65,center.z-nz*.45);g.add(mount);
+  const signMaterial=new THREE.MeshBasicMaterial({map:createProjectingRoomSignTexture(signLabel)});
+  signMaterial.userData.nameplateKey=signLabel.key;
+  // Two front-facing planes share a texture; the reverse face is rotated,
+  // so names read correctly from either end of the corridor.
+  for(const side of [-1,1]){const face=new THREE.Mesh(new THREE.PlaneGeometry(.84,.42),signMaterial);face.position.set(center.x+tx*side*.034,y+2.65,center.z+tz*side*.034);face.rotation.y=Math.atan2(tx*side,tz*side);face.userData={roomId:r.id,nameplateKey:signLabel.key,nameplateStyle:'projecting'};g.add(face);}
   const plan=CampusRoomLayout.furnishings(r);
   for(const item of plan.parts){const mesh=box(g,l,item.u0,item.u1,item.v0,item.v1,y+item.y0,y+item.y1,colors[item.paint],item.solid);if(mesh)mesh.userData={roomId:r.id,furnitureRole:item.role};}
   box(g,l,r.u-.7,r.u+.7,r.v-.12,r.v+.12,y+FH-.22,y+FH-.2,colors.light);

@@ -75,8 +75,9 @@
   for(const [oldId,id] of Object.entries(aliases()))if(api.rooms[oldId]&&api.rooms[id])api.rooms[oldId].name=api.rooms[id].name;
   api.scene.traverse(o=>{if(o.userData.roomId&&o.material?.map){
    const id=o.userData.roomId;if(!api.rooms[id]||!Object.hasOwn(saved,id))return;
-   const plate=M.nameplate(saved[id],api.rooms[id].cat);if(o.userData.nameplateKey===plate.key)return;
-   o.material.map.dispose();o.material.map=createRoomNameplateTexture(plate.text,plate.color);o.material.needsUpdate=true;o.userData.nameplateKey=plate.key;
+   const projecting=o.userData.nameplateStyle==='projecting',plate=projecting?M.projectingNameplate(saved[id],api.rooms[id].cat):M.nameplate(saved[id],api.rooms[id].cat);if(o.userData.nameplateKey===plate.key)return;
+   // Both faces share a material. Replace its texture once per name change.
+   if(o.material.userData?.nameplateKey!==plate.key){o.material.map.dispose();o.material.map=projecting?createProjectingRoomSignTexture(plate):createRoomNameplateTexture(plate.text,plate.color);o.material.needsUpdate=true;o.material.userData??={};o.material.userData.nameplateKey=plate.key;}o.userData.nameplateKey=plate.key;
   }});
   for(const btn of quick.querySelectorAll('[data-to]'))btn.textContent=api.rooms[btn.dataset.to].name.replace(/\s*\(\d+F\)/,'');
   search.dispatchEvent(new Event('input'));campusMinimap.invalidate();

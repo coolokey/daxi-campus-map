@@ -575,11 +575,25 @@
       ctx.font = "bold 24px 'Noto Sans TC', sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(text.replace(/\s*\(\d+F\)/, ''), 128, 32);
+      ctx.fillText(text.replace(/\s*\(\d+F\)/, ''), 128, 32, 228);
 
       const tex = new THREE.CanvasTexture(canvas);
       tex.encoding=THREE.sRGBEncoding;
       return tex;
+    }
+
+    // Photo reference: blue-and-white, metal-framed double-sided corridor signs.
+    function createProjectingRoomSignTexture(label) {
+      const canvas=document.createElement('canvas');canvas.width=256;canvas.height=128;
+      const ctx=canvas.getContext('2d');ctx.fillStyle=label.color;ctx.fillRect(0,0,256,128);
+      ctx.strokeStyle='#e2e4dc';ctx.lineWidth=3;ctx.strokeRect(7,7,242,114);
+      ctx.fillStyle='#ffffff';ctx.textAlign='center';ctx.textBaseline='middle';
+      const count=label.lines.length,space=label.subtitle?86:106,top=label.subtitle?12:11;
+      const font=Math.min(count===1?64:38,Math.floor(space/count*.85),Math.floor(224/Math.max(...label.lines.map(s=>Array.from(s).length))));
+      ctx.font=`bold ${font}px 'Noto Sans TC', sans-serif`;
+      label.lines.forEach((line,i)=>ctx.fillText(line,128,top+space*(i+.5)/count,224));
+      if(label.subtitle){ctx.font="bold 17px 'Noto Sans TC', sans-serif";ctx.fillText(label.subtitle,128,108,220);}
+      const tex=new THREE.CanvasTexture(canvas);tex.encoding=THREE.sRGBEncoding;return tex;
     }
 
     function createBuildingTitleTexture(text, bgColor = "#0f172a") {
