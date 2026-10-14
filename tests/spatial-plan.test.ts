@@ -55,3 +55,29 @@ it('no stair opening removes any part of a main corridor in any building',()=>{
  for(const b of buildings){const l=math.layout(b);for(const h of l.holes)for(const c of l.corridors)if(h.u0<c.u1-1e-6&&h.u1>c.u0+1e-6&&h.v0<c.v1-1e-6&&h.v1>c.v0+1e-6)cuts.push({building:b.id,h,c});}
  expect(cuts).toEqual([]);
 });
+
+
+describe('activity center photo-confirmed one-storey hall and second-floor balcony',()=>{
+ it('keeps destination IDs but corrects their floors and labels',()=>{
+  const {buildings}=load(),b=buildings.find((b:any)=>b.id==='gym-bld');
+  expect(b.floors).toBe(2);expect(b.rooms.find((r:any)=>r.id==='gym').floor).toBe(1);
+  expect(b.rooms.find((r:any)=>r.id==='gym-balcony').floor).toBe(2);
+  expect(b.rooms.find((r:any)=>r.id==='weight-room')).toMatchObject({floor:1});
+  expect(b.rooms.find((r:any)=>r.id==='weight-room').name).toContain('桌球');
+ });
+ it('leaves the center of the hall open above 1F while supporting the upper side walks',()=>{
+  const {buildings,math,plan}=load(),l=math.layout(buildings.find((b:any)=>b.id==='gym-bld'));
+  const hall=l.world(0,-5,3.6),side=l.world(16,-5,3.6),balcony=l.rooms.find((r:any)=>r.id==='gym-balcony').center;
+  expect(plan.groundAt(l,hall.x,hall.z,hall.y)).toBe(0);
+  expect(plan.groundAt(l,side.x,side.z,side.y)).toBe(3.6);
+  expect(plan.groundAt(l,balcony.x,balcony.z,balcony.y)).toBe(3.6);
+  expect(l.footprints.some((p:any)=>p.floor>2)).toBe(false);
+ });
+ it('supports stage steps and bleacher tiers with the same ground data used for walking',()=>{
+  const {buildings,math,plan}=load(),l=math.layout(buildings.find((b:any)=>b.id==='gym-bld'));
+  for(const [u,v,y] of [[0,-15,.6],[4,11.5,3.75],[4,12.5,3.9],[4,13.5,4.05]]){
+   const p=l.world(u,v,y);expect(plan.groundAt(l,p.x,p.z,p.y)).toBeCloseTo(y);
+  }
+  const aisle=l.world(0,12.5,3.6);expect(plan.groundAt(l,aisle.x,aisle.z,aisle.y)).toBe(3.6);
+ });
+});

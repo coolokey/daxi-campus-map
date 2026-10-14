@@ -76,7 +76,7 @@
       if(obj.material?.color?.getHex()===palette.brick){obj.material.map=gymTexture;obj.material.needsUpdate=true}
     });
     // 屋頂薄框與立面水平帶，讓高樓層陰影與結構更清晰。
-    const roofY=cfg.floors*FH;
+    const roofY=cfg.roofHeight||cfg.floors*FH;
     for(const side of [-1,1]){
       const trim=box(cfg.width+.6,.17,.28,cfg.x,roofY-.1,cfg.z+side*cfg.depth/2,0x71827a);
       trim.userData={buildingId:cfg.id,floorNum:cfg.floors,roof:true};floorMeshes.push(trim);

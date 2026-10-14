@@ -15,3 +15,10 @@ it('merges static meshes without losing transforms, floor visibility, textures o
  expect(root.children).toContain(textured);expect(root.children).toContain(marked);
  floor.visible=false;expect(floor.visible).toBe(false);expect(floor.children[0].parent).toBe(floor);
 });
+
+it('automatically batches the detailed activity center while retaining its floor group',()=>{
+ const scene=new THREE.Scene(),g=new THREE.Group();g.name='gym-court-nets';g.userData={floorNum:1,buildingId:'gym-bld'};scene.add(g);
+ const material=new THREE.MeshStandardMaterial();for(let i=0;i<20;i++){const m=new THREE.Mesh(new THREE.BoxGeometry(.01,1,.01),material);m.position.x=i*.1;g.add(m);}
+ runInNewContext(readFileSync('public/campus-explorer/static-batching.js','utf8'),{THREE,window:{campusExplorer:{scene}}});
+ expect(g.children).toHaveLength(1);expect(g.userData.floorNum).toBe(1);
+});

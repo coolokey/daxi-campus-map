@@ -11,7 +11,7 @@ beforeAll(()=>{
  const file=(f:string)=>{if(existsSync(root+f))run(readFileSync(root+f,'utf8'))};file('vendor/three.min.js');
  w.THREE.WebGLRenderer=class{domElement:any;shadowMap={};capabilities={getMaxAnisotropy:()=>1};constructor({canvas}:any){this.domElement=canvas}setSize(){}setPixelRatio(){}render(){}};
  file('vendor/OrbitControls.js');
- for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','spatial-world.js','photo-facade.js','art-direction.js','photo-reference.js'])file(f);
+ for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','spatial-world.js','photo-facade.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
 it('uses a larger, taller collision envelope for the rendered staff and student models',()=>{
@@ -24,7 +24,7 @@ it('keeps physical walls and ceilings visible while walking after selecting a lo
  expect(result).toEqual({cutaway:false,walking:true,descending:true,firstperson:true,restored:false});
 });
 it('shows a solid lower surface for every hidden wall and stair-guard collision proxy',()=>{
- const bad=run(`(()=>{setControlMode('firstperson');setFloorFilter('all');scene.updateMatrixWorld(true);const floors=scene.children.filter(g=>g.name.startsWith('floor-')),visible=floors.flatMap(g=>g.children.filter(m=>m.isMesh&&m.visible&&m.material.opacity>.85)),bad=[];for(const g of floors)for(const m of g.children.filter(m=>m.isMesh&&!m.visible&&!m.userData.roof)){const b=new THREE.Box3().setFromObject(m),alongX=b.max.x-b.min.x>b.max.z-b.min.z;for(const t of [.31,.69]){const x=alongX?b.min.x+(b.max.x-b.min.x)*t:(b.min.x+b.max.x)/2,z=alongX?(b.min.z+b.max.z)/2:b.min.z+(b.max.z-b.min.z)*t,origin=new THREE.Vector3(alongX?x:b.min.x-.15,b.min.y+.3,alongX?b.min.z-.15:z),direction=new THREE.Vector3(alongX?0:1,0,alongX?1:0),ray=new THREE.Raycaster(origin,direction,0,.5);if(!ray.intersectObjects(visible,false).length){bad.push(g.name);break;}}}setControlMode('bird');return bad})()`);
+ const bad=run(`(()=>{setControlMode('firstperson');setFloorFilter('all');scene.updateMatrixWorld(true);const floors=scene.children.filter(g=>g.name.startsWith('floor-')),visible=new Map([...new Set(floors.map(g=>g.userData.buildingId))].map(id=>[id,floors.filter(g=>g.userData.buildingId===id).flatMap(g=>g.children.filter(m=>m.isMesh&&m.visible&&m.material.opacity>.85))])),bad=[];for(const g of floors)for(const m of g.children.filter(m=>m.isMesh&&!m.visible&&!m.userData.roof)){const b=new THREE.Box3().setFromObject(m),alongX=b.max.x-b.min.x>b.max.z-b.min.z;for(const t of [.31,.69]){const x=alongX?b.min.x+(b.max.x-b.min.x)*t:(b.min.x+b.max.x)/2,z=alongX?(b.min.z+b.max.z)/2:b.min.z+(b.max.z-b.min.z)*t,origin=new THREE.Vector3(alongX?x:b.min.x-.15,b.min.y+(g.userData.buildingId==='gym-bld'?.06:.3),alongX?b.min.z-.15:z),direction=new THREE.Vector3(alongX?0:1,0,alongX?1:0),ray=new THREE.Raycaster(origin,direction,0,.5);if(!ray.intersectObjects(visible.get(g.userData.buildingId),false).length){bad.push(g.name);break;}}}setControlMode('bird');return bad})()`);
  expect(bad).toEqual([]);
 });
 it('closes exposed upper corridor ends with visible parapets and preserves gallery connections',()=>{
@@ -176,4 +176,19 @@ it('keeps both camera modes outside slabs and stair solids throughout ascending 
 it('renders furniture for every real room and leaves every doorway-to-center path clear',()=>{
  const bad=run(`(()=>{const bad=[];for(const l of campusWalkWorld.layouts)for(const r of l.rooms){const p=CampusRoomLayout.furnishings(r);if(!p.parts.length)bad.push(r.id+' empty');const pos={...r.corridor};for(const q of [r.door,r.center])if(moveAvatarWithCollision(pos,q.x-pos.x,q.z-pos.z))bad.push(r.id+' blocked');}return bad})()`);
  expect(bad).toEqual([]);
+});
+
+it('activity hall keeps real vertical clearance and a safe second-floor viewing edge',()=>{
+ const result=run(`(()=>{setControlMode('firstperson');scene.updateMatrixWorld(true);const l=campusWalkWorld.layouts.find(l=>l.id==='gym-bld'),p=l.world(0,-5,.2),ray=new THREE.Raycaster(new THREE.Vector3(p.x,p.y,p.z),new THREE.Vector3(0,1,0),0,12),hit=ray.intersectObjects(scene.children,true).find(h=>{let n=h.object;while(n){if(!n.visible)return false;n=n.parent}return h.object.material.transparent!==true}),edge=l.world(0,7,3.6),aisle=l.world(0,10.6,3.6);return {clearance:hit?.distance||0,edgeBlocked:checkWallCollision(edge.x,edge.y,edge.z),aisleClear:!checkWallCollision(aisle.x,aisle.y,aisle.z)}})()`);
+ expect(result.clearance).toBeGreaterThan(8);expect(result.edgeBlocked).toBe(true);expect(result.aisleClear).toBe(true);
+});
+
+it('can restart navigation from every new raised activity-center surface',()=>{
+ const failures=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='gym-bld'),bad=[];for(const [label,u,v,y] of [['stage',4,-15,.6],['tier1',4,11.5,3.75],['tier2',4,12.5,3.9],['tier3',4,13.5,4.05],['porch',0,17.8,.12],['access',-8,21.3,.06],['access-low',-8,23.8,.01],['stage-low',0,-11.5,.15],['window',-16.65,18.5,1.8]]){const start=l.world(u,v,y),route=campusWalkWorld.route(start,ROOMS_DB.academic);if(!route?.length)bad.push(label);else{const p=route.find(p=>Math.abs(campusWalkWorld.ground(p)-p.y)>.14||checkWallCollision(p.x,p.y,p.z));if(p)bad.push({label,p,ground:campusWalkWorld.ground(p),blocked:checkWallCollision(p.x,p.y,p.z)});}}return bad})()`);
+ expect(failures).toEqual([]);
+});
+
+it('keeps the curved-window midlanding free of low overhead concrete',()=>{
+ const result=run(`(()=>{setControlMode('firstperson');const l=campusWalkWorld.layouts.find(l=>l.id==='gym-bld'),p=l.world(l.stairs[0].turnU,18.4,2),ray=new THREE.Raycaster(new THREE.Vector3(p.x,p.y,p.z),new THREE.Vector3(0,1,0),0,12);scene.updateMatrixWorld(true);const h=ray.intersectObjects(scene.children,true).find(h=>{let o=h.object;while(o){if(!o.visible)return false;o=o.parent}return h.object.material.transparent!==true});return {clearance:h?.distance||0,ground:campusWalkWorld.ground({...p,y:1.8})}})()`);
+ expect(result.clearance).toBeGreaterThan(6.5);expect(result.ground).toBe(1.8);
 });

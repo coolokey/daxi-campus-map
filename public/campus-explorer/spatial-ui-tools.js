@@ -21,7 +21,7 @@ window.CampusSpatialUI = (() => {
  }
  function locate(position,layouts,fallback){
   const floor=Math.max(1,Math.round(Math.max(0,position.y)/3.6)+1);
-  const layout=layouts.find(l=>l.footprints.some(f=>f.floor===floor&&position.x>=f.rect.x0&&position.x<=f.rect.x1&&position.z>=f.rect.z0&&position.z<=f.rect.z1));
+  const layout=layouts.find(l=>l.footprints.some(f=>f.floor===floor&&position.x>=f.rect.x0&&position.x<=f.rect.x1&&position.z>=f.rect.z0&&position.z<=f.rect.z1)||(l.platforms||[]).some(p=>Math.abs(position.y-p.y)<.36&&position.x>=p.x0&&position.x<=p.x1&&position.z>=p.z0&&position.z<=p.z1));
   return layout?{floor,label:layout.b.name,buildingId:layout.id}:fallback(position);
  }
  return {rows,routeSegments,locate};

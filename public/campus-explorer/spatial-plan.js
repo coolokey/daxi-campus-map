@@ -1,7 +1,7 @@
 /* Geometry compiler shared by scene, physics, navigation, classroom matrix and map. */
 const CampusSpatialPlan = (() => {
  const H=3.6,eps=1e-6;
- const contains=(r,u,v)=>u>=r.u0-eps&&u<=r.u1+eps&&v>=r.v0-eps&&v<=r.v1+eps;
+ const contains=(r,u,v)=>u>=r.u0-eps&&u<=r.u1+eps&&v>=r.v0-eps&&v<=r.v1+eps&&(r.kind!=='tower'||(u-r.centerU)**2+(v-r.centerV)**2<=r.radius**2+eps);
  function layout(b){
   const p=b.spatialProfile;if(!p)return null;
   const horizontal=p.shape==='tech'||b.id==='art-building'?false:b.width>=b.depth,L=horizontal?b.width:b.depth,D=horizontal?b.depth:b.width,sign=p.sign||1;
@@ -39,7 +39,37 @@ const CampusSpatialPlan = (() => {
    return s;
   }
   const outerV=sign*D/2,wallV=sign*(D/2-2.8),cV=sign*(D/2-1.4);
-  if(b.id==='art-building'){
+  if(p.shape==='gym'){
+   // Photo-confirmed 1F foyer/hall and 2F U-shaped balcony. The outer
+   // shell height is independent of the number of usable floors.
+   displayRows.push({id:'main',label:'活動中心前廳／主館／二樓看台',axis:'u',start:-L/2,end:L/2});
+   fp(1,-18,18,-17,17);co(1,-15.4,10.8,14.2,17);
+   const porch=fp(1,-11,11,17,20.5);porch.kind='porch';const access=fp(1,-10,-6,20.5,24.3);access.kind='porch';
+   for(const centerU of [-14,14])Object.assign(fp(1,centerU-4,centerU+4,17,21.1),{kind:'tower',centerU,centerV:17.1,radius:4});
+   fp(2,-18,18,7,17);fp(2,-18,-15,-17,7);fp(2,15,18,-17,7);
+   co(2,-15.4,10.8,14.2,17);co(2,-18,18,7,9.2);co(2,-18,-15,-17,7);co(2,15,18,-17,7);
+   addCell({kind:'room',id:'gym'},1,-15,15,-17,7,'main','v1',10.6);
+   addCell({kind:'room',id:'weight-room'},1,-9,9,7,14.2,'main','v1',15.6);
+   addCell({kind:'room',id:'fire-room'},1,15,17.5,1,4.5,'main','v1',5.9);
+   addCell({kind:'room',id:'gym-balcony'},2,-10,10,7,10,'main','v1',10.6);
+   for(const [id,u0,u1] of [['north',-18,-10],['south',10,18]]){
+    addCell({kind:'stair',id,label:'活動中心圓塔樓梯'},1,u0,u1,9,14.2);
+    addCell({kind:'stair',id,label:'活動中心圓塔樓梯'},2,u0,u1,9,14.2);
+    const s=addStair(id,'活動中心'+(id==='north'?'北':'南')+'側樓梯',u0,u1,9,14.2);
+    const extension={u0:u0+.8,u1:s.farU+.08,v0:13.9,v1:19.3};s.windowLanding=extension;
+    holes.push({...extension});platforms.push({...rect(extension.u0,extension.u1,extension.v0,extension.v1),...extension,y:1.8,floor:1,stairId:s.id,kind:'windowLanding'});
+   }
+   for(let tier=0;tier<3;tier++)for(const [u0,u1] of [[-9,-1.2],[1.2,9]]){
+    const v0=11+tier,v1=v0+1;platforms.push({...rect(u0,u1,v0,v1),u0,u1,v0,v1,y:H+.15*(tier+1),floor:2,kind:'bleacher'});
+   }
+   platforms.push({...rect(-14,14,-17,-13),u0:-14,u1:14,v0:-17,v1:-13,y:.6,floor:1,kind:'stage'});
+   const stageStart=world(0,-11,0),stageEnd=world(0,-13,.6);
+   ramps.push({...rect(-1,1,-13,-11),start:stageStart,end:stageEnd,h0:0,h1:.6,axis:'x',floor:1,stairId:'gym-stage'});
+   for(const [v0,v1,y] of [[17,18.3,.12],[18.3,19,.08],[19,19.7,.04]])platforms.push({...rect(v0===17?-11:-5,v0===17?11:5,v0,v1),y,floor:1,kind:'porch'});
+   const accessStart=world(-8,18.3,.12),accessEnd=world(-8,24.3,0);
+   ramps.push({...rect(-10,-6,18.3,24.3),start:accessStart,end:accessEnd,h0:.12,h1:0,axis:'x',floor:1,stairId:'gym-access'});
+   entrances.push({floor:1,inside:world(0,16),outside:world(0,21.3),path:[world(0,16),world(0,17),world(0,17.5,.12),world(0,18.3,.12),world(0,19,.08),world(0,19.7,.04),world(0,20.5),world(0,21.3)]});
+  }else if(b.id==='art-building'){
    displayRows.push({id:'main',label:'圖面左 → 右',axis:'v',start:-D/2,end:D/2});
    for(let f=1;f<=b.floors;f++){
     fp(f,-L/2,L/2,-D/2,D/2);co(f,-L/2,L/2,-2,1);

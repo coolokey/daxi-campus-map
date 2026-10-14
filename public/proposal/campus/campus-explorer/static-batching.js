@@ -32,5 +32,5 @@ const CampusStaticBatch = (() => {
 (() => {
  const scene=window.campusExplorer?.scene;if(!scene)return;
  const names=['campus-landscape-refinement','photo-outdoor','basketball-court-complex','entrance-palm-avenue'];
- for(const group of scene.children)if(names.includes(group.name)||group.name.startsWith('photo-admin-'))CampusStaticBatch.batch(group);
+ for(const group of scene.children)if(names.includes(group.name)||group.name.startsWith('photo-admin-')||group.name.startsWith('gym-'))CampusStaticBatch.batch(group);
 })();

@@ -32,7 +32,7 @@ beforeAll(()=>{
  w.THREE.WebGLRenderer=class{domElement:any;shadowMap={};capabilities={getMaxAnisotropy:()=>1};constructor({canvas}:any){this.domElement=canvas}setSize(){}setPixelRatio(){}render(){}};
  file('vendor/OrbitControls.js');
  w.localStorage.setItem('daxi-avatar-appearance',JSON.stringify({gender:'female',outfit:'casual'}));
- for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','spatial-world.js'])file(f);
+ for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','spatial-world.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
 it('creates independent campus characters without changing player appearance or route',()=>{

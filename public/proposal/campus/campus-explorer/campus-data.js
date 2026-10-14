@@ -18,17 +18,17 @@ const FH = 3.6; // Floor Height in meters
     category: "sports",
     color: 0xb58c82,
     roofColor: 0x925d53,
-    x: -80, z: 58, width: 34, depth: 36, floors: 3,
+    x: -80, z: 58, width: 34, depth: 36, floors: 2, roofHeight: 9.6,
     isGymSpecial: true,
     stairs: [
-      { x: -65, z: 46, name: "活動中心南側雙圓柱梯", floors: 3 },
-      { x: -65, z: 70, name: "活動中心北側雙圓柱梯", floors: 3 }
+      { x: -65, z: 46, name: "活動中心南側雙圓柱梯", floors: 2 },
+      { x: -65, z: 70, name: "活動中心北側雙圓柱梯", floors: 2 }
     ],
     rooms: [
       { id: "gym", code: "GYM-1", name: "活動中心大禮堂", floor: 1, node: "gym-1f-hall", cat: "sports" },
       { id: "fire-room", code: "GYM-F", name: "消防機房 (1F)", floor: 1, node: "gym-fire-1f", cat: "admin" },
-      { id: "weight-room", code: "GYM-2", name: "體育重訓室 (2F)", floor: 2, node: "gym-stair-s-2f", cat: "sports" },
-      { id: "gym-balcony", code: "GYM-3", name: "活動中心看台區 (3F)", floor: 3, node: "gym-stair-s-3f", cat: "sports" }
+      { id: "weight-room", code: "GYM-2", name: "活動中心入口大廳／桌球區 (1F)", floor: 1, node: "gym-stair-s-2f", cat: "sports" },
+      { id: "gym-balcony", code: "GYM-3", name: "活動中心階梯看台 (2F)", floor: 2, node: "gym-stair-s-3f", cat: "sports" }
     ]
   },
 

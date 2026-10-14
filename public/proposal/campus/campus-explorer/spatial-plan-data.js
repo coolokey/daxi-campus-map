@@ -35,7 +35,7 @@ const CampusSpatialData = (() => {
   }},
   'health-bld':{sign:1,floors:{1:[room('health','511'),room('coop','512'),stair('east','東側樓梯')],2:[room('pe-office','521',1,'空間 521（名稱待確認）'),room('pe-storage','522',1,'空間 522（名稱待確認）'),stair('east','東側樓梯')]}},
   'art-building':{sign:-1,floors:Object.fromEntries(['broadwood','music-2f','music-3f','art-4f'].map((id,i)=>[i+1,[stair('main','藝術館樓梯'),room(id,`ART-${i+1}`,1,['樂活教室','音樂教室','音樂教室','美術教室'][i])]]))},
-  'gym-bld':{sign:1,confidence:'照片可確認外觀；室內尺度及上層動線為示意',floors:{1:[stair('north','活動中心北側梯'),room('gym','GYM-1',4),room('fire-room','GYM-F',.6),stair('south','活動中心南側梯')],2:[stair('north','活動中心北側梯'),room('weight-room','GYM-2',4.6),stair('south','活動中心南側梯')],3:[stair('north','活動中心北側梯'),room('gym-balcony','GYM-3',4.6),stair('south','活動中心南側梯')]}},
+  'gym-bld':{shape:'gym',sign:1,confidence:'照片與使用者確認：一樓球場、舞台及入口附屬空間；二樓看台。尺度按照片比例示意'},
   'recycle-bld':{sign:1,floors:{1:[room('recycling','REC-1')]}},
   'new-grade7':{shape:'new7',sign:1,confidence:'班級與固定碼由圖校對；西側上下樓梯段採示意尺度'},
   'multi-building':{shape:'multi',sign:-1},
@@ -49,6 +49,7 @@ const CampusSpatialData = (() => {
  };
  const aliases={'spec-staff-1':'admin-g89-staff','scout-judo':'general','counseling':'collab-conf','fitness-room':'709','counseling-act':'mid-315'};
  const custom={
+  gym:[[1,room('gym','GYM-1'),room('fire-room','GYM-F'),room('weight-room','GYM-2',1,'活動中心入口大廳／桌球區')],[2,room('gym-balcony','GYM-3',1,'活動中心階梯看台')]],
   new7:[
    [1,room('709','A12'),room('701','A13'),room('resource-room','A14',1,'資源班 3／4 教室'),room('sped-leader','A15',1,'特教教室')],
    [2,room('math-lab','A21',1,'空間 A21（名稱待確認）'),room('702','A22'),room('703','A23'),room('704','A24'),room('705','A25')],

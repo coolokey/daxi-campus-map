@@ -23,3 +23,9 @@ describe('人物定位小地圖',()=>{
  });
  it('校門附近顯示正門廣場',()=>expect(math.locate({x:0,y:0,z:96},[]).label).toBe('正門廣場'));
 });
+
+it('keeps an extended stair landing inside its building on the minimap',()=>{
+ const context:any={window:{}};runInNewContext(readFileSync('public/campus-explorer/spatial-ui-tools.js','utf8'),context);
+ const l={id:'gym-bld',b:{name:'學生活動中心'},footprints:[],platforms:[{x0:-64,x1:-60,z0:40,z1:43,y:1.8}]};
+ expect(context.window.CampusSpatialUI.locate({x:-62,y:1.8,z:41},[l],()=>({label:'迎賓廣場'}))).toMatchObject({label:'學生活動中心',buildingId:'gym-bld'});
+});

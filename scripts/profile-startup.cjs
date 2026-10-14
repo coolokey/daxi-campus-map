@@ -7,7 +7,7 @@ const old=baseline?cp.execFileSync('git',['show',`${baseline}:public/campus-expl
 const verifier=fs.readFileSync(path.join(__dirname,'verify-spatial-world.cjs'),'utf8');
 let source=verifier.slice(0,verifier.indexOf('const report='));
 source=source.replace('function run(file){vm.runInContext', 'const timings=[];function run(file){const started=performance.now();vm.runInContext');
-source=source.replace("fs.readFileSync(path.join(root,file),'utf8'),context", "file==='spatial-world.js'&&baselineSource!==null?baselineSource:fs.readFileSync(path.join(root,file),'utf8'),context");
+source=source.replace("fs.readFileSync(path.join(root,file),'utf8'),context", "file==='gym-world.js','spatial-world.js'&&baselineSource!==null?baselineSource:fs.readFileSync(path.join(root,file),'utf8'),context");
 source=source.replace('timeout:180000})}', 'timeout:180000});timings.push({file,ms:Math.round(performance.now()-started)})}');
 source+='console.log(JSON.stringify({baseline:baselineLabel,timings,totalMs:timings.reduce((n,t)=>n+t.ms,0)},null,2));dom.window.close();';
 new Function('require','__dirname','baselineSource','baselineLabel',source)(require,__dirname,old,baseline||'optimized');
