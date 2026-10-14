@@ -1,0 +1,21 @@
+{
+  "url": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/?v=1b17d8b",
+  "results": [
+    "Real keyboard: original campus → technology 1F → 2F physics classroom → chibi teacher dialogue/portrait → five-question task → same room",
+    "Real keyboard: original campus → art 1F → 2F → 3F → 4F art classroom with automatic next-doorway guidance",
+    "Real keyboard: art upper floor → downstairs → original campus → administration front/back breezeway and stairs → front wing 3F",
+    "Indoor 1 / 1.5 / 2 scale changes preserve floor and refresh collision-aware route",
+    "Real keyboard: administration 3F → downstairs → campus → grade 7 entrance → 2F → 3F 706 classroom; horizontal side-wing floor labels preserved",
+    "iPad/phone/320px/landscape directory, touch close and checked grade 7 floor labels and withheld unverified activity-centre upper floors"
+  ],
+  "errors": [],
+  "failed": [],
+  "gameCommit": "1b17d8be840b89a7365a27317184ce271753d95f",
+  "actionsRun": 38515849066,
+  "actionsConclusion": "success",
+  "asset": "presentation-BkhFKIT1.js",
+  "unitTests": 99,
+  "assetChecks": 4,
+  "enabledFloors": 30,
+  "enabledSourceSpaces": 90
+}
