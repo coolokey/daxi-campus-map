@@ -12,6 +12,13 @@ window.CampusNavigationGuide=(()=>{
    if(i>0&&kinds[i-1]===kinds[end])for(let j=i;j<end;j++)kinds[j]=kinds[end];
    i=end-1;
   }
+  // Shallow entrance thresholds belong to the approach, not a storey change.
+  for(let start=0;start<kinds.length;){
+   let end=start+1;while(kinds[end]===kinds[start])end++;
+   if(kinds[start]!=='flat'&&Math.abs(points[end].y-points[start].y)<.3)
+    for(let i=start;i<end;i++)kinds[i]='flat';
+   start=end;
+  }
   const result=[];
   for(let start=0;start<kinds.length;){
    let end=start+1;while(kinds[end]===kinds[start])end++;

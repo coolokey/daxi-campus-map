@@ -22,3 +22,8 @@ it('跨棟先下樓再上樓保留順序，平地路徑不虛構樓梯',()=>{
  expect(model.steps(points,room).filter((s:any)=>['up','down'].includes(s.kind)).map((s:any)=>s.kind)).toEqual(['down','up']);
  expect(model.steps([{y:.6},{y:.6}],{name:'司令台',code:'OUT-STAND'}).some((s:any)=>['up','down'].includes(s.kind))).toBe(false);
 });
+
+it('does not describe a shallow entrance threshold as going down a storey',()=>{
+ const plan=model.steps([{y:0},{y:.04},{y:.08},{y:.12},{y:.12},{y:0},{y:0},{y:1.8},{y:3.6},{y:3.6}],{name:'活動中心階梯看台',floor:2});
+ expect(plan.filter((s:any)=>['up','down'].includes(s.kind)).map((s:any)=>s.kind)).toEqual(['up']);
+});
