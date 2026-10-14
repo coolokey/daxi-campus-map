@@ -14,6 +14,14 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','spatial-world.js','photo-facade.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('renders first-floor interior paving above the outdoor lawn instead of on the same plane',()=>{
+ const result=run(`(()=>{scene.updateMatrixWorld(true);const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),r=l.rooms.find(r=>r.floor===1),ray=new THREE.Raycaster(new THREE.Vector3(r.center.x,.2,r.center.z),new THREE.Vector3(0,-1,0),0,.3),hit=ray.intersectObjects(scene.children,true)[0];return {height:hit.point.y,surface:hit.object.material.userData.campusSurface}})()`);
+ expect(result.surface).toBe('floor');expect(result.height).toBeGreaterThan(.01);
+});
+it('leaves standing headroom underneath stacked stair flights',()=>{
+ const failures=run(`(()=>{scene.updateMatrixWorld(true);const meshes=scene.children.filter(g=>g.name.startsWith('floor-stairs-')).flatMap(g=>g.children.filter(m=>m.isMesh)),ray=new THREE.Raycaster(),bad=[];for(const l of campusWalkWorld.layouts)for(const r of l.ramps)for(let i=1;i<20;i++){const p=CampusWalkMath.rampPoint(r,i/20);ray.set(new THREE.Vector3(p.x,p.y+.22,p.z),new THREE.Vector3(0,1,0));ray.far=1.68;const hit=ray.intersectObjects(meshes,false)[0];if(hit)bad.push({stair:r.stairId,floor:r.floor,t:i/20,clearance:hit.distance+.22});}return bad})()`);
+ expect(failures).toEqual([]);
+});
 it('rebuilt school floors retain distinct photo-based wall and stair materials instead of a shared white surface',()=>{
  const surfaces=run(`(()=>{const result={};scene.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(m?.userData.campusSurface){const id=m.userData.campusBuildingId;result[id]??={};result[id][m.userData.campusSurface]={luminance:m.color.r*.2126+m.color.g*.7152+m.color.b*.0722,hex:m.color.getHex(),roughness:m.roughness}}});return result})()`);
  expect(surfaces['admin-front']).toBeDefined();expect(surfaces['gym-bld']).toBeDefined();
@@ -106,8 +114,8 @@ it('shows the original sports mosaic above the rear windows without stretching i
  expect(mural.uv.every((n:number)=>n>0&&n<1)).toBe(true);
 });
 
-it('stair flights have closed risers below each tread instead of floating thin planks',()=>{
- const hits=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-back'),r=l.ramps[0],p=CampusWalkMath.rampPoint(r,.5),g=scene.children.find(g=>g.name==='floor-stairs-2'&&g.userData.buildingId===l.id),meshes=g.children.filter(m=>m.isMesh&&m.material.userData.campusSurface==='stair');g.updateMatrixWorld(true);const origin=new THREE.Vector3(p.x,r.h0+.1,p.z),direction=l.horizontal?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0);origin.addScaledVector(direction,-1.2);return new THREE.Raycaster(origin,direction,0,2.4).intersectObjects(meshes).length})()`);
+it('stair flights retain closed risers at walking height without filling the space below',()=>{
+ const hits=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-back'),r=l.ramps[0],p=CampusWalkMath.rampPoint(r,.5),g=scene.children.find(g=>g.name==='floor-stairs-2'&&g.userData.buildingId===l.id),meshes=g.children.filter(m=>m.isMesh&&m.material.userData.campusSurface==='stair');g.updateMatrixWorld(true);const origin=new THREE.Vector3(p.x,p.y-.08,p.z),direction=l.horizontal?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0);origin.addScaledVector(direction,-1.2);return new THREE.Raycaster(origin,direction,0,2.4).intersectObjects(meshes).length})()`);
  expect(hits).toBeGreaterThan(0);
 });
 it('corridor ceilings remain above walking height and hide for floor cutaway viewing',()=>{
@@ -138,4 +146,13 @@ it('upper stair openings have real guard barriers while both flight entrances re
 it('retained curved tower facades stay outside the building instead of passing through the actual stairs',()=>{
  const violations=run(`(()=>{const bad=[];scene.updateMatrixWorld(true);for(const id of ['gym-bld','grade8-front']){const cfg=BUILDINGS_CONFIG.find(b=>b.id===id),g=scene.children.find(g=>g.userData.buildingId===id&&!g.name.startsWith('floor-')),front=cfg.x+cfg.width/2,west=cfg.x-cfg.width/2;for(const m of g.children.filter(m=>m.isMesh&&m.geometry.type==='CylinderGeometry'&&m.geometry.parameters.radiusTop>=4.6)){const box=new THREE.Box3().setFromObject(m);if(id==='gym-bld'?box.min.x<front-.01:box.max.x>west+.01)bad.push({id,min:box.min.x,max:box.max.x})}}return bad})()`);
  expect(violations).toEqual([]);
+});
+
+it('keeps both camera modes outside slabs and stair solids throughout ascending and descending',()=>{
+ const bad=run(`(()=>{const bad=[];for(const mode of ['avatar','firstperson']){setControlMode(mode);for(const l of campusWalkWorld.layouts)for(const r of l.ramps)for(const direction of [-1,1])for(let i=1;i<20;i++){const p=CampusWalkMath.rampPoint(r,i/20);avatarGroup.position.set(p.x,p.y,p.z);avatarAngle=Math.atan2((r.end.x-r.start.x)*direction,(r.end.z-r.start.z)*direction);walkPitch=-.16;campusWalkWorld.updateCamera();if(campusWalkWorld.cameraBlocked(camera.position))bad.push({mode,stair:r.stairId,t:i/20,direction,camera:camera.position.toArray()});}}setControlMode('bird');return bad})()`);
+ expect(bad).toEqual([]);
+});
+it('renders furniture for every real room and leaves every doorway-to-center path clear',()=>{
+ const bad=run(`(()=>{const bad=[];for(const l of campusWalkWorld.layouts)for(const r of l.rooms){const p=CampusRoomLayout.furnishings(r);if(!p.parts.length)bad.push(r.id+' empty');const pos={...r.corridor};for(const q of [r.door,r.center])if(moveAvatarWithCollision(pos,q.x-pos.x,q.z-pos.z))bad.push(r.id+' blocked');}return bad})()`);
+ expect(bad).toEqual([]);
 });

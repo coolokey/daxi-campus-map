@@ -4,10 +4,11 @@
  const node=(id,p,buildingId)=>{graph[id]={id,...p,buildingId,neighbors:[]};return id};
  const link=(a,b)=>{if(a!==b&&!graph[a].neighbors.includes(b)){graph[a].neighbors.push(b);graph[b].neighbors.push(a)}};
  const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.96});
- const colors={wall:material(0xc9c5b9),blue:material(0x8da9ae),floor:material(0xa6aaa3),stair:material(0xb8bab0),wood:material(0x956941),green:material(0x315748),steel:material(0x61717a),light:material(0xfff9dd),glass:new THREE.MeshStandardMaterial({color:0x8fa5a9,transparent:true,opacity:.45})};
+ const colors={wall:material(0xc9c5b9),blue:material(0x8da9ae),floor:material(0xa6aaa3),stair:material(0xb8bab0),wood:material(0x956941),green:material(0x315748),steel:material(0x61717a),paper:material(0xcacbbb),screen:material(0x293f48),light:material(0xfff9dd),glass:new THREE.MeshStandardMaterial({color:0x8fa5a9,transparent:true,opacity:.45})};
  colors.light.emissive.setHex(0x8a8467);colors.light.emissiveIntensity=.4;
  const safetyMeshMaterial=new THREE.LineBasicMaterial({color:0x7f8880,transparent:true,opacity:.45});
- const surfaces=new Map();
+ const surfaces=new Map(),cameraVolumes=[];
+ const cameraVolume=(r,y0,y1)=>cameraVolumes.push({minX:r.x0,maxX:r.x1,minZ:r.z0,maxZ:r.z1,minY:y0,maxY:y1});
  function surfaceMaterials(l){
   if(surfaces.has(l.id))return surfaces.get(l.id);
   const p=CampusSurfacePalette.forBuilding(l.b),own={...colors};
@@ -20,6 +21,7 @@
   if(u1-u0<1e-5||v1-v0<1e-5||y1-y0<1e-5)return null;
   const r=l.rect(u0,u1,v0,v1),mesh=new THREE.Mesh(new THREE.BoxGeometry(r.x1-r.x0,y1-y0,r.z1-r.z0),mat);
   mesh.position.set((r.x0+r.x1)/2,(y0+y1)/2,(r.z0+r.z1)/2);mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);
+  if(mat!==colors.glass)cameraVolume(r,y0,y1);
   if(solid){registerWallCollider(r.x0,r.x1,r.z0,r.z1,y0,y1);WALL_COLLIDERS.at(-1).buildingId=l.id;}
   return mesh;
  };
@@ -33,12 +35,13 @@
  }
  const insideFloor=(l,x,z,floor)=>{const q=l.local(x,z);return l.footprints.some(p=>p.floor===floor&&CampusSpatialPlan.contains(p,q.u,q.v))};
  // Subtract the same stair holes that groundAt uses from every slab.
+ // Raise only the visual 1F paving slightly above the outdoor ground plane.
  function slab(g,l,p,y,paint=null,cutAtGround=false){
   const colors=surfaceMaterials(l);
   const xs=[p.u0,p.u1],zs=[p.v0,p.v1];
   for(const h of l.holes){if(h.u0>p.u0&&h.u0<p.u1)xs.push(h.u0);if(h.u1>p.u0&&h.u1<p.u1)xs.push(h.u1);if(h.v0>p.v0&&h.v0<p.v1)zs.push(h.v0);if(h.v1>p.v0&&h.v1<p.v1)zs.push(h.v1)}
   xs.sort((a,b)=>a-b);zs.sort((a,b)=>a-b);
-  for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++)if((y===0&&!cutAtGround)||!l.holes.some(h=>CampusSpatialPlan.contains(h,(xs[i-1]+xs[i])/2,(zs[j-1]+zs[j])/2)))box(g,l,xs[i-1],xs[i],zs[j-1],zs[j],y-.18,y,paint||colors.floor);
+  for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++)if((y===0&&!cutAtGround)||!l.holes.some(h=>CampusSpatialPlan.contains(h,(xs[i-1]+xs[i])/2,(zs[j-1]+zs[j])/2)))box(g,l,xs[i-1],xs[i],zs[j-1],zs[j],y-.18,y+(y===0?.045:0),paint||colors.floor);
  }
  function roomWall(g,l,c,side,y){
   const colors=surfaceMaterials(l),q={u:(c.u0+c.u1)/2,v:(c.v0+c.v1)/2};
@@ -66,16 +69,8 @@
   const label=CampusRoomLayout.nameplate(r.name,r.cat);
   const plate=new THREE.Mesh(new THREE.PlaneGeometry(width,.38),new THREE.MeshBasicMaterial({map:createRoomNameplateTexture(label.text,label.color),side:THREE.DoubleSide}));
   plate.position.set(pp.x,pp.y,pp.z);plate.rotation.y=r.doorSide.startsWith('u')?(l.horizontal?Math.PI/2:0):(l.horizontal?0:Math.PI/2);plate.userData.roomId=r.id;plate.userData.nameplateKey=label.key;g.add(plate);
-  const office=r.cat==='admin',w=r.u1-r.u0,d=r.v1-r.v0;
-  for(const side of [-1,1]){
-   const alongU=r.doorSide.startsWith('u'),u=r.u+(alongU?0:side*w*.3),v=r.v+(alongU?side*d*.3:0);
-   if(w<2.8||d<2.4)continue;
-   box(g,l,u-.4,u+.4,v-.5,v+.5,y+.72,y+.8,colors.wood,true);
-   for(const du of [-.3,.3])box(g,l,u+du-.025,u+du+.025,v-.43,v-.38,y,y+.72,colors.steel);
-   box(g,l,u-.26,u+.26,v+.58,v+.83,y+.4,y+.48,colors.wood,true);
-   if(office)box(g,l,u-.42,u+.42,v-.55,v-.5,y+.8,y+1.3,colors.blue,true);
-  }
-  box(g,l,r.u1-.16,r.u1-.08,r.v0+.3,r.v1-.3,y+1.05,y+2.3,office?colors.wall:colors.green);
+  const plan=CampusRoomLayout.furnishings(r);
+  for(const item of plan.parts){const mesh=box(g,l,item.u0,item.u1,item.v0,item.v1,y+item.y0,y+item.y1,colors[item.paint],item.solid);if(mesh)mesh.userData={roomId:r.id,furnitureRole:item.role};}
   box(g,l,r.u-.7,r.u+.7,r.v-.12,r.v+.12,y+FH-.22,y+FH-.2,colors.light);
  }
  // Retain existing outer ornament; replace old floors, stair meshes and roofs for shaped wings.
@@ -124,9 +119,9 @@
     const longU=p.u1-p.u0>=p.v1-p.v0,lo=longU?p.u0:p.v0,hi=longU?p.u1:p.v1;
     // Keep the same stair holes clear in the ceiling as in the floor above.
     slab(ceiling,l,p,y+FH-.22,colors.ceiling,true);
-    for(let t=lo+1.2;t<hi;t+=1.2)box(g,l,longU?t-.005:p.u0,longU?t+.005:p.u1,longU?p.v0:t-.005,longU?p.v1:t+.005,y+.002,y+.008,colors.grout);
+    for(let t=lo+1.2;t<hi;t+=1.2)box(g,l,longU?t-.005:p.u0,longU?t+.005:p.u1,longU?p.v0:t-.005,longU?p.v1:t+.005,y+(y===0?.047:.002),y+(y===0?.053:.008),colors.grout);
     const acrossLo=longU?p.v0:p.u0,acrossHi=longU?p.v1:p.u1;
-    for(let t=acrossLo+1.2;t<acrossHi;t+=1.2)box(g,l,longU?p.u0:t-.005,longU?p.u1:t+.005,longU?t-.005:p.v0,longU?t+.005:p.v1,y+.002,y+.008,colors.grout);
+    for(let t=acrossLo+1.2;t<acrossHi;t+=1.2)box(g,l,longU?p.u0:t-.005,longU?p.u1:t+.005,longU?t-.005:p.v0,longU?t+.005:p.v1,y+(y===0?.047:.002),y+(y===0?.053:.008),colors.grout);
     for(let t=lo+2;t<hi-.6;t+=5){
      const u=longU?t:(p.u0+p.u1)/2,v=longU?(p.v0+p.v1)/2:t;
      // Skip any fixture whose footprint would extend over a stair opening.
@@ -151,11 +146,12 @@
 
    for(const r of ramps){
     registerStairZone((r.x0+r.x1)/2,(r.z0+r.z1)/2,r.x1-r.x0,r.z1-r.z0,r.h0,r.h1,f,f+1,r.axis,r.axis==='x'?Math.sign(r.end.x-r.start.x):Math.sign(r.end.z-r.start.z));
-    // Closed risers follow the existing smooth walk ramp; dimensions are schematic.
+    // Closed risers follow the existing smooth walk ramp. A thin stepped waist
+    // leaves headroom below the next storey instead of filling a concrete wedge.
     const count=Math.ceil((r.h1-r.h0)/.15),runLength=Math.hypot(r.end.x-r.start.x,r.end.z-r.start.z),depth=runLength/count;
-    const stepBox=(point,width,height,length,colour)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?length:width,height,l.horizontal?width:length),colour);mesh.position.set(point.x,point.y,point.z);mesh.castShadow=mesh.receiveShadow=true;g.add(mesh);return mesh};
+    const stepBox=(point,width,height,length,colour)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?length:width,height,l.horizontal?width:length),colour);mesh.position.set(point.x,point.y,point.z);mesh.castShadow=mesh.receiveShadow=true;g.add(mesh);cameraVolume({x0:point.x-(l.horizontal?length:width)/2,x1:point.x+(l.horizontal?length:width)/2,z0:point.z-(l.horizontal?width:length)/2,z1:point.z+(l.horizontal?width:length)/2},point.y-height/2,point.y+height/2);return mesh};
     for(let i=0;i<count;i++){
-     const mid=M.rampPoint(r,(i+.5)/count),front=M.rampPoint(r,i/count),top=r.h0+(i+1)/count*(r.h1-r.h0),bottom=r.h0-.12;
+     const mid=M.rampPoint(r,(i+.5)/count),front=M.rampPoint(r,i/count),top=r.h0+(i+1)/count*(r.h1-r.h0),bottom=top-.3;
      stepBox({...mid,y:(top+bottom)/2},1.6,top-bottom,depth,colors.stair);
      stepBox({...front,y:top+.009},1.6,.018,.035,colors.edge);
      if(l.id==='gym-bld'){
@@ -204,6 +200,7 @@
   }
   for(const [mat,data] of batches){const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(data.p,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(data.n,3));if(data.uv.length)geo.setAttribute('uv',new THREE.Float32BufferAttribute(data.uv,2));const mesh=new THREE.Mesh(geo,mat);mesh.castShadow=mesh.receiveShadow=true;g.add(mesh)}
  }
+ const cameraIndex=CampusCollisionGrid.create(cameraVolumes,0,0);
  window.campusCollisionIndex=CampusCollisionGrid.create(WALL_COLLIDERS,AVATAR_COLLISION_RADIUS,AVATAR_HEIGHT);
  function floorAt(position){
   const y=position.y,l=layouts.find(l=>M.inside(l.bounds,position.x,position.z)&&insideFloor(l,position.x,position.z,Math.max(1,Math.round(y/FH)+1)));
@@ -225,8 +222,8 @@
   let state=buildingGraph?startupSearches.get(searchKey):null;if(!state){state=CampusGridSearch.create(a);if(buildingGraph)startupSearches.set(searchKey,state)}
   const stageFree=(x,z)=>CampusOutdoorPlan.onStage({x,z,y})&&Math.abs(CampusOutdoorPlan.ground({x,z})-y)<.15;
   const free=(x,z)=>{const wx=origin.x+x*step,wz=origin.z+z*step;
-   return ((wx>=-125&&wx<=115&&wz>=-100&&wz<=108)||CampusEntranceAvenue.contains(wx,wz))&&!checkWallCollision(wx,y,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.15:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)))};
-  const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||(stageSurface?!stageFree(x,z):!interior&&CampusOutdoorPlan.reserved({x,z}))||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.15)))return false}return true};
+   return ((wx>=-125&&wx<=115&&wz>=-100&&wz<=108)||CampusEntranceAvenue.contains(wx,wz))&&!checkWallCollision(wx,y,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.08:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)))};
+  const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||(stageSurface?!stageFree(x,z):!interior&&CampusOutdoorPlan.reserved({x,z}))||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.08)))return false}return true};
   const points=CampusGridSearch.path(state,b,free);if(points){const result=points.map(p=>({x:origin.x+p.x*step,y,z:origin.z+p.z*step}));
     if(result.length===1)return clear(start,end)?[{...start},{...end}]:null;
     if(!clear(start,result[1])||!clear(result.at(-2),end))return null;result[0]={...start};result[result.length-1]={...end};return result;
@@ -310,14 +307,15 @@
  function updateCamera(){
   const pose=M.cameraPose(avatarGroup.position,avatarAngle,walkPitch,currentMode==='firstperson',window.campusMouse?.distance||6.5),eye=new THREE.Vector3(avatarGroup.position.x,avatarGroup.position.y+1.55,avatarGroup.position.z),desired=new THREE.Vector3(pose.position.x,pose.position.y,pose.position.z);
   const l=layouts.find(l=>insideFloor(l,avatarGroup.position.x,avatarGroup.position.z,Math.max(1,Math.round(avatarGroup.position.y/FH)+1)));
-  if(l){desired.y=Math.min(desired.y,(Math.floor((avatarGroup.position.y+.1)/FH)+1)*FH-.3);if(currentMode==='avatar')desired.lerp(eye,.5)}
+  const inStair=l&&l.stairs.some(s=>M.inside(s.rect,avatarGroup.position.x,avatarGroup.position.z));
+  if(l){if(!inStair&&currentMode==='avatar')desired.y=Math.min(desired.y,(Math.floor((avatarGroup.position.y+.1)/FH)+1)*FH-.7);if(currentMode==='avatar')desired.lerp(eye,.5)}
   const fov=l?70:60;if(camera.fov!==fov){camera.fov=fov;camera.updateProjectionMatrix()}
   const cameraGround=p=>{let y=floorAt(p);for(const layout of layouts)for(const r of layout.ramps)if(M.inside(r,p.x,p.z)&&avatarGroup.position.y>=r.h0-.35&&avatarGroup.position.y<=r.h1+.35){const t=Math.max(0,Math.min(1,((r.axis==='x'?p.x:p.z)-(r.axis==='x'?r.start.x:r.start.z))/((r.axis==='x'?r.end.x:r.end.z)-(r.axis==='x'?r.start.x:r.start.z))));y=Math.max(y,r.h0+t*(r.h1-r.h0))}return y};
-  const clear=currentMode==='avatar'?CampusMouseModel.cameraClear(eye,desired,cameraGround,p=>window.campusCollisionIndex.pointHit(p.x,p.y,p.z)):1;
+  const clear=currentMode==='avatar'?CampusMouseModel.cameraClear(eye,desired,cameraGround,p=>window.campusCollisionIndex.pointHit(p.x,p.y,p.z)||cameraIndex.pointHit(p.x,p.y,p.z)):1;
   camera.position.copy(eye).lerp(desired,clear);controls.target.set(pose.target.x,pose.target.y,pose.target.z);camera.lookAt(controls.target);avatarGroup.visible=currentMode==='avatar'&&clear>.2;
  }
  let touch=null;renderer.domElement.addEventListener('touchstart',e=>{if(currentMode!=='bird'&&e.touches.length===1)touch={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});
  renderer.domElement.addEventListener('touchmove',e=>{if(!touch||currentMode==='bird')return;const p=e.touches[0];if(!p)return;applyManualCameraRotation(p.clientX-touch.x,p.clientY-touch.y);touch={x:p.clientX,y:p.clientY};e.preventDefault()},{passive:false});renderer.domElement.addEventListener('touchend',()=>touch=null);
  const roomAt=p=>{const f=Math.floor((p.y+.15)/FH)+1;for(const l of layouts){const q=l.local(p.x,p.z),r=l.rooms.find(r=>r.floor===f&&CampusSpatialPlan.contains(r,q.u,q.v));if(r)return r}return null};
- window.campusWalkWorld={layouts,graph,ground:floorAt,stepHeight,route,gridPath,updateCamera,roomAt,galleries,insideFloor};
+ window.campusWalkWorld={layouts,graph,ground:floorAt,stepHeight,route,gridPath,updateCamera,roomAt,galleries,insideFloor,cameraBlocked:p=>cameraIndex.pointHit(p.x,p.y,p.z)};
 })();

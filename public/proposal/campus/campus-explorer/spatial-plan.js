@@ -25,8 +25,8 @@ const CampusSpatialPlan = (() => {
   const co=(f,u0,u1,v0,v1)=>addRect(corridors,{floor:f,u0,u1,v0,v1});
   function addStair(id,name,u0,u1,v0,v1,side=sign,confidence='圖面位置／示意梯段'){
    const s=addRect(stairs,{id:`${b.id}-${id}`,name,u0,u1,v0,v1,floors:b.floors,confidence});
-   const cv=(v0+v1)/2,far=u0+2,near=u1-1.8,inner=u1-.9;
-   s.farU=far;s.nearU=near;s.innerU=inner;s.centerV=cv;s.sign=side;s.turnU=u0+1.1;
+   const cv=(v0+v1)/2,far=u0+2.5,near=u1-1.8,inner=u1-.9;
+   s.farU=far;s.nearU=near;s.innerU=inner;s.centerV=cv;s.sign=side;s.turnU=u0+1.35;
    s.hole={u0:u0+.2,u1:near,v0:cv-2.3,v1:cv+2.3};holes.push(s.hole);
    for(let f=1;f<b.floors;f++){
     const y=(f-1)*H;
