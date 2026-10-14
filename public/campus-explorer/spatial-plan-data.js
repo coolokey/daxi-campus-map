@@ -3,7 +3,7 @@
  */
 const CampusSpatialData = (() => {
  const room=(id,code,units=1,name)=>({id,spaceCode:code,kind:'room',units,name});
- const stair=(id,label='樓梯')=>({id,label,kind:'stair',len:6});
+ const stair=(id,label='樓梯')=>({id,label,kind:'stair',len:8});
  const wc=(units=.32)=>({kind:'wc',label:'廁所',units});
  const passage=(units=.5,label='穿堂')=>({kind:'passage',label,units});
  const vacant=(units=1,label='通道')=>({kind:'void',label,units});

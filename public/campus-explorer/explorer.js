@@ -1759,17 +1759,23 @@
         // 雙圓柱樓梯塔樓 (Twin Cylindrical Stair Towers)
         [-14, 14].forEach(offsetZ => {
           const tower = new THREE.Mesh(
-            new THREE.CylinderGeometry(4.6, 4.6, totalH + 1.8, 32),
+            new THREE.CylinderGeometry(4.6, 4.6, totalH + 1.8, 32, 1, true, Math.asin(1/4.6), Math.PI-2*Math.asin(1/4.6)),
             new THREE.MeshStandardMaterial({ color: 0xe89286 }) // 照片真實現況：粉橘紅細磁磚
           );
           tower.position.set(cfg.width / 2 - 1, (totalH + 1.8) / 2, offsetZ);
           tower.castShadow = true;
           bldGroup.add(tower);
+          // Keep the original exterior bulge, but no opaque back shell or caps
+          // may occupy the real interior stair/landing volume.
+          const capShape=new THREE.Shape(),capAngle=Math.acos(1/4.6);
+          capShape.absarc(0,0,4.6,-capAngle,capAngle,false);capShape.closePath();
+          const cap=new THREE.Mesh(new THREE.ShapeGeometry(capShape),tower.material);cap.rotation.x=-Math.PI/2;cap.position.set(cfg.width/2-1,totalH+1.8,offsetZ);cap.userData={buildingId:cfg.id,floorNum:cfg.floors,roof:true};bldGroup.add(cap);floorMeshes.push(cap);
+
 
           // 圓柱塔身 3 層樓環狀多格白色玻璃窗 (Multi-Pane Curved Panoramic Windows)
           for (let floorIdx = 1; floorIdx <= 3; floorIdx++) {
             const winBand = new THREE.Mesh(
-              new THREE.CylinderGeometry(4.65, 4.65, 1.6, 32, 1, false, -Math.PI / 2, Math.PI),
+              new THREE.CylinderGeometry(4.65, 4.65, 1.6, 32, 1, true, Math.asin(1/4.65), Math.PI-2*Math.asin(1/4.65)),
               new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 })
             );
             winBand.position.set(cfg.width / 2 - 1, (floorIdx - 0.5) * FH, offsetZ);
@@ -1778,7 +1784,7 @@
 
           // 塔樓底座半圓形不鏽鋼防護欄杆
           const baseRail = new THREE.Mesh(
-            new THREE.CylinderGeometry(4.9, 4.9, 1.1, 24, 1, true, -Math.PI / 2, Math.PI),
+            new THREE.CylinderGeometry(4.9, 4.9, 1.1, 24, 1, true, Math.asin(1/4.9), Math.PI-2*Math.asin(1/4.9)),
             new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.9, roughness: 0.1, side: THREE.DoubleSide })
           );
           baseRail.position.set(cfg.width / 2 - 1, 0.55, offsetZ);
@@ -1826,7 +1832,7 @@
       // 八年級南橫棟西側半圓弧樓梯塔 (平面圖特徵)
       if (cfg.id === "grade8-front") {
         const roundTower = new THREE.Mesh(
-          new THREE.CylinderGeometry(5.2, 5.2, totalH, 24, 1, false, Math.PI / 2, Math.PI),
+          new THREE.CylinderGeometry(5.2, 5.2, totalH, 24, 1, false, Math.PI, Math.PI),
           new THREE.MeshStandardMaterial({ color: cfg.color })
         );
         roundTower.position.set(-cfg.width / 2, totalH / 2, 0);
