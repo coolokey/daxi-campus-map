@@ -1,6 +1,6 @@
 /* Shared spatial model → geometry, collision, floor surfaces and navigation. */
 (() => {
- const M=CampusWalkMath,layouts=BUILDINGS_CONFIG.map(M.layout),graph={},roomTargets={},oldNodes={...NAV_NODES};
+ const M=CampusWalkMath,layouts=BUILDINGS_CONFIG.map(M.layout),galleryLayouts=CampusSpatialPlan.galleries(layouts),graph={},roomTargets={},oldNodes={...NAV_NODES};
  const node=(id,p,buildingId)=>{graph[id]={id,...p,buildingId,neighbors:[]};return id};
  const link=(a,b)=>{if(a!==b&&!graph[a].neighbors.includes(b)){graph[a].neighbors.push(b);graph[b].neighbors.push(a)}};
  const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.96});
@@ -28,8 +28,9 @@
  // Level guards around the stair void leave both flight mouths open.
  function landingGuard(g,l,u0,u1,v0,v1,y,colors){
   const barrier=box(g,l,u0,u1,v0,v1,y,y+.98,colors.steel,true);if(barrier)barrier.visible=false;
+  // Give the collision barrier a visible masonry base, as in the stair photos.
+  box(g,l,u0,u1,v0,v1,y,y+.68,colors.wall);
   box(g,l,u0,u1,v0,v1,y+.91,y+.98,colors.handrail);
-  box(g,l,u0,u1,v0,v1,y+.45,y+.49,colors.steel);
   const alongU=u1-u0>v1-v0,length=alongU?u1-u0:v1-v0,count=Math.max(1,Math.ceil(length/.6));
   for(let i=0;i<=count;i++){const u=alongU?u0+(u1-u0)*i/count:(u0+u1)/2,v=alongU?(v0+v1)/2:v0+(v1-v0)*i/count;box(g,l,u-.022,u+.022,v-.022,v+.022,y,y+.95,colors.steel);}
  }
@@ -53,6 +54,9 @@
   if(c.doorSide===side){
    const half=Math.min(.95,(end-start)/2-.16);
    wall(start,center-half,y,y+FH,paint);wall(center+half,end,y,y+FH,paint);wall(center-half,center+half,y+2.3,y+FH,paint);
+  }else if(!exposed||c.kind==='wc'){
+   // Internal room partitions are real walls, not exterior-style windows.
+   wall(start,end,y,y+FH,paint);
   }else{
    const solid=wall(start,end,y,y+FH,colors.wall);if(solid)solid.visible=false;
    wall(start,end,y,y+1.05,colors.blue,false);wall(start,end,y+2.65,y+FH,paint,false);
@@ -62,6 +66,19 @@
   const trim=(a,b)=>alongU?box(g,l,a,b,fixed-.104,fixed+.104,y+.005,y+.125,colors.skirt):box(g,l,fixed-.104,fixed+.104,a,b,y+.005,y+.125,colors.skirt);
   if(c.doorSide===side){const half=Math.min(.95,(end-start)/2-.16);trim(start,center-half);trim(center+half,end)}else trim(start,end);
 
+ }
+ function stairEnclosure(g,l,s,y){
+  const colors=surfaceMaterials(l),stop=s.nearU-.14;
+  // Thin side walls leave the full 1.8m exit landing open to the corridor.
+  for(const v of [s.v0,s.v1])box(g,l,s.u0,stop,v-.09,v+.09,y,y+FH,colors.wall,true);
+  // The detached history room has a ground-floor entrance through the north
+  // stair boundary. Preserve actual entrance crossings when closing the shaft.
+  const doors=y===0?l.entrances.flatMap(e=>{const a=l.local(e.inside.x,e.inside.z),b=l.local(e.outside.x,e.outside.z);if((a.u-s.u0)*(b.u-s.u0)>0||Math.abs(b.u-a.u)<1e-6)return [];const t=(s.u0-a.u)/(b.u-a.u),v=a.v+(b.v-a.v)*t;return v>s.v0&&v<s.v1?[{v0:v-1,v1:v+1}]:[]}):[];
+  const wall=(a,b,y0,y1,paint)=>{const cuts=[a,b,...doors.flatMap(d=>[Math.max(a,d.v0),Math.min(b,d.v1)]).filter(v=>v>a&&v<b)].sort((a,b)=>a-b);for(let i=1;i<cuts.length;i++){const middle=(cuts[i-1]+cuts[i])/2,bottom=doors.some(d=>middle>d.v0&&middle<d.v1)?Math.max(y0,y+2.3):y0;box(g,l,s.u0-.09,s.u0+.09,cuts[i-1],cuts[i],bottom,y1,paint,true);}},half=Math.min(1.6,(s.v1-s.v0)/2-.3);
+  wall(s.v0,s.v1,y,y+1.05,colors.wall);wall(s.v0,s.v1,y+2.65,y+FH,colors.wall);
+  wall(s.v0,s.centerV-half,y+1.05,y+2.65,colors.wall);wall(s.centerV+half,s.v1,y+1.05,y+2.65,colors.wall);
+  wall(s.centerV-half,s.centerV+half,y+1.05,y+2.65,colors.glass);
+  for(let v=s.centerV-half;v<=s.centerV+half+.001;v+=half/2){const bottom=doors.some(d=>v+.025>d.v0&&v-.025<d.v1)?y+2.3:y+1.05;box(g,l,s.u0-.105,s.u0+.105,v-.025,v+.025,bottom,y+2.65,colors.steel);}
  }
  function details(g,l,r,y){
   const colors=surfaceMaterials(l);
@@ -108,6 +125,7 @@
     for(const side of ['u0','u1','v0','v1'])roomWall(g,l,r,side,y);
     if(r.kind==='room')details(g,l,r,y);
    }
+   for(const s of l.stairs)stairEnclosure(g,l,s,y);
    if(f>1)for(const s of l.stairs){
     const h=s.hole;
     for(const v of [h.v0-.04,h.v1+.04])landingGuard(g,l,h.u0-.04,h.u1+.04,v-.03,v+.03,y,colors);
@@ -115,17 +133,19 @@
     for(const [a,b] of [[-2.34,-2.05],[-.45,.45],[2.05,2.34]])landingGuard(g,l,s.nearU+.01,s.nearU+.07,s.centerV+a,s.centerV+b,y,colors);
    }
    // Corridor edges: split against footprint intersections so internal joints stay open.
-   const parts=l.footprints.filter(p=>p.floor===f),us=[...new Set(parts.flatMap(p=>[p.u0,p.u1]))].sort((a,b)=>a-b),vs=[...new Set(parts.flatMap(p=>[p.v0,p.v1]))].sort((a,b)=>a-b);
+   const parts=l.footprints.filter(p=>p.floor===f),divisions=[...parts,...l.corridors.filter(p=>p.floor===f)],us=[...new Set(divisions.flatMap(p=>[p.u0,p.u1]))].sort((a,b)=>a-b),vs=[...new Set(divisions.flatMap(p=>[p.v0,p.v1]))].sort((a,b)=>a-b);
    const present=(u,v)=>parts.some(p=>u>p.u0+1e-5&&u<p.u1-1e-5&&v>p.v0+1e-5&&v<p.v1-1e-5);
    function edge(alongU,fixed,a,b){
     const u=alongU?(a+b)/2:fixed,v=alongU?fixed:(a+b)/2;
     const corridor=l.corridors.some(p=>p.floor===f&&CampusSpatialPlan.contains(p,u,v));if(!corridor)return;
     const min=alongU?a:fixed-.09,max=alongU?b:fixed+.09,v0=alongU?fixed-.09:a,v1=alongU?fixed+.09:b;
-    // Open corridor ends, and all 1F access edges. Upper corridor parapets stay solid.
-    const open=f===1||(!l.b.spatialProfile.shape&& !alongU);
+    // Keep ground-floor access and actual gallery junctions open. Exposed upper
+    // corridor ends need visible parapets instead of an invisible support limit.
+    const point=l.world(u,v),galleryJoin=galleryLayouts.some(q=>q.footprints.some(p=>p.floor===f&&M.inside(p.rect,point.x,point.z)));
+    const open=f===1||galleryJoin;
     if(!open)box(g,l,min,max,v0,v1,y,y+1.05,colors.exterior,true);
     // Space columns away from doors and corridor ends.
-    for(let t=a+1;t<b-1;t+=6)if(f!==1)box(g,l,alongU?t-.13:fixed-.13,alongU?t+.13:fixed+.13,alongU?fixed-.13:t-.13,alongU?fixed+.13:t+.13,y,y+FH,colors.exterior,true);
+    for(let t=a+1;t<b-1;t+=6)if(f!==1&&!galleryJoin)box(g,l,alongU?t-.13:fixed-.13,alongU?t+.13:fixed+.13,alongU?fixed-.13:t-.13,alongU?fixed+.13:t+.13,y,y+FH,colors.exterior,true);
    }
    for(const v of vs)for(let i=1;i<us.length;i++){const u=(us[i]+us[i-1])/2;if(present(u,v-.02)!==present(u,v+.02))edge(true,v,us[i-1],us[i]);}
    for(const u of us)for(let i=1;i<vs.length;i++){const v=(vs[i]+vs[i-1])/2;if(present(u-.02,v)!==present(u+.02,v))edge(false,u,vs[i-1],vs[i]);}
@@ -151,8 +171,8 @@
    const g=new THREE.Group();g.name=`floor-stairs-${f+1}`;g.userData={buildingId:l.id,floorNum:f+1};scene.add(g);floorMeshes.push(g);
    const ramps=l.ramps.filter(r=>r.stairId===s.id&&r.floor===f),p=l.platforms.find(p=>p.stairId===s.id&&p.floor===f);
    box(g,l,p.u0,p.u1,p.v0,p.v1,p.y-.16,p.y,colors.stair);
-   box(g,l,s.u0+.2,s.u0+.27,s.centerV-2.25,s.centerV+2.25,p.y+.85,p.y+.93,colors.handrail);
-   for(let v=s.centerV-2.2;v<=s.centerV+2.2;v+=.55)box(g,l,s.u0+.215,s.u0+.255,v-.022,v+.022,p.y,p.y+.9,colors.steel);
+   landingGuard(g,l,p.u0,p.u0+.07,p.v0,p.v1,p.y,colors);
+   for(const v of [p.v0,p.v1])landingGuard(g,l,p.u0,p.u1,v-.035,v+.035,p.y,colors);
    if(l.id==='gym-bld'){
     for(let v=s.centerV-1.9;v<s.centerV+2.3;v+=.4)box(g,l,s.u0+.2,s.farU+.08,v-.004,v+.004,p.y+.002,p.y+.008,colors.grout);
     for(let u=s.u0+.6;u<s.farU+.08;u+=.4)box(g,l,u-.004,u+.004,s.centerV-2.3,s.centerV+2.3,p.y+.002,p.y+.008,colors.grout);
@@ -197,7 +217,7 @@
   }
  }
  // Administrative galleries are compiled once and shared with the map and ground engine.
- const galleries=CampusSpatialPlan.galleries(layouts),front=layouts.find(l=>l.id==='admin-front'),back=layouts.find(l=>l.id==='admin-back');
+ const galleries=galleryLayouts,front=layouts.find(l=>l.id==='admin-front'),back=layouts.find(l=>l.id==='admin-back');
  for(const l of galleries){
   const colors=surfaceMaterials(l);
   for(let f=1;f<=l.b.floors;f++){
