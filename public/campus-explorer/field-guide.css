@@ -153,3 +153,7 @@
  .field-guide #guide-panel{top:12px;bottom:12px;max-height:calc(100dvh - 24px)}
  .field-guide #guide-route{top:62px;right:10px;left:auto;transform:none;width:280px;max-height:calc(100dvh - 135px)}
 }
+
+/* The HTML cover must obscure the scene before modal initialization. */
+#guide-landing[open]{z-index:10000}
+#guide-landing button:disabled{cursor:wait;opacity:.65}
