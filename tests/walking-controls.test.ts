@@ -24,6 +24,8 @@ it('teacher outfits have distinct silhouettes and hide student uniform trims',()
 });
 beforeAll(()=>{
  dom=new JSDOM(readFileSync(root+'index.html','utf8'),{url:'https://example.test',runScripts:'outside-only',pretendToBeVisual:true});
+ // These engine tests exercise movement after the visitor has entered the guide.
+ dom.window.document.getElementById('guide-landing')?.removeAttribute('open');
  const w=dom.window as any;context=dom.getInternalVMContext();
  w.requestAnimationFrame=()=>1;w.alert=()=>{};w.matchMedia=()=>({matches:false});
  w.HTMLCanvasElement.prototype.getContext=function(){return new Proxy({canvas:this,measureText:(t:string)=>({width:t.length*15}),createLinearGradient:()=>({addColorStop(){}}),createRadialGradient:()=>({addColorStop(){}})},{get:(o,k)=>k in o?o[k]:()=>{}})};

@@ -4,6 +4,8 @@ import { JSDOM } from 'jsdom';
 
 function setup(width = 390, query = '') {
  const dom = new JSDOM(`<body><div id="welcome-card"></div><div class="search-box"><input id="search-input"></div><div class="top-actions"><div id="campus-main-controls"><button id="btn-walk"></button></div></div><div id="floor-selector"></div><div id="scene-toolbar"></div><div id="nav-hud"><div id="hud-target-name"></div><span id="hud-dist-val">0</span><button id="btn-auto-walk">自動帶路</button><button id="btn-cancel-nav">取消</button></div></body>`, { runScripts: 'outside-only', url: `https://campus.example/${query}` });
+ const coverHtml=readFileSync('public/campus-explorer/index.html','utf8').match(/<dialog id="guide-landing"[\s\S]*?<\/dialog>/)![0];
+ dom.window.document.body.insertAdjacentHTML('afterbegin',coverHtml);
  const w = dom.window as any;
  w.innerWidth = width;
  w.HTMLDialogElement.prototype.showModal = function() { this.setAttribute('open', ''); };
