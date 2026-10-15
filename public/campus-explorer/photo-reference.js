@@ -12,7 +12,7 @@
    ['hill-2019','後山與擋土牆',oldDate,'斜面分段擋土牆及林木邊界；地形高度為示意。','track']
   ]},
   admin:{label:'行政大樓',items:[
-   ['admin-front','前立面與花園',unknown,'與全區空拍 05／11 的凹廊、樹列及活動中心相鄰關係交叉定位為行政大樓；不是由招牌直接辨識。','admin-g89-staff'],
+   ['admin-front','前立面與花園',unknown,'依使用者提供的各棟大樓名稱說明 PDF 圈選確認為行政大樓；以空拍與門面照片交叉核對。','admin-g89-staff'],
    ['admin-entry','門廊與坡道',unknown,'玻璃門、低台階、右側坡道與金屬扶手。入口高度採導覽示意，不代表實測無障礙路線。','admin-g89-staff'],
    ['admin-roof','屋面與窗組',unknown,'紅瓦主坡面、藍綠檐口與成組窗框；房名及樓層沿用 115 平面圖。','admin-g89-staff'],
    ['admin-gallery','連廊與側牆',unknown,'抬高連廊及柱框可供外觀對照；黃色框架設備用途未確認。','academic']
