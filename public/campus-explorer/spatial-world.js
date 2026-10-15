@@ -6,6 +6,7 @@
  const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.96});
  const colors={wall:material(0xc9c5b9),blue:material(0x8da9ae),floor:material(0xa6aaa3),stair:material(0xb8bab0),wood:material(0x956941),green:material(0x315748),steel:material(0x61717a),paper:material(0xcacbbb),screen:material(0x293f48),light:material(0xfff9dd),glass:new THREE.MeshStandardMaterial({color:0x8fa5a9,transparent:true,opacity:.45})};
  colors.light.emissive.setHex(0x8a8467);colors.light.emissiveIntensity=.4;
+ const techWindowFrame=material(0x4d8773);
  const safetyMeshMaterial=new THREE.LineBasicMaterial({color:0x7f8880,transparent:true,opacity:.45});
  const surfaces=new Map(),cameraVolumes=[];
  const cameraVolume=(r,y0,y1)=>cameraVolumes.push({minX:r.x0,maxX:r.x1,minZ:r.z0,maxZ:r.z1,minY:y0,maxY:y1});
@@ -68,6 +69,11 @@
   }else if(!exposed||c.kind==='wc'){
    // Internal room partitions are real walls, not exterior-style windows.
    wall(start,end,y,y+FH,paint);
+  }else if(l.id==='art-building'){
+   const solid=wall(start,end,y,y+FH,paint);if(solid)solid.visible=false;
+   wall(start,end,y,y+1.1,paint,false);wall(start,end,y+2.5,y+FH,paint,false);
+   const count=Math.max(1,Math.floor((end-start)/3)),pitch=(end-start)/count;
+   for(let i=0;i<count;i++){const a=start+i*pitch,b=a+pitch,half=Math.min(1.05,pitch/2-.22),center=(a+b)/2;wall(a,center-half,y+1.1,y+2.5,paint,false);wall(center+half,b,y+1.1,y+2.5,paint,false);wall(center-half,center+half,y+1.1,y+2.5,colors.glass,false);}
   }else{
    const solid=wall(start,end,y,y+FH,colors.wall);if(solid)solid.visible=false;
    wall(start,end,y,y+1.05,colors.windowSill||colors.blue,false);wall(start,end,y+2.65,y+FH,paint,false);
@@ -189,6 +195,45 @@
      if(l.holes.some(h=>[beam,lamp].some(q=>q.u0<h.u1&&q.u1>h.u0&&q.v0<h.v1&&q.v1>h.v0)))continue;
      box(ceiling,l,longU?u-.12:p.u0,longU?u+.12:p.u1,longU?p.v0:v-.12,longU?p.v1:v+.12,y+FH-.58,y+FH-.4,colors.ceiling);
      box(ceiling,l,longU?u-.7:u-.09,longU?u+.7:u+.09,longU?v-.09:v-.7,longU?v+.09:v+.7,y+FH-.64,y+FH-.59,colors.light);
+    }
+   }
+  }
+  if(l.id==='art-building'){
+   const v0=-l.D/2,c0=v0+5.2,c1=c0+2.8,cv=(c0+c1)/2;
+   for(let f=1;f<=l.b.floors;f++){
+    const y=(f-1)*FH,g=new THREE.Group();g.name=`floor-art-envelope-${f}`;g.userData={buildingId:l.id,floorNum:f};scene.add(g);floorMeshes.push(g);
+    // Photo: a closed grey tower with separate windows, not open stacked galleries.
+    box(g,l,-l.L/2,l.L/2,v0-.17,v0-.07,y,y+1.1,colors.exterior,true);
+    box(g,l,-l.L/2,l.L/2,v0-.17,v0-.07,y+2.5,y+FH,colors.exterior,true);
+    const pitch=l.L/3;
+    for(let i=0;i<3;i++){const a=-l.L/2+i*pitch,b=a+pitch,center=(a+b)/2;
+     box(g,l,a,center-1,v0-.17,v0-.07,y+1.1,y+2.5,colors.exterior,true);box(g,l,center+1,b,v0-.17,v0-.07,y+1.1,y+2.5,colors.exterior,true);
+     box(g,l,center-1,center+1,v0-.17,v0-.07,y+1.1,y+2.5,colors.glass,true);
+    }
+    for(const side of [-1,1]){
+     const u=side*(l.L/2+.1),center=(v0+c0)/2;
+     box(g,l,u-.05,u+.05,v0,c0,y,y+1.1,colors.exterior,true);box(g,l,u-.05,u+.05,v0,c0,y+2.5,y+FH,colors.exterior,true);
+     box(g,l,u-.05,u+.05,v0,center-1,y+1.1,y+2.5,colors.exterior,true);box(g,l,u-.05,u+.05,center+1,c0,y+1.1,y+2.5,colors.exterior,true);box(g,l,u-.05,u+.05,center-1,center+1,y+1.1,y+2.5,colors.glass,true);
+     if(f===1){for(const [a,b] of [[c0,cv-1],[cv+1,c1]])box(g,l,u-.05,u+.05,a,b,y,y+FH,colors.exterior,true);box(g,l,u-.05,u+.05,cv-1,cv+1,y+2.3,y+FH,colors.exterior,true);}
+     else{box(g,l,u-.05,u+.05,c0,c1,y,y+1.1,colors.exterior,true);box(g,l,u-.05,u+.05,c0,c1,y+2.5,y+FH,colors.exterior,true);box(g,l,u-.05,u+.05,c0,c1,y+1.1,y+2.5,colors.glass,true);}
+    }
+   }
+  }
+  if(l.id==='tech-building'){
+   const nose=l.facadeFeatures.roundedNose;
+   for(let f=1;f<=l.b.floors;f++){
+    const y=(f-1)*FH,g=new THREE.Group();g.name=`floor-tech-facade-${f}`;g.userData={buildingId:l.id,floorNum:f};scene.add(g);floorMeshes.push(g);
+    const p=l.world(nose.u,nose.v,y+FH/2),body=new THREE.Mesh(new THREE.CylinderGeometry(nose.radius,nose.radius,FH,24,1,false,0,Math.PI),colors.exterior);body.position.set(p.x,p.y,p.z);body.castShadow=body.receiveShadow=true;body.name='tech-rounded-junction';g.add(body);
+    // Closed semicircular outboard volume; use the same curve for visible shell and physics.
+    for(let u=nose.u-nose.radius;u<nose.u+nose.radius-.001;u+=.2){
+     const end=Math.min(nose.u+nose.radius,u+.2),v=nose.v+Math.sqrt(Math.max(0,nose.radius**2-((u+end)/2-nose.u)**2));
+     const r=l.rect(u,end,nose.v-.08,v);registerWallCollider(r.x0,r.x1,r.z0,r.z1,y,y+FH);WALL_COLLIDERS.at(-1).buildingId=l.id;cameraVolume(r,y,y+FH);
+    }
+    if(f===2)for(let u=-l.L/2;u<l.L/2-.01;u+=.8){
+     if(Math.abs(u+.4-nose.u)<nose.radius+.4)continue;
+     box(g,l,u+.04,Math.min(u+.76,l.L/2-.04),nose.v+.1,nose.v+.15,y+1.15,y+2.7,colors.glass);
+     for(const h of [1.15,2.7])box(g,l,u,Math.min(u+.8,l.L/2),nose.v+.09,nose.v+.18,y+h-.055,y+h+.055,techWindowFrame);
+     box(g,l,u,u+.055,nose.v+.09,nose.v+.18,y+1.15,y+2.7,techWindowFrame);
     }
    }
   }

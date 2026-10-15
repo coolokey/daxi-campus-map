@@ -38,7 +38,7 @@ it('tags new roofs for existing floor and cutaway filters with correct four/two-
 });
 it('keeps every technology roof vertex inside the existing top-floor footprints including the courtyard opening',()=>{
  const s=fixture(),l=s.layouts.find((l:any)=>l.id==='tech-building'),g=s.scene.getObjectByName('photo-roof-tech-building')!;expect(g).toBeTruthy();g.updateMatrixWorld(true);
- g.traverse((o:any)=>{if(!o.isMesh)return;const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++){const q=new THREE.Vector3().fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld);expect(l.footprints.some((f:any)=>f.floor===2&&q.x>=f.rect.x0-1e-5&&q.x<=f.rect.x1+1e-5&&q.z>=f.rect.z0-1e-5&&q.z<=f.rect.z1+1e-5)).toBe(true)}});s.dom.window.close();
+ g.traverse((o:any)=>{if(!o.isMesh)return;const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++){const q=new THREE.Vector3().fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld);const n=l.facadeFeatures.roundedNose,local=l.local(q.x,q.z);expect(l.footprints.some((f:any)=>f.floor===2&&q.x>=f.rect.x0-1e-5&&q.x<=f.rect.x1+1e-5&&q.z>=f.rect.z0-1e-5&&q.z<=f.rect.z1+1e-5)||Math.hypot(local.u-n.u,local.v-n.v)<=n.radius+1e-5).toBe(true)}});s.dom.window.close();
 });
 it('preserves room geometry navigation and collision data and uses matte roofs',()=>{
  const s=fixture();expect(s.scene.getObjectByName('photo-roof-art-building')).toBeTruthy();expect(JSON.stringify({layouts:s.layouts,graph:s.w.campusWalkWorld.graph,colliders:s.w.WALL_COLLIDERS})).toBe(s.before);

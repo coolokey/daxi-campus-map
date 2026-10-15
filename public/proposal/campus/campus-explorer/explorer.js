@@ -1382,8 +1382,8 @@
       }
       scene.add(bw);
     }
-    createBreezeway(-12, 32, 6, 14); // 行政前後棟中央通道
-    createBreezeway(-5, 32, 8, 4);   // 行政棟通往中庭通廊
+    // 行政大樓至後方校舍的窄橋由共享 spatial-plan / spatial-world 生成。
+    // 舊的一樓大頂棚會穿過二樓橋面以上的行走空間，故不再疊加。
     createBreezeway(15, 8, 26, 4);   // 九年級與八年級中棟北端橫向通廊
     createBreezeway(15, 52, 26, 4);  // 九年級與八年級中棟南端橫向通廊
     createBreezeway(12, 2, 4, 8);    // 通往健康中心棟通廊
@@ -2087,7 +2087,7 @@
   "bb-gate": { id: "bb-gate", x: 12, y: 0, z: -38, neighbors: ["vb-outer", "lan-pond-gate", "driveway-n1", "health-porch"] },
   "lan-pond-gate": { id: "lan-pond-gate", x: -18, y: 0, z: -66, neighbors: ["vb-outer", "bb-gate"] },
 
-  // 4. 行政大樓 (前棟與後棟)
+  // 4. 行政大樓與後方處室區（舊節點 ID 保留相容）
   "admin-f-porch": { id: "admin-f-porch", x: -12, y: 0, z: 50, neighbors: ["plaza-center", "statue-node", "admin-f-1f-w", "admin-f-1f-e", "admin-f-stair-1f", "admin-bridge"] },
   "admin-f-1f-w": { id: "admin-f-1f-w", x: -18, y: 0, z: 44, neighbors: ["admin-f-porch"] },
   "admin-f-1f-e": { id: "admin-f-1f-e", x: -6, y: 0, z: 44, neighbors: ["admin-f-porch"] },
@@ -3274,8 +3274,8 @@
         let miniName = cfg.name;
         if (cfg.id === "gym-bld") miniName = "活動中心";
         else if (cfg.id === "recycle-bld") miniName = "回收";
-        else if (cfg.id === "admin-front") miniName = "行政前棟";
-        else if (cfg.id === "admin-back") miniName = "行政後棟";
+        else if (cfg.id === "admin-front") miniName = "行政大樓";
+        else if (cfg.id === "admin-back") miniName = "後方處室區";
         else if (cfg.id === "health-bld") miniName = "健康/合作";
         else if (cfg.id === "grade8-front") miniName = "八年級(南棟)";
         else if (cfg.id === "grade9-back") miniName = "九年級";

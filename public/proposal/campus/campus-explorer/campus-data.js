@@ -48,18 +48,18 @@ const FH = 3.6; // Floor Height in meters
     ]
   },
 
-  // 3. 行政大樓 (前棟, 南橫棟)
+  // 3. 行政大樓：PDF 圈選的單一矩形主體（ID 保留相容）
   {
     id: "admin-front",
-    name: "行政大樓 (前棟)",
+    name: "行政大樓",
     category: "admin",
     color: 0xc7c4b9,
     roofColor: 0xa66b5c,
     hasPitchedRoof: true,
     x: -12, z: 44, width: 26, depth: 10, floors: 3,
     stairs: [
-      { x: -22, z: 44, name: "行政前棟西側樓梯", floors: 3 },
-      { x: -2, z: 44, name: "行政前棟東側樓梯", floors: 3 }
+      { x: -22, z: 44, name: "行政大樓西側樓梯", floors: 3 },
+      { x: -2, z: 44, name: "行政大樓東側樓梯", floors: 3 }
     ],
     rooms: [
       { id: "admin-g89-staff", code: "A1-01", name: "八、九年級導師室 (1F)", floor: 1, node: "admin-f-1f-w", cat: "admin" },
@@ -72,18 +72,18 @@ const FH = 3.6; // Floor Height in meters
     ]
   },
 
-  // 4. 行政大樓 (後棟, 北橫棟)
+  // 4. 後方桃米色屋頂校舍：按既有處室用途標示，非第二棟行政大樓
   {
     id: "admin-back",
-    name: "行政大樓 (後棟)",
+    name: "學務・總務等處室區",
     category: "admin",
     color: 0xc7c4b9,
     roofColor: 0xa66b5c,
     hasPitchedRoof: true,
-    x: -12, z: 20, width: 26, depth: 10, floors: 3,
+    x: -12, z: 20, width: 22, depth: 9, floors: 3,
     stairs: [
-      { x: -22, z: 20, name: "行政後棟西側樓梯", floors: 3 },
-      { x: -2, z: 20, name: "行政後棟東側樓梯", floors: 3 }
+      { x: -22, z: 20, name: "後方處室區西側樓梯", floors: 3 },
+      { x: -2, z: 20, name: "後方處室區東側樓梯", floors: 3 }
     ],
     rooms: [
       { id: "student-affairs", code: "B1-01", name: "學務處 (1F)", floor: 1, node: "admin-b-1f-w", cat: "admin" },
@@ -278,9 +278,9 @@ const FH = 3.6; // Floor Height in meters
     color: 0xc9bbb6,
     roofColor: 0x896774,
     // 1151015 aerials: compact four-storey tower immediately south of technology.
-    x: 74, z: 34, width: 14, depth: 18, floors: 4,
+    x: 84, z: 31.8, width: 11.2, depth: 12.8, floors: 4,
     stairs: [
-      { x: 68, z: 34, name: "藝術館主樓梯間", floors: 4 }
+      { x: 80, z: 31.8, name: "藝術館主樓梯間", floors: 4 }
     ],
     rooms: [
       { id: "broadwood", code: "ART1-BW", name: "樂活體能教室 (1F)", floor: 1, node: "art-1f-bw", cat: "sports" },

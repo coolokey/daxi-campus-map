@@ -71,14 +71,15 @@ const CampusSpatialPlan = (() => {
    entrances.push({floor:1,inside:world(0,16),outside:world(0,21.3),path:[world(0,16),world(0,17),world(0,17.5,.12),world(0,18.3,.12),world(0,19,.08),world(0,19.7,.04),world(0,20.5),world(0,21.3)]});
   }else if(b.id==='art-building'){
    displayRows.push({id:'main',label:'圖面左 → 右',axis:'v',start:-D/2,end:D/2});
+   const corridor0=-D/2+5.2,corridor1=corridor0+2.8,cv=(corridor0+corridor1)/2;
    for(let f=1;f<=b.floors;f++){
-    fp(f,-L/2,L/2,-D/2,D/2);co(f,-L/2,L/2,-2,1);
-    addCell({kind:'stair',id:'main',label:'西側樓梯'},f,-4,4,-D/2,-2,'main');
-    addCell({kind:'passage',label:'走廊'},f,-L/2,L/2,-2,1,'main');
-    addCell({...b.rooms.find(r=>r.floor===f),kind:'room'},f,-L/2,L/2,1,D/2,'main','v0',-.5);
+    fp(f,-L/2,L/2,-D/2,D/2);co(f,-L/2,L/2,corridor0,corridor1);
+    addCell({kind:'stair',id:'main',label:'西側樓梯'},f,-4,4,-D/2,corridor0,'main');
+    addCell({kind:'passage',label:'走廊'},f,-L/2,L/2,corridor0,corridor1,'main');
+    addCell({...b.rooms.find(r=>r.floor===f),kind:'room'},f,-L/2,L/2,corridor1,D/2,'main','v0',cv);
    }
-   addStair('main','藝術館西側樓梯',-4,4,-D/2,-2,1);
-   entrances.push({floor:1,inside:world(L/2-.6,-.5),outside:world(L/2+1.2,-.5)});
+   addStair('main','藝術館西側樓梯',-4,4,-D/2,corridor0,1);
+   entrances.push({floor:1,inside:world(L/2-.6,cv),outside:world(L/2+1.2,cv)});
   }else if(!p.shape){
    displayRows.push({id:'main',label:horizontal?'圖面左 → 右':'圖面上 → 下',axis:'u',start:-L/2,end:L/2});
    for(let f=1;f<=b.floors;f++){
@@ -147,27 +148,26 @@ const CampusSpatialPlan = (() => {
     entrances.push({floor:1,inside:world(south+1.4,left+1),outside:world(south+1.4,left-1.2)});
    }
    if(p.shape==='tech'){
-    const east=B-5,inner=east-2.8,north=a+6,south=A-8;
-    displayRows.push({id:'north',label:'北翼・圖面左 → 右',axis:'v',start:d,end:B},{id:'east',label:'東翼・圖面上 → 下',axis:'u',start:a,end:A},{id:'south',label:'南翼・圖面左 → 右',axis:'v',start:d,end:B});
+    // A broad main body and one projecting narrow wing, as in the aerials.
+    // Room IDs survive; the previous north/east/south courtyard is removed.
+    const join=A-8,c0=B-8,c1=c0+2.8,cv=(c0+c1)/2,stairEnd=a+8;
+    displayRows.push({id:'main',label:'寬主體',axis:'u',start:a,end:join},{id:'wing',label:'綠窗帶長翼',axis:'u',start:join,end:A});
     for(let f=1;f<=b.floors;f++){
-     fp(f,a,north,d,B);fp(f,south,A,d,B);fp(f,a,A,inner,B);co(f,north-2.8,north,d,B);co(f,south,south+2.8,d,east);co(f,a,A,inner,east);
-     const byId=id=>({...b.rooms.find(r=>r.id===id),kind:'room'}),half=(d+inner)/2;
-     if(f===1){addCell(byId('audiovisual-1f'),f,a,north-2.8,d,half,'north','u1',north-1.4);addCell(byId('life-tech-1'),f,a,north-2.8,half,inner,'north','u1',north-1.4);}
-     else{addCell(byId('tech-nw-2'),f,a,north-2.8,d,d+(inner-d)*.25,'north','u1',north-1.4);addCell(byId('physics-lab'),f,a,north-2.8,d+(inner-d)*.25,inner,'north','u1',north-1.4);}
-     addCell(byId(f===1?'tech-sw-1':'maker-lab'),f,south+2.8,A,d,inner-6,'south','u0',south+1.4);
-     addCell({kind:'wc',label:'廁所'},f,south+2.8,A,inner-6,inner-3,'south','u0',south+1.4);
-     addCell({kind:'stair',label:'科技館樓梯'},f,south,A,east+.2,B,'south');
-     const mid=(a+A)/2;
-     addCell(byId(f===1?'life-tech-2':'tech-smart'),f,a,mid,east,B,'east','v0',east-1.4);
-     addCell(byId(f===1?'computer-lab-1':'computer-lab-2'),f,mid,south,east,B,'east','v0',east-1.4);
-     addCell({kind:'passage',label:'通廊'},f,north,south,d,inner,'courtyard');
+     fp(f,a,join,d,B);fp(f,join,A,c0,B);co(f,a,A,c0,c1);
+     const byId=id=>({...b.rooms.find(r=>r.id===id),kind:'room'}),ids=f===1?['audiovisual-1f','life-tech-1','tech-sw-1']:['tech-nw-2','physics-lab','maker-lab'];
+     const unit=(join-a)/3;
+     ids.forEach((id,i)=>addCell(byId(id),f,a+i*unit,a+(i+1)*unit,d,c0,'main','v1',cv));
+     addCell({kind:'stair',label:'科技館樓梯'},f,a,stairEnd,c1,B,'main');
+     addCell({kind:'wc',label:'廁所'},f,stairEnd,join,c1,B,'main','v0',cv);
+     const wing=f===1?['life-tech-2','computer-lab-1']:['tech-smart','computer-lab-2'];
+     wing.forEach((id,i)=>addCell(byId(id),f,join+i*4,join+(i+1)*4,c1,B,'wing','v0',cv));
     }
-    addStair('main','科技館南翼樓梯',south,A,east+.2,B,-1);
-    entrances.push({floor:1,inside:world(north-1.4,d+1),outside:world(north-1.4,d-1.2)},{floor:1,inside:world(south+1.4,d+1),outside:world(south+1.4,d-1.2)});
+    addStair('main','科技館主體樓梯',a,stairEnd,c1,B,1);
+    entrances.push({floor:1,inside:world(a+.6,cv),outside:world(a-1.2,cv)},{floor:1,inside:world(A-.6,cv),outside:world(A+1.2,cv)});
    }
   }
   const bounds={x0:Math.min(...footprints.map(p=>p.rect.x0)),x1:Math.max(...footprints.map(p=>p.rect.x1)),z0:Math.min(...footprints.map(p=>p.rect.z0)),z1:Math.max(...footprints.map(p=>p.rect.z1))};
-  return{id:b.id,b,horizontal,L,D,sign,cV,wallV,outerV,world,local,rect,bounds,cells,corridors,footprints,displayRows,stairs,ramps,platforms,holes,rooms:cells.filter(c=>c.kind==='room'),entrances,entrance:entrances[0]?.outside,confidence:p.confidence||'依平面圖房間順序；未測量尺度'};
+  return{id:b.id,b,facadeFeatures:p.shape==='tech'?{roundedNose:{u:L/2-8,v:D/2,radius:1.4}}:null,horizontal,L,D,sign,cV,wallV,outerV,world,local,rect,bounds,cells,corridors,footprints,displayRows,stairs,ramps,platforms,holes,rooms:cells.filter(c=>c.kind==='room'),entrances,entrance:entrances[0]?.outside,confidence:p.confidence||'依平面圖房間順序；未測量尺度'};
  }
  function groundAt(l,x,z,currentY){
   const {u,v}=l.local(x,z);let best=0;

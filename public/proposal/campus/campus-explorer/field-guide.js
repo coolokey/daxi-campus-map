@@ -90,7 +90,7 @@
   let photo=null;
   if(id==='grandstand')photo=['stage-2019','司令台正面','2019 年 10 月 22 日實景紀錄；現況可能已有變更。'];
   else if(id==='track')photo=['track-2019','操場與跑道','2019 年 10 月 22 日實景紀錄；鋪面配色依現版平面圖呈現。'];
-  else if(room.buildingId==='admin-front')photo=['admin-front','行政前棟外觀','外觀對照照片，拍攝日期未提供；非所選處室內景。'];
+  else if(room.buildingId==='admin-front')photo=['admin-front','行政大樓外觀','外觀對照照片，拍攝日期未提供；非所選處室內景。'];
   el('guide-place-figure').hidden=!photo;
   notes.querySelector('summary').textContent=photo?'目的地筆記與實景':'目的地筆記';
   if(photo){el('guide-place-photo').src='photos/'+photo[0]+'.jpg';el('guide-place-photo').alt=photo[1];el('guide-place-caption').textContent=photo[2];}

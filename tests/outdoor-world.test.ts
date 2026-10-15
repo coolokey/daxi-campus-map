@@ -196,3 +196,9 @@ it('keeps the curved-window midlanding free of low overhead concrete',()=>{
 it('walks across each teaching L junction at its own floor without a guard, wall or support drop',()=>{
  const failures=run(`(()=>{const bad=[];for(const j of CampusSpatialPlan.junctions(campusWalkWorld.layouts)){const p={...j.start};for(let i=1;i<=24;i++){const z=j.start.z+(j.end.z-j.start.z)*i/24;if(moveAvatarWithCollision(p,0,z-p.z)||Math.abs(p.y-j.start.y)>.1){bad.push({floor:j.floor,p:{...p}});break;}}}return bad})()`);expect(failures).toEqual([]);
 });
+
+it('keeps the technology rounded extension solid and all room doors clear after the two-part rebuild',()=>{
+ expect(run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building'),n=l.facadeFeatures.roundedNose,p=l.world(n.u,n.v+n.radius*.5,0);return checkWallCollision(p.x,0,p.z)})()`)).toBe(true);
+ expect(run(`(()=>{scene.updateMatrixWorld(true);const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building'),n=l.facadeFeatures.roundedNose,p=l.world(n.u,n.v+n.radius+.3,1.5),ray=new THREE.Raycaster(new THREE.Vector3(p.x,p.y,p.z),new THREE.Vector3(-1,0,0),0,.5);return ray.intersectObjects(scene.children.filter(g=>g.name==='floor-tech-facade-1'),true).length>0})()`)).toBe(true);
+ const failures=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building');return l.rooms.filter(r=>{const p={...r.corridor};return moveAvatarWithCollision(p,r.center.x-p.x,r.center.z-p.z)}).map(r=>r.id)})()`);expect(failures).toEqual([]);
+});

@@ -58,6 +58,7 @@ const CampusPhotoRoofs=(()=>{
      for(const a of [p.u0+.07,p.u1-.07])localBox(a,v,.14,D,.36,y+.18,0xc6c9c3);
      for(const a of [p.v0+.07,p.v1-.07])localBox(u,a,L,.14,.36,y+.18,0xc6c9c3);
     }
+    const nose=l.facadeFeatures?.roundedNose;if(nose){const p=l.world(nose.u,nose.v);add(new THREE.CylinderGeometry(nose.radius,nose.radius,.14,24,1,false,0,Math.PI),0xe3e3da,p.x,y+.07,p.z);}
    }else if(l.id==='art-building'){
     for(const p of top)pitched(p,{rise:.95,tiles:true,overhang:.22});
     // Only a modest grey equipment box can be identified; no speculative towers.

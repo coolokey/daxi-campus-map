@@ -24,7 +24,7 @@ describe('115 平面圖共用配置',()=>{
   const {buildings,math,plan}=load(),multi=math.layout(buildings.find((b:any)=>b.id==='multi-building'));
   const parking=multi.cells.find((c:any)=>c.label==='停車場・留空'),u=(parking.u0+parking.u1)/2,v=(parking.v0+parking.v1)/2;
   expect(multi.footprints.some((p:any)=>p.floor===2&&plan.contains(p,u,v))).toBe(false);
-  const tech=math.layout(buildings.find((b:any)=>b.id==='tech-building'));expect(tech.displayRows).toHaveLength(3);expect(tech.rooms.find((r:any)=>r.id==='life-tech-2').center.x).toBeGreaterThan(tech.rooms.find((r:any)=>r.id==='audiovisual-1f').center.x);
+  const tech=math.layout(buildings.find((b:any)=>b.id==='tech-building'));expect(tech.displayRows).toHaveLength(2);expect(tech.rooms.find((r:any)=>r.id==='life-tech-2').center.x).toBeGreaterThan(tech.rooms.find((r:any)=>r.id==='audiovisual-1f').center.x);
   const art=math.layout(buildings.find((b:any)=>b.id==='art-building'));expect(art.stairs[0].rect.x1).toBeLessThan(art.rooms[0].rect.x0);
  });
  it('導航顯示每段直線貼地，不平滑切過牆角',()=>{
@@ -89,4 +89,14 @@ it('photo correction keeps the administrative bridge central and joins teaching 
  expect(mid.bounds.z1).toBeCloseTo(south.bounds.z0);
  expect(nine.b.depth).toBeLessThan(mid.b.depth*.7);
  expect(plan.junctions(ls)).toHaveLength(3);
+});
+
+it('uses one administrative identity and a broad technology body with one narrow wing',()=>{
+ const {buildings,math}=load(),front=buildings.find((b:any)=>b.id==='admin-front'),rear=buildings.find((b:any)=>b.id==='admin-back'),tech=math.layout(buildings.find((b:any)=>b.id==='tech-building')),art=math.layout(buildings.find((b:any)=>b.id==='art-building'));
+ expect(front.name).toBe('行政大樓');expect(rear.name).not.toContain('行政');expect(rear.width).toBeLessThan(front.width);
+ expect(tech.footprints.filter((p:any)=>p.floor===1)).toHaveLength(2);
+ expect(tech.cells.some((c:any)=>c.row==='courtyard')).toBe(false);
+ expect(tech.rooms).toHaveLength(10);expect(tech.stairs).toHaveLength(1);
+ expect(art.b.width*art.b.depth).toBeLessThan(front.width*front.depth*.6);expect(art.b.floors).toBe(4);
+ for(const l of [tech,art])for(const r of l.rooms){expect(l.footprints.some((p:any)=>p.floor===r.floor&&r.center.x>=p.rect.x0&&r.center.x<=p.rect.x1&&r.center.z>=p.rect.z0&&r.center.z<=p.rect.z1)).toBe(true);}
 });

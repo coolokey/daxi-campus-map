@@ -1,0 +1,375 @@
+{
+  "rooms": 109,
+  "physicalRooms": 92,
+  "nodes": 15146,
+  "unreachable": [],
+  "blockedEdges": [],
+  "stairs": [
+    {
+      "building": "gym-bld",
+      "stair": "gym-bld-north",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "gym-bld",
+      "stair": "gym-bld-north",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "gym-bld",
+      "stair": "gym-bld-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "gym-bld",
+      "stair": "gym-bld-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "gym-bld",
+      "stair": "gym-stage",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "gym-bld",
+      "stair": "gym-access",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "admin-back",
+      "stair": "admin-back-central",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "admin-back",
+      "stair": "admin-back-central",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "admin-back",
+      "stair": "admin-back-central",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "admin-back",
+      "stair": "admin-back-central",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "health-bld",
+      "stair": "health-bld-east",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "health-bld",
+      "stair": "health-bld-east",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-west",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-west",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-west",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-west",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-east",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-east",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-east",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade8-front",
+      "stair": "grade8-front-east",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade9-back",
+      "stair": "grade9-back-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade9-back",
+      "stair": "grade9-back-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade9-back",
+      "stair": "grade9-back-south",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade9-back",
+      "stair": "grade9-back-south",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade8-mid",
+      "stair": "grade8-mid-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-mid",
+      "stair": "grade8-mid-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "grade8-mid",
+      "stair": "grade8-mid-south",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "grade8-mid",
+      "stair": "grade8-mid-south",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "new-grade7",
+      "stair": "new-grade7-west",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "new-grade7",
+      "stair": "new-grade7-west",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "new-grade7",
+      "stair": "new-grade7-west",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "new-grade7",
+      "stair": "new-grade7-west",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "multi-building",
+      "stair": "multi-building-north",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "multi-building",
+      "stair": "multi-building-north",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "multi-building",
+      "stair": "multi-building-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "multi-building",
+      "stair": "multi-building-south",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "tech-building",
+      "stair": "tech-building-main",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "tech-building",
+      "stair": "tech-building-main",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "art-building",
+      "stair": "art-building-main",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "art-building",
+      "stair": "art-building-main",
+      "floor": 1,
+      "error": null
+    },
+    {
+      "building": "art-building",
+      "stair": "art-building-main",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "art-building",
+      "stair": "art-building-main",
+      "floor": 2,
+      "error": null
+    },
+    {
+      "building": "art-building",
+      "stair": "art-building-main",
+      "floor": 3,
+      "error": null
+    },
+    {
+      "building": "art-building",
+      "stair": "art-building-main",
+      "floor": 3,
+      "error": null
+    }
+  ],
+  "doorFailures": [],
+  "motorRoutes": [
+    {
+      "id": "academic",
+      "error": null,
+      "end": {
+        "x": -4.28125,
+        "y": 3.6,
+        "z": 42.6
+      }
+    },
+    {
+      "id": "901",
+      "error": null,
+      "end": {
+        "x": 6.1,
+        "y": 7.2,
+        "z": 11.724795640326976
+      }
+    },
+    {
+      "id": "804",
+      "error": null,
+      "end": {
+        "x": 29.4,
+        "y": 3.6,
+        "z": 40.37614678899082
+      }
+    },
+    {
+      "id": "704",
+      "error": null,
+      "end": {
+        "x": 100.4,
+        "y": 3.6,
+        "z": -61.5
+      }
+    },
+    {
+      "id": "computer-lab-1",
+      "error": null,
+      "end": {
+        "x": 85.4,
+        "y": 0,
+        "z": 21
+      }
+    },
+    {
+      "id": "art-4f",
+      "error": null,
+      "end": {
+        "x": 88,
+        "y": 10.8,
+        "z": 31.8
+      }
+    },
+    {
+      "id": "grandstand",
+      "error": null,
+      "end": {
+        "x": -62,
+        "y": 1.4,
+        "z": 11
+      }
+    },
+    {
+      "id": "gym",
+      "error": null,
+      "end": {
+        "x": -85,
+        "y": 0,
+        "z": 58
+      }
+    },
+    {
+      "id": "weight-room",
+      "error": null,
+      "end": {
+        "x": -69.4,
+        "y": 0,
+        "z": 58
+      }
+    },
+    {
+      "id": "gym-balcony",
+      "error": null,
+      "end": {
+        "x": -71.5,
+        "y": 3.6,
+        "z": 58
+      }
+    },
+    {
+      "id": "fire-room",
+      "error": null,
+      "end": {
+        "x": -77.25,
+        "y": 0,
+        "z": 74.25
+      }
+    }
+  ]
+}
