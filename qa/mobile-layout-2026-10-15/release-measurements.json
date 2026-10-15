@@ -1,0 +1,2540 @@
+[
+  {
+    "label": "release-320x568-walk",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 250,
+          "right": 308,
+          "top": 8,
+          "width": 58,
+          "x": 250,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 138,
+          "right": 242,
+          "top": 8,
+          "width": 104,
+          "x": 138,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 552,
+          "height": 44,
+          "left": 23,
+          "right": 86.5,
+          "top": 508,
+          "width": 63.5,
+          "x": 23,
+          "y": 508
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 552,
+          "height": 44,
+          "left": 90.5,
+          "right": 154,
+          "top": 508,
+          "width": 63.5,
+          "x": 90.5,
+          "y": 508
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 552,
+          "height": 44,
+          "left": 166,
+          "right": 229.5,
+          "top": 508,
+          "width": 63.5,
+          "x": 166,
+          "y": 508
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 552,
+          "height": 44,
+          "left": 233.5,
+          "right": 297,
+          "top": 508,
+          "width": 63.5,
+          "x": 233.5,
+          "y": 508
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 431,
+          "height": 96,
+          "left": 12,
+          "right": 108,
+          "top": 335,
+          "width": 96,
+          "x": 12,
+          "y": 335
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 431,
+          "height": 96,
+          "left": 212,
+          "right": 308,
+          "top": 335,
+          "width": 96,
+          "x": 212,
+          "y": 335
+        }
+      },
+      {
+        "id": "minimap-card",
+        "r": {
+          "bottom": 148,
+          "height": 84,
+          "left": 12,
+          "right": 96,
+          "top": 64,
+          "width": 84,
+          "x": 12,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      320,
+      568
+    ]
+  },
+  {
+    "label": "release-320x568-tools",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 250,
+          "right": 308,
+          "top": 8,
+          "width": 58,
+          "x": 250,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 138,
+          "right": 242,
+          "top": 8,
+          "width": 104,
+          "x": 138,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 552,
+          "height": 44,
+          "left": 23,
+          "right": 86.5,
+          "top": 508,
+          "width": 63.5,
+          "x": 23,
+          "y": 508
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 552,
+          "height": 44,
+          "left": 90.5,
+          "right": 154,
+          "top": 508,
+          "width": 63.5,
+          "x": 90.5,
+          "y": 508
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 552,
+          "height": 44,
+          "left": 166,
+          "right": 229.5,
+          "top": 508,
+          "width": 63.5,
+          "x": 166,
+          "y": 508
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 552,
+          "height": 44,
+          "left": 233.5,
+          "right": 297,
+          "top": 508,
+          "width": 63.5,
+          "x": 233.5,
+          "y": 508
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 431,
+          "height": 96,
+          "left": 12,
+          "right": 108,
+          "top": 335,
+          "width": 96,
+          "x": 12,
+          "y": 335
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 431,
+          "height": 96,
+          "left": 212,
+          "right": 308,
+          "top": 335,
+          "width": 96,
+          "x": 212,
+          "y": 335
+        }
+      },
+      {
+        "id": "guide-quick-tools",
+        "r": {
+          "bottom": 296,
+          "height": 232,
+          "left": 12,
+          "right": 308,
+          "top": 64,
+          "width": 296,
+          "x": 12,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      320,
+      568
+    ]
+  },
+  {
+    "label": "release-320x568-handbook",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 250,
+          "right": 308,
+          "top": 8,
+          "width": 58,
+          "x": 250,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 138,
+          "right": 242,
+          "top": 8,
+          "width": 104,
+          "x": 138,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 552,
+          "height": 44,
+          "left": 23,
+          "right": 86.5,
+          "top": 508,
+          "width": 63.5,
+          "x": 23,
+          "y": 508
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 552,
+          "height": 44,
+          "left": 90.5,
+          "right": 154,
+          "top": 508,
+          "width": 63.5,
+          "x": 90.5,
+          "y": 508
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 552,
+          "height": 44,
+          "left": 166,
+          "right": 229.5,
+          "top": 508,
+          "width": 63.5,
+          "x": 166,
+          "y": 508
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 552,
+          "height": 44,
+          "left": 233.5,
+          "right": 297,
+          "top": 508,
+          "width": 63.5,
+          "x": 233.5,
+          "y": 508
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 431,
+          "height": 96,
+          "left": 12,
+          "right": 108,
+          "top": 335,
+          "width": 96,
+          "x": 12,
+          "y": 335
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 431,
+          "height": 96,
+          "left": 212,
+          "right": 308,
+          "top": 335,
+          "width": 96,
+          "x": 212,
+          "y": 335
+        }
+      },
+      {
+        "id": "guide-panel",
+        "r": {
+          "bottom": 296,
+          "height": 232,
+          "left": 12,
+          "right": 308,
+          "top": 64,
+          "width": 296,
+          "x": 12,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      320,
+      568
+    ]
+  },
+  {
+    "label": "release-390x844-walk",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 320,
+          "right": 378,
+          "top": 8,
+          "width": 58,
+          "x": 320,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 208,
+          "right": 312,
+          "top": 8,
+          "width": 104,
+          "x": 208,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 828,
+          "height": 44,
+          "left": 26,
+          "right": 105.5,
+          "top": 784,
+          "width": 79.5,
+          "x": 26,
+          "y": 784
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 828,
+          "height": 44,
+          "left": 109.5,
+          "right": 189,
+          "top": 784,
+          "width": 79.5,
+          "x": 109.5,
+          "y": 784
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 828,
+          "height": 44,
+          "left": 201,
+          "right": 280.5,
+          "top": 784,
+          "width": 79.5,
+          "x": 201,
+          "y": 784
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 828,
+          "height": 44,
+          "left": 284.5,
+          "right": 364,
+          "top": 784,
+          "width": 79.5,
+          "x": 284.5,
+          "y": 784
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 707,
+          "height": 117,
+          "left": 12,
+          "right": 129,
+          "top": 590,
+          "width": 117,
+          "x": 12,
+          "y": 590
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 707,
+          "height": 117,
+          "left": 261,
+          "right": 378,
+          "top": 590,
+          "width": 117,
+          "x": 261,
+          "y": 590
+        }
+      },
+      {
+        "id": "minimap-card",
+        "r": {
+          "bottom": 148,
+          "height": 84,
+          "left": 12,
+          "right": 96,
+          "top": 64,
+          "width": 84,
+          "x": 12,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      390,
+      844
+    ]
+  },
+  {
+    "label": "release-390x844-tools",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 320,
+          "right": 378,
+          "top": 8,
+          "width": 58,
+          "x": 320,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 208,
+          "right": 312,
+          "top": 8,
+          "width": 104,
+          "x": 208,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 828,
+          "height": 44,
+          "left": 26,
+          "right": 105.5,
+          "top": 784,
+          "width": 79.5,
+          "x": 26,
+          "y": 784
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 828,
+          "height": 44,
+          "left": 109.5,
+          "right": 189,
+          "top": 784,
+          "width": 79.5,
+          "x": 109.5,
+          "y": 784
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 828,
+          "height": 44,
+          "left": 201,
+          "right": 280.5,
+          "top": 784,
+          "width": 79.5,
+          "x": 201,
+          "y": 784
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 828,
+          "height": 44,
+          "left": 284.5,
+          "right": 364,
+          "top": 784,
+          "width": 79.5,
+          "x": 284.5,
+          "y": 784
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 707,
+          "height": 117,
+          "left": 12,
+          "right": 129,
+          "top": 590,
+          "width": 117,
+          "x": 12,
+          "y": 590
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 707,
+          "height": 117,
+          "left": 261,
+          "right": 378,
+          "top": 590,
+          "width": 117,
+          "x": 261,
+          "y": 590
+        }
+      },
+      {
+        "id": "guide-quick-tools",
+        "r": {
+          "bottom": 342,
+          "height": 278,
+          "left": 38,
+          "right": 378,
+          "top": 64,
+          "width": 340,
+          "x": 38,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      390,
+      844
+    ]
+  },
+  {
+    "label": "release-390x844-handbook",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 320,
+          "right": 378,
+          "top": 8,
+          "width": 58,
+          "x": 320,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 208,
+          "right": 312,
+          "top": 8,
+          "width": 104,
+          "x": 208,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 828,
+          "height": 44,
+          "left": 26,
+          "right": 105.5,
+          "top": 784,
+          "width": 79.5,
+          "x": 26,
+          "y": 784
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 828,
+          "height": 44,
+          "left": 109.5,
+          "right": 189,
+          "top": 784,
+          "width": 79.5,
+          "x": 109.5,
+          "y": 784
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 828,
+          "height": 44,
+          "left": 201,
+          "right": 280.5,
+          "top": 784,
+          "width": 79.5,
+          "x": 201,
+          "y": 784
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 828,
+          "height": 44,
+          "left": 284.5,
+          "right": 364,
+          "top": 784,
+          "width": 79.5,
+          "x": 284.5,
+          "y": 784
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 707,
+          "height": 117,
+          "left": 12,
+          "right": 129,
+          "top": 590,
+          "width": 117,
+          "x": 12,
+          "y": 590
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 707,
+          "height": 117,
+          "left": 261,
+          "right": 378,
+          "top": 590,
+          "width": 117,
+          "x": 261,
+          "y": 590
+        }
+      },
+      {
+        "id": "guide-panel",
+        "r": {
+          "bottom": 572,
+          "height": 508,
+          "left": 12,
+          "right": 352,
+          "top": 64,
+          "width": 340,
+          "x": 12,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      390,
+      844
+    ]
+  },
+  {
+    "label": "release-430x932-walk",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 360,
+          "right": 418,
+          "top": 8,
+          "width": 58,
+          "x": 360,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 248,
+          "right": 352,
+          "top": 8,
+          "width": 104,
+          "x": 248,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 916,
+          "height": 44,
+          "left": 46,
+          "right": 125.5,
+          "top": 872,
+          "width": 79.5,
+          "x": 46,
+          "y": 872
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 916,
+          "height": 44,
+          "left": 129.5,
+          "right": 209,
+          "top": 872,
+          "width": 79.5,
+          "x": 129.5,
+          "y": 872
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 916,
+          "height": 44,
+          "left": 221,
+          "right": 300.5,
+          "top": 872,
+          "width": 79.5,
+          "x": 221,
+          "y": 872
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 916,
+          "height": 44,
+          "left": 304.5,
+          "right": 384,
+          "top": 872,
+          "width": 79.5,
+          "x": 304.5,
+          "y": 872
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 795,
+          "height": 120,
+          "left": 12,
+          "right": 132,
+          "top": 675,
+          "width": 120,
+          "x": 12,
+          "y": 675
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 795,
+          "height": 120,
+          "left": 298,
+          "right": 418,
+          "top": 675,
+          "width": 120,
+          "x": 298,
+          "y": 675
+        }
+      },
+      {
+        "id": "minimap-card",
+        "r": {
+          "bottom": 148,
+          "height": 84,
+          "left": 12,
+          "right": 96,
+          "top": 64,
+          "width": 84,
+          "x": 12,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      430,
+      932
+    ]
+  },
+  {
+    "label": "release-430x932-tools",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 360,
+          "right": 418,
+          "top": 8,
+          "width": 58,
+          "x": 360,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 248,
+          "right": 352,
+          "top": 8,
+          "width": 104,
+          "x": 248,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 916,
+          "height": 44,
+          "left": 46,
+          "right": 125.5,
+          "top": 872,
+          "width": 79.5,
+          "x": 46,
+          "y": 872
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 916,
+          "height": 44,
+          "left": 129.5,
+          "right": 209,
+          "top": 872,
+          "width": 79.5,
+          "x": 129.5,
+          "y": 872
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 916,
+          "height": 44,
+          "left": 221,
+          "right": 300.5,
+          "top": 872,
+          "width": 79.5,
+          "x": 221,
+          "y": 872
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 916,
+          "height": 44,
+          "left": 304.5,
+          "right": 384,
+          "top": 872,
+          "width": 79.5,
+          "x": 304.5,
+          "y": 872
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 795,
+          "height": 120,
+          "left": 12,
+          "right": 132,
+          "top": 675,
+          "width": 120,
+          "x": 12,
+          "y": 675
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 795,
+          "height": 120,
+          "left": 298,
+          "right": 418,
+          "top": 675,
+          "width": 120,
+          "x": 298,
+          "y": 675
+        }
+      },
+      {
+        "id": "guide-quick-tools",
+        "r": {
+          "bottom": 342,
+          "height": 278,
+          "left": 78,
+          "right": 418,
+          "top": 64,
+          "width": 340,
+          "x": 78,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      430,
+      932
+    ]
+  },
+  {
+    "label": "release-430x932-handbook",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 360,
+          "right": 418,
+          "top": 8,
+          "width": 58,
+          "x": 360,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 248,
+          "right": 352,
+          "top": 8,
+          "width": 104,
+          "x": 248,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 916,
+          "height": 44,
+          "left": 46,
+          "right": 125.5,
+          "top": 872,
+          "width": 79.5,
+          "x": 46,
+          "y": 872
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 916,
+          "height": 44,
+          "left": 129.5,
+          "right": 209,
+          "top": 872,
+          "width": 79.5,
+          "x": 129.5,
+          "y": 872
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 916,
+          "height": 44,
+          "left": 221,
+          "right": 300.5,
+          "top": 872,
+          "width": 79.5,
+          "x": 221,
+          "y": 872
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 916,
+          "height": 44,
+          "left": 304.5,
+          "right": 384,
+          "top": 872,
+          "width": 79.5,
+          "x": 304.5,
+          "y": 872
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 795,
+          "height": 120,
+          "left": 12,
+          "right": 132,
+          "top": 675,
+          "width": 120,
+          "x": 12,
+          "y": 675
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 795,
+          "height": 120,
+          "left": 298,
+          "right": 418,
+          "top": 675,
+          "width": 120,
+          "x": 298,
+          "y": 675
+        }
+      },
+      {
+        "id": "guide-panel",
+        "r": {
+          "bottom": 660,
+          "height": 596,
+          "left": 12,
+          "right": 352,
+          "top": 64,
+          "width": 340,
+          "x": 12,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      430,
+      932
+    ]
+  },
+  {
+    "label": "release-568x320-walk",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 498,
+          "right": 556,
+          "top": 8,
+          "width": 58,
+          "x": 498,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 386,
+          "right": 490,
+          "top": 8,
+          "width": 104,
+          "x": 386,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 306,
+          "height": 44,
+          "left": 164,
+          "right": 220,
+          "top": 262,
+          "width": 56,
+          "x": 164,
+          "y": 262
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 306,
+          "height": 44,
+          "left": 224,
+          "right": 280,
+          "top": 262,
+          "width": 56,
+          "x": 224,
+          "y": 262
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 306,
+          "height": 44,
+          "left": 288,
+          "right": 344,
+          "top": 262,
+          "width": 56,
+          "x": 288,
+          "y": 262
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 306,
+          "height": 44,
+          "left": 348,
+          "right": 404,
+          "top": 262,
+          "width": 56,
+          "x": 348,
+          "y": 262
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 281,
+          "height": 96,
+          "left": 12,
+          "right": 108,
+          "top": 185,
+          "width": 96,
+          "x": 12,
+          "y": 185
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 281,
+          "height": 96,
+          "left": 460,
+          "right": 556,
+          "top": 185,
+          "width": 96,
+          "x": 460,
+          "y": 185
+        }
+      },
+      {
+        "id": "minimap-card",
+        "r": {
+          "bottom": 148,
+          "height": 84,
+          "left": 12,
+          "right": 96,
+          "top": 64,
+          "width": 84,
+          "x": 12,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      568,
+      320
+    ]
+  },
+  {
+    "label": "release-568x320-tools",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 498,
+          "right": 556,
+          "top": 8,
+          "width": 58,
+          "x": 498,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 386,
+          "right": 490,
+          "top": 8,
+          "width": 104,
+          "x": 386,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 306,
+          "height": 44,
+          "left": 164,
+          "right": 220,
+          "top": 262,
+          "width": 56,
+          "x": 164,
+          "y": 262
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 306,
+          "height": 44,
+          "left": 224,
+          "right": 280,
+          "top": 262,
+          "width": 56,
+          "x": 224,
+          "y": 262
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 306,
+          "height": 44,
+          "left": 288,
+          "right": 344,
+          "top": 262,
+          "width": 56,
+          "x": 288,
+          "y": 262
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 306,
+          "height": 44,
+          "left": 348,
+          "right": 404,
+          "top": 262,
+          "width": 56,
+          "x": 348,
+          "y": 262
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 281,
+          "height": 96,
+          "left": 12,
+          "right": 108,
+          "top": 185,
+          "width": 96,
+          "x": 12,
+          "y": 185
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 281,
+          "height": 96,
+          "left": 460,
+          "right": 556,
+          "top": 185,
+          "width": 96,
+          "x": 460,
+          "y": 185
+        }
+      },
+      {
+        "id": "guide-quick-tools",
+        "r": {
+          "bottom": 232,
+          "height": 168,
+          "left": 120,
+          "right": 448,
+          "top": 64,
+          "width": 328,
+          "x": 120,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      568,
+      320
+    ]
+  },
+  {
+    "label": "release-568x320-handbook",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 498,
+          "right": 556,
+          "top": 8,
+          "width": 58,
+          "x": 498,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 386,
+          "right": 490,
+          "top": 8,
+          "width": 104,
+          "x": 386,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 306,
+          "height": 44,
+          "left": 164,
+          "right": 220,
+          "top": 262,
+          "width": 56,
+          "x": 164,
+          "y": 262
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 306,
+          "height": 44,
+          "left": 224,
+          "right": 280,
+          "top": 262,
+          "width": 56,
+          "x": 224,
+          "y": 262
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 306,
+          "height": 44,
+          "left": 288,
+          "right": 344,
+          "top": 262,
+          "width": 56,
+          "x": 288,
+          "y": 262
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 306,
+          "height": 44,
+          "left": 348,
+          "right": 404,
+          "top": 262,
+          "width": 56,
+          "x": 348,
+          "y": 262
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 281,
+          "height": 96,
+          "left": 12,
+          "right": 108,
+          "top": 185,
+          "width": 96,
+          "x": 12,
+          "y": 185
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 281,
+          "height": 96,
+          "left": 460,
+          "right": 556,
+          "top": 185,
+          "width": 96,
+          "x": 460,
+          "y": 185
+        }
+      },
+      {
+        "id": "guide-panel",
+        "r": {
+          "bottom": 232,
+          "height": 168,
+          "left": 120,
+          "right": 448,
+          "top": 64,
+          "width": 328,
+          "x": 120,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      568,
+      320
+    ]
+  },
+  {
+    "label": "release-844x390-walk",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 774,
+          "right": 832,
+          "top": 8,
+          "width": 58,
+          "x": 774,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 662,
+          "right": 766,
+          "top": 8,
+          "width": 104,
+          "x": 662,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 376,
+          "height": 44,
+          "left": 302,
+          "right": 348,
+          "top": 332,
+          "width": 46,
+          "x": 302,
+          "y": 332
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 376,
+          "height": 44,
+          "left": 352,
+          "right": 398,
+          "top": 332,
+          "width": 46,
+          "x": 352,
+          "y": 332
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 376,
+          "height": 44,
+          "left": 406,
+          "right": 452,
+          "top": 332,
+          "width": 46,
+          "x": 406,
+          "y": 332
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 376,
+          "height": 44,
+          "left": 456,
+          "right": 502,
+          "top": 332,
+          "width": 46,
+          "x": 456,
+          "y": 332
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 351,
+          "height": 96,
+          "left": 12,
+          "right": 108,
+          "top": 255,
+          "width": 96,
+          "x": 12,
+          "y": 255
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 351,
+          "height": 96,
+          "left": 736,
+          "right": 832,
+          "top": 255,
+          "width": 96,
+          "x": 736,
+          "y": 255
+        }
+      },
+      {
+        "id": "minimap-card",
+        "r": {
+          "bottom": 148,
+          "height": 84,
+          "left": 12,
+          "right": 96,
+          "top": 64,
+          "width": 84,
+          "x": 12,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      844,
+      390
+    ]
+  },
+  {
+    "label": "release-844x390-tools",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 774,
+          "right": 832,
+          "top": 8,
+          "width": 58,
+          "x": 774,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 662,
+          "right": 766,
+          "top": 8,
+          "width": 104,
+          "x": 662,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 376,
+          "height": 44,
+          "left": 302,
+          "right": 348,
+          "top": 332,
+          "width": 46,
+          "x": 302,
+          "y": 332
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 376,
+          "height": 44,
+          "left": 352,
+          "right": 398,
+          "top": 332,
+          "width": 46,
+          "x": 352,
+          "y": 332
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 376,
+          "height": 44,
+          "left": 406,
+          "right": 452,
+          "top": 332,
+          "width": 46,
+          "x": 406,
+          "y": 332
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 376,
+          "height": 44,
+          "left": 456,
+          "right": 502,
+          "top": 332,
+          "width": 46,
+          "x": 456,
+          "y": 332
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 351,
+          "height": 96,
+          "left": 12,
+          "right": 108,
+          "top": 255,
+          "width": 96,
+          "x": 12,
+          "y": 255
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 351,
+          "height": 96,
+          "left": 736,
+          "right": 832,
+          "top": 255,
+          "width": 96,
+          "x": 736,
+          "y": 255
+        }
+      },
+      {
+        "id": "guide-quick-tools",
+        "r": {
+          "bottom": 302,
+          "height": 238,
+          "left": 252,
+          "right": 592,
+          "top": 64,
+          "width": 340,
+          "x": 252,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      844,
+      390
+    ]
+  },
+  {
+    "label": "release-844x390-handbook",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 774,
+          "right": 832,
+          "top": 8,
+          "width": 58,
+          "x": 774,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 662,
+          "right": 766,
+          "top": 8,
+          "width": 104,
+          "x": 662,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 376,
+          "height": 44,
+          "left": 302,
+          "right": 348,
+          "top": 332,
+          "width": 46,
+          "x": 302,
+          "y": 332
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 376,
+          "height": 44,
+          "left": 352,
+          "right": 398,
+          "top": 332,
+          "width": 46,
+          "x": 352,
+          "y": 332
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 376,
+          "height": 44,
+          "left": 406,
+          "right": 452,
+          "top": 332,
+          "width": 46,
+          "x": 406,
+          "y": 332
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 376,
+          "height": 44,
+          "left": 456,
+          "right": 502,
+          "top": 332,
+          "width": 46,
+          "x": 456,
+          "y": 332
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 351,
+          "height": 96,
+          "left": 12,
+          "right": 108,
+          "top": 255,
+          "width": 96,
+          "x": 12,
+          "y": 255
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 351,
+          "height": 96,
+          "left": 736,
+          "right": 832,
+          "top": 255,
+          "width": 96,
+          "x": 736,
+          "y": 255
+        }
+      },
+      {
+        "id": "guide-panel",
+        "r": {
+          "bottom": 302,
+          "height": 238,
+          "left": 252,
+          "right": 592,
+          "top": 64,
+          "width": 340,
+          "x": 252,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      844,
+      390
+    ]
+  },
+  {
+    "label": "release-915x412-walk",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 845,
+          "right": 903,
+          "top": 8,
+          "width": 58,
+          "x": 845,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 733,
+          "right": 837,
+          "top": 8,
+          "width": 104,
+          "x": 733,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 398,
+          "height": 44,
+          "left": 337.5,
+          "right": 383.5,
+          "top": 354,
+          "width": 46,
+          "x": 337.5,
+          "y": 354
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 398,
+          "height": 44,
+          "left": 387.5,
+          "right": 433.5,
+          "top": 354,
+          "width": 46,
+          "x": 387.5,
+          "y": 354
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 398,
+          "height": 44,
+          "left": 441.5,
+          "right": 487.5,
+          "top": 354,
+          "width": 46,
+          "x": 441.5,
+          "y": 354
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 398,
+          "height": 44,
+          "left": 491.5,
+          "right": 537.5,
+          "top": 354,
+          "width": 46,
+          "x": 491.5,
+          "y": 354
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 373,
+          "height": 96,
+          "left": 12,
+          "right": 108,
+          "top": 277,
+          "width": 96,
+          "x": 12,
+          "y": 277
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 373,
+          "height": 96,
+          "left": 807,
+          "right": 903,
+          "top": 277,
+          "width": 96,
+          "x": 807,
+          "y": 277
+        }
+      },
+      {
+        "id": "minimap-card",
+        "r": {
+          "bottom": 148,
+          "height": 84,
+          "left": 12,
+          "right": 96,
+          "top": 64,
+          "width": 84,
+          "x": 12,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      915,
+      412
+    ]
+  },
+  {
+    "label": "release-915x412-tools",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 845,
+          "right": 903,
+          "top": 8,
+          "width": 58,
+          "x": 845,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 733,
+          "right": 837,
+          "top": 8,
+          "width": 104,
+          "x": 733,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 398,
+          "height": 44,
+          "left": 337.5,
+          "right": 383.5,
+          "top": 354,
+          "width": 46,
+          "x": 337.5,
+          "y": 354
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 398,
+          "height": 44,
+          "left": 387.5,
+          "right": 433.5,
+          "top": 354,
+          "width": 46,
+          "x": 387.5,
+          "y": 354
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 398,
+          "height": 44,
+          "left": 441.5,
+          "right": 487.5,
+          "top": 354,
+          "width": 46,
+          "x": 441.5,
+          "y": 354
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 398,
+          "height": 44,
+          "left": 491.5,
+          "right": 537.5,
+          "top": 354,
+          "width": 46,
+          "x": 491.5,
+          "y": 354
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 373,
+          "height": 96,
+          "left": 12,
+          "right": 108,
+          "top": 277,
+          "width": 96,
+          "x": 12,
+          "y": 277
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 373,
+          "height": 96,
+          "left": 807,
+          "right": 903,
+          "top": 277,
+          "width": 96,
+          "x": 807,
+          "y": 277
+        }
+      },
+      {
+        "id": "guide-quick-tools",
+        "r": {
+          "bottom": 324,
+          "height": 260,
+          "left": 287.5,
+          "right": 627.5,
+          "top": 64,
+          "width": 340,
+          "x": 287.5,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      915,
+      412
+    ]
+  },
+  {
+    "label": "release-915x412-handbook",
+    "boxes": [
+      {
+        "id": "guide-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 12,
+          "right": 100,
+          "top": 8,
+          "width": 88,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": "guide-tools-toggle",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 845,
+          "right": 903,
+          "top": 8,
+          "width": 58,
+          "x": 845,
+          "y": 8
+        }
+      },
+      {
+        "id": "anniversary-launch",
+        "r": {
+          "bottom": 52,
+          "height": 44,
+          "left": 733,
+          "right": 837,
+          "top": 8,
+          "width": 104,
+          "x": 733,
+          "y": 8
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:0",
+        "r": {
+          "bottom": 398,
+          "height": 44,
+          "left": 337.5,
+          "right": 383.5,
+          "top": 354,
+          "width": 46,
+          "x": 337.5,
+          "y": 354
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:1",
+        "r": {
+          "bottom": 398,
+          "height": 44,
+          "left": 387.5,
+          "right": 433.5,
+          "top": 354,
+          "width": 46,
+          "x": 387.5,
+          "y": 354
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:2",
+        "r": {
+          "bottom": 398,
+          "height": 44,
+          "left": 441.5,
+          "right": 487.5,
+          "top": 354,
+          "width": 46,
+          "x": 441.5,
+          "y": 354
+        }
+      },
+      {
+        "id": "#avatar-quick-choices label span:3",
+        "r": {
+          "bottom": 398,
+          "height": 44,
+          "left": 491.5,
+          "right": 537.5,
+          "top": 354,
+          "width": 46,
+          "x": 491.5,
+          "y": 354
+        }
+      },
+      {
+        "id": "mobile-move-stick",
+        "r": {
+          "bottom": 373,
+          "height": 96,
+          "left": 12,
+          "right": 108,
+          "top": 277,
+          "width": 96,
+          "x": 12,
+          "y": 277
+        }
+      },
+      {
+        "id": "mobile-look-stick",
+        "r": {
+          "bottom": 373,
+          "height": 96,
+          "left": 807,
+          "right": 903,
+          "top": 277,
+          "width": 96,
+          "x": 807,
+          "y": 277
+        }
+      },
+      {
+        "id": "guide-panel",
+        "r": {
+          "bottom": 324,
+          "height": 260,
+          "left": 287.5,
+          "right": 627.5,
+          "top": 64,
+          "width": 340,
+          "x": 287.5,
+          "y": 64
+        }
+      }
+    ],
+    "outside": [],
+    "overlaps": [],
+    "viewport": [
+      915,
+      412
+    ]
+  }
+]

@@ -14,7 +14,7 @@
  tools.innerHTML='<div id="guide-quick-main"></div><div id="guide-quick-floors"></div>';
  document.body.append(tools);
  const toolsToggle=document.createElement('button');toolsToggle.id='guide-tools-toggle';toolsToggle.type='button';toolsToggle.textContent='工具';toolsToggle.setAttribute('aria-label','開啟導覽工具');toolsToggle.setAttribute('aria-controls','guide-quick-tools');document.body.append(toolsToggle);
- function setToolsOpen(open){document.body.classList.toggle('guide-tools-open',open);toolsToggle.setAttribute('aria-expanded',String(open));toolsToggle.setAttribute('aria-label',open?'收合導覽工具':'開啟導覽工具');toolsToggle.textContent=open?'收合':'工具'}
+ function setToolsOpen(open){if(open&&isCompact())setPanel(false);document.body.classList.toggle('guide-tools-open',open);toolsToggle.setAttribute('aria-expanded',String(open));toolsToggle.setAttribute('aria-label',open?'收合導覽工具':'開啟導覽工具');toolsToggle.textContent=open?'收合':'工具'}
  toolsToggle.onclick=()=>setToolsOpen(!document.body.classList.contains('guide-tools-open'));
  tools.addEventListener('click',event=>{if(document.body.classList.contains('guide-tools-open')&&event.target.closest('#campus-main-controls button,.floor-btn,#fe-list-toggle'))setToolsOpen(false)});
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.body.classList.contains('guide-tools-open')){setToolsOpen(false);toolsToggle.focus();}});
@@ -38,9 +38,19 @@
  const stories=[['woodwork-1','01','木藝與創作','走向木藝教室，認識校園的創作空間。'],['library','02','閱讀的停靠站','到圖書館，為下一段學習找一本書。'],['grandstand','03','操場上的日常','走到司令台，從另一個角度看校園。'],['palm-avenue','04','椰林迎賓大道','沿著校門外的雙排椰林，回望大溪的入口。']];
  for(const [id,num,title,copy]of stories){const b=document.createElement('button');b.className='guide-story';b.innerHTML='<span>'+num+'</span><div><strong>'+title+'</strong><p>'+copy+'</p></div><b>↗</b>';b.onclick=()=>api.navigateToRoom(id);el('guide-stories').append(b)}
  const toggle=document.createElement('button');toggle.id='guide-toggle';toggle.textContent='校園手冊';toggle.setAttribute('aria-controls','guide-panel');document.body.append(toggle);
- function setPanel(open){document.body.classList.toggle('guide-collapsed',!open);toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'收合手冊':'開啟手冊'}
+ function isCompact(){return innerWidth<=768||innerHeight<=500}
+ function setPanel(open){if(open&&isCompact())setToolsOpen(false);document.body.classList.toggle('guide-collapsed',!open);toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'收合手冊':'開啟手冊'}
  toggle.onclick=()=>setPanel(document.body.classList.contains('guide-collapsed'));
- setPanel(innerWidth>=1100);
+ setPanel(innerWidth>=1100&&!isCompact());
+ let compactBefore=isCompact(),landscapeBefore=innerWidth>innerHeight;
+ window.addEventListener('resize',()=>{
+  const compact=isCompact(),landscape=innerWidth>innerHeight;
+  if(compact&&(!compactBefore||landscape!==landscapeBefore)){setPanel(false);setToolsOpen(false)}
+  compactBefore=compact;landscapeBefore=landscape;
+ });
+ document.addEventListener('click',event=>{
+  if(isCompact()&&event.target.closest('#anniversary-launch,.anniversary-cover-entry')){setPanel(false);setToolsOpen(false)}
+ });
  let shownDestination=null,navigation=null,plan=[],lastPoints=null;
  const setText=(node,text)=>{if(node.textContent!==text)node.textContent=text;};
  function displayNavigation(state){

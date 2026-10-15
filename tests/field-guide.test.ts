@@ -67,6 +67,26 @@ describe('探索手冊導覽卡', () => {
 });
 
 describe('固定工具與導航狀態', () => {
+ it('手機手冊與工具互相收合，旋轉後關閉面板而不留下遮擋', () => {
+  const s=setup(390,'?view=bird'),d=s.w.document;
+  d.getElementById('guide-toggle').click();
+  expect(d.body.classList.contains('guide-collapsed')).toBe(false);
+  d.getElementById('guide-tools-toggle').click();
+  expect(d.body.classList.contains('guide-collapsed')).toBe(true);
+  expect(d.body.classList.contains('guide-tools-open')).toBe(true);
+  d.getElementById('guide-toggle').click();
+  expect(d.body.classList.contains('guide-tools-open')).toBe(false);
+  s.w.innerWidth=844;s.w.innerHeight=390;
+  s.w.dispatchEvent(new s.w.Event('resize'));
+  expect(d.body.classList.contains('guide-collapsed')).toBe(true);
+  expect(d.getElementById('guide-toggle').getAttribute('aria-expanded')).toBe('false');
+  d.getElementById('guide-tools-toggle').click();
+  s.w.innerWidth=390;s.w.innerHeight=844;
+  s.w.dispatchEvent(new s.w.Event('resize'));
+  expect(d.body.classList.contains('guide-tools-open')).toBe(false);
+  expect(d.getElementById('guide-tools-toggle').getAttribute('aria-expanded')).toBe('false');
+  s.dom.window.close();
+ });
  it('搜尋入口略過歡迎卡，工具在手冊外且只有一份', () => {
   const s=setup(1280);
   s.w.document.getElementById('welcome-card').classList.remove('hidden');
