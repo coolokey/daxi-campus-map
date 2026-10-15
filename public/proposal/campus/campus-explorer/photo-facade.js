@@ -6,22 +6,32 @@
  const materials=new Map(),mat=c=>{if(!materials.has(c))materials.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.97}));return materials.get(c)};
  function group(f,name){const g=new THREE.Group();g.name=name;g.userData={buildingId:b.id,floorNum:f};api.scene.add(g);floorMeshes.push(g);return g}
  function box(g,w,h,d,x,y,z,c){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),c?.isMaterial?c:mat(c));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;g.add(m);return m}
- const frontZ=b.z+b.depth/2,cream=CampusSurfacePalette.forBuilding(b).exterior,white=0xb4b8ae,teal=0x447b79;
+ const frontZ=b.z+b.depth/2,white=0xb4b8ae,teal=0x447b79;
  const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const ctx=canvas.getContext('2d');ctx.fillStyle='#aaa9a1';ctx.fillRect(0,0,128,128);
  for(let i=0;i<1800;i++){const n=(i*73)%128,m=(i*37+Math.floor(i/128)*11)%128;ctx.fillStyle=i%3?'#b8b7b0':'#818781';ctx.fillRect(n,m,1,1);}
  const stoneTexture=new THREE.CanvasTexture(canvas);stoneTexture.wrapS=stoneTexture.wrapT=THREE.RepeatWrapping;stoneTexture.encoding=THREE.sRGBEncoding;
  const stone=new THREE.MeshStandardMaterial({color:0xd1d0c7,map:stoneTexture,roughness:.98});
- // The circulation facade is open at 1F. No glass sheet or pillar closes a doorway.
+ const windowGlass=new THREE.MeshStandardMaterial({color:0x647e85,transparent:true,opacity:.72,roughness:.26});
+ // The upper corridors are inside this closed stone-and-window envelope.
+ // Only the existing ground-floor central and end entrances stay open.
  for(let f=1;f<=b.floors;f++){
   const g=group(f,`photo-admin-facade-${f}`),y=(f-1)*FH;
-  box(g,b.width,.22,.24,b.x,y+FH-.05,frontZ+.13,cream);
+  box(g,b.width,.22,.24,b.x,y+FH-.05,frontZ+.13,stone);
   for(const x of [b.x-b.width/2+.4,b.x+b.width/2-.4])box(g,.38,FH,.3,x,y+FH/2,frontZ+.05,white);
-  if(f>1)for(let x=b.x-b.width/2+.9;x<b.x+b.width/2-1.3;x+=1.25){
-   const l=api.walkWorld?.layouts?.find(l=>l.id===b.id)||window.campusWalkWorld.layouts.find(l=>l.id===b.id);
-   const q=l.local(x+.58,frontZ),cell=l.cells.find(c=>c.floor===f&&q.u>=c.u0&&q.u<=c.u1);
-   if(cell?.kind==='passage'||cell?.kind==='stair')continue;
-   for(const dx of [0,1.15])box(g,.045,1.35,.12,x+dx,y+1.85,frontZ+.17,white);
-   for(const dy of [-.67,0,.67])box(g,1.15,.045,.12,x+.58,y+1.85+dy,frontZ+.17,white);
+  if(f>1){
+   box(g,b.width,.95,.24,b.x,y+.475,frontZ+.04,stone).name='admin-window-stone-sill';
+   box(g,b.width,FH-2.75,.24,b.x,y+(FH+2.75)/2,frontZ+.04,stone).name='admin-window-stone-lintel';
+   const bays=12,pitch=b.width/bays,pier=.34;
+   for(let i=0;i<=bays;i++){
+    const x=b.x-b.width/2+i*pitch;
+    box(g,pier,FH,.34,x,y+FH/2,frontZ+.02,stone).name='admin-window-stone-pier';
+    if(i===bays)continue;
+    const center=x+pitch/2,width=pitch-pier;
+    box(g,width,1.8,.045,center,y+1.85,frontZ+.025,windowGlass).name='admin-reflective-window';
+    for(const dx of [-width/2,0,width/2])box(g,.045,1.8,.09,center+dx,y+1.85,frontZ+.08,white);
+    for(const dy of [-.9,.42,.9])box(g,width,.045,.09,center,y+1.85+dy,frontZ+.08,white);
+   }
+   registerWallCollider(b.x-b.width/2,b.x+b.width/2,frontZ-.08,frontZ+.08,y,y+FH);WALL_COLLIDERS.at(-1).buildingId=b.id;
   }
  }
  const entrance=group(1,'photo-admin-entrance');
@@ -78,15 +88,21 @@
  const oldRoofs=[];api.scene.traverse(o=>{if(o.userData?.buildingId===b.id&&o.userData.roof)oldRoofs.push(o)});
  for(const o of oldRoofs){o.parent?.remove(o);const i=floorMeshes.indexOf(o);if(i>=0)floorMeshes.splice(i,1);o.geometry?.dispose()}
  const roof=group(b.floors,'photo-admin-roof');roof.userData.roof=true;
- const h=b.floors*FH,rise=1.35,halfDepth=b.depth/2+.55,slope=Math.atan2(rise,halfDepth),length=Math.hypot(halfDepth,rise);
- for(const z of [b.z-b.depth/2-.55,b.z+b.depth/2+.55])box(roof,b.width+1.6,.1,.17,b.x,h+.04,z,teal);
- for(const sign of [-1,1]){
-  const panel=box(roof,b.width+1.6,.1,length,b.x,h+.15+rise/2,b.z+sign*halfDepth/2,sign>0?0xb76f62:0xb9b28b);panel.rotation.x=sign*slope;
+ const h=b.floors*FH,rise=1.35,halfDepth=b.depth/2+.45,halfWidth=b.width/2+.45,ridgeHalf=halfWidth-halfDepth;
+ // Four planes share their hip edges and one inset ridge: no rectangular
+ // slope projects past the two triangular end roofs into an adjacent wing.
+ const lf=[-halfWidth,0,halfDepth],rf=[halfWidth,0,halfDepth],lb=[-halfWidth,0,-halfDepth],rb=[halfWidth,0,-halfDepth];
+ const rl=[-ridgeHalf,rise,0],rr=[ridgeHalf,rise,0],positions=[],roofGeometry=new THREE.BufferGeometry();
+ for(const [i,vertices] of [[lf,rf,rr,rl],[rb,lb,rl,rr],[rf,rb,rr],[lb,lf,rl]].entries()){
+  const start=positions.length/3;
+  for(let t=1;t<vertices.length-1;t++)positions.push(...vertices[0],...vertices[t],...vertices[t+1]);
+  roofGeometry.addGroup(start,positions.length/3-start,i);
  }
- // Ribs share the slope and elevation of the roof panels.
- for(let x=b.x-b.width/2;x<=b.x+b.width/2;x+=.6)for(const sign of [-1,1]){
-  const rib=box(roof,.025,.025,length,x,h+.22+rise/2,b.z+sign*halfDepth/2,sign>0?0x9a665a:0x96967b);rib.rotation.x=sign*slope;
- }
+ roofGeometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));roofGeometry.computeVertexNormals();
+ const panel=new THREE.Mesh(roofGeometry,[mat(0xb76f62),mat(0xb9b28b),mat(0xb9b28b),mat(0xb9b28b)]);
+ panel.name='admin-hip-roof';panel.position.set(b.x,h+.15,b.z);panel.castShadow=panel.receiveShadow=true;roof.add(panel);
+ for(const z of [b.z-halfDepth,b.z+halfDepth])box(roof,halfWidth*2,.12,.12,b.x,h+.08,z,teal);
+ for(const x of [b.x-halfWidth,b.x+halfWidth])box(roof,.12,.12,halfDepth*2,x,h+.08,b.z,teal);
  // Source-backed garden landmarks stay clear of the central route.
  const garden=group(1,'photo-admin-garden');
  for(const x of [b.x-5,b.x+7.5]){

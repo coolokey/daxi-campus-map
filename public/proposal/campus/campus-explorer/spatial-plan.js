@@ -184,15 +184,27 @@ const CampusSpatialPlan = (() => {
  function galleries(layouts){
   const front=layouts.find(l=>l.id==='admin-front'),back=layouts.find(l=>l.id==='admin-back');
   if(!front||!back)return [];
-  const x=front.bounds.x0-1.8,z0=back.b.z+back.cV,z1=front.b.z+front.cV,footprints=[],paths=[],rails=[];
-  for(let floor=1;floor<=Math.min(front.b.floors,back.b.floors);floor++){
-   const y=(floor-1)*H,rects=[{x0:x-1.4,x1:x+1.4,z0,z1},{x0:x-1.4,x1:front.bounds.x0+1.4,z0:z0-1.4,z1:z0+1.4},{x0:x-1.4,x1:front.bounds.x0+1.4,z0:z1-1.4,z1:z1+1.4}];
-   for(const rect of rects)footprints.push({floor,u0:rect.x0,u1:rect.x1,v0:rect.z0,v1:rect.z1,rect});
-   paths.push({floor,points:[back.world(-back.L/2+.6,back.cV,y),{x,y,z:z0},{x,y,z:z1},front.world(-front.L/2+.6,front.cV,y)]});
-   if(floor>1)for(const side of [-1,1])rails.push({floor,u0:x+side*1.4-.06,u1:x+side*1.4+.06,v0:z0+1.4,v1:z1-1.4});
+  const passage=front.cells.find(c=>c.floor===2&&c.kind==='passage');
+  if(!passage)return [];
+  const u=(passage.u0+passage.u1)/2,x=front.world(u,0).x,z0=back.bounds.z1,z1=front.bounds.z0,footprints=[],paths=[],rails=[];
+  for(let floor=2;floor<=Math.min(front.b.floors,back.b.floors);floor++){
+   const y=(floor-1)*H,rect={x0:x-1.4,x1:x+1.4,z0,z1};
+   footprints.push({floor,u0:rect.x0,u1:rect.x1,v0:rect.z0,v1:rect.z1,rect});
+   paths.push({floor,points:[back.world(u,back.cV,y),{x,y,z:z0},{x,y,z:z1},front.world(u,front.cV,y)]});
+   for(const side of [-1,1])rails.push({floor,u0:x+side*1.4-.06,u1:x+side*1.4+.06,v0:z0,v1:z1});
   }
-  const bounds={x0:x-1.4,x1:front.bounds.x0+1.4,z0:z0-1.4,z1:z1+1.4};
-  return[{id:'admin-gallery',b:{id:'admin-gallery',name:'行政大樓連通廊',floors:front.b.floors,rooms:[]},bounds,horizontal:true,world:(u,v,y=0)=>({x:u,z:v,y}),local:(x,z)=>({u:x,v:z}),rect:(u0,u1,v0,v1)=>({x0:u0,x1:u1,z0:v0,z1:v1}),cells:[],rooms:[],stairs:[],ramps:[],holes:[],platforms:[],entrances:[],footprints,corridors:footprints,paths,rails,displayRows:[]}];
+  const bounds={x0:x-1.4,x1:x+1.4,z0,z1};
+  return[{id:'admin-gallery',b:{id:'admin-gallery',name:'行政大樓中央連通廊',floors:front.b.floors,rooms:[]},bounds,horizontal:true,world:(u,v,y=0)=>({x:u,z:v,y}),local:(x,z)=>({u:x,v:z}),rect:(u0,u1,v0,v1)=>({x0:u0,x1:u1,z0:v0,z1:v1}),cells:[],rooms:[],stairs:[],ramps:[],holes:[],platforms:[],entrances:[],footprints,corridors:footprints,paths,rails,displayRows:[]}];
+ }
+ function junctions(layouts){
+  const a=layouts.find(l=>l.id==='grade8-mid'),b=layouts.find(l=>l.id==='grade8-front');if(!a||!b)return [];
+  const result=[];
+  for(let floor=1;floor<=Math.min(a.b.floors,b.b.floors);floor++){
+   const c=a.corridors.find(c=>c.floor===floor),r=c.rect,x=(r.x0+r.x1)/2,z=a.bounds.z1,y=(floor-1)*H;
+   if(Math.abs(z-b.bounds.z0)>.01)continue;
+   result.push({floor,a:a.id,b:b.id,start:{x,y,z:z-.6},end:{x,y,z:z+.6}});
+  }
+  return result;
  }
  function ribbon(points,width=.28){
   const vertices=[];
@@ -203,5 +215,5 @@ const CampusSpatialPlan = (() => {
   }
   return vertices;
  }
- return{layout,groundAt,contains,galleries,ribbon};
+ return{layout,groundAt,contains,galleries,junctions,ribbon};
 })();

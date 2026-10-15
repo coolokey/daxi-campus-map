@@ -150,10 +150,10 @@ const FH = 3.6; // Floor Height in meters
     color: 0xc1c8ba,
     roofColor: 0xa66b5c,
     hasPitchedRoof: true,
-    x: 2, z: 28, width: 12, depth: 38, floors: 3,
+    x: 2, z: 23, width: 12, depth: 28, floors: 3,
     stairs: [
       { x: 2, z: 10, name: "九年級北側樓梯", floors: 3 },
-      { x: 2, z: 46, name: "九年級南側樓梯", floors: 3 }
+      { x: 2, z: 36, name: "九年級南側樓梯", floors: 3 }
     ],
     rooms: [
       { id: "906", code: "9B1-906", name: "906 教室 (1F)", floor: 1, node: "g9-1f-906", cat: "grade9" },
@@ -176,10 +176,10 @@ const FH = 3.6; // Floor Height in meters
     color: 0xc8c4b7,
     roofColor: 0xa66b5c,
     hasPitchedRoof: true,
-    x: 28, z: 28, width: 13, depth: 38, floors: 3,
+    x: 28, z: 32, width: 13, depth: 46, floors: 3,
     stairs: [
       { x: 28, z: 10, name: "八年級中棟北側樓梯", floors: 3 },
-      { x: 28, z: 46, name: "八年級中棟南側樓梯", floors: 3 }
+      { x: 28, z: 54, name: "八年級中棟南側樓梯", floors: 3 }
     ],
     rooms: [
       { id: "counseling-act", code: "8M1-C", name: "輔導活動空間 (1F)", floor: 1, node: "g8m-1f-counsel", cat: "special" },

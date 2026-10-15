@@ -156,7 +156,8 @@
     for(const [a,b] of [[-2.34,-2.05],[-.45,.45],[2.05,2.34]])landingGuard(g,l,s.nearU+.01,s.nearU+.07,s.centerV+a,s.centerV+b,y,colors);
    }
    // Corridor edges: split against footprint intersections so internal joints stay open.
-   const parts=l.footprints.filter(p=>p.floor===f),divisions=[...parts,...l.corridors.filter(p=>p.floor===f)],us=[...new Set(divisions.flatMap(p=>[p.u0,p.u1]))].sort((a,b)=>a-b),vs=[...new Set(divisions.flatMap(p=>[p.v0,p.v1]))].sort((a,b)=>a-b);
+   const neighbors=layouts.filter(q=>['grade8-front','grade8-mid'].includes(l.id)&&['grade8-front','grade8-mid'].includes(q.id)&&q.id!==l.id),neighborCorridors=neighbors.flatMap(q=>q.corridors.filter(c=>c.floor===f).map(c=>{const a=l.local(c.rect.x0,c.rect.z0),b=l.local(c.rect.x1,c.rect.z1);return {u0:Math.min(a.u,b.u),u1:Math.max(a.u,b.u),v0:Math.min(a.v,b.v),v1:Math.max(a.v,b.v)}}));
+   const parts=l.footprints.filter(p=>p.floor===f),divisions=[...parts,...l.corridors.filter(p=>p.floor===f),...neighborCorridors,...galleryLayouts.flatMap(q=>q.footprints.filter(p=>p.floor===f).map(p=>{const a=l.local(p.rect.x0,p.rect.z0),b=l.local(p.rect.x1,p.rect.z1);return {u0:Math.min(a.u,b.u),u1:Math.max(a.u,b.u),v0:Math.min(a.v,b.v),v1:Math.max(a.v,b.v)}}))],us=[...new Set(divisions.flatMap(p=>[p.u0,p.u1]))].sort((a,b)=>a-b),vs=[...new Set(divisions.flatMap(p=>[p.v0,p.v1]))].sort((a,b)=>a-b);
    const present=(u,v)=>parts.some(p=>u>p.u0+1e-5&&u<p.u1-1e-5&&v>p.v0+1e-5&&v<p.v1-1e-5);
    function edge(alongU,fixed,a,b){
     const u=alongU?(a+b)/2:fixed,v=alongU?fixed:(a+b)/2;
@@ -165,10 +166,11 @@
     // Keep ground-floor access and actual gallery junctions open. Exposed upper
     // corridor ends need visible parapets instead of an invisible support limit.
     const point=l.world(u,v),galleryJoin=galleryLayouts.some(q=>q.footprints.some(p=>p.floor===f&&M.inside(p.rect,point.x,point.z)));
-    const open=f===1||galleryJoin;
+    const teachingJoin=neighborCorridors.some(p=>CampusSpatialPlan.contains(p,u,v));
+    const open=f===1||galleryJoin||teachingJoin;
     if(!open)box(g,l,min,max,v0,v1,y,y+1.05,colors.exterior,true);
     // Space columns away from doors and corridor ends.
-    for(let t=a+1;t<b-1;t+=6)if(f!==1&&!galleryJoin)box(g,l,alongU?t-.13:fixed-.13,alongU?t+.13:fixed+.13,alongU?fixed-.13:t-.13,alongU?fixed+.13:t+.13,y,y+FH,colors.exterior,true);
+    for(let t=a+1;t<b-1;t+=6)if(f!==1&&!galleryJoin&&!teachingJoin)box(g,l,alongU?t-.13:fixed-.13,alongU?t+.13:fixed+.13,alongU?fixed-.13:t-.13,alongU?fixed+.13:t+.13,y,y+FH,colors.exterior,true);
    }
    for(const v of vs)for(let i=1;i<us.length;i++){const u=(us[i]+us[i-1])/2;if(present(u,v-.02)!==present(u,v+.02))edge(true,v,us[i-1],us[i]);}
    for(const u of us)for(let i=1;i<vs.length;i++){const v=(vs[i]+vs[i-1])/2;if(present(u-.02,v)!==present(u+.02,v))edge(false,u,vs[i-1],vs[i]);}
@@ -330,6 +332,12 @@
   const start=node(`admin-gallery-start-${f}`,pts[0],'admin-back');attachPath(previous,start,gridPath(graph[previous],pts[0],y,back),'admin-back');previous=start;
   for(let i=1;i<pts.length;i++){const id=node(`admin-gallery-${f}-${i}`,pts[i],gallery.id);link(previous,id);previous=id}
   attachPath(previous,hubs[`admin-front-${f}`],gridPath(pts.at(-1),graph[hubs[`admin-front-${f}`]],y,front),'admin-front');
+ }
+ for(const j of CampusSpatialPlan.junctions(layouts)){
+  const a=layouts.find(l=>l.id===j.a),b=layouts.find(l=>l.id===j.b),ha=hubs[`${j.a}-${j.floor}`],hb=hubs[`${j.b}-${j.floor}`];
+  const na=node(`teaching-junction-${j.floor}-a`,j.start,j.a),nb=node(`teaching-junction-${j.floor}-b`,j.end,j.b);
+  attachPath(ha,na,gridPath(graph[ha],j.start,j.start.y,a),j.a);link(na,nb);
+  attachPath(nb,hb,gridPath(j.end,graph[hb],j.end.y,b),j.b);
  }
  const gate=node('gate',{x:-10,y:0,z:90});
  for(const l of layouts)for(const [i,e] of l.entrances.entries()){

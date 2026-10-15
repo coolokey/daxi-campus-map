@@ -81,3 +81,12 @@ describe('activity center photo-confirmed one-storey hall and second-floor balco
   const aisle=l.world(0,12.5,3.6);expect(plan.groundAt(l,aisle.x,aisle.z,aisle.y)).toBe(3.6);
  });
 });
+it('photo correction keeps the administrative bridge central and joins teaching floors',()=>{
+ const {buildings,math,plan}=load(),ls=buildings.map((b:any)=>math.layout(b)),front=ls.find((l:any)=>l.id==='admin-front'),mid=ls.find((l:any)=>l.id==='grade8-mid'),south=ls.find((l:any)=>l.id==='grade8-front'),nine=ls.find((l:any)=>l.id==='grade9-back'),g=plan.galleries(ls)[0];
+ expect(g.paths.map((p:any)=>p.floor)).toEqual([2,3]);
+ for(const p of g.paths){const end=p.points.at(-1),q=front.local(end.x,end.z);expect(front.cells.some((c:any)=>c.floor===p.floor&&c.kind==='passage'&&q.u>=c.u0&&q.u<=c.u1)).toBe(true);}
+ expect(g.bounds.x0).toBeGreaterThan(front.bounds.x0+5);
+ expect(mid.bounds.z1).toBeCloseTo(south.bounds.z0);
+ expect(nine.b.depth).toBeLessThan(mid.b.depth*.7);
+ expect(plan.junctions(ls)).toHaveLength(3);
+});

@@ -43,6 +43,40 @@ it('makes the cube four tiles across on all six faces with an opaque dark core a
 it('assigns all facade and entrance objects to the existing building and floor visibility groups',()=>{
  const s=build();for(const g of s.scene.children){expect(g.userData.buildingId).toBe('admin-front');expect([1,2,3]).toContain(g.userData.floorNum);expect(s.floorMeshes).toContain(g)}s.dom.window.close();
 });
+it('encloses upper administrative floors with stone bands, square piers and glazed window bays',()=>{
+ const s=build(),l=s.w.campusWalkWorld.layouts.find((l:any)=>l.id==='admin-front'),b=l.b,front=b.z+b.depth/2;
+ s.scene.updateMatrixWorld(true);
+ for(const f of [2,3]){
+  const g=s.scene.getObjectByName(`photo-admin-facade-${f}`)!;
+  const piers=g.children.filter(o=>o.name==='admin-window-stone-pier');expect(piers.length).toBeGreaterThan(8);
+  for(const p of piers)expect(new THREE.Box3().setFromObject(p).getSize(new THREE.Vector3()).x).toBeGreaterThan(.25);
+  for(let x=b.x-b.width/2+.5;x<b.x+b.width/2-.5;x+=.2)for(const height of [.5,1.8,3.3]){
+   const ray=new THREE.Raycaster(new THREE.Vector3(x,(f-1)*3.6+height,front+1),new THREE.Vector3(0,0,-1),0,1.25);
+   expect(ray.intersectObject(g,true).length,`${f}F front opening at ${x}, ${height}`).toBeGreaterThan(0);
+  }
+  expect(s.solids.some(c=>c.y0<=(f-1)*3.6&&c.y1>=f*3.6&&c.x0<=b.x&&c.x1>=b.x&&c.z0<=front&&c.z1>=front)).toBe(true);
+ }
+ // The lower central passage remains physically and visually open.
+ const ray=new THREE.Raycaster(new THREE.Vector3(b.x,1.5,front+1),new THREE.Vector3(0,0,-1),0,1.3);
+ expect(ray.intersectObjects(s.scene.children.filter(g=>g.name.includes('facade')||g.name.includes('entrance')),true)).toHaveLength(0);
+ s.dom.window.close();
+});
+it('uses a compact four-hip roof with a red front slope and cream rear and end slopes',()=>{
+ const s=build(),l=s.w.campusWalkWorld.layouts.find((l:any)=>l.id==='admin-front'),b=l.b;
+ const roof=s.scene.getObjectByName('photo-admin-roof')!,panels=roof.children.filter(o=>o.name==='admin-hip-roof') as THREE.Mesh[];
+ expect(panels).toHaveLength(1);const panel=panels[0],geo=panel.geometry;
+ expect(geo.groups).toHaveLength(4);
+ const normals=geo.getAttribute('normal'),directions=new Set<string>();
+ for(let i=0;i<normals.count;i++){
+  const x=normals.getX(i),z=normals.getZ(i);expect(normals.getY(i)).toBeGreaterThan(0);
+  directions.add(Math.abs(x)>Math.abs(z)?(x>0?'east':'west'):(z>0?'front':'rear'));
+ }
+ expect([...directions].sort()).toEqual(['east','front','rear','west']);
+ const bounds=new THREE.Box3().setFromObject(roof);expect(bounds.max.x-b.x).toBeLessThanOrEqual(b.width/2+.6);expect(bounds.max.z-b.z).toBeLessThanOrEqual(b.depth/2+.6);
+ const palette=panel.material as THREE.MeshStandardMaterial[];
+ expect(palette[0].color.getHex()).toBe(0xb76f62);expect(palette[1].color.getHex()).toBe(0xb9b28b);
+ expect(roof.userData.roof).toBe(true);s.dom.window.close();
+});
 it('adds photo-matched classroom grilles and blue courtyard accents without closing any door',()=>{
  const s=build(true),groups=s.scene.children.filter(g=>g.name.startsWith('photo-teaching-'));expect(groups).toHaveLength(9);
  for(const g of groups){expect(['grade8-front','grade8-mid','grade9-back']).toContain(g.userData.buildingId);expect(s.floorMeshes).toContain(g);expect(g.children.some(c=>c.name==='teaching-window-grilles')).toBe(true)}
