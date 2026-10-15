@@ -144,11 +144,11 @@ it('analog movement keeps partial speed, caps diagonal speed and uses collision'
  expect(run(`96-avatarGroup.position.z`)).toBeCloseTo(.9);
  run(`avatarGroup.position.set(-10,0,96);campusMobileControls.move.x=1;campusMobileControls.move.y=1;animate();`);
  expect(run(`Math.hypot(avatarGroup.position.x+10,avatarGroup.position.z-96)`)).toBeCloseTo(1.8);
- run(`avatarGroup.position.set(78,10.8,46);avatarAngle=Math.PI/2;campusMobileControls.move.x=0;campusMobileControls.move.y=1;for(let i=0;i<10;i++)animate();`);
+ run(`window.artLayout=campusWalkWorld.layouts.find(l=>l.id==='art-building');window.artRoom=artLayout.rooms.find(r=>r.floor===4);avatarGroup.position.copy(artRoom.center);avatarAngle=Math.PI/2;campusMobileControls.move.x=0;campusMobileControls.move.y=1;for(let i=0;i<10;i++)animate();`);
  const stoppedX=run(`avatarGroup.position.x`);
  run(`for(let i=0;i<10;i++)animate();`);
  expect(run(`avatarGroup.position.x`)).toBe(stoppedX);
- expect(stoppedX).toBeLessThan(81);
+ expect(stoppedX).toBeLessThan(run(`artLayout.bounds.x1`));
 });
 it('releasing a direction button does not release a held keyboard direction',()=>{
  run(`setControlMode('avatar');resetManualInput();document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'w',bubbles:true}));document.getElementById('dpad-up').dispatchEvent(new MouseEvent('mousedown'));document.getElementById('dpad-up').dispatchEvent(new MouseEvent('mouseup'));`);
