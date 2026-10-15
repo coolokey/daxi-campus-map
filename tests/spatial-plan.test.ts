@@ -81,19 +81,15 @@ describe('activity center photo-confirmed one-storey hall and second-floor balco
   const aisle=l.world(0,12.5,3.6);expect(plan.groundAt(l,aisle.x,aisle.z,aisle.y)).toBe(3.6);
  });
 });
-it('photo correction keeps the administrative bridge central and joins teaching floors',()=>{
- const {buildings,math,plan}=load(),ls=buildings.map((b:any)=>math.layout(b)),front=ls.find((l:any)=>l.id==='admin-front'),mid=ls.find((l:any)=>l.id==='grade8-mid'),south=ls.find((l:any)=>l.id==='grade8-front'),nine=ls.find((l:any)=>l.id==='grade9-back'),g=plan.galleries(ls)[0];
- expect(g.paths.map((p:any)=>p.floor)).toEqual([2,3]);
- for(const p of g.paths){const end=p.points.at(-1),q=front.local(end.x,end.z);expect(front.cells.some((c:any)=>c.floor===p.floor&&c.kind==='passage'&&q.u>=c.u0&&q.u<=c.u1)).toBe(true);}
- expect(g.bounds.x0).toBeGreaterThan(front.bounds.x0+5);
- expect(mid.bounds.z1).toBeCloseTo(south.bounds.z0);
- expect(nine.b.depth).toBeLessThan(mid.b.depth*.7);
- expect(plan.junctions(ls)).toHaveLength(3);
+it('keeps teaching joints and puts administrative circulation in its single layout',()=>{
+ const {buildings,math,plan}=load(),ls=buildings.map((b:any)=>math.layout(b)),admin=ls.find((l:any)=>l.id==='admin-front'),mid=ls.find((l:any)=>l.id==='grade8-mid'),south=ls.find((l:any)=>l.id==='grade8-front'),nine=ls.find((l:any)=>l.id==='grade9-back');
+ expect(plan.galleries(ls)).toEqual([]);expect(admin.footprints.filter((p:any)=>p.part==='connector').map((p:any)=>p.floor)).toEqual([2,3]);
+ expect(mid.bounds.z1).toBeCloseTo(south.bounds.z0);expect(nine.b.depth).toBeLessThan(mid.b.depth*.7);expect(plan.junctions(ls)).toHaveLength(3);
 });
 
 it('uses one administrative identity and a broad technology body with one narrow wing',()=>{
- const {buildings,math}=load(),front=buildings.find((b:any)=>b.id==='admin-front'),rear=buildings.find((b:any)=>b.id==='admin-back'),tech=math.layout(buildings.find((b:any)=>b.id==='tech-building')),art=math.layout(buildings.find((b:any)=>b.id==='art-building'));
- expect(front.name).toBe('行政大樓');expect(rear.name).not.toContain('行政');expect(rear.width).toBeLessThan(front.width);
+ const {buildings,math}=load(),front=buildings.find((b:any)=>b.id==='admin-front'),tech=math.layout(buildings.find((b:any)=>b.id==='tech-building')),art=math.layout(buildings.find((b:any)=>b.id==='art-building'));
+ expect(front.name).toBe('行政大樓');expect(buildings.some((b:any)=>b.id==='admin-back')).toBe(false);
  expect(tech.footprints.filter((p:any)=>p.floor===1)).toHaveLength(2);
  expect(tech.cells.some((c:any)=>c.row==='courtyard')).toBe(false);
  expect(tech.rooms).toHaveLength(10);expect(tech.stairs).toHaveLength(1);

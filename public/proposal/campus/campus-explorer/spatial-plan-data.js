@@ -64,6 +64,18 @@ const CampusSpatialData = (() => {
    [2,room('tech-nw-2','TC-NW-2'),room('physics-lab','TC-N-2',1,'理化實驗室'),room('maker-lab','TC-SW-2',1,'空間 TC-SW-2（名稱待確認）'),room('tech-smart','TC-NE-2',1,'科技教室（名稱待確認）'),room('computer-lab-2','TC-SE-2',1,'電腦教室二')]
   ]
  };
+ // One building owns every office. Parts are geometry only, never separate destinations.
+ const adminFront=profiles['admin-front'],adminRear=profiles['admin-back'];
+ profiles['admin-front']={shape:'admin',sign:1,front:adminFront,rear:adminRear,
+  rearBody:{x:-12,z:23,width:24,depth:10},
+  confidence:'1151015 Word 標示與五角度空拍：同一連棟行政樓；各區尺度為照片比例示意'};
+ custom.admin=[1,2,3].map(f=>[f,...[...adminFront.floors[f],...adminRear.floors[f]].filter(c=>c.kind==='room')]);
+ Object.assign(extras,{
+  'student-affairs':{name:'學務處',cat:'admin'},'coach-room':{name:'教練室',cat:'sports'},
+  'general':{name:'總務處 / 人事室 / 會計室',cat:'admin'},
+  'spec-staff-back':{name:'專任辦公室',cat:'admin'},'teacher-study':{name:'教師研習中心',cat:'admin'}
+ });
+ delete profiles['admin-back'];
  for(const b of BUILDINGS_CONFIG){
   const p=profiles[b.id],old=new Map(b.rooms.map(r=>[r.id,r]));
   const rows=p.shape?custom[p.shape]:Object.entries(p.floors).map(([f,cells])=>[Number(f),...cells.filter(c=>c.kind==='room')]);

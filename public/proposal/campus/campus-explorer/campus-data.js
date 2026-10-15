@@ -48,7 +48,7 @@ const FH = 3.6; // Floor Height in meters
     ]
   },
 
-  // 3. 行政大樓：PDF 圈選的單一矩形主體（ID 保留相容）
+  // 3. 行政大樓：入口橫體、中央連接區與內側橫體為同一棟（ID 保留相容）
   {
     id: "admin-front",
     name: "行政大樓",
@@ -56,7 +56,7 @@ const FH = 3.6; // Floor Height in meters
     color: 0xc7c4b9,
     roofColor: 0xa66b5c,
     hasPitchedRoof: true,
-    x: -12, z: 44, width: 26, depth: 10, floors: 3,
+    x: -12, z: 42, width: 26, depth: 14, floors: 3,
     stairs: [
       { x: -22, z: 44, name: "行政大樓西側樓梯", floors: 3 },
       { x: -2, z: 44, name: "行政大樓東側樓梯", floors: 3 }
@@ -69,30 +69,6 @@ const FH = 3.6; // Floor Height in meters
       { id: "academic", code: "A2-03", name: "教務處 (2F)", floor: 2, node: "admin-f-2f-e", cat: "admin" },
       { id: "lang-lab", code: "A3-01", name: "語言教室 (3F)", floor: 3, node: "admin-f-3f-w", cat: "special" },
       { id: "spec-staff-3", code: "A3-02", name: "專任辦公室三 (3F)", floor: 3, node: "admin-f-3f-e", cat: "admin" }
-    ]
-  },
-
-  // 4. 後方桃米色屋頂校舍：按既有處室用途標示，非第二棟行政大樓
-  {
-    id: "admin-back",
-    name: "學務・總務等處室區",
-    category: "admin",
-    color: 0xc7c4b9,
-    roofColor: 0xa66b5c,
-    hasPitchedRoof: true,
-    x: -12, z: 20, width: 22, depth: 9, floors: 3,
-    stairs: [
-      { x: -22, z: 20, name: "後方處室區西側樓梯", floors: 3 },
-      { x: -2, z: 20, name: "後方處室區東側樓梯", floors: 3 }
-    ],
-    rooms: [
-      { id: "student-affairs", code: "B1-01", name: "學務處 (1F)", floor: 1, node: "admin-b-1f-w", cat: "admin" },
-      { id: "coach-room", code: "B1-02", name: "教練室 (1F)", floor: 1, node: "admin-b-1f-c", cat: "sports" },
-      { id: "weimei-room", code: "B1-03", name: "唯美教室 (1F)", floor: 1, node: "admin-b-1f-e", cat: "special" },
-      { id: "general", code: "B2-01", name: "總務處 / 人事室 / 會計室 (2F)", floor: 2, node: "admin-b-2f-w", cat: "admin" },
-      { id: "scout-judo", code: "B2-02", name: "童軍團部 / 柔道教室 (2F)", floor: 2, node: "admin-b-2f-e", cat: "sports" },
-      { id: "spec-staff-back", code: "B3-01", name: "專任辦公室 (3F)", floor: 3, node: "admin-b-3f-w", cat: "admin" },
-      { id: "teacher-study", code: "B3-02", name: "教師研習中心 (3F)", floor: 3, node: "admin-b-3f-e", cat: "admin" }
     ]
   },
 
@@ -254,7 +230,7 @@ const FH = 3.6; // Floor Height in meters
     category: "special",
     color: 0xbcc9c2,
     roofColor: 0x567b70,
-    x: 74, z: 12, width: 28, depth: 22, floors: 2,
+    x: 74, z: 19, width: 28, depth: 36, floors: 2,
     stairs: [
       { x: 62, z: 12, name: "科技館樓梯", floors: 2 }
     ],
@@ -278,9 +254,9 @@ const FH = 3.6; // Floor Height in meters
     color: 0xc9bbb6,
     roofColor: 0x896774,
     // 1151015 aerials: compact four-storey tower immediately south of technology.
-    x: 84, z: 31.8, width: 11.2, depth: 12.8, floors: 4,
+    x: 84, z: 45.8, width: 11.2, depth: 12.8, floors: 4,
     stairs: [
-      { x: 80, z: 31.8, name: "藝術館主樓梯間", floors: 4 }
+      { x: 80, z: 45.8, name: "藝術館主樓梯間", floors: 4 }
     ],
     rooms: [
       { id: "broadwood", code: "ART1-BW", name: "樂活體能教室 (1F)", floor: 1, node: "art-1f-bw", cat: "sports" },

@@ -3,7 +3,7 @@
  * admin-front is handled independently by photo-facade.js.
  */
 const CampusPhotoRoofs=(()=>{
- const ids=new Set(['admin-back','grade8-front','grade8-mid','grade9-back','art-building','tech-building','admin-gallery']);
+ const ids=new Set(['admin-front','grade8-front','grade8-mid','grade9-back','art-building','tech-building']);
  function build({scene,layouts,floorMeshes,height=3.6}){
   const materials=new Map(),material=color=>{
    if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.97,side:THREE.DoubleSide}));
@@ -12,7 +12,7 @@ const CampusPhotoRoofs=(()=>{
   // Some spatial roofs carry only roof:true; their floor group owns buildingId.
   // Only explicit roof objects are removed: floor slabs and corridor ceilings stay.
   const obsolete=[];
-  scene.traverse(o=>{if(!o.userData?.roof)return;let owner=o;while(owner&&!owner.userData?.buildingId)owner=owner.parent;if(ids.has(owner?.userData.buildingId))obsolete.push(o)});
+  scene.traverse(o=>{if(!o.userData?.roof||o.name==='photo-admin-roof')return;let owner=o;while(owner&&!owner.userData?.buildingId)owner=owner.parent;if(ids.has(owner?.userData.buildingId))obsolete.push(o)});
   for(const o of obsolete){o.parent?.remove(o);const i=floorMeshes.indexOf(o);if(i>=0)floorMeshes.splice(i,1);o.traverse(c=>c.geometry?.dispose())}
   const built=[];
   for(const l of layouts){
@@ -50,7 +50,14 @@ const CampusPhotoRoofs=(()=>{
     if(tiles)for(let d=.75;d<half;d+=.75)for(const sign of [-1,1])localBox(u,v+sign*d,length,.025,.018,y+.17+rise*(1-d/half),0xb9ad81);
    }
    const top=l.footprints.filter(p=>p.floor===l.b.floors);
-   if(l.id==='tech-building'){
+   if(l.id==='admin-front'){
+    // The front hip roof belongs to photo-facade; the connected roof reaches it.
+    for(const p of top.filter(p=>p.part==='inner'))pitched(p,{color:0xd9b38d,rise:.65,overhang:.16});
+    for(const p of top.filter(p=>p.part==='connector')){
+     const half=(p.u1-p.u0)/2+.16,len=p.v1-p.v0+.5,rise=.28,angle=Math.atan2(rise,half),depth=Math.hypot(half,rise),x=(p.u0+p.u1)/2,z=(p.v0+p.v1)/2;
+     for(const sign of [-1,1])box(depth,.09,len,l.b.x+x+sign*half/2,y+.1+rise/2,l.b.z+z,0xd9b38d,0,-sign*angle);
+    }
+   }else if(l.id==='tech-building'){
     // Each white flat roof occupies one existing wing. No rectangle spans the courtyard.
     for(const p of top){
      const u=(p.u0+p.u1)/2,v=(p.v0+p.v1)/2,L=p.u1-p.u0,D=p.v1-p.v0;

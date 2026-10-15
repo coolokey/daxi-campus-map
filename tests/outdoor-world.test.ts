@@ -46,7 +46,7 @@ it('leaves standing headroom underneath stacked stair flights',()=>{
 it('rebuilt school floors retain distinct photo-based wall and stair materials instead of a shared white surface',()=>{
  const surfaces=run(`(()=>{const result={};scene.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(m?.userData.campusSurface){const id=m.userData.campusBuildingId;result[id]??={};result[id][m.userData.campusSurface]={luminance:m.color.r*.2126+m.color.g*.7152+m.color.b*.0722,hex:m.color.getHex(),roughness:m.roughness}}});return result})()`);
  expect(surfaces['admin-front']).toBeDefined();expect(surfaces['gym-bld']).toBeDefined();
- expect(surfaces['admin-back'].stair.hex).not.toBe(surfaces['gym-bld'].stair.hex);
+ expect(surfaces['admin-front'].stair.hex).not.toBe(surfaces['gym-bld'].stair.hex);
  expect(surfaces['admin-front'].floor.luminance).toBeLessThan(surfaces['admin-front'].wall.luminance);
  expect(surfaces['gym-bld'].floor.luminance).toBeLessThan(surfaces['gym-bld'].wall.luminance);
  for(const building of Object.values(surfaces) as any[])for(const kind of ['wall','floor','stair'])if(building[kind]){expect(building[kind].luminance).toBeLessThan(.65);expect(building[kind].roughness).toBeGreaterThanOrEqual(.9)}
@@ -136,7 +136,7 @@ it('shows the original sports mosaic above the rear windows without stretching i
 });
 
 it('stair flights retain closed risers at walking height without filling the space below',()=>{
- const hits=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-back'),r=l.ramps[0],p=CampusWalkMath.rampPoint(r,.5),g=scene.children.find(g=>g.name==='floor-stairs-2'&&g.userData.buildingId===l.id),meshes=g.children.filter(m=>m.isMesh&&m.material.userData.campusSurface==='stair');g.updateMatrixWorld(true);const origin=new THREE.Vector3(p.x,p.y-.08,p.z),direction=l.horizontal?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0);origin.addScaledVector(direction,-1.2);return new THREE.Raycaster(origin,direction,0,2.4).intersectObjects(meshes).length})()`);
+ const hits=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),r=l.ramps[0],p=CampusWalkMath.rampPoint(r,.5),g=scene.children.find(g=>g.name==='floor-stairs-2'&&g.userData.buildingId===l.id),meshes=g.children.filter(m=>m.isMesh&&m.material.userData.campusSurface==='stair');g.updateMatrixWorld(true);const origin=new THREE.Vector3(p.x,p.y-.08,p.z),direction=l.horizontal?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0);origin.addScaledVector(direction,-1.2);return new THREE.Raycaster(origin,direction,0,2.4).intersectObjects(meshes).length})()`);
  expect(hits).toBeGreaterThan(0);
 });
 it('corridor ceilings remain above walking height and hide for floor cutaway viewing',()=>{
@@ -201,4 +201,11 @@ it('keeps the technology rounded extension solid and all room doors clear after 
  expect(run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building'),n=l.facadeFeatures.roundedNose,p=l.world(n.u,n.v+n.radius*.5,0);return checkWallCollision(p.x,0,p.z)})()`)).toBe(true);
  expect(run(`(()=>{scene.updateMatrixWorld(true);const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building'),n=l.facadeFeatures.roundedNose,p=l.world(n.u,n.v+n.radius+.3,1.5),ray=new THREE.Raycaster(new THREE.Vector3(p.x,p.y,p.z),new THREE.Vector3(-1,0,0),0,.5);return ray.intersectObjects(scene.children.filter(g=>g.name==='floor-tech-facade-1'),true).length>0})()`)).toBe(true);
  const failures=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building');return l.rooms.filter(r=>{const p={...r.corridor};return moveAvatarWithCollision(p,r.center.x-p.x,r.center.z-p.z)}).map(r=>r.id)})()`);expect(failures).toEqual([]);
+});
+
+it('walks across the continuous administrative body on both upper floors',()=>{
+ const failures=run(`(()=>{const errors=[];for(const [from,to] of [['academic','general'],['spec-staff-3','teacher-study']]){
+  const ids=findShortestPath(ROOMS_DB[from].node,ROOMS_DB[to].node),p={...campusWalkWorld.graph[ROOMS_DB[from].node]};if(!ids){errors.push(from+' missing');continue;}
+  for(const id of ids.slice(1)){const q=campusWalkWorld.graph[id],origin={...p},n=Math.max(1,Math.ceil(Math.hypot(q.x-p.x,q.z-p.z)/.1));for(let i=1;i<=n;i++){const target={x:origin.x+(q.x-origin.x)*i/n,z:origin.z+(q.z-origin.z)*i/n};if(moveAvatarWithCollision(p,target.x-p.x,target.z-p.z)||Math.abs(p.y-q.y)>.15){errors.push(from+' '+id);break}}if(errors.length)break;}
+ }return errors})()`);expect(failures).toEqual([]);
 });

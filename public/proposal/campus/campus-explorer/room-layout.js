@@ -2,7 +2,7 @@
 (() => {
  const M=CampusRoomLayout,api=campusExplorer;
  const aliases=()=>typeof CampusSpatialData==='undefined'?{}:CampusSpatialData.aliases||{};
- const order=['admin-front','admin-back','new-grade7','grade8-front','grade8-mid','grade9-back','multi-building','tech-building','art-building','health-bld','gym-bld','recycle-bld'];
+ const order=['admin-front','new-grade7','grade8-front','grade8-mid','grade9-back','multi-building','tech-building','art-building','health-bld','gym-bld','recycle-bld'];
  const buildings=[...api.buildings].sort((a,b)=>order.indexOf(a.id)-order.indexOf(b.id));
  const rooms=buildings.flatMap(b=>b.rooms.map(r=>({...r,name:r.name.replace(/\s*\(\d+F\)/,'')}))),base=M.normalize(null,rooms);
  const colors=M.colors;

@@ -2935,9 +2935,12 @@
 
     function focusBuilding(cfg) {
       focusedBuildingId=cfg.id;
+      const layout=window.campusWalkWorld?.layouts.find(l=>l.id===cfg.id);
+      const cx=layout?(layout.bounds.x0+layout.bounds.x1)/2:cfg.x;
+      const cz=layout?(layout.bounds.z0+layout.bounds.z1)/2:cfg.z;
       animateCameraTo(
-        new THREE.Vector3(cfg.x + 36, cfg.floors * FH + 30, cfg.z + 45),
-        new THREE.Vector3(cfg.x, cfg.floors * FH / 2, cfg.z)
+        new THREE.Vector3(cx + 36, cfg.floors * FH + 30, cz + 45),
+        new THREE.Vector3(cx, cfg.floors * FH / 2, cz)
       );
     }
 
@@ -3275,7 +3278,7 @@
         if (cfg.id === "gym-bld") miniName = "活動中心";
         else if (cfg.id === "recycle-bld") miniName = "回收";
         else if (cfg.id === "admin-front") miniName = "行政大樓";
-        else if (cfg.id === "admin-back") miniName = "後方處室區";
+
         else if (cfg.id === "health-bld") miniName = "健康/合作";
         else if (cfg.id === "grade8-front") miniName = "八年級(南棟)";
         else if (cfg.id === "grade9-back") miniName = "九年級";
@@ -3326,7 +3329,7 @@
         setTimeout(() => {
           if(ROOMS_DB[to])navigateToRoom(to);
           else {
-            const building=BUILDINGS_CONFIG.find(b=>b.id===to);
+            const building=BUILDINGS_CONFIG.find(b=>b.id===(['admin-back','admin-gallery'].includes(to)?'admin-front':to));
             if(building){setControlMode('bird');focusBuilding(building)}
             else showToast('找不到此目的地，請使用上方搜尋');
           }

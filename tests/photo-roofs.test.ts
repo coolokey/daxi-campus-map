@@ -21,16 +21,16 @@ function fixture(){
  if(existsSync('public/campus-explorer/photo-roofs.js'))run(readFileSync('public/campus-explorer/photo-roofs.js','utf8'));
  return{dom,w,scene,floorMeshes,layouts,legacy,ceilings,before};
 }
-const ids=['admin-back','grade8-front','grade8-mid','grade9-back','art-building','tech-building','admin-gallery'];
+const ids=['admin-front','grade8-front','grade8-mid','grade9-back','art-building','tech-building'];
 it('represents the aerial art building as a compact four-storey block beside the technology wing',()=>{
  const s=fixture(),art=s.layouts.find((l:any)=>l.id==='art-building'),tech=s.layouts.find((l:any)=>l.id==='tech-building');
  expect(art.b.floors).toBe(4);expect(art.b.depth/art.b.width).toBeLessThan(1.5);
  expect(art.bounds.z0-tech.bounds.z1).toBeGreaterThanOrEqual(1);expect(art.bounds.z0-tech.bounds.z1).toBeLessThanOrEqual(4);s.dom.window.close();
 });
 it('replaces inherited roof markers but preserves every ceiling and unrelated roof',()=>{
- const s=fixture();expect(s.scene.getObjectByName('photo-roof-admin-back')).toBeTruthy();
+ const s=fixture();expect(s.scene.getObjectByName('photo-roof-admin-front')).toBeTruthy();
  for(const [i,l] of s.layouts.entries()){expect(s.legacy[i].parent!==null).toBe(!ids.includes(l.id));expect(s.ceilings[i].parent).not.toBeNull()}
- expect(s.scene.getObjectByName('photo-roof-admin-front')).toBeUndefined();s.dom.window.close();
+ expect(s.scene.getObjectByName('photo-roof-admin-back')).toBeUndefined();s.dom.window.close();
 });
 it('tags new roofs for existing floor and cutaway filters with correct four/two-storey heights',()=>{
  const s=fixture();for(const id of ids){const g=s.scene.getObjectByName('photo-roof-'+id)!;expect(g).toBeTruthy();const l=s.layouts.find((l:any)=>l.id===id);expect(g.userData).toMatchObject({buildingId:id,floorNum:l.b.floors,roof:true});expect(s.floorMeshes).toContain(g);expect(new THREE.Box3().setFromObject(g).min.y).toBeGreaterThanOrEqual(l.b.floors*3.6-.01);g.visible=!g.userData.roof;expect(g.visible).toBe(false)}

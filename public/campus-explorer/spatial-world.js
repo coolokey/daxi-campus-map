@@ -174,6 +174,14 @@
     const point=l.world(u,v),galleryJoin=galleryLayouts.some(q=>q.footprints.some(p=>p.floor===f&&M.inside(p.rect,point.x,point.z)));
     const teachingJoin=neighborCorridors.some(p=>CampusSpatialPlan.contains(p,u,v));
     const open=f===1||galleryJoin||teachingJoin;
+    const connector=l.b.spatialProfile.shape==='admin'&&l.footprints.some(p=>p.floor===f&&p.part==='connector'&&CampusSpatialPlan.contains(p,u,v));
+    if(connector&&!open){
+     box(g,l,min,max,v0,v1,y,y+1.05,colors.exterior,true);
+     box(g,l,min,max,v0,v1,y+2.6,y+FH,colors.exterior,true);
+     box(g,l,min,max,v0,v1,y+1.05,y+2.6,colors.glass,true);
+     for(let t=a+.5;t<b;t+=.8)box(g,l,alongU?t-.025:fixed-.12,alongU?t+.025:fixed+.12,alongU?fixed-.12:t-.025,alongU?fixed+.12:t+.025,y+1.05,y+2.6,colors.steel);
+     return;
+    }
     if(!open)box(g,l,min,max,v0,v1,y,y+1.05,colors.exterior,true);
     // Space columns away from doors and corridor ends.
     for(let t=a+1;t<b-1;t+=6)if(f!==1&&!galleryJoin&&!teachingJoin)box(g,l,alongU?t-.13:fixed-.13,alongU?t+.13:fixed+.13,alongU?fixed-.13:t-.13,alongU?fixed+.13:t+.13,y,y+FH,colors.exterior,true);
@@ -197,6 +205,11 @@
      box(ceiling,l,longU?u-.7:u-.09,longU?u+.7:u+.09,longU?v-.09:v-.7,longU?v+.09:v+.7,y+FH-.64,y+FH-.59,colors.light);
     }
    }
+  }
+  if(l.b.spatialProfile.shape==='admin'){
+   const connector=l.footprints.find(p=>p.part==='connector'),g=new THREE.Group();g.name='floor-admin-covered-passage-1';g.userData={buildingId:l.id,floorNum:1};scene.add(g);floorMeshes.push(g);
+   // An open ground-floor undercroft supports the upper connected body.
+   for(const u of [connector.u0+.12,connector.u1-.12])for(const v of [connector.v0+1.8,connector.v1-.5])box(g,l,u-.1,u+.1,v-.1,v+.1,0,FH,colors.exterior,true);
   }
   if(l.id==='art-building'){
    const v0=-l.D/2,c0=v0+5.2,c1=c0+2.8,cv=(c0+c1)/2;
@@ -229,7 +242,7 @@
      const end=Math.min(nose.u+nose.radius,u+.2),v=nose.v+Math.sqrt(Math.max(0,nose.radius**2-((u+end)/2-nose.u)**2));
      const r=l.rect(u,end,nose.v-.08,v);registerWallCollider(r.x0,r.x1,r.z0,r.z1,y,y+FH);WALL_COLLIDERS.at(-1).buildingId=l.id;cameraVolume(r,y,y+FH);
     }
-    if(f===2)for(let u=-l.L/2;u<l.L/2-.01;u+=.8){
+    if(f===2)for(let u=nose.u;u<l.L/2-.01;u+=.8){
      if(Math.abs(u+.4-nose.u)<nose.radius+.4)continue;
      box(g,l,u+.04,Math.min(u+.76,l.L/2-.04),nose.v+.1,nose.v+.15,y+1.15,y+2.7,colors.glass);
      for(const h of [1.15,2.7])box(g,l,u,Math.min(u+.8,l.L/2),nose.v+.09,nose.v+.18,y+h-.055,y+h+.055,techWindowFrame);
@@ -273,7 +286,7 @@
      const a=shift(r.start),c=shift(r.end);a.y+=.9;c.y+=.9;rail(a,c,colors.handrail,.04);
      const posts=Math.max(2,Math.ceil(runLength/.8));for(let j=0;j<=posts;j++){const q=shift(M.rampPoint(r,j/posts));rail(q,q.clone().add(new THREE.Vector3(0,.9,0)),colors.steel,.022);}
      // Administrative stair safety mesh is schematic, without reproducing notices.
-     if(l.id==='admin-back'){
+     if(l.b.spatialProfile.shape==='admin'){
       const points=[];
       // Diamond weave in the stair-side plane, clipped to the guard height.
       for(const direction of [-1,1])for(let k=-runLength-.7;k<runLength+.7;k+=.24){
@@ -287,20 +300,7 @@
    }
   }
  }
- // Administrative galleries are compiled once and shared with the map and ground engine.
- const galleries=galleryLayouts,front=layouts.find(l=>l.id==='admin-front'),back=layouts.find(l=>l.id==='admin-back');
- for(const l of galleries){
-  const colors=surfaceMaterials(l);
-  for(let f=1;f<=l.b.floors;f++){
-   const y=(f-1)*FH,g=new THREE.Group();g.name=`floor-gallery-${f}`;g.userData={buildingId:'admin-front',floorNum:f};scene.add(g);floorMeshes.push(g);
-   for(const p of l.footprints.filter(p=>p.floor===f))box(g,l,p.u0,p.u1,p.v0,p.v1,y-.18,y,colors.floor);
-   for(const r of l.rails.filter(r=>r.floor===f)){
-    box(g,l,r.u0,r.u1,r.v0,r.v1,y,y+.84,colors.blue,true);
-    box(g,l,r.u0,r.u1,r.v0,r.v1,y+.84,y+1,colors.exterior,true);
-   }
-  }
- }
- layouts.push(...galleries);
+ const galleries=[];
  // Static batching retains low draw calls despite the extra circulation details.
  for(const g of scene.children.filter(g=>g.type==='Group'&&(g.name.startsWith('floor-')||g.userData.campusCeiling))){
   const batches=new Map();for(const mesh of [...g.children])if(mesh.isMesh&&mesh.visible&&!mesh.userData.roof&&!mesh.material.map&&!Array.isArray(mesh.material)){
@@ -370,13 +370,6 @@
    }
    link(previous,`${s.id}-upper-${f+1}`);
   }
- }
- for(const gallery of galleries)for(const {floor:f,points:pts} of gallery.paths){
-  const y=(f-1)*FH;
-  let previous=hubs[`admin-back-${f}`];
-  const start=node(`admin-gallery-start-${f}`,pts[0],'admin-back');attachPath(previous,start,gridPath(graph[previous],pts[0],y,back),'admin-back');previous=start;
-  for(let i=1;i<pts.length;i++){const id=node(`admin-gallery-${f}-${i}`,pts[i],gallery.id);link(previous,id);previous=id}
-  attachPath(previous,hubs[`admin-front-${f}`],gridPath(pts.at(-1),graph[hubs[`admin-front-${f}`]],y,front),'admin-front');
  }
  for(const j of CampusSpatialPlan.junctions(layouts)){
   const a=layouts.find(l=>l.id===j.a),b=layouts.find(l=>l.id===j.b),ha=hubs[`${j.a}-${j.floor}`],hb=hubs[`${j.b}-${j.floor}`];

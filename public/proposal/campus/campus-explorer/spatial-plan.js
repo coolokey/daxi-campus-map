@@ -4,7 +4,7 @@ const CampusSpatialPlan = (() => {
  const contains=(r,u,v)=>u>=r.u0-eps&&u<=r.u1+eps&&v>=r.v0-eps&&v<=r.v1+eps&&(r.kind!=='tower'||(u-r.centerU)**2+(v-r.centerV)**2<=r.radius**2+eps);
  function layout(b){
   const p=b.spatialProfile;if(!p)return null;
-  const horizontal=p.shape==='tech'||b.id==='art-building'?false:b.width>=b.depth,L=horizontal?b.width:b.depth,D=horizontal?b.depth:b.width,sign=p.sign||1;
+  const horizontal=p.shape==='admin'?true:p.shape==='tech'||b.id==='art-building'?false:b.width>=b.depth,L=horizontal?b.width:b.depth,D=horizontal?b.depth:b.width,sign=p.sign||1;
   const world=(u,v,y=0)=>horizontal?{x:b.x+u,z:b.z+v,y}:{x:b.x+v,z:b.z+u,y};
   const rect=(u0,u1,v0,v1)=>{const a=world(u0,v0),c=world(u1,v1);return{x0:Math.min(a.x,c.x),x1:Math.max(a.x,c.x),z0:Math.min(a.z,c.z),z1:Math.max(a.z,c.z)}};
   const local=(x,z)=>horizontal?{u:x-b.x,v:z-b.z}:{u:z-b.z,v:x-b.x};
@@ -39,7 +39,30 @@ const CampusSpatialPlan = (() => {
    return s;
   }
   const outerV=sign*D/2,wallV=sign*(D/2-2.8),cV=sign*(D/2-1.4);
-  if(p.shape==='gym'){
+  if(p.shape==='admin'){
+   // Compile both office rows into one coordinate frame, one building and one graph.
+   const front=layout({...b,spatialProfile:p.front}),rear=layout({...b,...p.rearBody,id:'admin-inner',spatialProfile:p.rear});
+   function merge(part,name){
+    const shift=part.b.z-b.z;
+    const localRect=q=>({...q,v0:q.v0+shift,v1:q.v1+shift,part:name});
+    for(const key of ['cells','corridors','footprints','platforms','holes'])for(const q of part[key]){
+     const r=localRect(q);if(key==='cells')r.row=name;if(r.v!==undefined)r.v+=shift;
+     // center/door/corridor and rect are already expressed in world coordinates.
+     ({cells,corridors,footprints,platforms,holes})[key].push(r);
+    }
+    for(const q of part.stairs)stairs.push({...localRect(q),centerV:q.centerV+shift,hole:localRect(q.hole)});
+    ramps.push(...part.ramps);entrances.push(...part.entrances);
+   }
+   // Root circulation starts beside the real stairwell; ground-floor parts have outdoor access.
+   merge(rear,'inner');merge(front,'entrance');
+   displayRows.push({id:'entrance',label:'入口側處室',axis:'u',start:-L/2,end:L/2},{id:'inner',label:'內側處室',axis:'u',start:-12,end:12});
+   const passage=front.cells.find(c=>c.floor===2&&c.kind==='passage'),u=(passage.u0+passage.u1)/2;
+   const v0=rear.cV+rear.b.z-b.z-.1,v1=-D/2+.1;
+   for(let f=2;f<=b.floors;f++){
+    Object.assign(fp(f,u-1.7,u+1.7,v0,v1),{part:'connector'});
+    Object.assign(co(f,u-1.7,u+1.7,v0,front.cV),{part:'connector'});
+   }
+  }else if(p.shape==='gym'){
    // Photo-confirmed 1F foyer/hall and 2F U-shaped balcony. The outer
    // shell height is independent of the number of usable floors.
    displayRows.push({id:'main',label:'活動中心前廳／主館／二樓看台',axis:'u',start:-L/2,end:L/2});
@@ -150,7 +173,7 @@ const CampusSpatialPlan = (() => {
    if(p.shape==='tech'){
     // A broad main body and one projecting narrow wing, as in the aerials.
     // Room IDs survive; the previous north/east/south courtyard is removed.
-    const join=A-8,c0=B-8,c1=c0+2.8,cv=(c0+c1)/2,stairEnd=a+8;
+    const join=0,c0=B-8,c1=c0+2.8,cv=(c0+c1)/2,stairEnd=a+8;
     displayRows.push({id:'main',label:'寬主體',axis:'u',start:a,end:join},{id:'wing',label:'綠窗帶長翼',axis:'u',start:join,end:A});
     for(let f=1;f<=b.floors;f++){
      fp(f,a,join,d,B);fp(f,join,A,c0,B);co(f,a,A,c0,c1);
@@ -160,14 +183,14 @@ const CampusSpatialPlan = (() => {
      addCell({kind:'stair',label:'科技館樓梯'},f,a,stairEnd,c1,B,'main');
      addCell({kind:'wc',label:'廁所'},f,stairEnd,join,c1,B,'main','v0',cv);
      const wing=f===1?['life-tech-2','computer-lab-1']:['tech-smart','computer-lab-2'];
-     wing.forEach((id,i)=>addCell(byId(id),f,join+i*4,join+(i+1)*4,c1,B,'wing','v0',cv));
+     const span=(A-join)/wing.length;wing.forEach((id,i)=>addCell(byId(id),f,join+i*span,join+(i+1)*span,c1,B,'wing','v0',cv));
     }
     addStair('main','科技館主體樓梯',a,stairEnd,c1,B,1);
     entrances.push({floor:1,inside:world(a+.6,cv),outside:world(a-1.2,cv)},{floor:1,inside:world(A-.6,cv),outside:world(A+1.2,cv)});
    }
   }
   const bounds={x0:Math.min(...footprints.map(p=>p.rect.x0)),x1:Math.max(...footprints.map(p=>p.rect.x1)),z0:Math.min(...footprints.map(p=>p.rect.z0)),z1:Math.max(...footprints.map(p=>p.rect.z1))};
-  return{id:b.id,b,facadeFeatures:p.shape==='tech'?{roundedNose:{u:L/2-8,v:D/2,radius:1.4}}:null,horizontal,L,D,sign,cV,wallV,outerV,world,local,rect,bounds,cells,corridors,footprints,displayRows,stairs,ramps,platforms,holes,rooms:cells.filter(c=>c.kind==='room'),entrances,entrance:entrances[0]?.outside,confidence:p.confidence||'依平面圖房間順序；未測量尺度'};
+  return{id:b.id,b,facadeFeatures:p.shape==='tech'?{roundedNose:{u:0,v:D/2,radius:1.4}}:null,horizontal,L,D,sign,cV,wallV,outerV,world,local,rect,bounds,cells,corridors,footprints,displayRows,stairs,ramps,platforms,holes,rooms:cells.filter(c=>c.kind==='room'),entrances,entrance:entrances[0]?.outside,confidence:p.confidence||'依平面圖房間順序；未測量尺度'};
  }
  function groundAt(l,x,z,currentY){
   const {u,v}=l.local(x,z);let best=0;
@@ -181,21 +204,8 @@ const CampusSpatialPlan = (() => {
   }
   return best;
  }
- function galleries(layouts){
-  const front=layouts.find(l=>l.id==='admin-front'),back=layouts.find(l=>l.id==='admin-back');
-  if(!front||!back)return [];
-  const passage=front.cells.find(c=>c.floor===2&&c.kind==='passage');
-  if(!passage)return [];
-  const u=(passage.u0+passage.u1)/2,x=front.world(u,0).x,z0=back.bounds.z1,z1=front.bounds.z0,footprints=[],paths=[],rails=[];
-  for(let floor=2;floor<=Math.min(front.b.floors,back.b.floors);floor++){
-   const y=(floor-1)*H,rect={x0:x-1.4,x1:x+1.4,z0,z1};
-   footprints.push({floor,u0:rect.x0,u1:rect.x1,v0:rect.z0,v1:rect.z1,rect});
-   paths.push({floor,points:[back.world(u,back.cV,y),{x,y,z:z0},{x,y,z:z1},front.world(u,front.cV,y)]});
-   for(const side of [-1,1])rails.push({floor,u0:x+side*1.4-.06,u1:x+side*1.4+.06,v0:z0,v1:z1});
-  }
-  const bounds={x0:x-1.4,x1:x+1.4,z0,z1};
-  return[{id:'admin-gallery',b:{id:'admin-gallery',name:'行政大樓中央連通廊',floors:front.b.floors,rooms:[]},bounds,horizontal:true,world:(u,v,y=0)=>({x:u,z:v,y}),local:(x,z)=>({u:x,v:z}),rect:(u0,u1,v0,v1)=>({x0:u0,x1:u1,z0:v0,z1:v1}),cells:[],rooms:[],stairs:[],ramps:[],holes:[],platforms:[],entrances:[],footprints,corridors:footprints,paths,rails,displayRows:[]}];
- }
+ // Kept as an empty compatibility API: administrative circulation now lives in one layout.
+ function galleries(){return []}
  function junctions(layouts){
   const a=layouts.find(l=>l.id==='grade8-mid'),b=layouts.find(l=>l.id==='grade8-front');if(!a||!b)return [];
   const result=[];

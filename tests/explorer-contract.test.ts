@@ -11,10 +11,9 @@ type Building={id:string;x:number;z:number;width:number;depth:number;rooms:Room[
 const buildings:Building[]=runInNewContext(data+'; BUILDINGS_CONFIG');
 const nodes:Record<string,{x:number;y:number;z:number;neighbors:string[]}>=runInNewContext(nav+'; NAV_NODES');
 describe('平面圖與導航一致性',()=>{
- it('行政大樓與後方處室區保持相對位置，雙縱棟保留中庭',()=>{
+ it('行政大樓只有一棟配置，雙縱棟保留中庭',()=>{
   const b=(id:string)=>buildings.find(b=>b.id===id)!;
-  expect(b('admin-front').x).toBe(b('admin-back').x);
-  expect(b('admin-front').z).toBeGreaterThan(b('admin-back').z);
+  expect(b('admin-front')).toBeDefined();expect(b('admin-back')).toBeUndefined();
   expect(b('grade9-back').depth).toBeGreaterThan(b('grade9-back').width);
   expect(b('grade8-mid').depth).toBeGreaterThan(b('grade8-mid').width);
   expect(b('art-building').z).toBeGreaterThan(b('tech-building').z);

@@ -12,7 +12,7 @@
    ['hill-2019','後山與擋土牆',oldDate,'斜面分段擋土牆及林木邊界；地形高度為示意。','track']
   ]},
   admin:{label:'行政大樓',items:[
-   ['admin-front','前立面與花園',unknown,'依使用者提供的各棟大樓名稱說明 PDF 圈選確認為行政大樓；以空拍與門面照片交叉核對。','admin-g89-staff'],
+   ['admin-front','前立面與花園',unknown,'依使用者提供的 Word 箭頭標示及五角度空拍，入口橫體、中央連接與內側處室為同一行政大樓；尺度採照片比例示意。','admin-g89-staff'],
    ['admin-entry','門廊與坡道',unknown,'玻璃門、低台階、右側坡道與金屬扶手。入口高度採導覽示意，不代表實測無障礙路線。','admin-g89-staff'],
    ['admin-roof','屋面與窗組',unknown,'紅瓦主坡面、藍綠檐口與成組窗框；房名及樓層沿用 115 平面圖。','admin-g89-staff'],
    ['admin-gallery','連廊與側牆',unknown,'抬高連廊及柱框可供外觀對照；黃色框架設備用途未確認。','academic']
