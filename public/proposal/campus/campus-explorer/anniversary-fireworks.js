@@ -54,11 +54,12 @@
   }
   function cinematicView(){
     if(!running)return;
-    if(!cameraSaved)cameraSaved={mode:currentMode,position:api.camera.position.clone(),target:api.controls.target.clone()};
-    api.setControlMode('bird');cancelCameraTween();
+    if(!cameraSaved)cameraSaved={mode:currentMode,position:api.camera.position.clone(),target:api.controls.target.clone(),floor:api.getFloorFilter?.()||'all',fov:api.camera.fov,far:api.camera.far};
+    api.manualTakeover?.();api.resetManualInput?.();api.setControlMode('bird');api.setFloorFilter?.('all');cancelCameraTween();
     const damping=api.controls.enableDamping;api.controls.enableDamping=false;api.controls.update();api.controls.enableDamping=damping;
     const mobile=innerWidth<600;
-    api.camera.position.set(mobile?-25:-125,mobile?49:59,mobile?355:245);api.controls.target.set(0,mobile?78:69,-35);api.camera.lookAt(api.controls.target);interacted=false;
+    if(mobile){api.camera.fov=60;api.camera.far=Math.max(api.camera.far,2200);api.camera.updateProjectionMatrix();}
+    api.camera.position.set(mobile?0:-125,mobile?69:59,mobile?800:245);api.controls.target.set(0,mobile?100:69,mobile?-145:-35);api.camera.lookAt(api.controls.target);interacted=false;
     fx?.alignText?.();
   }
   function start(){
@@ -80,7 +81,7 @@
       }
     });
     panel.hidden=false;panel.classList.remove('is-finished');banner.hidden=false;document.body.classList.add('anniversary-playing');
-    if(fromCover){cinematicView();if(!document.body.classList.contains('guide-collapsed'))document.getElementById('guide-toggle')?.click();}
+    cinematicView();
     quiet();if(soundWanted)void resumeSound();soundUI();updatePhase(waitingForSound?'loading':'countdown');return true;
   }
   function positionDistance(position){return Math.hypot(position.x-api.camera.position.x,position.y-api.camera.position.y,position.z-api.camera.position.z);}
@@ -89,7 +90,7 @@
     soundUI();
     document.body.classList.remove('anniversary-playing','anniversary-lettering');banner.hidden=true;
     if(cameraSaved&&!interacted&&currentMode==='bird'){
-      api.setControlMode(cameraSaved.mode);cancelCameraTween();api.camera.position.copy(cameraSaved.position);api.controls.target.copy(cameraSaved.target);api.camera.lookAt(cameraSaved.target);
+      api.setControlMode(cameraSaved.mode);api.setFloorFilter?.(cameraSaved.floor);cancelCameraTween();api.camera.position.copy(cameraSaved.position);api.controls.target.copy(cameraSaved.target);api.camera.lookAt(cameraSaved.target);api.camera.fov=cameraSaved.fov;api.camera.far=cameraSaved.far;api.camera.updateProjectionMatrix();
     }
     cameraSaved=null;
     panel.hidden=!finished;panel.classList.toggle('is-finished',finished);panel.dataset.phase=finished?'finished':'stopped';
