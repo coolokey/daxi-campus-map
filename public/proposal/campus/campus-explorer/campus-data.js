@@ -3,10 +3,12 @@
 // Other wings retain their aerial-supported exterior hue; interiors are schematic.
 const CampusSurfacePalette = (()=>{
  const base={wall:0xb2ad9c,band:0x8b9a8e,floor:0x85877d,stair:0x7b807b,edge:0x565f5b,handrail:0x73574b,skirt:0x69726a,grout:0x72776e,ceiling:0xb9b6a9};
- const admin={wall:0xb5ac96,band:0xa1a393,floor:0x878579,stair:0x737974,edge:0x515a57,handrail:0x8c9692,skirt:0x606963,ceiling:0xbab4a4,exterior:0xb8b8ae};
+ const admin={wall:0xb5af9d,band:0x598663,floor:0x878a84,stair:0x737974,edge:0x515a57,handrail:0x8c9692,skirt:0x606963,ceiling:0xbab4a4,exterior:0xa8aaa3,windowSill:0xa0a39b};
+ const teaching={wall:0xb4b09e,band:0x568b63,floor:0x858a83,stair:0x7b807b,ceiling:0xb7b3a4,exterior:0x989d97,windowSill:0x92978f};
+ const aerial={exterior:0xb0b3aa,windowSill:0xa3a79f};
  const gym={wall:0xb0b3a0,band:0xb18a7d,floor:0x727672,stair:0xa09b8d,edge:0x76776b,handrail:0x826346,skirt:0x285d88,exterior:0xaf8579};
  const shade=c=>[16,8,0].reduce((n,shift)=>n|(Math.round(((c>>shift)&255)*.92)<<shift),0);
- return {forBuilding:(b={})=>({...base,exterior:shade(b.color||0xb1b2a5),...(['admin-front','admin-back','admin-gallery'].includes(b.id)?admin:b.id==='gym-bld'?gym:{})})};
+ return {forBuilding:(b={})=>({...base,exterior:shade(b.color||0xb1b2a5),...(['admin-front','admin-back','admin-gallery'].includes(b.id)?admin:['grade8-front','grade8-mid','grade9-back'].includes(b.id)?teaching:['art-building','tech-building'].includes(b.id)?aerial:b.id==='gym-bld'?gym:{})})};
 })();
 const FH = 3.6; // Floor Height in meters
 
@@ -275,9 +277,10 @@ const FH = 3.6; // Floor Height in meters
     category: "special",
     color: 0xc9bbb6,
     roofColor: 0x896774,
-    x: 74, z: 46, width: 14, depth: 32, floors: 4,
+    // 1151015 aerials: compact four-storey tower immediately south of technology.
+    x: 74, z: 34, width: 14, depth: 18, floors: 4,
     stairs: [
-      { x: 68, z: 46, name: "藝術館主樓梯間", floors: 4 }
+      { x: 68, z: 34, name: "藝術館主樓梯間", floors: 4 }
     ],
     rooms: [
       { id: "broadwood", code: "ART1-BW", name: "樂活體能教室 (1F)", floor: 1, node: "art-1f-bw", cat: "sports" },

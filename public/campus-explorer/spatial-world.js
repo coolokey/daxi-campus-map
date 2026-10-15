@@ -55,13 +55,22 @@
   const wall=(a,b,y0,y1,mat,solid=true)=>alongU?box(g,l,a,b,fixed-.09,fixed+.09,y0,y1,mat,solid):box(g,l,fixed-.09,fixed+.09,a,b,y0,y1,mat,solid);
   if(c.doorSide===side){
    const half=Math.min(.95,(end-start)/2-.16);
-   wall(start,center-half,y,y+FH,paint);wall(center+half,end,y,y+FH,paint);wall(center-half,center+half,y+2.3,y+FH,paint);
+   const photoCorridor=['grade8-front','grade8-mid','grade9-back','admin-front','admin-back'].includes(l.id);
+   const wing=(a,b)=>{
+    if(!photoCorridor||b-a<1.3){wall(a,b,y,y+FH,paint);return;}
+    const collider=wall(a,b,y,y+FH,paint);if(collider)collider.visible=false;
+    wall(a,b,y,y+1.05,colors.blue,false);wall(a,b,y+2.65,y+FH,paint,false);
+    wall(a+.1,b-.1,y+1.05,y+2.65,colors.glass,false);
+    for(let t=a+.12;t<b;t+=.55)wall(t-.02,t+.02,y+1.05,y+2.65,colors.steel,false);
+    for(const h of [1.05,1.7,2.65])wall(a,b,y+h-.02,y+h+.02,colors.steel,false);
+   };
+   wing(start,center-half);wing(center+half,end);wall(center-half,center+half,y+2.3,y+FH,paint);
   }else if(!exposed||c.kind==='wc'){
    // Internal room partitions are real walls, not exterior-style windows.
    wall(start,end,y,y+FH,paint);
   }else{
    const solid=wall(start,end,y,y+FH,colors.wall);if(solid)solid.visible=false;
-   wall(start,end,y,y+1.05,colors.blue,false);wall(start,end,y+2.65,y+FH,paint,false);
+   wall(start,end,y,y+1.05,colors.windowSill||colors.blue,false);wall(start,end,y+2.65,y+FH,paint,false);
    wall(start+.2,end-.2,y+1.05,y+2.65,colors.glass,false);
    for(let u=start+.35;u<end-.2;u+=.6)wall(u-.022,u+.022,y+1.05,y+2.65,colors.steel,false);
   }
@@ -238,7 +247,10 @@
   for(let f=1;f<=l.b.floors;f++){
    const y=(f-1)*FH,g=new THREE.Group();g.name=`floor-gallery-${f}`;g.userData={buildingId:'admin-front',floorNum:f};scene.add(g);floorMeshes.push(g);
    for(const p of l.footprints.filter(p=>p.floor===f))box(g,l,p.u0,p.u1,p.v0,p.v1,y-.18,y,colors.floor);
-   for(const r of l.rails.filter(r=>r.floor===f))box(g,l,r.u0,r.u1,r.v0,r.v1,y,y+1,colors.wall,true);
+   for(const r of l.rails.filter(r=>r.floor===f)){
+    box(g,l,r.u0,r.u1,r.v0,r.v1,y,y+.84,colors.blue,true);
+    box(g,l,r.u0,r.u1,r.v0,r.v1,y+.84,y+1,colors.exterior,true);
+   }
   }
  }
  layouts.push(...galleries);

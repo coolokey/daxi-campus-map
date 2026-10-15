@@ -4,7 +4,8 @@ const CampusStaticBatch = (() => {
   for(const child of [...group.children])if(child.isGroup)batch(child);
   const batches=new Map();
   for(const mesh of group.children){
-   if(!mesh.isMesh||mesh.isInstancedMesh||mesh.isSkinnedMesh||!mesh.visible||mesh.name||Object.keys(mesh.userData).length||Array.isArray(mesh.material)||mesh.material.map||mesh.material.transparent||mesh.geometry.morphAttributes.position||mesh.geometry.drawRange.count!==Infinity)continue;
+   const cubeSticker=group.name==='photo-admin-rubiks-cube'&&mesh.name==='cube-tile';
+   if(!mesh.isMesh||mesh.isInstancedMesh||mesh.isSkinnedMesh||!mesh.visible||(mesh.name&&!cubeSticker)||Object.keys(mesh.userData).length||Array.isArray(mesh.material)||mesh.material.map||mesh.material.transparent||mesh.geometry.morphAttributes.position||mesh.geometry.drawRange.count!==Infinity)continue;
    const geometry=mesh.geometry;
    if(!geometry.attributes.position||!geometry.attributes.normal||Object.keys(geometry.attributes).some(key=>!['position','normal','uv'].includes(key)))continue;
    const key=[mesh.material.uuid,mesh.castShadow,mesh.receiveShadow,mesh.renderOrder,mesh.layers.mask,!!geometry.attributes.uv].join('/');
@@ -32,5 +33,5 @@ const CampusStaticBatch = (() => {
 (() => {
  const scene=window.campusExplorer?.scene;if(!scene)return;
  const names=['campus-landscape-refinement','photo-outdoor','basketball-court-complex','entrance-palm-avenue'];
- for(const group of scene.children)if(names.includes(group.name)||group.name.startsWith('photo-admin-')||group.name.startsWith('gym-'))CampusStaticBatch.batch(group);
+ for(const group of scene.children)if(names.includes(group.name)||group.name.startsWith('photo-admin-')||group.name.startsWith('photo-teaching-')||group.name.startsWith('gym-'))CampusStaticBatch.batch(group);
 })();

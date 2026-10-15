@@ -626,40 +626,46 @@
     // 專屬大門門柱紋理 (藍黃波浪圓弧彩繪＋金色校名)
     function createGatePylonTexture() {
       const canvas = document.createElement("canvas");
-      canvas.width = 256;
-      canvas.height = 512;
+      canvas.width = 512;
+      canvas.height = 1024;
       const ctx = canvas.getContext("2d");
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, 256, 512);
-
-      // 兩側大溪國中標誌性藍黃波浪圓圈彩繪
-      for (let y = 30; y < 490; y += 75) {
-        ctx.fillStyle = "#9fc4d4";
+      ctx.fillStyle = "#ecece7";
+      ctx.fillRect(0, 0, 512, 1024);
+      // 原照片兩側是連續的淡藍波紋及黃色半圓，中央為內縮字板。
+      for (const side of [0, 512]) {
+        const inward = side === 0 ? 1 : -1;
+        ctx.fillStyle = "#99bac7";
         ctx.beginPath();
-        ctx.arc(28, y, 22, 0, Math.PI * 2);
+        ctx.moveTo(side, 0);
+        ctx.lineTo(side + inward * 55, 0);
+        for (let y = 0; y < 1024; y += 128) {
+          ctx.bezierCurveTo(side + inward * 115, y + 40, side + inward * 14, y + 90, side + inward * 55, y + 128);
+        }
+        ctx.lineTo(side, 1024);
+        ctx.closePath();
         ctx.fill();
-        ctx.fillStyle = "#facc15";
-        ctx.beginPath();
-        ctx.arc(28, y, 12, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = "#9fc4d4";
-        ctx.beginPath();
-        ctx.arc(228, y, 22, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#facc15";
-        ctx.beginPath();
-        ctx.arc(228, y, 12, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.fillStyle = "#d8bc5c";
+        for (let y = 38; y < 1024; y += 192) {
+          ctx.beginPath();
+          ctx.arc(side, y, 55, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
-
-      // 中央金色楷書校名
-      ctx.fillStyle = "#b45309";
-      ctx.font = "bold 32px 'Noto Sans TC', sans-serif";
+      ctx.fillStyle = "#a6aaa8";
+      ctx.fillRect(89, 148, 334, 735);
+      ctx.fillStyle = "#dddeda";
+      ctx.fillRect(97, 160, 318, 715);
+      ctx.font = "bold 64px 'DFKai-SB', 'BiauKai', 'Noto Serif TC', serif";
       ctx.textAlign = "center";
-      const txt = ["桃", "園", "市", "立", "大", "溪", "國", "中"];
-      for (let i = 0; i < txt.length; i++) {
-        ctx.fillText(txt[i], 128, 70 + i * 48);
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#a48c50";
+      ctx.shadowColor = "#626258";
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 5;
+      ctx.shadowBlur = 2;
+      // 逐字依校門口.jpg：右列大雁乘風飛萬里，左列溪聲向學步高峰。
+      for (const [text, x] of [["大雁乘風飛萬里", 325], ["溪聲向學步高峰", 190]]) {
+        [...text].forEach((character, i) => ctx.fillText(character, x, 230 + i * 94));
       }
       return new THREE.CanvasTexture(canvas);
     }
@@ -888,26 +894,92 @@
     // 4.3 蔣公銅像庭園 (位於行政大樓西側庭院 x=-36, z=32)
     function createStatueCourtyard() {
       const statueGroup = new THREE.Group();
-      statueGroup.position.set(-36, 0.02, 32);
+      statueGroup.name = "photo-statue-courtyard";
+      // 尺寸沿既有模型比例；本體後移，保留 z=32 的既有前方觀賞目的地。
+      statueGroup.position.set(-36, 0.02, 28.5);
+      const stoneCanvas = document.createElement("canvas");
+      stoneCanvas.width = stoneCanvas.height = 128;
+      const stoneCtx = stoneCanvas.getContext("2d");
+      stoneCtx.fillStyle = "#aeb0b0";
+      stoneCtx.fillRect(0, 0, 128, 128);
+      for (let i = 0; i < 1500; i++) {
+        stoneCtx.fillStyle = i % 3 ? "#74787b" : "#d4d4d0";
+        stoneCtx.fillRect((i * 47) % 128, (i * 31 + Math.floor(i / 128) * 17) % 128, 1, 1);
+      }
+      const stone = new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(stoneCanvas), roughness: 0.98 });
+      const bronze = new THREE.MeshStandardMaterial({ color: 0x303337, metalness: 0.55, roughness: 0.64 });
+      const shadowBronze = new THREE.MeshStandardMaterial({ color: 0x222529, metalness: 0.45, roughness: 0.74 });
+      const addPart = (name, geometry, material, x, y, z) => {
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.name = name;
+        mesh.position.set(x, y, z);
+        mesh.castShadow = mesh.receiveShadow = true;
+        statueGroup.add(mesh);
+        return mesh;
+      };
+      const box = (name, w, h, d, material, x, y, z) => addPart(name, new THREE.BoxGeometry(w, h, d), material, x, y, z);
+      const oval = (name, sx, sy, sz, material, x, y, z) => {
+        const mesh = addPart(name, new THREE.SphereGeometry(1, 24, 16), material, x, y, z);
+        mesh.scale.set(sx, sy, sz);
+        return mesh;
+      };
+      box("stone-bottom-step", 4.2, 0.22, 3.4, stone, 0, 0.11, 0);
+      box("stone-upper-step", 3.7, 0.22, 2.9, stone, 0, 0.33, 0);
+      box("front-step", 2.1, 0.16, 0.65, stone, 0, 0.08, 2.02);
+      box("front-upper-step", 2.1, 0.24, 0.55, stone, 0, 0.18, 1.55);
+      box("stone-plinth", 3, 2.35, 2.2, stone, 0, 1.615, 0);
+      box("stone-cap-lower", 3.1, 0.15, 2.3, stone, 0, 2.865, 0);
+      box("stone-cap-upper", 2.5, 0.14, 1.85, stone, 0, 3.01, 0);
+      box("bust-foot", 1.9, 0.13, 1.05, shadowBronze, 0, 3.145, 0);
 
-      const baseRing = new THREE.Mesh(new THREE.CylinderGeometry(5.2, 5.8, 0.4, 24), new THREE.MeshStandardMaterial({ color: 0x94a3b8 }));
-      baseRing.position.y = 0.2;
-      baseRing.receiveShadow = true;
-      statueGroup.add(baseRing);
+      // 深色半身銅像：肩／胸、頸、頭、耳鼻與立領，非圓柱替身。
+      oval("bust-shoulders", 1.02, 0.52, 0.44, bronze, 0, 3.91, 0);
+      const torso = addPart("bust-torso", new THREE.CylinderGeometry(0.84, 0.85, 1.12, 24), bronze, 0, 3.73, 0);
+      torso.scale.z = 0.48;
+      oval("bust-neck", 0.24, 0.32, 0.23, bronze, 0, 4.47, 0);
+      oval("bust-head", 0.37, 0.52, 0.32, bronze, 0, 5.02, 0.015);
+      oval("bust-hair", 0.37, 0.24, 0.315, shadowBronze, 0, 5.32, -0.018);
+      oval("bust-ear-left", 0.075, 0.17, 0.09, bronze, -0.365, 4.99, 0.02);
+      oval("bust-ear-right", 0.075, 0.17, 0.09, bronze, 0.365, 4.99, 0.02);
+      oval("bust-nose", 0.075, 0.13, 0.13, bronze, 0, 5.01, 0.308);
+      for (const side of [-1, 1]) {
+        oval(`bust-brow-${side}`, 0.105, 0.028, 0.034, shadowBronze, side * 0.16, 5.14, 0.295);
+        oval(`bust-eye-${side}`, 0.065, 0.025, 0.022, shadowBronze, side * 0.16, 5.08, 0.307);
+        oval(`bust-moustache-${side}`, 0.09, 0.035, 0.03, shadowBronze, side * 0.075, 4.88, 0.322);
+      }
+      oval("bust-mouth", 0.12, 0.018, 0.026, shadowBronze, 0, 4.83, 0.302);
+      for (const [side, x] of [["left", -0.17], ["right", 0.17]]) {
+        const collar = box(`bust-collar-${side}`, 0.28, 0.22, 0.09, bronze, x, 4.45, 0.265);
+        collar.rotation.z = x < 0 ? -0.26 : 0.26;
+        box(`bust-pocket-${side}`, 0.46, 0.37, 0.045, bronze, x * 2.65, 3.91, 0.395);
+        box(`bust-pocket-flap-${side}`, 0.48, 0.085, 0.06, shadowBronze, x * 2.65, 4.09, 0.417);
+      }
+      box("bust-button-seam", 0.035, 1.1, 0.025, shadowBronze, 0, 3.8, 0.42);
+      for (let i = 0; i < 4; i++) oval(`bust-button-${i}`, 0.037, 0.037, 0.025, bronze, 0, 4.23 - i * 0.25, 0.448);
 
-      const flowerBed = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 4.5, 0.6, 24), new THREE.MeshStandardMaterial({ color: 0x2e7d32 }));
-      flowerBed.position.y = 0.5;
-      statueGroup.add(flowerBed);
+      const plaqueCanvas = document.createElement("canvas");
+      plaqueCanvas.width = 256;
+      plaqueCanvas.height = 384;
+      const ctx = plaqueCanvas.getContext("2d");
+      ctx.fillStyle = "#17191b";
+      ctx.fillRect(0, 0, 256, 384);
+      ctx.fillStyle = "#bc9b52";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "bold 71px 'DFKai-SB', 'BiauKai', 'Noto Serif TC', serif";
+      [..."民族救星"].forEach((character, i) => ctx.fillText(character, 128, 55 + i * 89));
+      const plaqueMaterial = new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(plaqueCanvas), roughness: 0.75 });
+      addPart("statue-plaque", new THREE.PlaneGeometry(1.75, 2.03), plaqueMaterial, 0, 1.66, 1.112);
 
-      const base2 = new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.6, 2.4), new THREE.MeshStandardMaterial({ color: 0xd1d5db }));
-      base2.position.y = 2.1;
-      base2.castShadow = true;
-      statueGroup.add(base2);
-
-      const bronze = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.9, 2.2, 16), new THREE.MeshStandardMaterial({ color: 0x8b5a2b }));
-      bronze.position.y = 4.4;
-      bronze.castShadow = true;
-      statueGroup.add(bronze);
+      const soil = new THREE.MeshStandardMaterial({ color: 0x625b4a, roughness: 1 });
+      const foliage = new THREE.MeshStandardMaterial({ color: 0x395740, roughness: 0.95 });
+      for (const side of [-1, 1]) {
+        box(`hedge-bed-${side}`, 1.15, 0.12, 2.8, soil, side * 2.4, 0.06, 0);
+        for (const z of [-0.9, 0.9]) {
+          box(`hedge-stone-edge-${side}-${z}`, 1.3, 0.2, 0.14, stone, side * 2.4, 0.1, z * 1.6);
+          oval(`trimmed-shrub-${side}-${z}`, 0.57, 0.47, 0.57, foliage, side * 2.4, 0.52, z);
+        }
+      }
 
       scene.add(statueGroup);
 
