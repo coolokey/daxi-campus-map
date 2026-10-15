@@ -15,23 +15,22 @@
  function button(text,action){const el=document.createElement('button');el.type='button';el.textContent=text;el.onclick=action;return el}
  const visibleRooms=()=>M.rooms(campusWalkWorld.layouts,api.rooms,currentFloorFilter);
  const clean=name=>name.replace(/\s*\(\d+F\)/,'');
- const badgeName=name=>clean(name).replace(/^(\d{3})\s+教室$/,'$1').replace(/^空間\s+\S+（名稱待確認）$/,'名稱待確認');
+ const badgeName=name=>clean(name).replace(/^空間\s+\S+（名稱待確認）$/,'名稱待確認');
  function closeCard(){card.hidden=true;selected=null;lastTrigger?.focus();}
  function focusRoom(r){focusedBuildingId=r.buildingId;const p=r.center;animateCameraTo(new THREE.Vector3(p.x+25,p.y+32,p.z+35),new THREE.Vector3(p.x,p.y+1,p.z));}
  function showCard(r,trigger){lastTrigger=trigger||document.activeElement;selected=r.id;card.replaceChildren();
   const close=button('×',closeCard);close.className='fe-close';close.setAttribute('aria-label','關閉教室資訊');
   const context=document.createElement('p');context.textContent=`${r.buildingName} · ${r.floor}F`;
-  const heading=document.createElement('h2');heading.textContent=clean(api.rooms[r.id].name);
-  const code=document.createElement('p');code.textContent=`固定空間編號：${r.spaceCode||r.code||'未標示'}${r.codeSource==='assigned'?'（導覽編號）':''}`;
-  const note=document.createElement('small');const layout=campusWalkWorld.layouts.find(l=>l.id===r.buildingId);note.textContent=r.name.includes('待確認')?'圖面文字尚待確認；保留固定編號供查找。':layout?.confidence?.includes('上層')?layout.confidence:'依 115 學年度平面圖配置；室內尺度為導覽示意。';
+  const heading=document.createElement('h2');heading.textContent=badgeName(api.rooms[r.id].name);
+  const note=document.createElement('small');const layout=campusWalkWorld.layouts.find(l=>l.id===r.buildingId);note.textContent=r.name.includes('待確認')?'圖面文字尚待確認，請依現場門牌確認名稱。':layout?.confidence?.includes('上層')?layout.confidence:'依 115 學年度平面圖配置；室內尺度為導覽示意。';
   const actions=document.createElement('div');actions.className='fe-card-actions';actions.append(button('查看此教室',()=>focusRoom(r)),button('步行導航',()=>{card.hidden=true;list.hidden=true;api.setControlMode('avatar');api.navigateToRoom(r.id,false)}));
-  card.append(close,context,heading,code,note,actions);card.hidden=false;close.focus();
+  card.append(close,context,heading,note,actions);card.hidden=false;close.focus();
  }
- function entry(r){const el=button('',()=>showCard(r,el));el.dataset.room=r.id;el.className='fe-room';const name=document.createElement('span'),code=document.createElement('small');el.append(name,code);paint(el,r);return el}
- function paint(el,r){const name=clean(api.rooms[r.id].name);el.firstElementChild.textContent=badgeName(name);el.lastElementChild.textContent=r.spaceCode||r.code||'';el.style.setProperty('--room-color',M.color(name,r.cat));el.setAttribute('aria-label',`${r.buildingName} ${r.floor}F ${name}，固定空間編號 ${r.spaceCode||r.code||'未標示'}`);el.title=el.getAttribute('aria-label');}
+ function entry(r){const el=button('',()=>showCard(r,el));el.dataset.room=r.id;el.className='fe-room';const name=document.createElement('span');el.append(name);paint(el,r);return el}
+ function paint(el,r){const name=clean(api.rooms[r.id].name);el.firstElementChild.textContent=badgeName(name);el.style.setProperty('--room-color',M.color(name,r.cat));el.setAttribute('aria-label',`${r.buildingName} ${r.floor}F ${badgeName(name)}`);el.title=el.getAttribute('aria-label');}
  function buildList(rooms){list.replaceChildren();const heading=document.createElement('h2');heading.textContent=`${currentFloorFilter}F 教室與處室`;list.append(button('關閉清單',()=>{list.hidden=true;listToggle.setAttribute('aria-expanded','false');listToggle.focus()}),heading);
   const grid=document.createElement('div');grid.className='fe-index-grid';list.append(grid);
-  for(const b of api.buildings){const items=rooms.filter(r=>r.buildingId===b.id);if(!items.length)continue;const section=document.createElement('section'),h=document.createElement('h3');h.textContent=`${b.name} · ${items.length} 間`;section.append(h);for(const r of items){const el=entry(r);el.firstElementChild.textContent=clean(api.rooms[r.id].name);section.append(el)}grid.append(section);}
+  for(const b of api.buildings){const items=rooms.filter(r=>r.buildingId===b.id);if(!items.length)continue;const section=document.createElement('section'),h=document.createElement('h3');h.textContent=`${b.name} · ${items.length} 間`;section.append(h);for(const r of items){const el=entry(r);el.firstElementChild.textContent=badgeName(api.rooms[r.id].name);section.append(el)}grid.append(section);}
  }
  function refresh(){
   lastLayout='';
@@ -47,11 +46,11 @@
   for(const [id,el]of cache){el.hidden=true;tints.get(id).visible=rooms.some(r=>r.id===id);}
   for(const [id,el]of headers)el.hidden=true;
   for(const l of campusWalkWorld.layouts.filter(l=>l.b.floors>=Number(currentFloorFilter)&&l.rooms.some(r=>r.floor===Number(currentFloorFilter)))){if(!headers.has(l.id)){const el=button('',()=>{focusedBuildingId=l.id;focusBuilding(l.b)});el.className='fe-building';layer.append(el);headers.set(l.id,el)}headers.get(l.id).textContent=`${l.b.name} ${currentFloorFilter}F`;}
-  buildList(rooms);summary.textContent=`${campusRoomLayout.year} 學年度 · ${currentFloorFilter}F · 全部 ${rooms.length} 間教室與處室｜下方依建築完整列出`;
-  if(selected){const r=rooms.find(r=>r.id===selected);if(r){card.querySelector('h2').textContent=clean(r.name)}else{selected=null;card.hidden=true}}
+  buildList(rooms);summary.textContent=`${campusRoomLayout.year} 學年度 · ${currentFloorFilter}F · 全部 ${rooms.length} 間教室與處室`;
+  if(selected){const r=rooms.find(r=>r.id===selected);if(r){card.querySelector('h2').textContent=badgeName(r.name)}else{selected=null;card.hidden=true}}
  }
  listToggle.onclick=()=>{list.hidden=!list.hidden;card.hidden=true;listToggle.setAttribute('aria-expanded',String(!list.hidden))};
- selector.querySelectorAll('.floor-btn').forEach(b=>b.onclick=()=>{document.getElementById('welcome-card').classList.add('hidden');if(currentMode!=='bird')api.setControlMode('bird');api.setFloorFilter(b.dataset.f);if(b.dataset.f!=='all'){list.hidden=false;listToggle.setAttribute('aria-expanded','true');focusedBuildingId=null;const target=new THREE.Vector3(14,(Number(b.dataset.f)-1)*3.6,20);animateCameraTo(new THREE.Vector3(innerWidth<768?-110:-45,innerWidth<768?150:108,innerWidth<768?180:135),target)}});
+ selector.querySelectorAll('.floor-btn').forEach(b=>b.onclick=()=>{document.getElementById('welcome-card').classList.add('hidden');if(currentMode!=='bird')api.setControlMode('bird');list.hidden=true;card.hidden=true;selected=null;listToggle.setAttribute('aria-expanded','false');api.setFloorFilter(b.dataset.f);if(b.dataset.f!=='all'){focusedBuildingId=null;const target=new THREE.Vector3(14,(Number(b.dataset.f)-1)*3.6,20);animateCameraTo(new THREE.Vector3(innerWidth<768?-110:-45,innerWidth<768?150:108,innerWidth<768?180:135),target)}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!card.hidden)closeCard();list.hidden=true;listToggle.setAttribute('aria-expanded','false')}});
  window.addEventListener('keydown',e=>{if((!card.hidden||!list.hidden)&&['w','a','s','d','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.stopImmediatePropagation()}},true);
  function reserved(){return ['top-nav','guide-quick-tools','avatar-quick-choices','floor-selector','minimap-card','scene-toolbar','guide-panel','guide-route','guide-toggle','guide-tools-toggle','anniversary-launch','anniversary-dialog','fe-summary','fe-list','fe-card'].flatMap(id=>{const el=document.getElementById(id);if(!el||el.hidden||!el.getClientRects().length)return [];const r=el.getBoundingClientRect();return[{x:r.x,y:r.y,w:r.width,h:r.height}]})}
@@ -62,7 +61,7 @@
   const w=innerWidth,h=innerHeight,candidates=[],buildingCandidates=[];const project=(p)=>{const v=new THREE.Vector3(p.x,p.y,p.z).project(api.camera);return{x:(v.x*.5+.5)*w,y:(-v.y*.5+.5)*h,behind:v.z>1||v.z< -1}};
   for(const [id,el]of cache)el.hidden=true;for(const [id,el]of headers)el.hidden=true;
   for(const l of campusWalkWorld.layouts){const el=headers.get(l.id);if(!el||!rooms.some(r=>r.buildingId===l.id))continue;el.title=`${l.b.name} ${currentFloorFilter}F`;el.textContent=`${l.b.name.split(' / ')[0].replace('教學棟','棟').replace('與特教園地','')} ${currentFloorFilter}F`;const p=project({x:l.b.x,y:(Number(currentFloorFilter)-1)*3.6+10,z:l.b.z});buildingCandidates.push({...p,id:`building:${l.id}`,el,w:Math.min(170,el.textContent.length*11+16),h:26})}
-  for(const r of [...rooms].sort((a,b)=>Number(b.buildingId===focusedBuildingId)-Number(a.buildingId===focusedBuildingId))){const el=cache.get(r.id),p=project({...r.center,y:r.center.y+2}),textWidth=badgeName(r.name).length*(innerWidth<768?11:12),codeWidth=String(r.spaceCode||r.code||'').length*7+10,labelWidth=Math.min(innerWidth<768?150:210,textWidth+codeWidth+14),labelHeight=Math.max(28,Math.ceil(textWidth/Math.max(30,labelWidth-codeWidth-14))*14+8);candidates.push({...p,id:r.id,el,w:labelWidth,h:labelHeight})}
+  for(const r of [...rooms].sort((a,b)=>Number(b.buildingId===focusedBuildingId)-Number(a.buildingId===focusedBuildingId))){const el=cache.get(r.id),p=project({...r.center,y:r.center.y+2}),textWidth=badgeName(r.name).length*(innerWidth<768?11:12),labelWidth=Math.min(innerWidth<768?150:210,textWidth+16),labelHeight=Math.max(28,Math.ceil(textWidth/Math.max(30,labelWidth-16))*14+8);candidates.push({...p,id:r.id,el,w:labelWidth,h:labelHeight})}
   lines.replaceChildren();
   for(const c of M.pack([...candidates,...buildingCandidates],w,h,obstacles)){c.el.hidden=false;c.el.style.left=`${c.x}px`;c.el.style.top=`${c.y}px`;c.el.style.width=`${c.w}px`;c.el.style.height=`${c.h}px`;
    const anchor=candidates.find(a=>a.id===c.id);
