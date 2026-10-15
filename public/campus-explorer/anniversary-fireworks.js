@@ -54,10 +54,10 @@
   }
   function cinematicView(){
     if(!running)return;
-    if(!cameraSaved)cameraSaved={mode:currentMode,position:api.camera.position.clone(),target:api.controls.target.clone(),floor:api.getFloorFilter?.()||'all',fov:api.camera.fov,far:api.camera.far};
+    if(!cameraSaved)cameraSaved={mode:currentMode,position:api.camera.position.clone(),target:api.controls.target.clone(),floor:api.getFloorFilter?.()||'all',fov:api.camera.fov,far:api.camera.far,maxDistance:api.controls.maxDistance,maxPolarAngle:api.controls.maxPolarAngle};
     api.manualTakeover?.();api.resetManualInput?.();api.setControlMode('bird');api.setFloorFilter?.('all');cancelCameraTween();
     const damping=api.controls.enableDamping;api.controls.enableDamping=false;api.controls.update();api.controls.enableDamping=damping;
-    const mobile=innerWidth<600;
+    const mobile=innerWidth<600;api.controls.maxDistance=Math.max(api.controls.maxDistance||420,mobile?1200:420);api.controls.maxPolarAngle=Math.PI*.58;
     if(mobile){api.camera.fov=60;api.camera.far=Math.max(api.camera.far,2200);api.camera.updateProjectionMatrix();}
     api.camera.position.set(mobile?0:-125,mobile?69:59,mobile?800:245);api.controls.target.set(0,mobile?100:69,mobile?-145:-35);api.camera.lookAt(api.controls.target);interacted=false;
     fx?.alignText?.();
@@ -92,6 +92,7 @@
     if(cameraSaved&&!interacted&&currentMode==='bird'){
       api.setControlMode(cameraSaved.mode);api.setFloorFilter?.(cameraSaved.floor);cancelCameraTween();api.camera.position.copy(cameraSaved.position);api.controls.target.copy(cameraSaved.target);api.camera.lookAt(cameraSaved.target);api.camera.fov=cameraSaved.fov;api.camera.far=cameraSaved.far;api.camera.updateProjectionMatrix();
     }
+    if(cameraSaved){api.controls.maxDistance=cameraSaved.maxDistance;api.controls.maxPolarAngle=cameraSaved.maxPolarAngle;}
     cameraSaved=null;
     panel.hidden=!finished;panel.classList.toggle('is-finished',finished);panel.dataset.phase=finished?'finished':'stopped';
     if(finished){$('status').textContent='煙火秀已結束，謝謝你一起點亮大溪的八十週年。';$('replay').textContent='再次觀看';}
