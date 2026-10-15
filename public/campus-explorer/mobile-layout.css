@@ -43,6 +43,7 @@
  .field-guide .mobile-stick-look{right:var(--mobile-right)}
  .field-guide #avatar-quick-choices{bottom:calc(8px + env(safe-area-inset-bottom,0px));width:min(360px,calc(100vw - var(--mobile-left) - var(--mobile-right)));box-sizing:border-box}
  .field-guide #mode-toast,.field-guide #mouse-look-hint,.field-guide #fe-summary{display:none}
+ .field-guide .campus-speech,.field-guide .campus-person-tag{z-index:25}
 }
 @media(max-height:500px) and (orientation:landscape){
  .field-guide{--mobile-reserve:calc(88px + env(safe-area-inset-bottom,0px))}
