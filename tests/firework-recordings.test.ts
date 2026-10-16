@@ -62,3 +62,18 @@ it('部分下載失敗只重試缺失樣本，不重複加入成功錄音',async
  const s=setup('near-1.mp3');expect((await s.engine.load()).loaded).toBe(17);s.setFailure(false);
  const result=await s.engine.load();expect(result.loaded).toBe(18);expect(result.failed).toEqual([]);expect(s.requested).toHaveLength(21);expect(s.engine.stats().loaded).toBe(18);
 });
+it('keeps the mobile viewing camera audible above the ambience without losing stereo direction',async()=>{
+ const s=setup();await s.engine.load();const position={x:60,y:125,z:-155};
+ s.engine.play('far',{position,camera:{x:-125,y:59,z:245}});s.engine.play('far',{position,camera:{x:0,y:69,z:800}});s.engine.play('crowd');
+ const [desktop,mobile,crowd]=s.engine.stats().played;
+ expect(mobile.gain).toBeGreaterThan(.25);expect(mobile.gain).toBeGreaterThan(crowd.gain*3);expect(mobile.gain/desktop.gain).toBeGreaterThan(.6);expect(mobile.pan).toBeGreaterThan(0);
+});
+it('prioritizes an explosion over tails when the bounded voice pool is full and clears retired sources on stop',async()=>{
+ const s=setup();await s.engine.load();for(let i=0;i<18;i++)s.engine.play('tail');
+ expect(s.engine.play('near')).not.toBeNull();expect(s.engine.stats().played.at(-1).kind).toBe('near');expect(s.engine.stats().active).toBeLessThanOrEqual(18);
+ s.engine.stop();expect(s.engine.stats().active).toBe(0);expect(s.engine.stats().retiring).toBe(0);
+});
+it('never loses a fresh main attack even when the pool is entirely occupied by explosions',async()=>{
+ const s=setup();await s.engine.load();for(let i=0;i<18;i++)s.engine.play('far');expect(s.engine.play('near')).not.toBeNull();
+ s.engine.stop();for(let i=0;i<18;i++)s.engine.play('near');expect(s.engine.play('near')).not.toBeNull();s.engine.dispose();
+});

@@ -41,4 +41,7 @@ fs.writeFileSync(path.join(embedded,embeddedJsName),embeddedJs);fs.writeFileSync
 for(const m of [...embeddedScripts,...embeddedStyles])embeddedHtml=embeddedHtml.replace(m[0],'');
 embeddedHtml=embeddedHtml.replace('</head>',`<link rel="stylesheet" href="${embeddedCssName}"></head>`).replace('</body>',`<script defer src="${embeddedJsName}"></script></body>`);
 fs.writeFileSync(path.join(embedded,'index.html'),embeddedHtml);
+// Rebuild the alternate outer shell too; its bundle hint and routing must not fossilize.
+const nestedEntry=entry.replaceAll('./assets/','../../assets/').replace(`./campus-explorer/${jsName}`,`./campus-explorer/${embeddedJsName}`);
+fs.writeFileSync(path.join(dist,'proposal/campus/index.html'),nestedEntry);
 console.log('Embedded proposal campus bundled with the same anniversary engine.');

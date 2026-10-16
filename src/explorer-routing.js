@@ -6,7 +6,7 @@ const aliases={
 export function explorerUrl(base,search){
  const input=new URLSearchParams(search),output=new URLSearchParams();
  const destination=input.get('to');
- if(destination)output.set('to',aliases[destination]??destination);
+ if(destination)output.set('to',Object.hasOwn(aliases,destination)?aliases[destination]:destination);
  if(input.get('view')==='plan')output.set('view','plan');
  if(input.get('profile')==='1')output.set('profile','1');
  const query=output.toString();

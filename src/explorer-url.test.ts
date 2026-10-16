@@ -6,4 +6,7 @@ describe('既有導覽網址相容',()=>{
  it('轉換舊版目的地',()=>expect(explorerUrl('./','?to=admin')).toBe('./campus-explorer/index.html?to=academic'));
  it('保留場景原目的地',()=>expect(explorerUrl('./','?to=art-4f')).toBe('./campus-explorer/index.html?to=art-4f'));
  it('不轉送舊版檢視模式與任意參數',()=>expect(explorerUrl('./','?viewer=legacy&other=x')).toBe('./campus-explorer/index.html'));
+ it.each(['__proto__','constructor','toString'])('特殊目的地 %s 不讀取別名原型',value=>{
+  const url=new URL(explorerUrl('https://school.test/','?to='+value));expect(url.searchParams.get('to')).toBe(value);
+ });
 });

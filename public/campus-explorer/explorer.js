@@ -2587,6 +2587,7 @@
 
     window.addEventListener("keydown", (e) => {
       if (e.target instanceof Element && e.target.closest("input,textarea,select,[contenteditable]")) return;
+      if (e.target instanceof Element && e.target.closest("button,a,summary,[role=button]") && (e.code === 'Space' || e.key === 'Enter')) return;
       if(motionBlocked())return;
       if(['w','s','a','d','ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key.length===1?e.key.toLowerCase():e.key)){
         e.preventDefault();manualTakeover();
@@ -2649,12 +2650,12 @@
        8. NAVIGATION & CAMERA TRANSITIONS
        ========================================================================== */
     function navigateToRoom(roomId, focusCamera = true) {
-      stopAutoWalk();
-      const room = ROOMS_DB[roomId];
+      const room = typeof roomId==='string'&&Object.hasOwn(ROOMS_DB,roomId)?ROOMS_DB[roomId]:null;
       if (!room) {
-        alert("找不到此處室或教室: " + roomId);
-        return;
+        showToast("找不到此處室或教室");
+        return false;
       }
+      stopAutoWalk();
 
       focusedBuildingId=room.buildingId;
       const targetNodeId = room.node;
@@ -3025,6 +3026,7 @@
     });
 
     window.onSelectSearchRoom = (roomId) => {
+      if(typeof roomId!=='string'||!Object.hasOwn(ROOMS_DB,roomId))return false;
       searchResults.style.display = "none";
       searchInput.value = ROOMS_DB[roomId].name;
       navigateToRoom(roomId);
@@ -3327,14 +3329,18 @@
       const to = params.get("to");
       if (to) {
         setTimeout(() => {
-          if(ROOMS_DB[to])navigateToRoom(to);
-          else {
-            const building=BUILDINGS_CONFIG.find(b=>b.id===(['admin-back','admin-gallery'].includes(to)?'admin-front':to));
-            if(building){setControlMode('bird');focusBuilding(building)}
-            else showToast('找不到此目的地，請使用上方搜尋');
-          }
+          if(!openDestination(to))showToast('找不到此目的地，請使用搜尋');
         },600);
       }
+    }
+
+    function openDestination(to) {
+      if(typeof to!=='string')return false;
+      const room=Object.hasOwn(ROOMS_DB,to),building=BUILDINGS_CONFIG.find(b=>b.id===(['admin-back','admin-gallery'].includes(to)?'admin-front':to));
+      if(!room&&!building)return false;
+      const cover=document.getElementById('guide-landing');if(cover?.open)cover.close();
+      if(room)navigateToRoom(to);else{setControlMode('bird');focusBuilding(building)}
+      return true;
     }
 
     /* ==========================================================================
@@ -3558,7 +3564,7 @@
       track:{id:'track',name:'操場及綜合球場',buildingName:'操場',floor:1,cat:'sports',node:'track-center'},
       breezeway:{id:'breezeway',name:'中央通廊',buildingName:'教學區',floor:1,cat:'special',node:'breezeway-mid'}
     });
-    window.campusExplorer = {scene,camera,renderer,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,clearNavigation,getNavigationState,setFloorFilter,getFloorFilter:()=>currentFloorFilter,setControlMode,manualTakeover,resetManualInput,motionBlocked,getAvatarAppearance,setAvatarAppearance,createCharacter,getPlayerPosition:()=>avatarGroup.position.clone()};
+    window.campusExplorer = {scene,camera,renderer,controls,buildings:BUILDINGS_CONFIG,rooms:ROOMS_DB,nodes:NAV_NODES,findShortestPath,navigateToRoom,openDestination,clearNavigation,getNavigationState,setFloorFilter,getFloorFilter:()=>currentFloorFilter,setControlMode,manualTakeover,resetManualInput,motionBlocked,getAvatarAppearance,setAvatarAppearance,createCharacter,getPlayerPosition:()=>avatarGroup.position.clone()};
     document.body.dataset.controlMode=currentMode;
     requestAnimationFrame(animate);
     checkUrlQueryTarget();

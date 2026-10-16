@@ -1,0 +1,24 @@
+[
+  {
+    "version": "原版",
+    "peak": 0.11884616315364838,
+    "rms": 0.016543115689430322,
+    "rmsDB": -35.62765386266262,
+    "clipped": 0,
+    "played": 43,
+    "mainAttacks": 14,
+    "preempted": 0,
+    "dropped": 0
+  },
+  {
+    "version": "修正版",
+    "peak": 0.5035204291343689,
+    "rms": 0.03396647846874214,
+    "rmsDB": -29.378989540003616,
+    "clipped": 0,
+    "played": 50,
+    "mainAttacks": 14,
+    "preempted": 2,
+    "dropped": 7
+  }
+]

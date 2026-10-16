@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "auditDate": "2026-10-16",
+  "repository": "coolokey/daxi-campus-map",
+  "baseCommit": "9ddcc710f4ff0a07f668e0c627a99c46b5d08782",
+  "scope": "Independent architecture and security review of baseline and approved delivery changes. This JSON is the only file written by this reviewer.",
+  "checks": {
+    "xssRoomNameSearch": {
+      "status": "passed",
+      "method": "Executed the actual search handler in JSDOM with an HTML event-handler payload as a room name.",
+      "payloadRetainedAsText": true,
+      "injectedImageElements": 0,
+      "locations": ["public/campus-explorer/explorer.js:escapeRoomText", "public/campus-explorer/room-layout.js:applyNames"]
+    },
+    "localStoragePrototypePollution": {
+      "status": "passed",
+      "method": "Parsed room configuration containing prototype-related object keys with CampusRoomLayout.parse.",
+      "objectPrototypeModified": false,
+      "unknownKeysDropped": true,
+      "location": "public/campus-explorer/room-layout-model.js:normalize"
+    },
+    "destinationPrototypeNames": {
+      "status": "passed",
+      "rejectedNames": ["__proto__", "constructor", "toString"],
+      "otherRejectedValues": [null, 123],
+      "entries": ["campusExplorer.openDestination", "campusExplorer.navigateToRoom", "window.onSelectSearchRoom"],
+      "invalidInputStopsExistingNavigation": false,
+      "invalidSearchSelectionChangesInput": false,
+      "aliasResolverUsesOwnProperties": true
+    },
+    "proposalPostMessage": {
+      "status": "passed",
+      "originChecked": true,
+      "sourceChecked": true,
+      "foreignOriginInvokesDestinationResolver": false,
+      "wrongSourceInvokesDestinationResolver": false,
+      "validParentCanResolveBuilding": true,
+      "locations": ["public/campus-explorer/proposal-bridge.js", "public/proposal/app.js", "src/loading-state.js", "public/proposal/rpg/assets/presentation-BkhFKIT1.js"]
+    },
+    "credentialFormatScan": {
+      "status": "no_matches",
+      "trackedTextFilesScanned": 490,
+      "method": "Credential-shaped pattern scan of tracked text files. Matching values are never recorded.",
+      "categories": ["GitHub token formats", "OpenAI token formats", "Google API key formats", "private-key headers"],
+      "limitations": ["Pattern scans cannot prove absence of every sensitive value.", "Git history was not scanned."]
+    },
+    "sourceArchiveScan": {
+      "status": "no_matches",
+      "path": "submission-source/rpg-source.zip",
+      "credentialShapedMatches": 0,
+      "envPrivateKeyOrCredentialsFileNamesFound": 0,
+      "method": "Inspected ZIP entry names and text without extracting or modifying the archive."
+    },
+    "npmAudit": {
+      "status": "passed",
+      "registry": "https://registry.npmjs.org",
+      "knownVulnerabilities": {"info": 0, "low": 0, "moderate": 0, "high": 0, "critical": 0, "total": 0},
+      "dependencies": 131,
+      "packageLockChangedDuringReview": false
+    },
+    "vendoredThreeAdvisories": {
+      "status": "no_advisories_returned",
+      "package": "three",
+      "version": "0.128.0",
+      "registryEndpoint": "https://registry.npmjs.org/-/npm/v1/security/advisories/bulk",
+      "note": "Vendored Three.js is separate from the lockfile dependency. No package was upgraded."
+    },
+    "publicResponseHeaders": {
+      "status": "observed",
+      "routes": ["https://coolokey.github.io/daxi-campus-map/", "https://coolokey.github.io/daxi-campus-map/proposal/"],
+      "httpStatuses": [200, 200],
+      "hstsPresent": true,
+      "contentSecurityPolicyPresent": false,
+      "referrerPolicyPresent": false,
+      "permissionsPolicyPresent": false,
+      "assessment": "Missing policies are defense-in-depth recommendations; this review did not demonstrate an exploit caused by their absence."
+    },
+    "htmlRelativeReferences": {
+      "status": "passed",
+      "missingReferencedFiles": 0,
+      "scope": "Static src and href references in baseline public HTML."
+    },
+    "activeRpgModuleGraph": {
+      "status": "passed",
+      "entry": "public/proposal/rpg/assets/presentation-BkhFKIT1.js",
+      "reachableJsModules": 10,
+      "missingJsModules": 0
+    },
+    "nestedLegacyAssets": {
+      "status": "passed_static",
+      "moduleAndStylesheetPrefix": "../../assets/",
+      "dynamicImportsResolveRelativeToSharedModuleUrl": true,
+      "legacyImageCopiesPresent": ["public/proposal/campus/generated", "public/proposal/campus/campus-photos", "public/proposal/campus/campus-plan-115.jpg"],
+      "note": "Browser rendering is delegated to the main task; this reviewer did not start a browser."
+    },
+    "focusedTests": {
+      "status": "passed",
+      "files": ["src/proposal-bridge.test.js", "src/explorer-url.test.ts", "tests/delivery-sync.test.ts"],
+      "testFiles": 3,
+      "tests": 11,
+      "command": "node node_modules/vitest/vitest.mjs run src/proposal-bridge.test.js src/explorer-url.test.ts tests/delivery-sync.test.ts --maxWorkers=1"
+    }
+  },
+  "fixedFindings": [
+    {"id": "ARCH-01", "description": "Existing HTML-referenced styles and scripts are overwritten during embedded synchronization.", "location": "scripts/sync-anniversary.cjs"},
+    {"id": "ARCH-02", "description": "Proposal destination messages use the same room and building resolver as URL entry.", "location": "public/campus-explorer/proposal-bridge.js"},
+    {"id": "ARCH-03", "description": "The production nested shell is rebuilt with the current embedded bundle and shared root asset paths.", "location": "scripts/package-explorer.cjs"},
+    {"id": "ARCH-04", "description": "Alias, URL and public navigation entries reject inherited prototype destinations.", "locations": ["src/explorer-routing.js", "public/campus-explorer/explorer.js"]}
+  ],
+  "remainingRecommendations": [
+    {"id": "SEC-HARDEN-01", "severity": "defense_in_depth", "description": "Consider tested Content-Security-Policy, Referrer-Policy and Permissions-Policy. Existing inline boot scripts and inline handlers require deliberate migration or allowed hashes before enforcing CSP."}
+  ],
+  "limitations": [
+    "No active browser penetration test was performed.",
+    "No full test suite was run by this reviewer.",
+    "Known-advisory and format scans are evidence-bounded and do not establish complete security.",
+    "Release deployment and live visual QA remain the responsibility of the main task."
+  ]
+}

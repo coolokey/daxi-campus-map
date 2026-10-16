@@ -106,7 +106,7 @@ it('右側啟動與再次觀看皆自動套用觀賞鏡頭，停止後還原原�
  for(const width of [390,1440]){
   const s=setup(),w=s.w;Object.defineProperty(w,'innerWidth',{value:width,configurable:true});w.currentMode='avatar';w.campusExplorer.setControlMode=(mode:string)=>w.currentMode=mode;
   w.campusExplorer.camera.position.set(8,5,22);const originalFov=w.campusExplorer.camera.fov;w.campusExplorer.controls.maxDistance=420;w.campusExplorer.controls.target.set(7,5,18);
-  s.click('launch');await s.flush();expect(w.currentMode).toBe('bird');expect(w.campusExplorer.camera.position.z).toBe(width<600?800:245);expect(w.campusExplorer.controls.target.y).toBeGreaterThan(60);expect(w.campusExplorer.controls.maxDistance).toBeGreaterThanOrEqual(w.campusExplorer.camera.position.distanceTo(w.campusExplorer.controls.target));
+  s.click('launch');await s.flush();expect(w.currentMode).toBe('bird');expect(w.campusExplorer.camera.position.z).toBe(width<600?600:245);expect(w.campusExplorer.controls.target.y).toBeGreaterThan(60);expect(w.campusExplorer.controls.maxDistance).toBeGreaterThanOrEqual(w.campusExplorer.camera.position.distanceTo(w.campusExplorer.controls.target));
   s.click('replay');await s.flush();expect(w.currentMode).toBe('bird');s.click('close');expect(w.currentMode).toBe('avatar');expect(w.campusExplorer.camera.fov).toBe(originalFov);expect(w.campusExplorer.controls.maxDistance).toBe(420);expect(w.campusExplorer.camera.position.toArray()).toEqual([8,5,22]);expect(w.campusExplorer.controls.target.toArray()).toEqual([7,5,18]);s.dom.window.close();
  }
 });

@@ -9,7 +9,9 @@
       window.proposalHidden = !data.visible;
       if (!data.visible) { api?.resetManualInput(); api?.manualTakeover(); }
     }
-    if (data?.type === 'proposal:destination' && typeof data.destination === 'string' && Object.hasOwn(api?.rooms || {}, data.destination)) {
+    if (data?.type === 'proposal:destination' && typeof data.destination === 'string' && api?.openDestination) {
+      api.openDestination(data.destination);
+    } else if (data?.type === 'proposal:destination' && typeof data.destination === 'string' && Object.hasOwn(api?.rooms || {}, data.destination)) {
       const cover = document.getElementById('guide-landing');
       if (cover?.open) cover.close();
       api.navigateToRoom(data.destination);

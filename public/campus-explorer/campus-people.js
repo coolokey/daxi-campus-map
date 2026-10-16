@@ -250,7 +250,7 @@
  }
  function isTap(start,end){return !!start&&Math.hypot(end.x-start.x,end.y-start.y)<=6&&end.time-start.time<=450}
  let pointer=null;const canvas=api.renderer?.domElement;
- canvas?.addEventListener('pointerdown',event=>{pointer=event.isPrimary===false?null:{id:event.pointerId,x:event.clientX,y:event.clientY,time:event.timeStamp,moved:false}});
+ canvas?.addEventListener('pointerdown',event=>{pointer=event.isPrimary===false||(event.button!==undefined&&event.button!==0)?null:{id:event.pointerId,x:event.clientX,y:event.clientY,time:event.timeStamp,moved:false}});
  canvas?.addEventListener('pointermove',event=>{if(pointer&&Math.hypot(event.clientX-pointer.x,event.clientY-pointer.y)>6)pointer.moved=true});
  canvas?.addEventListener('pointercancel',()=>pointer=null);
  canvas?.addEventListener('pointerup',event=>{const start=pointer;pointer=null;if(!start||start.moved||event.pointerId!==start.id||!isTap(start,{x:event.clientX,y:event.clientY,time:event.timeStamp})||!ray||dialog.open||document.body.dataset.controlMode==='bird')return;

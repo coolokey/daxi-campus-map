@@ -64,6 +64,14 @@ describe('校園師生名冊',()=>{
  });
 });
 describe('示意人物效能與碰撞',()=>{
+ it('opens a teacher on left tap and leaves right-button camera gestures alone',()=>{
+  const s=setup(),canvas=s.d.querySelector('canvas');s.api.update(.1,1);
+  canvas.getBoundingClientRect=()=>({left:0,top:0,width:400,height:400});
+  const actor=s.api.actors.find((a:any)=>a.person),mesh=new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshBasicMaterial());mesh.userData.campusPerson=actor;
+  const original=THREE.Raycaster.prototype.intersectObjects;THREE.Raycaster.prototype.intersectObjects=()=>[{object:mesh}] as any;
+  try{for(const button of [2,0]){for(const type of ['pointerdown','pointerup']){const e=new s.w.Event(type);Object.assign(e,{button,pointerId:1,isPrimary:true,clientX:100,clientY:100});canvas.dispatchEvent(e)}expect(s.d.getElementById('campus-people-dialog').open).toBe(button===0);}}
+  finally{THREE.Raycaster.prototype.intersectObjects=original;s.dom.window.close();}
+ });
  it.each([1280,390])('主角對話在 %i px 畫面依人物與攝影機投影定位，走動後同步跟隨',width=>{
   const player=new THREE.Vector3(-10,0,78),s=setup(width,w=>{
    w.innerHeight=844;w.campusExplorer.getPlayerPosition=()=>player;

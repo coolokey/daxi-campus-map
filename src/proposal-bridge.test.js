@@ -13,3 +13,10 @@ it('accepts visibility and destinations only from the same-origin parent',()=>{
  send({type:'proposal:destination',destination:'academic'});expect(navigateToRoom).toHaveBeenCalledWith('academic');
  send({type:'proposal:destination',destination:'missing'});expect(navigateToRoom).toHaveBeenCalledTimes(1);
 });
+it('forwards building destinations through the shared resolver without trusting foreign messages',()=>{
+ let listener;const parent={},openDestination=vi.fn();
+ const window={parent,location:{origin:'https://school.test'},campusExplorer:{rooms:{},buildings:[{id:'tech-building'}],openDestination},addEventListener:(_,fn)=>listener=fn};
+ vm.runInNewContext(readFileSync(new URL('../public/campus-explorer/proposal-bridge.js',import.meta.url),'utf8'),{window,document:{getElementById:()=>null}});
+ listener({source:parent,origin:'https://evil.test',data:{type:'proposal:destination',destination:'tech-building'}});expect(openDestination).not.toHaveBeenCalled();
+ listener({source:parent,origin:'https://school.test',data:{type:'proposal:destination',destination:'tech-building'}});expect(openDestination).toHaveBeenCalledWith('tech-building');
+});

@@ -27,7 +27,7 @@
   }
   function qualityFor({width=1280,cores=4,memory=4,reduced=false,low=false,preset='auto'}={}){
     const tier=reduced||low||preset==='battery'?'low':preset==='high'?'high':preset==='standard'?'medium':width<600||cores<=4||memory<=2?'mobile':width<1100||memory<=4?'medium':'high';
-    return {tier,maxParticles:{low:1000,mobile:2800,medium:5200,high:8500}[tier],stars:{low:65,mobile:150,medium:240,high:360}[tier],smoke:{low:12,mobile:25,medium:45,high:65}[tier]};
+    return {tier,maxParticles:{low:1000,mobile:2800,medium:5200,high:8500}[tier],stars:{low:65,mobile:130,medium:200,high:280}[tier],trailSamples:{low:2,mobile:3,medium:3,high:4}[tier],smoke:{low:12,mobile:25,medium:45,high:65}[tier]};
   }
   function burstVectors(kind,count,random=Math.random){
     const golden=Math.PI*(3-Math.sqrt(5));
@@ -35,6 +35,7 @@
       const y=1-2*(i+.5)/count,a=i*golden,r=Math.sqrt(1-y*y),speed=(kind==='willow'?25:kind==='chrysanthemum'?34:30)*(.83+random()*.3);
       if(kind==='ring'){const angle=i/count*Math.PI*6, radius=speed*(i%3===0?.7:1.15);return{x:Math.cos(angle)*radius,y:Math.sin(angle)*radius,z:(random()-.5)*2,life:2.8+random()};}
       if(kind==='fan'){const angle=-1.1+2.2*i/Math.max(1,count-1);return{x:Math.sin(angle)*speed,y:Math.cos(angle)*speed,z:(random()-.5)*8,life:2.1+random()};}
+      if(kind==='comet')return{x:Math.cos(a)*r*speed*.28,y:speed*(.65+random()*.5),z:Math.sin(a)*r*speed*.28,life:2.7+random()};
       return{x:Math.cos(a)*r*speed,y:y*speed,z:Math.sin(a)*r*speed,life:kind==='willow'?4+random()*1.5:2+random()*1.8};
     });
   }
@@ -67,5 +68,14 @@
     const right=q?{x:1-2*(q.y*q.y+q.z*q.z),y:2*(q.x*q.y+q.w*q.z),z:2*(q.x*q.z-q.w*q.y)}:{x:1,y:0,z:0};
     return {distance,delay:distance/343,gain:1/(1+(distance/180)**2),pan:Math.max(-.9,Math.min(.9,(dx*right.x+dy*right.y+dz*right.z)/Math.max(100,distance)))};
   }
-  window.CampusAnniversary = Object.freeze({phaseAt, shapePoints, frameStep,textLayout,qualityFor,burstVectors,createCues,eightyTargets,spatialAudio});
+  function burstSoundLayers(kind,size=1){
+    const large=size>=.7,willow=kind==='willow';
+    return [
+      {kind:'near',delay:0,gain:large?1:.72,size},
+      {kind:'far',delay:.035,gain:large?.58:.24,size},
+      {kind:'crackle',delay:willow?.32:.1,gain:willow?.95:.58,size},
+      {kind:'tail',delay:willow?.48:.22,gain:willow?.75:.46,size}
+    ];
+  }
+  window.CampusAnniversary = Object.freeze({phaseAt, shapePoints, frameStep,textLayout,qualityFor,burstVectors,createCues,eightyTargets,spatialAudio,burstSoundLayers});
 })();

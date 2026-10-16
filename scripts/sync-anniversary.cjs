@@ -13,7 +13,7 @@ const staffTarget=path.join(target,'assets/staff');fs.mkdirSync(staffTarget,{rec
 for(const file of fs.readdirSync(path.join(source,'assets/staff')))fs.copyFileSync(path.join(source,'assets/staff',file),path.join(staffTarget,file));
 for(const file of ['avatar-appearance-ui.js','avatar-appearance.css'])fs.copyFileSync(path.join(source,file),path.join(target,file));
 for(const match of html.matchAll(/(?:src|href)="([^"?#]+\.(?:js|css))"/g)){
-  const file=match[1];if(!fs.existsSync(path.join(target,file)))fs.copyFileSync(path.join(source,file),path.join(target,file));
+  const file=match[1];fs.copyFileSync(path.join(source,file),path.join(target,file));
 }
 const fontSource=path.join(source,'assets/fonts'),fontTarget=path.join(target,'assets/fonts');fs.mkdirSync(fontTarget,{recursive:true});
 for(const file of fs.readdirSync(fontSource))fs.copyFileSync(path.join(fontSource,file),path.join(fontTarget,file));

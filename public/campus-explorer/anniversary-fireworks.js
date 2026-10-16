@@ -59,7 +59,7 @@
     const damping=api.controls.enableDamping;api.controls.enableDamping=false;api.controls.update();api.controls.enableDamping=damping;
     const mobile=innerWidth<600;api.controls.maxDistance=Math.max(api.controls.maxDistance||420,mobile?1200:420);api.controls.maxPolarAngle=Math.PI*.58;
     if(mobile){api.camera.fov=60;api.camera.far=Math.max(api.camera.far,2200);api.camera.updateProjectionMatrix();}
-    api.camera.position.set(mobile?0:-125,mobile?69:59,mobile?800:245);api.controls.target.set(0,mobile?100:69,mobile?-145:-35);api.camera.lookAt(api.controls.target);interacted=false;
+    api.camera.position.set(mobile?0:-125,mobile?69:59,mobile?600:245);api.controls.target.set(0,mobile?100:69,mobile?-145:-35);api.camera.lookAt(api.controls.target);interacted=false;
     fx?.alignText?.();
   }
   function start(){
@@ -77,14 +77,13 @@
       launch:position=>play('launch',position),
       move:(handle,position)=>{if(soundEnabled)audioEngine?.updateSource(handle,position,api.camera);},
       burst:(position,kind,size=1)=>{
-        const distance=positionDistance(position);play(distance>300?'far':'near',position,{size});play('crackle',position,{delay:.08});play('tail',position,{delay:.18});
+        for(const layer of model.burstSoundLayers(kind,size))play(layer.kind,position,layer);
       }
     });
     panel.hidden=false;panel.classList.remove('is-finished');banner.hidden=false;document.body.classList.add('anniversary-playing');
     cinematicView();
     quiet();if(soundWanted)void resumeSound();soundUI();updatePhase(waitingForSound?'loading':'countdown');return true;
   }
-  function positionDistance(position){return Math.hypot(position.x-api.camera.position.x,position.y-api.camera.position.y,position.z-api.camera.position.z);}
   function stop(finished=false){
     running=false;quiet();fx?.dispose();fx=null;night(0);saved=null;last=0;
     soundUI();

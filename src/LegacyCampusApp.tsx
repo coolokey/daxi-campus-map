@@ -15,8 +15,10 @@ export default function App(){
  const [query,setQuery]=useState('');
  const [selected,setSelected]=useState<Place|undefined>(()=>getInitialPlaceFromUrl());
  const results=useMemo(()=>searchPlaces(query),[query]);
+ const modernQuery=new URLSearchParams(window.location.search);modernQuery.delete('viewer');const modernHref=modernQuery.size?'?'+modernQuery.toString():'./';
  const select=(place:Place)=>{setSelected(place);setTour('explore');const url=new URL(location.href);url.searchParams.set('to',place.id);history.pushState({},'',url)};
  return <main className="viewer">
+  <aside className="legacy-notice">舊版模型預覽，校舍與處室請以正式版為準。<a href={modernHref}>開啟正式導覽 ↗</a></aside>
   {tour==='opening'&&<section className="tour-opening">
    <img className="tour-backdrop" src={asset('generated/daxi-campus-birdseye-v2.png')} alt="大溪國中校園導覽開場景"/>
    <div className="tour-shade"/>

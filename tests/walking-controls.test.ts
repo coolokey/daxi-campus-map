@@ -37,6 +37,13 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','spatial-world.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('keeps native button Space activation while retaining WASD movement',()=>{
+ const result=run(`(()=>{const b=document.createElement('button');document.body.append(b);const original=triggerJump;let jumps=0;triggerJump=()=>jumps++;setControlMode('avatar');const e=new KeyboardEvent('keydown',{key:' ',code:'Space',bubbles:true,cancelable:true});b.dispatchEvent(e);b.dispatchEvent(new KeyboardEvent('keydown',{key:'w',code:'KeyW',bubbles:true,cancelable:true}));const forward=moveInput.forward;b.dispatchEvent(new KeyboardEvent('keyup',{key:'w',bubbles:true}));triggerJump=original;b.remove();return {jumps,cancelled:e.defaultPrevented,forward}})()`);
+ expect(result).toEqual({jumps:0,cancelled:false,forward:true});
+});
+it('rejects inherited room names in every public selection entry without altering a valid route',()=>{
+ const result=run(`(()=>{navigateToRoom('academic');const route=currentNavPoints,focus=focusedBuildingId,bad=[];for(const id of ['__proto__','constructor','toString']){try{navigateToRoom(id);onSelectSearchRoom(id);if(currentNavPoints!==route||focusedBuildingId!==focus)bad.push(id)}catch{bad.push(id)}}clearNavigation();return bad})()`);expect(result).toEqual([]);
+});
 it('creates independent campus characters without changing player appearance or route',()=>{
  run(`window.playerSnapshot=avatarGroup.position.clone();window.playerHair=avatarGroup.getObjectByName('avatar-short-hair').material.color.clone();window.teacher=campusExplorer.createCharacter({role:'teacher',gender:'male',glasses:true,hairColor:0x77716b,shirtColor:0x859a88});window.student=campusExplorer.createCharacter({role:'student',gender:'female',outfit:'uniform'});`);
  expect(run(`teacher!==avatarGroup&&teacher.parent===null&&avatarGroup.position.equals(playerSnapshot)`)).toBe(true);

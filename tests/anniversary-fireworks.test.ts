@@ -71,3 +71,9 @@ it('環狀煙火維持圓環平面，文字兩波在 18 秒與 20 秒發射',()=
  expect(cues.find((c:any)=>c.textLine===1).at).toBe(20000);
  expect(m.qualityFor({preset:'battery'}).maxParticles).toBeLessThan(m.qualityFor({preset:'standard'}).maxParticles);
 });
+it('layers a synchronized attack, body and shape-specific crackle rather than a muffled distant sample only',()=>{
+ const m=model();expect(m.burstSoundLayers).toBeTypeOf('function');
+ for(const kind of ['sphere','willow','comet']){const layers=m.burstSoundLayers(kind,1);expect(layers[0]).toMatchObject({kind:'near',delay:0});expect(layers.some((l:any)=>l.kind==='far')).toBe(true);expect(layers.every((l:any)=>l.gain>0&&l.gain<=1&&l.delay<1)).toBe(true);}
+ expect(m.burstSoundLayers('willow',1).find((l:any)=>l.kind==='crackle').delay).toBeGreaterThan(m.burstSoundLayers('sphere',1).find((l:any)=>l.kind==='crackle').delay);
+ const comet=m.burstVectors('comet',80,()=>.5);expect(comet.every((p:any)=>p.y>0)).toBe(true);
+});
