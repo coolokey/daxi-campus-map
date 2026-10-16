@@ -15,11 +15,14 @@
     <label class="anniversary-volume" for="anniversary-volume">音量<input id="anniversary-volume" type="range" min="0" max="100" value="100"><output id="anniversary-volume-value">100%</output></label>
     <p id="anniversary-audio-status">開始表演後，自動播放真實錄音。</p><p class="anniversary-help">可繼續走動、轉頭與操作校園；Esc 停止。</p></div>`;
   const banner=document.createElement('div');banner.id='anniversary-banner';banner.setAttribute('aria-live','polite');banner.hidden=true;
+  banner.innerHTML='<span id="anniversary-countdown">10</span><small id="anniversary-preparation"></small><button id="anniversary-audio-retry" type="button" hidden>重試音效</button>';
+  const countdown=banner.querySelector('#anniversary-countdown'),preparation=banner.querySelector('#anniversary-preparation'),audioRetry=banner.querySelector('#anniversary-audio-retry');
   const cover=document.getElementById('guide-landing'),coverEntry=document.createElement('button');coverEntry.type='button';coverEntry.className='anniversary-cover-entry';coverEntry.textContent='80 週年煙火秀 ↗';
   cover?.querySelector('footer')?.append(coverEntry);document.body.append(launcher,panel,banner);
   const $=id=>panel.querySelector('#anniversary-'+id);
   let running=false,fx=null,saved=null,elapsed=0,last=0,cueIndex=0,cues=[],phase='',cameraSaved=null,interacted=false,previousFocus=null;
   let audio=null,audioEngine=null,soundWanted=true,soundEnabled=false,soundGeneration=0,waitingForSound=false,low=false,quality=null,slowSum=0,slowFrames=0,lastDowngrade=0;
+  let preparing=false,preparationElapsed=0,audioFailure='',slowDownload=false,pendingEffects=null;
   const listeners=[];function listen(target,type,handler){if(!target?.addEventListener)return;target.addEventListener(type,handler);listeners.push(()=>target.removeEventListener?.(type,handler));}
   const isReduced=()=>reduced.matches||low;
   const compactControls=()=>innerWidth<=1024||innerHeight<=500||matchMedia('(pointer: coarse)').matches;
@@ -39,24 +42,27 @@
   const environment={width:innerWidth,cores:navigator.hardwareConcurrency||4,memory:navigator.deviceMemory||4};
   function qualityValue(){return model.qualityFor({...environment,width:innerWidth,reduced:isReduced(),preset:$('preset').value});}
   function soundUI(){ $('sound').textContent=soundWanted?'音效：開啟':'音效：關閉';$('sound').setAttribute('aria-pressed',String(soundWanted));$('sound').setAttribute('aria-label',soundWanted?'關閉音效':'開啟音效'); }
-  function quiet(){soundGeneration++;soundEnabled=false;waitingForSound=false;audioEngine?.stop();audio?.suspend().catch(()=>{});crowdStarted=false;}
+  function quiet(){soundGeneration++;soundEnabled=false;waitingForSound=false;audioRetry.hidden=true;audioEngine?.stop();audio?.suspend().catch(()=>{});crowdStarted=false;}
   async function resumeSound(){
     const generation=++soundGeneration;
-    waitingForSound=true;last=0;let timeout;
+    waitingForSound=true;audioFailure='';slowDownload=false;audioRetry.hidden=true;let timeout;
     try{
       const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)throw new Error('瀏覽器不支援 Web Audio');
       if(!audio){audio=new Audio();audioEngine=window.CampusFireworkAudio.create(audio,audio.destination,{manifestURL:new URL('assets/sounds/manifest.json',document.baseURI).href});}
       // resume is called before awaiting a fetch, while the user activation is alive (iOS).
       const resume=audio.resume().then(()=>{if(generation!==soundGeneration&&(!soundWanted||!running||document.hidden||window.proposalHidden))return audio.suspend();});$('audio-status').textContent='正在載入真實錄音……';
-      const [result]=await Promise.race([Promise.all([audioEngine.load(),resume]),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(new Error('錄音載入逾時')),8000);})]);
+      timeout=setTimeout(()=>{if(generation===soundGeneration){slowDownload=true;$('audio-status').textContent='網路較慢，音效仍在下載中，完成後會自動開始。';}},30000);
+      const [result]=await Promise.all([audioEngine.load(),resume]);
       if(generation!==soundGeneration){if(!soundWanted||!running||document.hidden||window.proposalHidden)audio.suspend().catch(()=>{});return;}
       if(!result.loaded)throw new Error('錄音尚未載入，請重新開啟音效重試');
+      if(result.layers&&(!result.layers.launch||!result.layers.near))throw new Error('主要升空或爆裂錄音尚未下載成功');
+      if(audio.state!=='running')throw new Error('瀏覽器尚未允許播放音效，請按重試音效');
       soundEnabled=soundWanted&&running&&!document.hidden&&!window.proposalHidden;
       audioEngine.setVolume(Number($('volume').value)/100);
       $('audio-status').textContent=result.failed.length?`已載入 ${result.loaded}/18；缺少 ${result.failed.length} 個資源，未載入部分保持無聲。`:`已載入 ${result.loaded}/18 個真實錄音樣本。`;
       if(!soundEnabled)quiet();
-    }catch(error){if(generation!==soundGeneration)return;soundWanted=false;quiet();soundUI();$('audio-status').textContent='音效無法啟用：'+error.message+'。仍可欣賞煙火。';}
-    finally{clearTimeout(timeout);if(generation===soundGeneration){waitingForSound=false;last=0;}}
+    }catch(error){if(generation!==soundGeneration)return;quiet();audioFailure=error.message;waitingForSound=preparing;audioRetry.hidden=false;soundUI();$('audio-status').textContent='音效無法啟用：'+error.message+'。請重試，或關閉音效後靜音觀看。';}
+    finally{clearTimeout(timeout);if(generation===soundGeneration)waitingForSound=false;}
   }
   function play(kind,position,extra={}){if(!soundEnabled)return null;return audioEngine?.play(kind,{position,camera:api.camera,...extra});}
   function night(amount){
@@ -84,9 +90,11 @@
     soundWanted=true;$('volume').value='100';$('volume-value').textContent='100%';
     previousFocus=document.activeElement;const fromCover=!!cover?.open;if(fromCover)cover.close();
     saved={background:api.scene.background.clone(),fog:api.scene.fog?.color.clone(),lights:[],exposure:api.renderer?.toneMappingExposure};api.scene.traverse(o=>{if(o.isLight)saved.lights.push([o,o.intensity]);});
-    running=true;elapsed=0;last=0;cueIndex=0;cues=model.createCues();phase='';slowSum=0;slowFrames=0;lastDowngrade=0;cameraSaved=null;interacted=false;crowdStarted=false;
+    running=true;preparing=true;preparationElapsed=0;audioFailure='';slowDownload=false;elapsed=0;last=0;cueIndex=0;cues=model.createCues();phase='';slowSum=0;slowFrames=0;lastDowngrade=0;cameraSaved=null;interacted=false;crowdStarted=false;
+    panel.hidden=false;banner.hidden=false;countdown.textContent='10';preparation.textContent='正在下載音效，倒數結束後開始';audioRetry.hidden=true;banner.classList.remove('is-waiting');
+    quiet();void resumeSound();soundUI();
     quality=qualityValue();
-    fx=window.CampusFireworkScene.create(api,quality,{
+    const createEffects=()=>window.CampusFireworkScene.create(api,quality,{
       textPanel:()=>panel.getBoundingClientRect(),
       launch:position=>play('launch',position),
       move:(handle,position)=>{if(soundEnabled)audioEngine?.updateSource(handle,position,api.camera);},
@@ -94,13 +102,15 @@
         for(const layer of model.burstSoundLayers(kind,size))play(layer.kind,position,layer);
       }
     });
+    // Let the first countdown frame paint before allocating the particle scene.
+    fx=null;pendingEffects=createEffects;
     panel.hidden=false;panel.classList.remove('is-finished');banner.hidden=false;document.body.classList.add('anniversary-playing');
     wasCompact=compactControls();setSettingsOpen(!wasCompact);
     cinematicView();
-    quiet();if(soundWanted)void resumeSound();soundUI();updatePhase(waitingForSound?'loading':'countdown');return true;
+    updatePhase('countdown');return true;
   }
   function stop(finished=false){
-    running=false;quiet();fx?.dispose();fx=null;night(0);saved=null;last=0;
+    running=false;preparing=false;pendingEffects=null;quiet();fx?.dispose();fx=null;night(0);saved=null;last=0;
     soundUI();
     document.body.classList.remove('anniversary-playing','anniversary-lettering');banner.hidden=true;
     if(cameraSaved&&!interacted&&currentMode==='bird'){
@@ -118,15 +128,25 @@
     const copy={loading:'正在準備音效，完成後同步開始倒數。',countdown:'準備好了嗎？生日煙火即將開始。',sparse:'序曲・第一道祝福升空',dense:'盛放・金色菊花、彩球、垂柳、環狀與扇形連發',formation:'金色光點匯聚，寫下大溪的生日祝福。',blessing:'大溪國中 80 週年校慶快樂！',fade:'將這一夜的光，留在每位大溪人的心裡。'};
     $('status').textContent=copy[value]||'';
     document.body.classList.toggle('anniversary-lettering',['formation','blessing','fade'].includes(value));
-    banner.hidden=value!=='countdown';if(value!=='countdown')banner.textContent='';
+    banner.hidden=value!=='countdown'&&value!=='loading';
   }
   function update(now){
     if(!running)return;
     if(document.hidden||window.proposalHidden){last=0;return;}
-    if(waitingForSound){last=0;return;}
-    const step=model.frameStep(now,last);last=now;elapsed+=step.elapsedMs;
+    if(!preparing&&waitingForSound){last=now;return;}
+    const step=model.frameStep(now,last);last=now;
+    if(preparing){
+      preparationElapsed=Math.min(10000,preparationElapsed+step.elapsedMs);
+      const remaining=Math.ceil((10000-preparationElapsed)/1000),loaded=audioEngine?.stats().loaded||0;
+      countdown.textContent=remaining?String(remaining):'準備中';banner.classList.toggle('is-waiting',!remaining);
+      preparation.textContent=!soundWanted?'靜音觀看':audioFailure?'音效下載失敗，請重試，或關閉音效後觀看':soundEnabled?'音效已就緒，即將開始':`${slowDownload?'網路較慢，仍在下載音效':'正在下載音效'} ${loaded}/18`;
+      night(preparationElapsed/10000);
+      if(remaining||(soundWanted&&!soundEnabled)){updatePhase(remaining?'countdown':'loading');return;}
+      preparing=false;elapsed=3000;banner.hidden=true;audioRetry.hidden=true;
+      fx=pendingEffects?.();pendingEffects=null;fx?.alignText?.();
+    }else elapsed+=step.elapsedMs;
+    if(waitingForSound)return;
     const next=model.phaseAt(elapsed);if(next==='finished'){stop(true);return;}updatePhase(next);
-    if(next==='countdown')banner.textContent=String(Math.max(1,3-Math.floor(elapsed/1000)));
     const darkness=elapsed<3000?elapsed/3000:elapsed<27000?1:(30000-elapsed)/3000;night(darkness);
     while(cueIndex<cues.length&&cues[cueIndex].at<=elapsed){const cue=cues[cueIndex++];if(!isReduced()&&elapsed-cue.at<900&&elapsed<27000)fx.launch(cue);}
     if(soundEnabled&&!crowdStarted&&elapsed>=3000&&elapsed<27000){play('crowd',api.camera.position,{loop:true});crowdStarted=true;}
@@ -143,6 +163,7 @@
     }
   }
   $('replay').onclick=start;$('close').onclick=()=>stop();launcher.onclick=start;coverEntry.onclick=start;
+  audioRetry.onclick=()=>{if(running&&soundWanted)void resumeSound();};
   $('settings-toggle').onclick=()=>setSettingsOpen($('settings').hidden);
   listen(window,'resize',()=>{const compact=compactControls();if(compact!==wasCompact){wasCompact=compact;setSettingsOpen(!compact||!running);}});
   $('sound').onclick=()=>{soundWanted=!soundWanted;soundUI();if(soundWanted&&running)void resumeSound();else quiet();};

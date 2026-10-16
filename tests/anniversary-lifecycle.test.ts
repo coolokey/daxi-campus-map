@@ -39,26 +39,48 @@ it('桌面轉手機會收合設定，旋轉手機保留選擇，收合後焦點�
  s.w.document.getElementById('anniversary-view').focus();s.click('settings-toggle');expect(s.w.document.activeElement.id).toBe('anniversary-settings-toggle');
  resize(1440,900);expect(settings.hidden).toBe(false);expect(s.w.document.getElementById('anniversary-sound').parentElement.className).toBe('anniversary-controls');s.click('close');s.dom.window.close();
 });
-it('慢速載入音效時不先播放煙火，準備好後才從完整倒數開始',async()=>{
+it('立即從 10 秒倒數同步下載，慢速載入完成後才開始煙火',async()=>{
  const s=setup({slowLoad:true});s.click('launch');await s.flush();
+ expect(s.w.document.getElementById('anniversary-countdown').textContent).toBe('10');
  s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(9000);
  expect(s.w.campusAnniversary.stats().elapsed).toBe(0);
- expect(s.w.campusAnniversary.stats().phase).toBe('loading');
+ expect(s.w.document.getElementById('anniversary-countdown').textContent).toBe('2');
  s.finishLoad();await s.flush();s.w.campusAnniversary.update(10000);s.w.campusAnniversary.update(11000);
- expect(s.w.campusAnniversary.stats().elapsed).toBe(1000);expect(s.w.campusAnniversary.stats().soundEnabled).toBe(true);
+ expect(s.w.campusAnniversary.stats().elapsed).toBe(3000);expect(s.w.campusAnniversary.stats().soundEnabled).toBe(true);
  s.click('close');s.dom.window.close();
 });
 it('音效載入中停止或靜音，不留下等待狀態或延遲重啟聲音',async()=>{
  const s=setup({slowLoad:true});s.click('launch');s.click('sound');await s.flush();
- s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(2000);expect(s.w.campusAnniversary.stats().elapsed).toBe(1000);
+ s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(11000);expect(s.w.campusAnniversary.stats().elapsed).toBe(3000);
  s.click('close');s.finishLoad();await s.flush();expect(s.w.campusAnniversary.stats().running).toBe(false);expect(s.w.campusAnniversary.stats().soundEnabled).toBe(false);s.dom.window.close();
 });
-it('音效下載逾時仍可看煙火，遲到的下載不會中途突然開始播放',async()=>{
+it('慢網路只提示仍在下載，不自動靜音，首次完成即可有聲播放',async()=>{
  const s=setup({slowLoad:true});s.click('launch');await s.flush();s.expire();await s.flush();
  expect(s.w.campusAnniversary.stats().soundEnabled).toBe(false);
- s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(2000);expect(s.w.campusAnniversary.stats().elapsed).toBe(1000);
- s.finishLoad();await s.flush();expect(s.w.campusAnniversary.stats().soundEnabled).toBe(false);
- expect(s.w.document.getElementById('anniversary-audio-status').textContent).toContain('逾時');s.click('close');s.dom.window.close();
+ s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(12000);expect(s.w.campusAnniversary.stats().elapsed).toBe(0);
+ expect(s.w.campusAnniversary.stats().soundWanted).toBe(true);
+ expect(s.w.document.getElementById('anniversary-preparation').textContent).toContain('下載');
+ s.finishLoad();await s.flush();s.w.campusAnniversary.update(13000);expect(s.w.campusAnniversary.stats().soundEnabled).toBe(true);expect(s.w.campusAnniversary.stats().elapsed).toBe(3000);
+ s.click('close');s.dom.window.close();
+});
+it('快速下載仍保留完整 10 秒倒數，準備期間不先建立粒子場景',async()=>{
+ const s=setup();s.click('launch');await s.flush();expect(s.w.campusAnniversary.stats().visual).toBeNull();
+ s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(10000);
+ expect(s.w.document.getElementById('anniversary-countdown').textContent).toBe('1');expect(s.w.campusAnniversary.stats().elapsed).toBe(0);
+ s.w.campusAnniversary.update(11000);expect(s.w.campusAnniversary.stats().phase).toBe('sparse');expect(s.w.campusAnniversary.stats().visual).not.toBeNull();
+ s.click('close');s.dom.window.close();
+});
+it('首次下載失敗可在同場重試，不需先播放一次無聲煙火',async()=>{
+ const options={emptyLoad:true},s=setup(options);s.click('launch');await s.flush();expect(s.w.document.getElementById('anniversary-audio-retry').hidden).toBe(false);
+ s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(12000);expect(s.w.campusAnniversary.stats().elapsed).toBe(0);
+ options.emptyLoad=false;s.click('audio-retry');await s.flush();s.w.campusAnniversary.update(13000);
+ expect(s.w.campusAnniversary.stats().soundEnabled).toBe(true);expect(s.w.campusAnniversary.stats().phase).toBe('sparse');s.click('close');s.dom.window.close();
+});
+it('瀏覽器拒絕音效時保留明確重試，只有手動靜音才繼續',async()=>{
+ const s=setup();s.w.AudioContext.prototype.resume=()=>Promise.resolve();s.click('launch');await s.flush();
+ expect(s.w.campusAnniversary.stats().soundEnabled).toBe(false);expect(s.w.document.getElementById('anniversary-audio-retry').hidden).toBe(false);
+ s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(12000);expect(s.w.campusAnniversary.stats().elapsed).toBe(0);
+ s.click('sound');s.w.campusAnniversary.update(13000);expect(s.w.campusAnniversary.stats().phase).toBe('sparse');s.click('close');s.dom.window.close();
 });
 it('點選開始即啟用音效，預設音量 100%，停止後仍可再啟用',async()=>{
  const s=setup();expect(s.instances).toHaveLength(0);s.click('launch');await s.flush();
@@ -120,7 +142,8 @@ it('品質與低動畫可獨立調整，銷毀後移除介面及監聽',()=>{
 
 it('沒有錄音可用時顯示失敗與重試提示，不假裝音效已開啟',async()=>{
  const s=setup({emptyLoad:true});s.click('launch');await s.flush();expect(s.w.campusAnniversary.stats().soundEnabled).toBe(false);
- expect(s.w.document.getElementById('anniversary-audio-status').textContent).toContain('音效無法啟用');expect(s.w.document.getElementById('anniversary-sound').getAttribute('aria-label')).toBe('開啟音效');
+ expect(s.w.document.getElementById('anniversary-audio-status').textContent).toContain('音效無法啟用');expect(s.w.document.getElementById('anniversary-audio-retry').hidden).toBe(false);
+ expect(s.w.campusAnniversary.stats().soundWanted).toBe(true);s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(12000);expect(s.w.campusAnniversary.stats().elapsed).toBe(0);
  s.click('close');s.dom.window.close();
 });
 it('右側啟動與再次觀看皆自動套用觀賞鏡頭，停止後還原原視角',async()=>{
