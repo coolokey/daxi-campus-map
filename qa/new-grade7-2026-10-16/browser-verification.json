@@ -1,0 +1,92 @@
+{
+  "errors": [],
+  "warnings": [],
+  "views": [
+    {
+      "viewport": "390x844",
+      "horizontalOverflow": false
+    }
+  ],
+  "rooms": [
+    {
+      "id": "701",
+      "reachable": true
+    },
+    {
+      "id": "702",
+      "reachable": true
+    },
+    {
+      "id": "703",
+      "reachable": true
+    },
+    {
+      "id": "704",
+      "reachable": true
+    },
+    {
+      "id": "705",
+      "reachable": true
+    },
+    {
+      "id": "706",
+      "reachable": true
+    },
+    {
+      "id": "707",
+      "reachable": true
+    },
+    {
+      "id": "708",
+      "reachable": true
+    },
+    {
+      "id": "709",
+      "reachable": true
+    },
+    {
+      "id": "resource-room",
+      "reachable": true
+    },
+    {
+      "id": "sped-leader",
+      "reachable": true
+    },
+    {
+      "id": "math-lab",
+      "reachable": true
+    },
+    {
+      "id": "sped-classroom",
+      "reachable": true
+    },
+    {
+      "id": "new7-staff",
+      "reachable": true
+    },
+    {
+      "id": "fitness-room",
+      "reachable": true
+    }
+  ],
+  "details": {
+    "groups": [
+      {
+        "name": "photo-new7-1",
+        "building": "new-grade7",
+        "floor": 1
+      },
+      {
+        "name": "photo-new7-2",
+        "building": "new-grade7",
+        "floor": 2
+      },
+      {
+        "name": "photo-new7-3",
+        "building": "new-grade7",
+        "floor": 3
+      }
+    ],
+    "rooms": 14
+  }
+}
