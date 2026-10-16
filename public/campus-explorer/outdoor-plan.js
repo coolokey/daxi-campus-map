@@ -15,5 +15,11 @@ const CampusOutdoorPlan=(()=>{
  const stairsPath=()=>Array.from({length:37},(_,i)=>({x:-62,z:4.5+i*.1,y:stage.height*i/36}));
  function exitPath(p){if(!onStage(p))return null;const points=[{x:p.x,y:p.y,z:p.z},{x:-62,y:ground(p),z:p.z}];if(p.z>8.1)points.push({x:-62,y:1.4,z:8.1});for(const q of stairsPath().reverse())if(q.z<p.z)points.push(q);points.push({...stage.foot});return points}
  const courts=[{x0:-74,x1:-60,z0:-37,z1:-27},{x0:-74,x1:-60,z0:-23,z1:-13}];
- return{palette,track,stage,courts,inside,ground,onStage,onStairs,stairWidth,reserved,stairsPath,exitPath};
+ // Trace of the user's IPAD v.3 plan, fitted to existing campus landmarks.
+ // Coordinates, fence height and finishes are illustrative, not surveyed.
+ // The open polyline ends at the outside edges of the existing gate pylons.
+ const outline=[[-22.2,86],[-22.2,100],[-40,100],[-95,91],[-112,83],[-127,57],[-123,54],[-141,20],[-144,22],[-149,12],[-152,-25],[-151,-52],[-142,-64],[-123,-71],[-121,-79],[111,-79],[114,-75],[111,-65],[109,-12],[111,-3],[103,2],[106,14],[108,24],[107,34],[99,39],[99,64],[98,86],[94,99],[66,94],[2.2,100],[2.2,86]];
+ const perimeter={height:2.9,thickness:.7,outline,segments:outline.slice(1).map(([bx,bz],i)=>({ax:outline[i][0],az:outline[i][1],bx,bz,thickness:.7}))};
+ perimeter.contains=(x,z)=>{let inside=false;for(let i=0,j=outline.length-1;i<outline.length;j=i++){const [ax,az]=outline[i],[bx,bz]=outline[j];if((az>z)!==(bz>z)&&x<(bx-ax)*(z-az)/(bz-az)+ax)inside=!inside;}return inside};
+ return{palette,track,stage,courts,perimeter,inside,ground,onStage,onStairs,stairWidth,reserved,stairsPath,exitPath};
 })();

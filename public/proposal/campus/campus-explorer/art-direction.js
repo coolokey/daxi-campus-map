@@ -39,12 +39,8 @@
     box(3.2,.18,.75,15,.72,z,0x997554);
     box(.16,.6,.65,13.8,.34,z,0x52615a);box(.16,.6,.65,16.2,.34,z,0x52615a);
   }
-  // 後側擋土牆與坡地樹叢，呼應操場照片。
-  for(let i=0;i<14;i++){
-    const wall=box(14.7,2.7+(i%3)*.12,.85,-126+i*15,1.3,-75,0x818b7f);wall.rotation.x=-.15;
-    box(14.8,.12,1.05,-126+i*15,2.7,-75.2,0xa1aa94);
-    for(const x of [-129+i*15,-123+i*15])box(.1,.55,.08,x,1.1,-74.5,0x536456);
-  }
+  // The plan-derived outdoor perimeter now owns the visible northern barrier
+  // and its collision. Keep the trees, avoiding a second non-solid decor wall.
   // Track-side shade, tree wells and low brick seating from the 2019 series.
   paved(86,2.2,-88,5.4);
   for(let x=-126;x<=-79;x+=7.8){
@@ -63,7 +59,7 @@
   }
   // 補上車道標線，採低對比標線避免畫面喧賓奪主。
   for(let z=-66;z<79;z+=10)box(.18,.015,3.5,52.5,.045,z,0xdfdecd);
-  for(let x=2;x<101;x+=10)box(3.5,.015,.18,x,.045,86,0xdfdecd);
+  for(let x=2;x<90;x+=10)box(3.5,.015,.18,x,.045,86,0xdfdecd);
   for(let i=0;i<7;i++)box(1,.015,7,-19+i*2,.055,79,0xf0efdf);
   const gymTexture=tiledTexture(true);
   for(const group of scene.children){

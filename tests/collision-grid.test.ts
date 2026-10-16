@@ -3,6 +3,17 @@ import {readFileSync,existsSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 const file=new URL('../public/campus-explorer/collision-grid.js',import.meta.url);
 describe('共用牆面空間索引',()=>{
+ it('斜牆只阻擋實際牆面，保留包圍框內的空地與人物轉角淨空',()=>{
+  const m=runInNewContext(readFileSync(file,'utf8')+';CampusCollisionGrid');
+  const wall={minX:-.36,maxX:10.36,minZ:-.36,maxZ:10.36,minY:0,maxY:2.9,segment:{ax:0,az:0,bx:10,bz:10,thickness:.7}};
+  const index=m.create([wall]),adults=m.create([wall],.64,2.15);
+  expect(index.hit(5,0,5)).toBe(true);expect(index.hit(2,0,8)).toBe(false);
+  expect(index.pointHit(2,1,8)).toBe(false);expect(index.pointHit(5,1,5)).toBe(true);
+  expect(index.hit(5,1.3,5)).toBe(true);expect(index.hit(5,3,5)).toBe(false);
+  expect(index.hit(5,0,6.2)).toBe(true);expect(index.hit(5,0,6.5)).toBe(false);
+  expect(adults.hit(5,0,6.5)).toBe(true);
+  expect(index.hit(10.3,0,10.3)).toBe(true);
+ });
  it('鏡頭點位查詢與完整牆面掃描一致，包括跨格邊界',()=>{
   const m=runInNewContext(readFileSync(file,'utf8')+';CampusCollisionGrid');
   const walls=[{minX:3.98,maxX:4.02,minZ:-8,maxZ:8,minY:1,maxY:4},{minX:-8,maxX:8,minZ:7.98,maxZ:8.02,minY:4,maxY:7}];

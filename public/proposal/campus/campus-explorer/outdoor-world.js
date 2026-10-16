@@ -6,8 +6,29 @@ const CampusOutdoorWorld=(()=>{
  function floor(g,w,d,x,z,color,y=.035){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),mat(color));m.rotation.x=-Math.PI/2;m.position.set(x,y,z);m.receiveShadow=true;g.add(m);return m}
  function loop(g,points,y,color){const geo=new THREE.BufferGeometry().setFromPoints(points.map(([x,z])=>new THREE.Vector3(x,y,z)));const m=new THREE.LineLoop(geo,new THREE.LineBasicMaterial({color}));g.add(m)}
  function stadium(radius){const s=new THREE.Shape(),t=P.track,a=t.halfStraight;s.moveTo(-a,-radius);s.lineTo(a,-radius);s.absarc(a,0,radius,-Math.PI/2,Math.PI/2,false);s.lineTo(-a,radius);s.absarc(-a,0,radius,Math.PI/2,Math.PI*1.5,false);s.closePath();return s}
+ function renderPerimeter(parent){
+  const g=new THREE.Group();g.name='campus-perimeter';g.userData.source='115 campus plan IPAD v.3 — illustrative dimensions';parent.add(g);
+  const stone=0x888f82,cap=0xb0b3a4,steel=0x465b50,p=P.perimeter;
+  for(const s of p.segments){
+   const dx=s.bx-s.ax,dz=s.bz-s.az,length=Math.hypot(dx,dz),angle=Math.atan2(dz,dx),x=(s.ax+s.bx)/2,z=(s.az+s.bz)/2;
+   const beam=(w,h,d,y,color)=>{const m=box(g,w,h,d,x,y,z,color);m.rotation.y=-angle;return m};
+   beam(length,1.5,p.thickness,.75,stone);beam(length,.14,p.thickness+.16,1.55,cap);
+   beam(length,.09,.09,1.72,steel);beam(length,.09,.09,2.84,steel);
+   const bars=Math.ceil(length/.65);for(let i=0;i<=bars;i++){const t=i/bars;box(g,.065,1.2,.065,s.ax+dx*t,2.24,s.az+dz*t,steel)}
+   // One rotated collider per wall, independent of decorative railing density.
+   const px=Math.abs(dz/length)*p.thickness/2,pz=Math.abs(dx/length)*p.thickness/2;
+   registerWallCollider(Math.min(s.ax,s.bx)-px,Math.max(s.ax,s.bx)+px,Math.min(s.az,s.bz)-pz,Math.max(s.az,s.bz)+pz,-.2,p.height);
+   Object.assign(WALL_COLLIDERS.at(-1),{perimeter:true,segment:s});
+  }
+  // Posts close acute corners and prevent diagonal leaks between fence runs.
+  for(const [x,z] of p.outline){box(g,.9,2.96,.9,x,1.48,z,stone);box(g,1.02,.12,1.02,x,3,z,cap);registerWallCollider(x-.45,x+.45,z-.45,z+.45,-.2,3.06);WALL_COLLIDERS.at(-1).perimeter=true;}
+  // Existing 2.4-wide gate pylons are visible in explorer.js; make them solid.
+  for(const x of [-21,1]){registerWallCollider(x-1.2,x+1.2,84.8,87.2,-.2,6.2);WALL_COLLIDERS.at(-1).perimeter=true;}
+  return g;
+ }
  function render(scene){
   const g=new THREE.Group();g.name='photo-outdoor';scene.add(g);const t=P.track,c=P.palette;
+  renderPerimeter(g);
   function ring(r,color,y){const mesh=new THREE.Mesh(new THREE.ShapeGeometry(stadium(r)),mat(color));mesh.rotation.x=-Math.PI/2;mesh.position.set(t.x,y,t.z);mesh.receiveShadow=true;g.add(mesh)}
   ring(t.outerRadius,c.track,.032);ring(t.innerRadius,c.lawn,.05);
   for(let i=0;i<=6;i++){const r=t.innerRadius+i*(t.outerRadius-t.innerRadius)/6;loop(g,stadium(r).getPoints(96).map(p=>[p.x+t.x,p.y+t.z]),.065,c.line)}

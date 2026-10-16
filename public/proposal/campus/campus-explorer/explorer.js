@@ -484,7 +484,7 @@
       for (let i = 0; i < WALL_COLLIDERS.length; i++) {
         const c = WALL_COLLIDERS[i];
         if (avatarMaxY >= c.minY && avatarMinY <= c.maxY) {
-          if (avatarMaxX > c.minX && avatarMinX < c.maxX &&
+          if ((!c.segment||CampusCollisionGrid.overlaps(c,x,z,r))&&avatarMaxX > c.minX && avatarMinX < c.maxX &&
               avatarMaxZ > c.minZ && avatarMinZ < c.maxZ) {
             return true;
           }
@@ -741,11 +741,11 @@
 
     // 南側主幹道 (東西向車道, z=86)
     const southRoad = new THREE.Mesh(
-      new THREE.PlaneGeometry(170, 9),
+      new THREE.PlaneGeometry(158, 9),
       new THREE.MeshStandardMaterial({ color: 0x8c4c3a })
     );
     southRoad.rotation.x = -Math.PI / 2;
-    southRoad.position.set(20, 0.02, 86);
+    southRoad.position.set(14, 0.02, 86);
     southRoad.receiveShadow = true;
     scene.add(southRoad);
 

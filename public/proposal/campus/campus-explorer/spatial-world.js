@@ -8,7 +8,7 @@
  colors.light.emissive.setHex(0x8a8467);colors.light.emissiveIntensity=.4;
  const techWindowFrame=material(0x4d8773);
  const safetyMeshMaterial=new THREE.LineBasicMaterial({color:0x7f8880,transparent:true,opacity:.45});
- const surfaces=new Map(),cameraVolumes=[];
+ const surfaces=new Map(),cameraVolumes=WALL_COLLIDERS.filter(c=>c.perimeter).map(c=>({...c}));
  const cameraVolume=(r,y0,y1)=>cameraVolumes.push({minX:r.x0,maxX:r.x1,minZ:r.z0,maxZ:r.z1,minY:y0,maxY:y1});
  function surfaceMaterials(l){
   if(surfaces.has(l.id))return surfaces.get(l.id);

@@ -14,6 +14,22 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','spatial-world.js','photo-facade.js','photo-teaching.js','photo-roofs.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('has a continuous visible perimeter that blocks players, jumping students, teachers and cameras',()=>{
+ const result=run(`(()=>{const p=CampusOutdoorPlan.perimeter,g=scene.getObjectByName('campus-perimeter'),bad=[];if(!p||!g)return {missing:true};scene.updateMatrixWorld(true);for(const [i,s] of p.segments.entries()){const dx=s.bx-s.ax,dz=s.bz-s.az,d=Math.hypot(dx,dz),nx=-dz/d,nz=dx/d;for(const t of [0,.1,.5,.9,1]){const x=s.ax+dx*t,z=s.az+dz*t;for(const y of [0,1.3])if(!checkWallCollision(x,y,z)||!campusPeopleCollisionIndex.hit(x,y,z))bad.push(i+' collision');if(!campusWalkWorld.cameraBlocked({x,y:1,z}))bad.push(i+' camera');const ray=new THREE.Raycaster(new THREE.Vector3(x+nx*2,1,z+nz*2),new THREE.Vector3(-nx,0,-nz),0,4);if(!ray.intersectObjects(g.children,true).length)bad.push(i+' visual');}}return {missing:false,bad}})()`);
+ expect(result).toEqual({missing:false,bad:[]});
+});
+it('stops high-speed and jumping movement through perimeter faces without sealing the gate approach',()=>{
+ const result=run(`(()=>{const perimeter=CampusOutdoorPlan.perimeter;if(!perimeter)return {missing:true};const failures=[];for(const [i,s] of perimeter.segments.entries()){const dx=s.bx-s.ax,dz=s.bz-s.az,d=Math.hypot(dx,dz),nx=-dz/d,nz=dx/d,mx=(s.ax+s.bx)/2,mz=(s.az+s.bz)/2;for(const side of [-1,1]){const p={x:mx+nx*2*side,y:0,z:mz+nz*2*side};const blocked=moveAvatarWithCollision(p,-nx*4*side,-nz*4*side);if(!blocked||((p.x-mx)*nx+(p.z-mz)*nz)*side<0)failures.push(i+' fast crossing');}if(!checkWallCollision(mx,1.3,mz))failures.push(i+' jumping');}const p={x:-10,y:0,z:80};moveAvatarWithCollision(p,0,50);return {missing:false,failures,gate:p}})()`);
+ expect(result.missing).toBe(false);expect(result.failures).toEqual([]);expect(result.gate.z).toBeCloseTo(130);expect(result.gate.y).toBe(0);
+});
+it('keeps every real room inside the plan perimeter while excluding the surrounding off-campus land',()=>{
+ const result=run(`(()=>{const p=CampusOutdoorPlan.perimeter;if(!p)return {missing:true};return {missing:false,outside:campusWalkWorld.layouts.flatMap(l=>l.rooms.filter(r=>!p.contains(r.center.x,r.center.z)).map(r=>r.id)),west:p.contains(-180,0),north:p.contains(0,-100),east:p.contains(130,0),river:p.contains(40,115)}})()`);
+ expect(result).toEqual({missing:false,outside:[],west:false,north:false,east:false,river:false});
+});
+it('keeps driveway ends and both parking canopies within the perimeter',()=>{
+ const bad=run(`(()=>{const p=CampusOutdoorPlan.perimeter,bad=[],road=scene.children.find(m=>m.isMesh&&m.geometry.type==='PlaneGeometry'&&m.position.z===86&&m.position.y===.02),canopies=scene.children.filter(m=>m.isMesh&&m.geometry.type==='BoxGeometry'&&m.position.y===3&&m.position.z===90);for(const m of [road,...canopies]){const width=m.geometry.parameters.width,depth=m.geometry.parameters.depth||m.geometry.parameters.height;for(const dx of [-width/2,width/2])for(const dz of [-depth/2,depth/2])if(!p.contains(m.position.x+dx,m.position.z+dz))bad.push({x:m.position.x+dx,z:m.position.z+dz})}return bad})()`);
+ expect(bad).toEqual([]);
+});
 it('uses a larger, taller collision envelope for the rendered staff and student models',()=>{
  expect(run(`!!window.campusPeopleCollisionIndex`)).toBe(true);
  expect(run(`WALL_COLLIDERS.filter(c=>c.maxY-c.minY>.25).every(c=>campusPeopleCollisionIndex.hit((c.minX+c.maxX)/2,c.minY,(c.minZ+c.maxZ)/2))`)).toBe(true);
