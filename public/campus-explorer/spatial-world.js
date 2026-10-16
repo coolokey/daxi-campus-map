@@ -56,7 +56,7 @@
   const wall=(a,b,y0,y1,mat,solid=true)=>alongU?box(g,l,a,b,fixed-.09,fixed+.09,y0,y1,mat,solid):box(g,l,fixed-.09,fixed+.09,a,b,y0,y1,mat,solid);
   if(c.doorSide===side){
    const half=Math.min(.95,(end-start)/2-.16);
-   const photoCorridor=['grade8-front','grade8-mid','grade9-back','admin-front','admin-back'].includes(l.id);
+   const photoCorridor=['grade8-front','grade8-mid','grade9-back','admin-front','admin-back','new-grade7'].includes(l.id);
    const wing=(a,b)=>{
     if(!photoCorridor||b-a<1.3){wall(a,b,y,y+FH,paint);return;}
     const collider=wall(a,b,y,y+FH,paint);if(collider)collider.visible=false;
@@ -184,7 +184,10 @@
     }
     if(!open)box(g,l,min,max,v0,v1,y,y+1.05,colors.exterior,true);
     // Space columns away from doors and corridor ends.
-    for(let t=a+1;t<b-1;t+=6)if(f!==1&&!galleryJoin&&!teachingJoin)box(g,l,alongU?t-.13:fixed-.13,alongU?t+.13:fixed+.13,alongU?fixed-.13:t-.13,alongU?fixed+.13:t+.13,y,y+FH,colors.exterior,true);
+    for(let t=a+1;t<b-1;t+=6)if(f!==1&&!galleryJoin&&!teachingJoin){
+     const post=box(g,l,alongU?t-.13:fixed-.13,alongU?t+.13:fixed+.13,alongU?fixed-.13:t-.13,alongU?fixed+.13:t+.13,y,y+FH,colors.exterior,true);
+     if(l.id==='new-grade7'&&post){post.geometry.dispose();post.geometry=new THREE.CylinderGeometry(.13,.13,FH,12);post.material=colors.ceiling;}
+    }
    }
    for(const v of vs)for(let i=1;i<us.length;i++){const u=(us[i]+us[i-1])/2;if(present(u,v-.02)!==present(u,v+.02))edge(true,v,us[i-1],us[i]);}
    for(const u of us)for(let i=1;i<vs.length;i++){const v=(vs[i]+vs[i-1])/2;if(present(u-.02,v)!==present(u+.02,v))edge(false,u,vs[i-1],vs[i]);}

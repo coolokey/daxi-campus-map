@@ -38,3 +38,63 @@
   }
  }
 })();
+
+/* Seven-grade wing: 767193_0–767196_0, 2026-10-16.
+ * Photo-backed finishes on the existing plan; no new floor, route or collider.
+ * Broad stairs/ramp in the photos have no surveyed position or rise here, so
+ * the existing level entrance stays unchanged rather than becoming a fake stair.
+ */
+(()=>{
+ const api=window.campusExplorer,l=window.campusWalkWorld?.layouts.find(l=>l.id==='new-grade7');if(!api||!l)return;
+ const materials=new Map(),mat=c=>{if(!materials.has(c))materials.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.97}));return materials.get(c)};
+ const cvs=document.createElement('canvas');cvs.width=cvs.height=128;const ctx=cvs.getContext('2d');ctx.fillStyle='#a2a49f';ctx.fillRect(0,0,128,128);
+ let seed=701;for(let i=0;i<7000;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const x=seed%128;seed=(Math.imul(seed,1664525)+1013904223)>>>0;const z=seed%128;ctx.fillStyle=['#767b77','#c0c1ba','#929690'][i%3];ctx.fillRect(x,z,1,1);}
+ const aggregate=new THREE.CanvasTexture(cvs);aggregate.wrapS=aggregate.wrapT=THREE.RepeatWrapping;aggregate.encoding=THREE.sRGBEncoding;
+ // Update only this building's shared stone finishes, before colour calibration.
+ api.scene.traverse(o=>{const m=o.material;if(m?.userData?.campusBuildingId===l.id&&['wall','exterior'].includes(m.userData.campusSurface)){m.map=aggregate;m.needsUpdate=true;}});
+ function box(g,u,v,y,w,h,d,c){const p=l.world(u,v,y),m=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?w:d,h,l.horizontal?d:w),mat(c));m.position.set(p.x,p.y,p.z);m.castShadow=m.receiveShadow=true;g.add(m);return m;}
+ const B=l.D/2,a=-l.L/2,A=l.L/2,stone=0x949792,green=0x24805e,brown=0x4b4038,cream=0xc9c8b9;
+ for(let f=1;f<=l.b.floors;f++){
+  const y=(f-1)*FH,g=new THREE.Group();g.name=`photo-new7-${f}`;g.userData={buildingId:l.id,floorNum:f};api.scene.add(g);floorMeshes.push(g);
+  // Deep fascia and projecting flat eaves; all pieces stay at the slab line.
+  box(g,0,B+.13,y+FH-.24,l.L+.3,.45,.32,stone);
+  box(g,A+.13,0,y+FH-.24,.32,.45,l.D+.3,stone);
+  if(f>1){
+   const rail=new THREE.Group();rail.name='new7-green-rail';g.add(rail);
+   // Main facade: masonry parapet with a brown top rail and green stanchions.
+   box(rail,0,B+.12,y+1.2,l.L,.065,.07,brown);
+   for(let u=a+.35;u<A;u+=2.4)box(rail,u,B+.12,y+1.12,.045,.19,.045,green);
+   // End bay: an open green grille section as shown in the corner close-up.
+   const lo=A-7.4,hi=A-.4;
+   for(const h of [1.09,1.85])box(rail,(lo+hi)/2,B+.15,y+h,hi-lo,.05,.065,h>1.5?brown:green);
+   for(let u=lo;u<=hi;u+=.38)box(rail,u,B+.15,y+1.47,.035,.76,.045,green);
+  }
+  // Ground-floor round columns stand outside the walkable slab edge.
+  if(f===1)for(let u=a+1;u<A-1;u+=6){
+   const p=l.world(u,B+.24,y+FH/2),post=new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,FH,12),mat(cream));post.position.set(p.x,p.y,p.z);post.castShadow=post.receiveShadow=true;g.add(post);
+  }
+  // Slatted shade wraps the existing west stair bay, without closing its exit.
+  const shade=new THREE.Group();shade.name='new7-stair-sunshade';g.add(shade);
+  const lo=a+.35,hi=a+4.2;
+  if(f>1){
+   for(const h of [.18,FH-.5])box(shade,(lo+hi)/2,B+.31,y+h,hi-lo,.09,.28,brown);
+   for(let u=lo;u<=hi;u+=.3)box(shade,u,B+.32,y+(FH-.32)/2,.07,FH-.68,.32,brown);
+  }
+  // White drainpipes beside the columns and the shaded stair bay.
+  for(const u of [a+4.5,A-.3])box(g,u,B+.29,y+FH/2,.07,FH,.07,0xcdd0c8);
+  for(const r of l.rooms.filter(r=>r.floor===f)){
+   const axis=r.doorSide[0],out=r.doorSide.endsWith('0')?-1:1,du=axis==='v'?1:0,dv=axis==='u'?1:0;
+   const u=(r.u0+r.u1)/2+(axis==='u'?out*(r.u1-r.u0)/2:0),v=(r.v0+r.v1)/2+(axis==='v'?out*(r.v1-r.v0)/2:0);
+   // Retracted pale-green sliding leaf beside the opening, leaving the route clear.
+   const offset=1.28,pu=u+du*offset+(axis==='u'?out*.13:0),pv=v+dv*offset+(axis==='v'?out*.13:0);
+   box(g,pu,pv,y+1.13,axis==='v'?.56:.045,2.2,axis==='u'?.56:.045,0xb0c49b);
+   box(g,pu,pv,y+1.62,axis==='v'?.16:.055,.6,axis==='u'?.16:.055,0x526c62);
+   // Silver security grille over the corridor window wings, clear of the door.
+   const length=axis==='v'?r.u1-r.u0:r.v1-r.v0;
+   for(const sign of [-1,1])for(let t=1.75;t<length/2-.25;t+=.36){
+    const qu=u+du*sign*t+(axis==='u'?out*.14:0),qv=v+dv*sign*t+(axis==='v'?out*.14:0);
+    box(g,qu,qv,y+1.85,.025,1.55,.025,0xc0c5bf);
+   }
+  }
+ }
+})();
