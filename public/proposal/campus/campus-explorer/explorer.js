@@ -1009,6 +1009,7 @@
       const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 1.5, 8), new THREE.MeshStandardMaterial({ color: 0x5c4033 }));
       trunk.position.y = 0.75;
       trunk.castShadow = true;
+      trunk.userData.campusSolid = true;
       tree.add(trunk);
       const fol1 = new THREE.Mesh(new THREE.ConeGeometry(1.6, 3.8, 8), new THREE.MeshStandardMaterial({ color: 0x2d6a4f }));
       fol1.position.y = 2.8;
@@ -1028,6 +1029,7 @@
       const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.5, 2.4, 8), new THREE.MeshStandardMaterial({ color: 0x4a3728 }));
       trunk.position.y = 1.2;
       trunk.castShadow = true;
+      trunk.userData.campusSolid = true;
       tree.add(trunk);
       const crown = new THREE.Mesh(new THREE.DodecahedronGeometry(2.8, 1), new THREE.MeshStandardMaterial({ color: 0x386641, roughness: 0.8 }));
       crown.position.y = 4.2;
@@ -1135,9 +1137,11 @@
       // 排球柱與球網
       const post1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3.2, 8), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
       post1.position.set(-7, 1.6, 0);
+      post1.userData.campusSolid=true;
       vbGroup.add(post1);
       const post2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3.2, 8), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
       post2.position.set(7, 1.6, 0);
+      post2.userData.campusSolid=true;
       vbGroup.add(post2);
 
       const net = new THREE.Mesh(new THREE.PlaneGeometry(14, 1.2), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.85 }));
@@ -1243,6 +1247,7 @@
 
         const post = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 4.4, 12), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
         post.position.y = 2.2;
+        post.userData.campusSolid=true;
         hoop.add(post);
 
         const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.4, 8), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
@@ -2120,7 +2125,7 @@
 
   // 5. 通廊 (Breezeways) 與中央庭園
   "breezeway-west": { id: "breezeway-west", x: -5, y: 0, z: 32, neighbors: ["admin-bridge", "g9-porch-s", "g9-porch-n"] },
-  "breezeway-mid": { id: "breezeway-mid", x: 15, y: 0, z: 28, neighbors: ["g9-porch-s", "g8m-porch-s", "g9-porch-n", "g8m-porch-n"] },
+  "breezeway-mid": { id: "breezeway-mid", x: 17.5, y: 0, z: 26, neighbors: ["g9-porch-s", "g8m-porch-s", "g9-porch-n", "g8m-porch-n"] },
   "breezeway-north": { id: "breezeway-north", x: 15, y: 0, z: 6, neighbors: ["health-porch", "g9-porch-n", "g8m-porch-n", "bb-gate"] },
 
   // 6. 健康中心棟 (北橫棟)

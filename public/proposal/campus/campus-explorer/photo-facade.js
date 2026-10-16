@@ -31,7 +31,7 @@
     for(const dx of [-width/2,0,width/2])box(g,.045,1.8,.09,center+dx,y+1.85,frontZ+.08,white);
     for(const dy of [-.9,.42,.9])box(g,width,.045,.09,center,y+1.85+dy,frontZ+.08,white);
    }
-   registerWallCollider(b.x-b.width/2,b.x+b.width/2,frontZ-.08,frontZ+.08,y,y+FH);WALL_COLLIDERS.at(-1).buildingId=b.id;
+   registerWallCollider(b.x-b.width/2,b.x+b.width/2,frontZ-.08,frontZ+.08,y,y+FH);Object.assign(WALL_COLLIDERS.at(-1),{buildingId:b.id,persistent:true});
   }
  }
  const entrance=group(1,'photo-admin-entrance');
@@ -39,7 +39,7 @@
  // Its posts and open glass leaves preserve the existing central route.
  for(const x of [b.x-2.8,b.x+2.8]){
   box(entrance,.55,6.85,.55,x,3.425,frontZ+1.65,stone).name='admin-porch-column';
-  registerWallCollider(x-.275,x+.275,frontZ+1.375,frontZ+1.925,0,6.85);WALL_COLLIDERS.at(-1).buildingId=b.id;
+  registerWallCollider(x-.275,x+.275,frontZ+1.375,frontZ+1.925,0,6.85);Object.assign(WALL_COLLIDERS.at(-1),{buildingId:b.id,persistent:true});
   for(let y=1.3;y<6.7;y+=1.35)box(entrance,.557,.012,.557,x,y,frontZ+1.65,0x787d78);
  }
  const canopy=box(entrance,6.5,.22,2.55,b.x,6.96,frontZ+.8,stone);canopy.name='admin-porch-canopy';
@@ -50,7 +50,7 @@
   const x=b.x+sign*1.65,pane=box(entrance,.85,2.25,.035,x,1.18,frontZ+.15,glass);
   for(const dx of [-.425,.425])box(entrance,.045,2.25,.06,x+dx,1.18,frontZ+.15,white);
   for(const y of [.06,.85,2.3])box(entrance,.85,.04,.06,x,y,frontZ+.15,white);
-  registerWallCollider(x-.425,x+.425,frontZ+.12,frontZ+.18,0,2.3);WALL_COLLIDERS.at(-1).buildingId=b.id;
+  registerWallCollider(x-.425,x+.425,frontZ+.12,frontZ+.18,0,2.3);Object.assign(WALL_COLLIDERS.at(-1),{buildingId:b.id,persistent:true});
  }
  box(entrance,4.15,.58,.035,b.x,2.64,frontZ+.15,glass).name='admin-entrance-transom';
  for(const y of [2.32,2.94])box(entrance,4.2,.045,.06,b.x,y,frontZ+.15,white);
@@ -72,10 +72,9 @@
   box(entrance,c-a,1.55,.025,(a+c)/2,1.85,frontZ+.04,glass);
   for(let x=a+.2;x<c;x+=.5)box(entrance,.035,1.6,.06,x,1.85,frontZ+.075,white);
   for(const y of [1.05,1.6,2.65])box(entrance,c-a,.035,.06,(a+c)/2,y,frontZ+.075,white);
-  registerWallCollider(a,c,frontZ-.08,frontZ+.08,0,FH);WALL_COLLIDERS.at(-1).buildingId=b.id;
+  registerWallCollider(a,c,frontZ-.08,frontZ+.08,0,FH);Object.assign(WALL_COLLIDERS.at(-1),{buildingId:b.id,persistent:true});
  }
- window.campusCollisionIndex=CampusCollisionGrid.create(WALL_COLLIDERS,AVATAR_COLLISION_RADIUS,AVATAR_HEIGHT);
- window.campusPeopleCollisionIndex=CampusCollisionGrid.create(WALL_COLLIDERS,.64,2.15);
+ // The shared spatial model builds both indexes after all physical scenery.
  // Low entrance threshold and flank ramp are visual guides at the existing zero-level entrance.
  box(entrance,4.1,.045,1.15,b.x,.025,frontZ+.65,0x93978d);
  const ramp=box(entrance,1.2,.08,3.1,b.x+4.35,.06,frontZ+1.5,0x93978d);ramp.rotation.x=-.02;
@@ -103,15 +102,24 @@
  panel.name='admin-hip-roof';panel.position.set(b.x,h+.15,b.z);panel.castShadow=panel.receiveShadow=true;roof.add(panel);
  for(const z of [b.z-halfDepth,b.z+halfDepth])box(roof,halfWidth*2,.12,.12,b.x,h+.08,z,teal);
  for(const x of [b.x-halfWidth,b.x+halfWidth])box(roof,.12,.12,halfDepth*2,x,h+.08,b.z,teal);
- // Source-backed garden landmarks stay clear of the central route.
+ // S__66011287.jpg fixes the front-view order and outer-bed placement:
+ // peacock left, cube right, both beyond the main cypresses. Units are schematic.
  const garden=group(1,'photo-admin-garden');
+ const beds=[{name:'admin-left-flowerbed',min:b.x-b.width/2-1,max:b.x-3.5},
+  {name:'admin-right-flowerbed',min:b.x+5.5,max:b.x+b.width/2+1}];
+ for(const bed of beds){
+  const center=(bed.min+bed.max)/2,width=bed.max-bed.min;
+  box(garden,width,.16,3.9,center,.08,frontZ+3.55,0x5b703f).name=bed.name;
+  // Low edging encloses each planting strip without crossing either approach.
+  for(const z of [frontZ+1.6,frontZ+5.5])box(garden,width,.14,.12,center,.07,z,0x9c927e);
+  for(const x of [bed.min,bed.max])box(garden,.12,.14,3.9,x,.07,frontZ+3.55,0x9c927e);
+ }
  for(const x of [b.x-5,b.x+7.5]){
-  box(garden,2.4,.28,2.5,x,.14,frontZ+4.4,0x9c9e80);
-  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.13,.22,3.1,8),mat(0x705c46));trunk.position.set(x,1.55,frontZ+4.4);garden.add(trunk);
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.13,.22,3.1,8),mat(0x705c46));trunk.position.set(x,1.55,frontZ+4.4);trunk.userData.campusSolid=true;garden.add(trunk);
   for(let i=0;i<3;i++){const crown=new THREE.Mesh(new THREE.ConeGeometry(1.3-i*.2,3.2,8),mat(i%2?0x4b6c43:0x567c45));crown.position.set(x,3.2+i*.8,frontZ+4.4);garden.add(crown)}
  }
  const cube=new THREE.Group();cube.name='photo-admin-rubiks-cube';cube.rotation.set(.45,.35,.3);garden.add(cube);
- box(cube,1.6,1.6,1.6,0,0,0,0x27312e).name='cube-core';
+ const core=box(cube,1.6,1.6,1.6,0,0,0,0x27312e);core.name='cube-core';core.userData.campusSolid=true;
  const stickerColours=[0xc8564c,0xd2b649,0x659575,0x536c8e,0xd9d9cd,0xc67c3e];
  for(let face=0;face<6;face++)for(let row=0;row<4;row++)for(let col=0;col<4;col++){
   const tile=new THREE.Mesh(new THREE.PlaneGeometry(.368,.368),mat(stickerColours[(face*3+row*5+col*7)%6]));tile.name='cube-tile';
@@ -121,7 +129,7 @@
   else{tile.position.set(a,face===4?.803:-.803,c);tile.rotation.x=face===4?-Math.PI/2:Math.PI/2;}
   cube.add(tile);
  }
- cube.position.y=.1-new THREE.Box3().setFromObject(cube).min.y;cube.position.x=b.x+9;cube.position.z=frontZ+4.1;
- const peacock=new THREE.Mesh(new THREE.CircleGeometry(.85,12,0,Math.PI),mat(0x568374));peacock.position.set(b.x-9,.25,frontZ+4);garden.add(peacock);
+ cube.position.y=.18-new THREE.Box3().setFromObject(cube).min.y;cube.position.x=b.x+b.width*.46;cube.position.z=frontZ+4.1;
+ const peacock=new THREE.Mesh(new THREE.CircleGeometry(.85,12,0,Math.PI),mat(0x568374));peacock.name='photo-admin-peacock';peacock.position.set(b.x-b.width*.46,.18,frontZ+4.8);garden.add(peacock);
  // The source only demonstrates the shape, not botanical or equipment identities.
 })();

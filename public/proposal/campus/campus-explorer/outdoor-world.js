@@ -81,7 +81,7 @@ const CampusOutdoorWorld=(()=>{
   if(typeof requestIdleCallback==='function')requestIdleCallback(loadMural,{timeout:2500});else setTimeout(loadMural,600);
   // Flag poles stand on the viewer's left (+x for a -z-facing stage).
   floor(st,7,2.5,-49.5,9,c.line,.07);
-  for(const [i,x] of [-52,-49.5,-47].entries()){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.06,.08,10+i%2,10),mat(0xbdc7c8));pole.position.set(x,(10+i%2)/2,9);st.add(pole)}
+  for(const [i,x] of [-52,-49.5,-47].entries()){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.06,.08,10+i%2,10),mat(0xbdc7c8));pole.position.set(x,(10+i%2)/2,9);pole.userData.campusSolid=true;st.add(pole)}
   const flag=new THREE.Mesh(new THREE.PlaneGeometry(1.7,1.1),new THREE.MeshBasicMaterial({color:0xa9443d,side:THREE.DoubleSide}));flag.position.set(-48.65,10.25,9);st.add(flag);
   const canton=new THREE.Mesh(new THREE.PlaneGeometry(.85,.55),new THREE.MeshBasicMaterial({color:0x344e7b,side:THREE.DoubleSide}));canton.position.set(-49.075,10.525,8.99);st.add(canton);
   const sun=new THREE.Mesh(new THREE.CircleGeometry(.17,12),new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide}));sun.position.set(-49.075,10.525,8.98);st.add(sun);

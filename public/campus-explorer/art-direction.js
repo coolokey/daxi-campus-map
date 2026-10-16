@@ -1,4 +1,4 @@
-/* 美術層：配置與路徑沿用 campus-data.js / explorer.js，裝飾不提供碰撞。 */
+/* 美術層：配置與路徑沿用 campus-data.js / explorer.js，實體景觀由 landscape-world 建立與登記碰撞。 */
 (() => {
   const api=window.campusExplorer;
   if(!api)return;
@@ -6,7 +6,7 @@
   const palette={stone:0xd0c9bd,brick:0xb88d84,leaf:0x567657,soil:0x8d7761};
   const materials=new Map();
   const mat=color=>{if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.86}));return materials.get(color)};
-  const decor=new THREE.Group();decor.name='campus-landscape-refinement';scene.add(decor);
+  const decor=scene.getObjectByName('campus-landscape-refinement');
   function box(w,h,d,x,y,z,color){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;decor.add(m);return m}
   function tiledTexture(wall=false){
     const cvs=document.createElement('canvas');cvs.width=cvs.height=256;
@@ -20,47 +20,6 @@
     const texture=new THREE.CanvasTexture(cvs);texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.repeat.set(wall?3:8,wall?2:8);texture.encoding=THREE.sRGBEncoding;
     texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return texture;
   }
-  const paver=new THREE.MeshStandardMaterial({map:tiledTexture(),roughness:.93});
-  function paved(w,d,x,z){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(w,d),paver);mesh.rotation.x=-Math.PI/2;mesh.position.set(x,.035,z);mesh.receiveShadow=true;decor.add(mesh)}
-  // 前庭與銅像廣場，以及校舍之間可通行的硬鋪面。
-  paved(56,30,-32,61);paved(28,26,-40,32);paved(22,42,15,28);
-  paved(8,118,44,8);paved(42,7,12,51);paved(40,7,12,6);
-  function planter(x,z,w,d){
-    box(w,.32,d,x,.17,z,0xbfc7af);box(w-.35,.08,d-.35,x,.37,z,palette.soil);
-    for(let i=0;i<Math.max(2,Math.floor(w/1.5));i++){
-      const leaf=new THREE.Mesh(new THREE.IcosahedronGeometry(.66,1),mat(i%2?0x557a52:0x719461));leaf.scale.set(1,.65,.85);leaf.position.set(x-w/2+.85+i*1.3,.77,z);leaf.castShadow=true;decor.add(leaf);
-    }
-  }
-  for(const x of [11,19])for(const z of [16,29,41])planter(x,z,3.4,4);
-  for(const x of [-43,-27])planter(x,44,6,1.8);
-  for(const z of [40,52,64,76])planter(-53,z,2,4);
-  // 柔和綠籬與座椅形成中庭尺度，保留縱向通廊。
-  for(const z of [17,37]){
-    box(3.2,.18,.75,15,.72,z,0x997554);
-    box(.16,.6,.65,13.8,.34,z,0x52615a);box(.16,.6,.65,16.2,.34,z,0x52615a);
-  }
-  // The plan-derived outdoor perimeter now owns the visible northern barrier
-  // and its collision. Keep the trees, avoiding a second non-solid decor wall.
-  // Track-side shade, tree wells and low brick seating from the 2019 series.
-  paved(86,2.2,-88,5.4);
-  for(let x=-126;x<=-79;x+=7.8){
-    box(2.1,.3,1.6,x,.16,7.6,0x987867);box(1.75,.03,1.3,x,.32,7.6,palette.soil);
-    const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.13,.2,3.3,8),mat(0x76644c));trunk.position.set(x,1.65,7.6);decor.add(trunk);
-    for(let i=0;i<2;i++){const leaf=new THREE.Mesh(new THREE.IcosahedronGeometry(1.8,1),mat(i?0x6d8351:0x587849));leaf.position.set(x+(i?.45:-.3),3.6+i*.6,7.6);leaf.scale.y=.8;decor.add(leaf)}
-    box(2,.12,.45,x,.48,8.55,0x9e8468);
-  }
-  for(let i=0;i<30;i++){
-    const crown=new THREE.Mesh(new THREE.IcosahedronGeometry(3.2+(i%3)*.7,1),mat([0x365b47,0x416851,0x51765a][i%3]));
-    crown.position.set(-135+i*7.5,4.2+(i%4)*.7,-82-(i%2)*4);crown.scale.y=1.2;crown.castShadow=true;decor.add(crown);
-  }
-  for(let i=0;i<12;i++){
-    const hill=new THREE.Mesh(new THREE.SphereGeometry(18+(i%3)*6,16,10),mat([0x365b47,0x416851,0x51765a][i%3]));
-    hill.position.set(-155+i*25,-3,-110-(i%2)*10);hill.scale.set(1.2,.55,1);hill.receiveShadow=true;decor.add(hill);
-  }
-  // 補上車道標線，採低對比標線避免畫面喧賓奪主。
-  for(let z=-66;z<79;z+=10)box(.18,.015,3.5,52.5,.045,z,0xdfdecd);
-  for(let x=2;x<90;x+=10)box(3.5,.015,.18,x,.045,86,0xdfdecd);
-  for(let i=0;i<7;i++)box(1,.015,7,-19+i*2,.055,79,0xf0efdf);
   const gymTexture=tiledTexture(true);
   for(const group of scene.children){
     const cfg=api.buildings.find(b=>group.position.x===b.x&&group.position.z===b.z&&group.type==='Group');

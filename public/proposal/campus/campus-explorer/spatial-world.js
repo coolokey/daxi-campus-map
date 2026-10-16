@@ -124,7 +124,7 @@
   box(g,l,r.u-.7,r.u+.7,r.v-.12,r.v+.12,y+FH-.22,y+FH-.2,colors.light);
  }
  // Retain existing outer ornament; replace old floors, stair meshes and roofs for shaped wings.
- for(let i=WALL_COLLIDERS.length-1;i>=0;i--)if(WALL_COLLIDERS[i].buildingId)WALL_COLLIDERS.splice(i,1);
+ for(let i=WALL_COLLIDERS.length-1;i>=0;i--)if(WALL_COLLIDERS[i].buildingId&&!WALL_COLLIDERS[i].persistent)WALL_COLLIDERS.splice(i,1);
  STAIR_ZONES.length=0;
  for(const l of layouts){
   const colors=surfaceMaterials(l);

@@ -1,0 +1,372 @@
+[
+  {
+    "url": "http://127.0.0.1:5190/campus-explorer/index.html?view=bird&v=landmark-collision",
+    "probes": [
+      {
+        "name": "石柱",
+        "hit": true
+      },
+      {
+        "name": "左灌木",
+        "hit": true
+      },
+      {
+        "name": "右灌木",
+        "hit": true
+      },
+      {
+        "name": "柏樹",
+        "hit": true
+      },
+      {
+        "name": "闊葉樹",
+        "hit": true
+      },
+      {
+        "name": "操場樹幹",
+        "hit": true
+      },
+      {
+        "name": "長椅",
+        "hit": true
+      },
+      {
+        "name": "花台",
+        "hit": true
+      },
+      {
+        "name": "旗桿1",
+        "hit": true
+      },
+      {
+        "name": "旗桿2",
+        "hit": true
+      },
+      {
+        "name": "旗桿3",
+        "hit": true
+      },
+      {
+        "name": "排球柱1",
+        "hit": true
+      },
+      {
+        "name": "排球柱2",
+        "hit": true
+      },
+      {
+        "name": "行政庭園左樹幹",
+        "hit": true
+      },
+      {
+        "name": "行政庭園右樹幹",
+        "hit": true
+      }
+    ],
+    "movement": [
+      {
+        "blocked": true,
+        "end": {
+          "x": -36,
+          "y": 0,
+          "z": 30.923076923076927
+        },
+        "overlap": false
+      },
+      {
+        "blocked": true,
+        "end": {
+          "x": -36,
+          "y": 0,
+          "z": 26.256410256410252
+        },
+        "overlap": false
+      },
+      {
+        "blocked": true,
+        "end": {
+          "x": -39.46666666666667,
+          "y": 0,
+          "z": 28.5
+        },
+        "overlap": false
+      },
+      {
+        "blocked": true,
+        "end": {
+          "x": -32.53333333333333,
+          "y": 0,
+          "z": 28.5
+        },
+        "overlap": false
+      },
+      {
+        "blocked": true,
+        "end": {
+          "x": -37.60000000000001,
+          "y": 0,
+          "z": 30.71666666666666
+        },
+        "overlap": false
+      }
+    ],
+    "routeFound": true,
+    "routeBlocked": false,
+    "routeEnd": {
+      "x": -36,
+      "y": 0,
+      "z": 31.999999999999993
+    },
+    "gateRouteFound": true,
+    "gateRouteBlocked": false,
+    "gateRouteEnd": {
+      "id": "gate",
+      "x": -35.999999999999986,
+      "y": 0,
+      "z": 32.000000000000014,
+      "neighbors": [
+        "gate-gym-bld-outside-0-p0",
+        "gate-recycle-bld-outside-0-p0",
+        "gate-recycle-bld-outside-1-p0",
+        "gate-recycle-bld-outside-2-p0",
+        "gate-admin-front-outside-0-p0",
+        "gate-admin-front-outside-1-p0",
+        "gate-admin-front-outside-3-p0",
+        "gate-admin-front-outside-4-p0",
+        "gate-admin-front-outside-5-p0",
+        "gate-health-bld-outside-0-p0",
+        "gate-health-bld-outside-1-p0",
+        "gate-health-bld-outside-2-p0",
+        "gate-grade8-front-outside-0-p0",
+        "gate-grade8-front-outside-1-p0",
+        "gate-grade8-front-outside-2-p0",
+        "gate-grade9-back-outside-0-p0",
+        "gate-grade9-back-outside-1-p0",
+        "gate-grade9-back-outside-2-p0",
+        "gate-grade8-mid-outside-0-p0",
+        "gate-grade8-mid-outside-1-p0",
+        "gate-new-grade7-outside-0-p0",
+        "gate-multi-building-outside-1-p0",
+        "gate-tech-building-outside-0-p0",
+        "gate-tech-building-outside-1-p0",
+        "gate-art-building-outside-0-p0",
+        "gate-stage-outdoor-foot-p0",
+        "gate-gate-guard-p0",
+        "gate-palm-avenue-end-p0",
+        "gate-bike-shed-p0",
+        "gate-statue-node-p0",
+        "gate-vb-outer-p0",
+        "gate-bb-gate-p0",
+        "gate-lan-pond-gate-p0",
+        "gate-parking-lot-p0",
+        "gate-track-center-p0",
+        "gate-breezeway-mid-p0"
+      ]
+    },
+    "landmarks": 138,
+    "desktop": {
+      "p": [
+        -36,
+        0,
+        30.748280000042918
+      ],
+      "angle": 3.141592653589793,
+      "blocked": false,
+      "overlap": false
+    },
+    "mobile": {
+      "p": [
+        -36,
+        0,
+        30.783199999928478
+      ],
+      "overlap": false
+    },
+    "errors": []
+  },
+  {
+    "url": "http://127.0.0.1:5190/proposal/campus/campus-explorer/index.html?view=bird&v=landmark-collision",
+    "probes": [
+      {
+        "name": "石柱",
+        "hit": true
+      },
+      {
+        "name": "左灌木",
+        "hit": true
+      },
+      {
+        "name": "右灌木",
+        "hit": true
+      },
+      {
+        "name": "柏樹",
+        "hit": true
+      },
+      {
+        "name": "闊葉樹",
+        "hit": true
+      },
+      {
+        "name": "操場樹幹",
+        "hit": true
+      },
+      {
+        "name": "長椅",
+        "hit": true
+      },
+      {
+        "name": "花台",
+        "hit": true
+      },
+      {
+        "name": "旗桿1",
+        "hit": true
+      },
+      {
+        "name": "旗桿2",
+        "hit": true
+      },
+      {
+        "name": "旗桿3",
+        "hit": true
+      },
+      {
+        "name": "排球柱1",
+        "hit": true
+      },
+      {
+        "name": "排球柱2",
+        "hit": true
+      },
+      {
+        "name": "行政庭園左樹幹",
+        "hit": true
+      },
+      {
+        "name": "行政庭園右樹幹",
+        "hit": true
+      }
+    ],
+    "movement": [
+      {
+        "blocked": true,
+        "end": {
+          "x": -36,
+          "y": 0,
+          "z": 30.923076923076927
+        },
+        "overlap": false
+      },
+      {
+        "blocked": true,
+        "end": {
+          "x": -36,
+          "y": 0,
+          "z": 26.256410256410252
+        },
+        "overlap": false
+      },
+      {
+        "blocked": true,
+        "end": {
+          "x": -39.46666666666667,
+          "y": 0,
+          "z": 28.5
+        },
+        "overlap": false
+      },
+      {
+        "blocked": true,
+        "end": {
+          "x": -32.53333333333333,
+          "y": 0,
+          "z": 28.5
+        },
+        "overlap": false
+      },
+      {
+        "blocked": true,
+        "end": {
+          "x": -37.60000000000001,
+          "y": 0,
+          "z": 30.71666666666666
+        },
+        "overlap": false
+      }
+    ],
+    "routeFound": true,
+    "routeBlocked": false,
+    "routeEnd": {
+      "x": -36,
+      "y": 0,
+      "z": 31.999999999999993
+    },
+    "gateRouteFound": true,
+    "gateRouteBlocked": false,
+    "gateRouteEnd": {
+      "id": "gate",
+      "x": -35.999999999999986,
+      "y": 0,
+      "z": 32.000000000000014,
+      "neighbors": [
+        "gate-gym-bld-outside-0-p0",
+        "gate-recycle-bld-outside-0-p0",
+        "gate-recycle-bld-outside-1-p0",
+        "gate-recycle-bld-outside-2-p0",
+        "gate-admin-front-outside-0-p0",
+        "gate-admin-front-outside-1-p0",
+        "gate-admin-front-outside-3-p0",
+        "gate-admin-front-outside-4-p0",
+        "gate-admin-front-outside-5-p0",
+        "gate-health-bld-outside-0-p0",
+        "gate-health-bld-outside-1-p0",
+        "gate-health-bld-outside-2-p0",
+        "gate-grade8-front-outside-0-p0",
+        "gate-grade8-front-outside-1-p0",
+        "gate-grade8-front-outside-2-p0",
+        "gate-grade9-back-outside-0-p0",
+        "gate-grade9-back-outside-1-p0",
+        "gate-grade9-back-outside-2-p0",
+        "gate-grade8-mid-outside-0-p0",
+        "gate-grade8-mid-outside-1-p0",
+        "gate-new-grade7-outside-0-p0",
+        "gate-multi-building-outside-1-p0",
+        "gate-tech-building-outside-0-p0",
+        "gate-tech-building-outside-1-p0",
+        "gate-art-building-outside-0-p0",
+        "gate-stage-outdoor-foot-p0",
+        "gate-gate-guard-p0",
+        "gate-palm-avenue-end-p0",
+        "gate-bike-shed-p0",
+        "gate-statue-node-p0",
+        "gate-vb-outer-p0",
+        "gate-bb-gate-p0",
+        "gate-lan-pond-gate-p0",
+        "gate-parking-lot-p0",
+        "gate-track-center-p0",
+        "gate-breezeway-mid-p0"
+      ]
+    },
+    "landmarks": 138,
+    "desktop": {
+      "p": [
+        -36,
+        0,
+        30.755000000000003
+      ],
+      "angle": 3.141592653589793,
+      "blocked": false,
+      "overlap": false
+    },
+    "mobile": {
+      "p": [
+        -36,
+        0,
+        30.75394999997318
+      ],
+      "overlap": false
+    },
+    "errors": []
+  }
+]
