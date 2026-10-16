@@ -43,6 +43,30 @@ it('makes the cube four tiles across on all six faces with an opaque dark core a
 it('assigns all facade and entrance objects to the existing building and floor visibility groups',()=>{
  const s=build();for(const g of s.scene.children){expect(g.userData.buildingId).toBe('admin-front');expect([1,2,3]).toContain(g.userData.floorNum);expect(s.floorMeshes).toContain(g)}s.dom.window.close();
 });
+it('places the entrance landmarks in the outer flowerbeds and leaves the central approach clear',()=>{
+ const s=build(),b=s.w.campusWalkWorld.layouts.find((l:any)=>l.id==='admin-front').b;
+ const garden=s.scene.getObjectByName('photo-admin-garden')!;
+ const cube=s.scene.getObjectByName('photo-admin-rubiks-cube')!;
+ const peacock=s.scene.getObjectByName('photo-admin-peacock')!;
+ expect(cube.position.x-b.x).toBeGreaterThan(b.width*.43);
+ expect(peacock).toBeTruthy();
+ expect(b.x-peacock.position.x).toBeGreaterThan(b.width*.43);
+ for(const [object,bedName] of [[cube,'admin-right-flowerbed'],[peacock,'admin-left-flowerbed']] as const){
+  const bed=s.scene.getObjectByName(bedName)!;expect(bed).toBeTruthy();
+  const bounds=new THREE.Box3().setFromObject(bed),item=new THREE.Box3().setFromObject(object);
+  expect(item.min.x).toBeGreaterThanOrEqual(bounds.min.x);
+  expect(item.max.x).toBeLessThanOrEqual(bounds.max.x);
+  expect(item.min.z).toBeGreaterThanOrEqual(bounds.min.z);
+  expect(item.max.z).toBeLessThanOrEqual(bounds.max.z);
+  expect(item.min.y).toBeGreaterThanOrEqual(bounds.max.y);
+  expect(item.min.y-bounds.max.y).toBeLessThan(.08);
+ }
+ for(const child of garden.children){
+  const bounds=new THREE.Box3().setFromObject(child);
+  expect(bounds.max.x<b.x-3||bounds.min.x>b.x+3).toBe(true);
+ }
+ s.dom.window.close();
+});
 it('encloses upper administrative floors with stone bands, square piers and glazed window bays',()=>{
  const s=build(),l=s.w.campusWalkWorld.layouts.find((l:any)=>l.id==='admin-front'),b=l.b,front=b.z+b.depth/2;
  s.scene.updateMatrixWorld(true);
