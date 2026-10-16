@@ -25,11 +25,14 @@
   const compactControls=()=>innerWidth<=1024||innerHeight<=500||matchMedia('(pointer: coarse)').matches;
   let wasCompact=compactControls();
   function setSettingsOpen(open){
+    const compact=compactControls();
+    if(compact)panel.querySelector('.anniversary-quick-controls').prepend($('sound'));
+    else $('replay').after($('sound'));
     if(!open&&$('settings').contains(document.activeElement))$('settings-toggle').focus({preventScroll:true});
     $('settings').hidden=!open;panel.classList.toggle('settings-open',open);
-    panel.classList.toggle('compact-controls',compactControls());
+    panel.classList.toggle('compact-controls',compact);
     $('settings-toggle').setAttribute('aria-expanded',String(open));$('settings-toggle').textContent=open?'收合設定':'設定';
-    $('close').textContent=compactControls()?'停止 ×':'停止表演 ×';fx?.alignText?.();
+    $('close').textContent=compact?'停止 ×':'停止表演 ×';fx?.alignText?.();
   }
   let disposed=false;
   let config={requireQuest:false,questId:'energy-core'},unlocked=false,crowdStarted=false;

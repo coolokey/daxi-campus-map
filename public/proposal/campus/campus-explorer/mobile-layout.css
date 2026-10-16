@@ -46,7 +46,7 @@
  .field-guide .campus-speech,.field-guide .campus-person-tag{z-index:25}
 }
 /* Compact fireworks dock also covers tablets and short landscape screens. */
-.anniversary-quick-controls{display:flex;gap:7px;margin-top:8px}
+.anniversary-quick-controls{display:none}
 .anniversary-quick-controls button{flex:1}
 #anniversary-settings[hidden]{display:none!important}
 body.field-guide #anniversary-dialog.compact-controls:not([hidden]){

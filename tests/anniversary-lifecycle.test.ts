@@ -34,9 +34,10 @@ it('桌面轉手機會收合設定，旋轉手機保留選擇，收合後焦點�
  const s=setup();s.w.matchMedia=()=>({matches:false});
  const resize=(width:number,height:number)=>{Object.defineProperty(s.w,'innerWidth',{value:width,configurable:true});Object.defineProperty(s.w,'innerHeight',{value:height,configurable:true});s.w.dispatchEvent(new s.w.Event('resize'));};
  resize(1440,900);s.click('launch');const settings=s.w.document.getElementById('anniversary-settings');expect(settings.hidden).toBe(false);
+ expect(s.w.document.getElementById('anniversary-sound').parentElement.className).toBe('anniversary-controls');
  resize(390,844);expect(settings.hidden).toBe(true);s.click('settings-toggle');resize(844,390);expect(settings.hidden).toBe(false);
  s.w.document.getElementById('anniversary-view').focus();s.click('settings-toggle');expect(s.w.document.activeElement.id).toBe('anniversary-settings-toggle');
- resize(1440,900);expect(settings.hidden).toBe(false);s.click('close');s.dom.window.close();
+ resize(1440,900);expect(settings.hidden).toBe(false);expect(s.w.document.getElementById('anniversary-sound').parentElement.className).toBe('anniversary-controls');s.click('close');s.dom.window.close();
 });
 it('慢速載入音效時不先播放煙火，準備好後才從完整倒數開始',async()=>{
  const s=setup({slowLoad:true});s.click('launch');await s.flush();
