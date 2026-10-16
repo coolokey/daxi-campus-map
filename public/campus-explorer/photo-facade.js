@@ -103,10 +103,19 @@
  panel.name='admin-hip-roof';panel.position.set(b.x,h+.15,b.z);panel.castShadow=panel.receiveShadow=true;roof.add(panel);
  for(const z of [b.z-halfDepth,b.z+halfDepth])box(roof,halfWidth*2,.12,.12,b.x,h+.08,z,teal);
  for(const x of [b.x-halfWidth,b.x+halfWidth])box(roof,.12,.12,halfDepth*2,x,h+.08,b.z,teal);
- // Source-backed garden landmarks stay clear of the central route.
+ // S__66011287.jpg fixes the front-view order and outer-bed placement:
+ // peacock left, cube right, both beyond the main cypresses. Units are schematic.
  const garden=group(1,'photo-admin-garden');
+ const beds=[{name:'admin-left-flowerbed',min:b.x-b.width/2-1,max:b.x-3.5},
+  {name:'admin-right-flowerbed',min:b.x+5.5,max:b.x+b.width/2+1}];
+ for(const bed of beds){
+  const center=(bed.min+bed.max)/2,width=bed.max-bed.min;
+  box(garden,width,.16,3.9,center,.08,frontZ+3.55,0x5b703f).name=bed.name;
+  // Low edging encloses each planting strip without crossing either approach.
+  for(const z of [frontZ+1.6,frontZ+5.5])box(garden,width,.14,.12,center,.07,z,0x9c927e);
+  for(const x of [bed.min,bed.max])box(garden,.12,.14,3.9,x,.07,frontZ+3.55,0x9c927e);
+ }
  for(const x of [b.x-5,b.x+7.5]){
-  box(garden,2.4,.28,2.5,x,.14,frontZ+4.4,0x9c9e80);
   const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.13,.22,3.1,8),mat(0x705c46));trunk.position.set(x,1.55,frontZ+4.4);garden.add(trunk);
   for(let i=0;i<3;i++){const crown=new THREE.Mesh(new THREE.ConeGeometry(1.3-i*.2,3.2,8),mat(i%2?0x4b6c43:0x567c45));crown.position.set(x,3.2+i*.8,frontZ+4.4);garden.add(crown)}
  }
@@ -121,7 +130,7 @@
   else{tile.position.set(a,face===4?.803:-.803,c);tile.rotation.x=face===4?-Math.PI/2:Math.PI/2;}
   cube.add(tile);
  }
- cube.position.y=.1-new THREE.Box3().setFromObject(cube).min.y;cube.position.x=b.x+9;cube.position.z=frontZ+4.1;
- const peacock=new THREE.Mesh(new THREE.CircleGeometry(.85,12,0,Math.PI),mat(0x568374));peacock.position.set(b.x-9,.25,frontZ+4);garden.add(peacock);
+ cube.position.y=.18-new THREE.Box3().setFromObject(cube).min.y;cube.position.x=b.x+b.width*.46;cube.position.z=frontZ+4.1;
+ const peacock=new THREE.Mesh(new THREE.CircleGeometry(.85,12,0,Math.PI),mat(0x568374));peacock.name='photo-admin-peacock';peacock.position.set(b.x-b.width*.46,.18,frontZ+4.8);garden.add(peacock);
  // The source only demonstrates the shape, not botanical or equipment identities.
 })();
