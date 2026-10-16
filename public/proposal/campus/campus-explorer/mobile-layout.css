@@ -45,6 +45,31 @@
  .field-guide #mode-toast,.field-guide #mouse-look-hint,.field-guide #fe-summary{display:none}
  .field-guide .campus-speech,.field-guide .campus-person-tag{z-index:25}
 }
+/* Compact fireworks dock also covers tablets and short landscape screens. */
+.anniversary-quick-controls{display:flex;gap:7px;margin-top:8px}
+.anniversary-quick-controls button{flex:1}
+#anniversary-settings[hidden]{display:none!important}
+body.field-guide #anniversary-dialog.compact-controls:not([hidden]){
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;
+ top:auto!important;bottom:calc(12px + env(safe-area-inset-bottom,0px))!important;
+ left:auto!important;right:calc(12px + env(safe-area-inset-right,0px));transform:none!important;
+ width:min(320px,calc(100vw - 24px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));
+ max-height:calc(100dvh - 24px - env(safe-area-inset-bottom,0px));padding:8px;box-sizing:border-box;overflow:auto
+}
+body.field-guide #anniversary-dialog.compact-controls .anniversary-heading,
+body.field-guide #anniversary-dialog.compact-controls .anniversary-quick-controls{display:contents}
+body.field-guide #anniversary-dialog.compact-controls .anniversary-heading>span{display:none}
+body.field-guide #anniversary-dialog.compact-controls #anniversary-sound{order:0}
+body.field-guide #anniversary-dialog.compact-controls #anniversary-settings-toggle{order:1}
+body.field-guide #anniversary-dialog.compact-controls #anniversary-close{order:2}
+body.field-guide #anniversary-dialog.compact-controls button{min-height:44px;margin:0;white-space:normal;font-size:12px}
+body.field-guide #anniversary-dialog.compact-controls #anniversary-status{order:3;grid-column:1/-1;min-height:0;margin:0}
+body.field-guide #anniversary-dialog.compact-controls:not(.settings-open) #anniversary-status{
+ position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap
+}
+body.field-guide #anniversary-dialog.compact-controls #anniversary-settings{order:4;grid-column:1/-1;max-height:min(48dvh,320px);overflow:auto}
+body.field-guide #anniversary-dialog.compact-controls .anniversary-preset select{min-height:44px}
+body.field-guide #anniversary-dialog[hidden]{display:none!important}
 @media(max-height:500px) and (orientation:landscape){
  .field-guide{--mobile-reserve:calc(88px + env(safe-area-inset-bottom,0px))}
  .field-guide #guide-panel,.field-guide #guide-quick-tools,.field-guide #guide-route,.field-guide #fe-list,.field-guide #fe-card,.field-guide #anniversary-dialog,.field-guide #anniversary-dialog.is-finished,.field-guide .avatar-setting-modal.open{left:50%;right:auto;transform:translateX(-50%);width:min(340px,calc(100vw - 240px))}

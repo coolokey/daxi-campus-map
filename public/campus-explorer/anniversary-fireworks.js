@@ -6,12 +6,14 @@
   const launcher=document.createElement('button');launcher.id='anniversary-launch';launcher.type='button';launcher.innerHTML='<span aria-hidden="true">80</span><b>週年煙火秀</b>';launcher.setAttribute('aria-label','開始大溪國中 80 週年煙火秀');
   const panel=document.createElement('section');panel.id='anniversary-dialog';panel.hidden=true;panel.setAttribute('aria-label','八十週年煙火秀控制');
   panel.innerHTML=`<div class="anniversary-heading"><span>大溪國中 <b>80</b> 週年</span><button id="anniversary-close" type="button">停止表演 ×</button></div>
+    <div class="anniversary-quick-controls"><button id="anniversary-sound" type="button" aria-pressed="true" aria-label="關閉音效">音效：開啟</button><button id="anniversary-settings-toggle" type="button" aria-controls="anniversary-settings" aria-expanded="true">收合設定</button></div>
     <p id="anniversary-status" role="status" aria-live="polite"></p>
+    <div id="anniversary-settings">
     <div class="anniversary-track" aria-hidden="true"><i></i></div>
-    <div class="anniversary-controls"><button id="anniversary-replay" type="button">再次觀看</button><button id="anniversary-sound" type="button" aria-pressed="true" aria-label="關閉音效">音效：開啟</button><button id="anniversary-quality" type="button" aria-pressed="false">降低動畫</button><button id="anniversary-view" type="button">觀賞視角</button></div>
+    <div class="anniversary-controls"><button id="anniversary-replay" type="button">再次觀看</button><button id="anniversary-quality" type="button" aria-pressed="false">降低動畫</button><button id="anniversary-view" type="button">觀賞視角</button></div>
     <label class="anniversary-preset" for="anniversary-preset">畫質<select id="anniversary-preset"><option value="auto">自動</option><option value="high">高畫質</option><option value="standard">標準</option><option value="battery">省電</option></select></label>
     <label class="anniversary-volume" for="anniversary-volume">音量<input id="anniversary-volume" type="range" min="0" max="100" value="100"><output id="anniversary-volume-value">100%</output></label>
-    <p id="anniversary-audio-status">開始表演後，自動播放真實錄音。</p><p class="anniversary-help">可繼續走動、轉頭與操作校園；Esc 停止。</p>`;
+    <p id="anniversary-audio-status">開始表演後，自動播放真實錄音。</p><p class="anniversary-help">可繼續走動、轉頭與操作校園；Esc 停止。</p></div>`;
   const banner=document.createElement('div');banner.id='anniversary-banner';banner.setAttribute('aria-live','polite');banner.hidden=true;
   const cover=document.getElementById('guide-landing'),coverEntry=document.createElement('button');coverEntry.type='button';coverEntry.className='anniversary-cover-entry';coverEntry.textContent='80 週年煙火秀 ↗';
   cover?.querySelector('footer')?.append(coverEntry);document.body.append(launcher,panel,banner);
@@ -20,6 +22,15 @@
   let audio=null,audioEngine=null,soundWanted=true,soundEnabled=false,soundGeneration=0,waitingForSound=false,low=false,quality=null,slowSum=0,slowFrames=0,lastDowngrade=0;
   const listeners=[];function listen(target,type,handler){if(!target?.addEventListener)return;target.addEventListener(type,handler);listeners.push(()=>target.removeEventListener?.(type,handler));}
   const isReduced=()=>reduced.matches||low;
+  const compactControls=()=>innerWidth<=1024||innerHeight<=500||matchMedia('(pointer: coarse)').matches;
+  let wasCompact=compactControls();
+  function setSettingsOpen(open){
+    if(!open&&$('settings').contains(document.activeElement))$('settings-toggle').focus({preventScroll:true});
+    $('settings').hidden=!open;panel.classList.toggle('settings-open',open);
+    panel.classList.toggle('compact-controls',compactControls());
+    $('settings-toggle').setAttribute('aria-expanded',String(open));$('settings-toggle').textContent=open?'收合設定':'設定';
+    $('close').textContent=compactControls()?'停止 ×':'停止表演 ×';fx?.alignText?.();
+  }
   let disposed=false;
   let config={requireQuest:false,questId:'energy-core'},unlocked=false,crowdStarted=false;
   const environment={width:innerWidth,cores:navigator.hardwareConcurrency||4,memory:navigator.deviceMemory||4};
@@ -81,6 +92,7 @@
       }
     });
     panel.hidden=false;panel.classList.remove('is-finished');banner.hidden=false;document.body.classList.add('anniversary-playing');
+    wasCompact=compactControls();setSettingsOpen(!wasCompact);
     cinematicView();
     quiet();if(soundWanted)void resumeSound();soundUI();updatePhase(waitingForSound?'loading':'countdown');return true;
   }
@@ -94,7 +106,7 @@
     if(cameraSaved){api.controls.maxDistance=cameraSaved.maxDistance;api.controls.maxPolarAngle=cameraSaved.maxPolarAngle;}
     cameraSaved=null;
     panel.hidden=!finished;panel.classList.toggle('is-finished',finished);panel.dataset.phase=finished?'finished':'stopped';
-    if(finished){$('status').textContent='煙火秀已結束，謝謝你一起點亮大溪的八十週年。';$('replay').textContent='再次觀看';}
+    if(finished){setSettingsOpen(true);$('status').textContent='煙火秀已結束，謝謝你一起點亮大溪的八十週年。';$('replay').textContent='再次觀看';}
     else if(panel.contains(document.activeElement))launcher.focus({preventScroll:true});
     return true;
   }
@@ -128,6 +140,8 @@
     }
   }
   $('replay').onclick=start;$('close').onclick=()=>stop();launcher.onclick=start;coverEntry.onclick=start;
+  $('settings-toggle').onclick=()=>setSettingsOpen($('settings').hidden);
+  listen(window,'resize',()=>{const compact=compactControls();if(compact!==wasCompact){wasCompact=compact;setSettingsOpen(!compact||!running);}});
   $('sound').onclick=()=>{soundWanted=!soundWanted;soundUI();if(soundWanted&&running)void resumeSound();else quiet();};
   $('volume').oninput=()=>{$('volume-value').textContent=$('volume').value+'%';audioEngine?.setVolume(Number($('volume').value)/100);};
   $('quality').onclick=()=>{low=!low;$('quality').setAttribute('aria-pressed',String(low));$('quality').textContent=low?'恢復動畫':'降低動畫';quality=qualityValue();fx?.setQuality(quality);};

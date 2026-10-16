@@ -2,6 +2,18 @@ import {it,expect} from 'vitest';
 import {JSDOM} from 'jsdom';
 import {readFileSync} from 'node:fs';
 import * as THREE from 'three';
+it('手機直向與橫向開始時收合設定，重播仍預設有聲，結束後可再次觀看',async()=>{
+ for(const [width,height] of [[390,844],[844,390]]){
+  const s=setup();Object.defineProperty(s.w,'innerWidth',{value:width,configurable:true});Object.defineProperty(s.w,'innerHeight',{value:height,configurable:true});
+  s.click('launch');await s.flush();const settings=s.w.document.getElementById('anniversary-settings'),toggle=s.w.document.getElementById('anniversary-settings-toggle');
+  expect(settings?.hidden).toBe(true);expect(toggle?.getAttribute('aria-expanded')).toBe('false');
+  expect(s.w.campusAnniversary.stats().soundEnabled).toBe(true);
+  s.click('settings-toggle');expect(settings.hidden).toBe(false);expect(toggle.getAttribute('aria-expanded')).toBe('true');
+  s.click('replay');await s.flush();expect(settings.hidden).toBe(true);expect(s.w.document.getElementById('anniversary-volume').value).toBe('100');
+  s.w.campusAnniversary.stop(true);expect(settings.hidden).toBe(false);
+  s.click('replay');expect(settings.hidden).toBe(true);s.click('close');s.dom.window.close();
+ }
+});
 function setup(options:{slowLoad?:boolean,emptyLoad?:boolean}={}){
  const dom=new JSDOM('<body></body>',{url:'https://campus.test',runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window as any;
  const pending:Array<()=>void>=[],instances:any[]=[];let finishLoad:()=>void=()=>{},expire:()=>void=()=>{},engineVolume=1;
@@ -18,6 +30,14 @@ function setup(options:{slowLoad?:boolean,emptyLoad?:boolean}={}){
  const click=(id:string)=>w.document.getElementById('anniversary-'+id).click(),flush=async()=>{for(const resolve of pending.splice(0))resolve();for(let i=0;i<8;i++)await Promise.resolve();};
  return {dom,w,click,flush,instances,finishLoad:()=>finishLoad(),expire:()=>expire()};
 }
+it('桌面轉手機會收合設定，旋轉手機保留選擇，收合後焦點可繼續操作',()=>{
+ const s=setup();s.w.matchMedia=()=>({matches:false});
+ const resize=(width:number,height:number)=>{Object.defineProperty(s.w,'innerWidth',{value:width,configurable:true});Object.defineProperty(s.w,'innerHeight',{value:height,configurable:true});s.w.dispatchEvent(new s.w.Event('resize'));};
+ resize(1440,900);s.click('launch');const settings=s.w.document.getElementById('anniversary-settings');expect(settings.hidden).toBe(false);
+ resize(390,844);expect(settings.hidden).toBe(true);s.click('settings-toggle');resize(844,390);expect(settings.hidden).toBe(false);
+ s.w.document.getElementById('anniversary-view').focus();s.click('settings-toggle');expect(s.w.document.activeElement.id).toBe('anniversary-settings-toggle');
+ resize(1440,900);expect(settings.hidden).toBe(false);s.click('close');s.dom.window.close();
+});
 it('慢速載入音效時不先播放煙火，準備好後才從完整倒數開始',async()=>{
  const s=setup({slowLoad:true});s.click('launch');await s.flush();
  s.w.campusAnniversary.update(1000);s.w.campusAnniversary.update(9000);
