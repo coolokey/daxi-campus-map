@@ -155,6 +155,59 @@
   cube.add(tile);
  }
  cube.position.y=.18-new THREE.Box3().setFromObject(cube).min.y;cube.position.x=b.x+b.width*.46;cube.position.z=frontZ+4.1;
- const peacock=new THREE.Mesh(new THREE.CircleGeometry(.85,12,0,Math.PI),mat(0x568374));peacock.name='photo-admin-peacock';peacock.position.set(b.x-b.width*.46,.18,frontZ+4.8);garden.add(peacock);
+ // S__66011287_0: a low mosaic relief, scalloped fan and cobalt neck.
+ // Draw the tesserae and eyes once, rather than hundreds of individual meshes.
+ function createPeacock(){
+  const p=new THREE.Group();p.name='photo-admin-peacock';
+  const outline=new THREE.Shape();outline.moveTo(-1.25,.025);
+  for(let i=0;i<=200;i++){
+   const a=Math.PI-i*Math.PI/200,r=1+.018*Math.cos(a*22);
+   outline.lineTo(1.23*r*Math.cos(a),.025+1.28*r*Math.sin(a));
+  }
+  outline.lineTo(.28,.025);outline.quadraticCurveTo(0,.12,-.28,.025);outline.closePath();
+  const relief=new THREE.Mesh(new THREE.ExtrudeGeometry(outline,{depth:.085,bevelEnabled:true,bevelThickness:.009,bevelSize:.009,bevelSegments:1,steps:1,curveSegments:12}),mat(0x234d42));
+  relief.name='peacock-tail-relief';relief.position.z=-.06;relief.castShadow=relief.receiveShadow=true;p.add(relief);
+  const tileCanvas=document.createElement('canvas');tileCanvas.width=1024;tileCanvas.height=640;
+  const c=tileCanvas.getContext('2d');c.fillStyle='#244b43';c.fillRect(0,0,1024,640);
+  const tileColors=['#47786b','#315c56','#6b9180','#376f70','#73885d','#94a892'];
+  for(let row=0;row<100;row++)for(let col=0;col<150;col++){
+   const n=(row*71+col*37)%97;c.fillStyle=tileColors[n%tileColors.length];
+   c.fillRect(col*7+(row%2)*3,row*7,4+n%2,3+n%3);
+  }
+  // Four staggered rows of eye feathers, radiating from the bird's lower body.
+  const rows=[{r:.37,n:9},{r:.56,n:13},{r:.75,n:17},{r:.94,n:21}];
+  for(const [row,{r,n}] of rows.entries())for(let i=0;i<n;i++){
+   const a=.10+(Math.PI-.20)*(i+.25*(row%2))/(n-1+.25*(row%2));
+   const dx=Math.cos(a)*492,dy=-Math.sin(a)*600,x=512+dx*r,y=626+dy*r;
+   c.strokeStyle='#a3aa79';c.lineWidth=1.8;c.beginPath();c.moveTo(512+dx*.12,626+dy*.12);c.quadraticCurveTo(512+dx*r*.55+9,626+dy*r*.52,x,y);c.stroke();
+   c.save();c.translate(x,y);c.rotate(Math.atan2(dy,dx)+Math.PI/2);
+   const rx=12+row*2.2,ry=17+row*2.6;
+   for(const [scale,color] of [[1.18,'#172f2f'],[1,'#b1a15e'],[.84,'#426f53'],[.64,'#73a5a0'],[.44,'#123d65'],[.25,'#101f32']]){
+    c.fillStyle=color;c.beginPath();c.ellipse(0,0,rx*scale,ry*scale,0,0,Math.PI*2);c.fill();
+   }
+   c.fillStyle='#b1c6a1';c.beginPath();c.ellipse(-rx*.17,-ry*.17,rx*.11,ry*.10,0,0,Math.PI*2);c.fill();c.restore();
+  }
+  const mosaic=new THREE.CanvasTexture(tileCanvas);mosaic.encoding=THREE.sRGBEncoding;mosaic.anisotropy=4;
+  const faceGeometry=new THREE.ShapeGeometry(outline,12),pos=faceGeometry.attributes.position,uv=faceGeometry.attributes.uv;
+  for(let i=0;i<pos.count;i++)uv.setXY(i,(pos.getX(i)+1.28)/2.56,pos.getY(i)/1.36);
+  const faceMaterial=new THREE.MeshStandardMaterial({map:mosaic,color:0xffffff,roughness:.88,side:THREE.DoubleSide});
+  for(const z of [.035,-.073]){const face=new THREE.Mesh(faceGeometry,faceMaterial);face.name=z>0?'peacock-mosaic-face':'peacock-mosaic-back';face.position.z=z;face.receiveShadow=true;p.add(face)}
+  // Bronze edge is a visible border around the shallow tiled sculpture.
+  const edgePoints=outline.getPoints(240).map(v=>new THREE.Vector3(v.x,v.y,.039));
+  const rim=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(edgePoints,true),240,.012,5,true),mat(0x83764e));rim.name='peacock-tail-rim';p.add(rim);
+  function ellipsoid(name,x,y,z,sx,sy,sz,color){const m=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),mat(color));m.name=name;m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=m.receiveShadow=true;p.add(m);return m}
+  ellipsoid('peacock-body',0,.19,.10,.16,.17,.105,0x153d4e);
+  for(const side of [-1,1]){const wing=ellipsoid('peacock-wing',side*.12,.23,.13,.075,.145,.04,0x287779);wing.rotation.z=side*.28;box(p,.025,.12,.035,side*.055,.06,.11,0x3d4541)}
+  const neckPath=new THREE.CatmullRomCurve3([new THREE.Vector3(0,.22,.15),new THREE.Vector3(.025,.38,.17),new THREE.Vector3(.015,.53,.16),new THREE.Vector3(-.025,.66,.15)]);
+  const neck=new THREE.Mesh(new THREE.TubeGeometry(neckPath,24,.041,8,false),mat(0x174b81));neck.name='peacock-neck';neck.castShadow=true;p.add(neck);
+  ellipsoid('peacock-head',-.034,.69,.15,.064,.062,.052,0x236c99);
+  ellipsoid('peacock-cheek',-.063,.69,.196,.03,.025,.009,0xb7c0b3);
+  ellipsoid('peacock-eye',-.068,.704,.205,.012,.012,.008,0x101f23);
+  const beak=new THREE.Mesh(new THREE.ConeGeometry(.022,.07,8),mat(0x9f9674));beak.name='peacock-beak';beak.rotation.z=Math.PI/2;beak.position.set(-.12,.686,.15);p.add(beak);
+  const crown=new THREE.Group();crown.name='peacock-crown';p.add(crown);
+  for(let i=0;i<4;i++){const x=-.07+i*.022,y=.79+Math.sin(i/3*Math.PI)*.025;const stem=box(crown,.008,.075,.008,x,y-.035,.145,0x3e7d83);stem.rotation.z=(1.5-i)*.14;const tip=new THREE.Mesh(new THREE.SphereGeometry(.016,8,6),mat(0x297790));tip.position.set(x,y,.145);crown.add(tip)}
+  return p;
+ }
+ const peacock=createPeacock();peacock.position.set(b.x-b.width*.46,.18,frontZ+4.8);garden.add(peacock);
  // The source only demonstrates the shape, not botanical or equipment identities.
 })();

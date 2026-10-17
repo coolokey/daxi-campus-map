@@ -1,0 +1,17 @@
+{
+  "reference": "S__66011287_0.jpg",
+  "tests": {
+    "files": 2,
+    "passed": 15,
+    "failed": 0
+  },
+  "build": "passed",
+  "desktopDetail": "passed",
+  "desktopAngle": "passed",
+  "mobile": "390x844 passed",
+  "consoleErrors": [],
+  "proposalSourceMatches": true,
+  "positionAndOrientation": "unchanged; left flowerbed bounds tested",
+  "originalPhotoUploaded": false,
+  "limitations": "Photo-informed stylized mosaic relief; illustrative dimensions."
+}

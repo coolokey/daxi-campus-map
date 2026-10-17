@@ -43,6 +43,18 @@ it('makes the cube four tiles across on all six faces with an opaque dark core a
 it('assigns all facade and entrance objects to the existing building and floor visibility groups',()=>{
  const s=build();for(const g of s.scene.children){expect(g.userData.buildingId).toBe('admin-front');expect([1,2,3]).toContain(g.userData.floorNum);expect(s.floorMeshes).toContain(g)}s.dom.window.close();
 });
+it('models the photo peacock as a scalloped mosaic relief with a blue curved neck and crown',()=>{
+ const s=build(),p=s.scene.getObjectByName('photo-admin-peacock')!;
+ expect(p.type).toBe('Group');
+ for(const name of ['peacock-tail-relief','peacock-mosaic-face','peacock-body','peacock-neck','peacock-head','peacock-crown'])expect(p.getObjectByName(name),name).toBeTruthy();
+ const face=p.getObjectByName('peacock-mosaic-face') as THREE.Mesh;
+ expect((face.material as THREE.MeshStandardMaterial).map).toBeTruthy();
+ const bounds=new THREE.Box3().setFromObject(p),size=bounds.getSize(new THREE.Vector3());
+ expect(Math.max(size.x,size.z)).toBeGreaterThan(2.3);expect(size.y).toBeGreaterThan(1.2);
+ expect(Math.min(size.x,size.z)).toBeLessThan(.5);
+ const neck=p.getObjectByName('peacock-neck') as THREE.Mesh;
+ expect(neck.geometry.type).toBe('TubeGeometry');s.dom.window.close();
+});
 it('places the entrance landmarks in the outer flowerbeds and leaves the central approach clear',()=>{
  const s=build(),l=s.w.campusWalkWorld.layouts.find((l:any)=>l.id==='admin-front'),b=l.b;
  const garden=s.scene.getObjectByName('photo-admin-garden')!;
