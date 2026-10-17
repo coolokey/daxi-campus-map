@@ -1,0 +1,111 @@
+{
+  "rooms": 109,
+  "physicalRooms": 92,
+  "nodes": 15578,
+  "unreachable": [],
+  "blockedEdges": [],
+  "badStairs": [],
+  "doorFailures": [],
+  "motorRoutes": [
+    {
+      "id": "academic",
+      "error": null,
+      "end": {
+        "x": -19.6,
+        "y": 3.6,
+        "z": 36.21875
+      }
+    },
+    {
+      "id": "901",
+      "error": null,
+      "end": {
+        "x": 6.1,
+        "y": 7.2,
+        "z": 11.724795640326976
+      }
+    },
+    {
+      "id": "804",
+      "error": null,
+      "end": {
+        "x": 29.4,
+        "y": 3.6,
+        "z": 40.37614678899082
+      }
+    },
+    {
+      "id": "704",
+      "error": null,
+      "end": {
+        "x": 100.4,
+        "y": 3.6,
+        "z": -61.5
+      }
+    },
+    {
+      "id": "computer-lab-1",
+      "error": null,
+      "end": {
+        "x": 85.4,
+        "y": 0,
+        "z": 32.5
+      }
+    },
+    {
+      "id": "art-4f",
+      "error": null,
+      "end": {
+        "x": 88,
+        "y": 10.8,
+        "z": 45.8
+      }
+    },
+    {
+      "id": "grandstand",
+      "error": null,
+      "end": {
+        "x": -62,
+        "y": 1.4,
+        "z": 11
+      }
+    },
+    {
+      "id": "gym",
+      "error": null,
+      "end": {
+        "x": -85,
+        "y": 0,
+        "z": 58
+      }
+    },
+    {
+      "id": "weight-room",
+      "error": null,
+      "end": {
+        "x": -69.4,
+        "y": 0,
+        "z": 58
+      }
+    },
+    {
+      "id": "gym-balcony",
+      "error": null,
+      "end": {
+        "x": -71.5,
+        "y": 3.6,
+        "z": 58
+      }
+    },
+    {
+      "id": "fire-room",
+      "error": null,
+      "end": {
+        "x": -77.25,
+        "y": 0,
+        "z": 74.25
+      }
+    }
+  ],
+  "errors": []
+}

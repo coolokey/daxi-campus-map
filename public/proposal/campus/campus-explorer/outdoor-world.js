@@ -26,6 +26,22 @@ const CampusOutdoorWorld=(()=>{
   for(const x of [-21,1]){registerWallCollider(x-1.2,x+1.2,84.8,87.2,-.2,6.2);WALL_COLLIDERS.at(-1).perimeter=true;}
   return g;
  }
+ function renderVolleyballCourts(parent,courts,id,color){
+  const g=new THREE.Group();g.name='volleyball-'+id+'-courts';parent.add(g);
+  if(id==='outer'){const p=P.volleyball.outerPad;floor(g,p.x1-p.x0,p.z1-p.z0,(p.x0+p.x1)/2,(p.z0+p.z1)/2,0xa45f59,.057)}
+  for(const [i,r] of courts.entries()){
+   const x=(r.x0+r.x1)/2,z=(r.z0+r.z1)/2,w=r.x1-r.x0,d=r.z1-r.z0,longX=w>d;
+   const surface=floor(g,w,d,x,z,color,.068);surface.name='volleyball-'+id+'-'+(i+1);surface.userData.volleyballCourt={...r};
+   loop(g,[[r.x0,r.z0],[r.x1,r.z0],[r.x1,r.z1],[r.x0,r.z1]],.08,P.palette.line);
+   for(const offset of [-3,0,3])floor(g,longX?.08:w,longX?d:.08,x+(longX?offset:0),z+(longX?0:offset),P.palette.line,.082);
+   // Only the existing outdoor net is retained; the aerial red courts show surface markings.
+   if(id==='outer'){
+    for(const px of [r.x0-1,r.x1+1]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,2.6,8),mat(0x465b50));post.position.set(px,1.3,z);post.userData.campusSolid=true;g.add(post)}
+    const net=new THREE.Mesh(new THREE.PlaneGeometry(w+2,1),new THREE.MeshBasicMaterial({color:0xf2f0e4,wireframe:true,side:THREE.DoubleSide,transparent:true,opacity:.7}));net.position.set(x,2.1,z);g.add(net);
+   }
+  }
+  return g;
+ }
  function render(scene){
   const g=new THREE.Group();g.name='photo-outdoor';scene.add(g);const t=P.track,c=P.palette;
   renderPerimeter(g);
@@ -41,9 +57,14 @@ const CampusOutdoorWorld=(()=>{
    const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1.2),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(t.x-20,.075,t.z+18+(lane-.5)*1.5);g.add(m);
    floor(g,.1,1.5,t.x-22+(lane-1)*.35,t.z+18+(lane-.5)*1.5,c.line,.07);
   }
-  for(const r of P.courts){floor(g,r.x1-r.x0,r.z1-r.z0,(r.x0+r.x1)/2,(r.z0+r.z1)/2,c.court,.068);loop(g,[[r.x0,r.z0],[r.x1,r.z0],[r.x1,r.z1],[r.x0,r.z1]],.075,c.line);floor(g,r.x1-r.x0,.08,(r.x0+r.x1)/2,(r.z0+r.z1)/2,c.line,.08)}
+  // Hard court apron follows the inner bend, leaving the running lanes clear.
+  const apronShape=new THREE.Shape();apronShape.moveTo(14,-18);apronShape.lineTo(25,-18);apronShape.absarc(25,0,18,-Math.PI/2,Math.PI/2,false);apronShape.lineTo(14,18);apronShape.closePath();
+  const apron=new THREE.Mesh(new THREE.ShapeGeometry(apronShape),mat(0x7b8778));apron.name='volleyball-inner-apron';apron.rotation.x=-Math.PI/2;apron.position.set(t.x,.056,t.z);apron.receiveShadow=true;g.add(apron);
+  floor(g,1.2,32,-70,t.z,0xc58e87,.06);
+  renderVolleyballCourts(g,P.courts,'inner',c.court);
+
   // Goals retain the guide's existing sports-field landmarks.
-  for(const x of [t.x-22,t.x+22]){const goal=new THREE.Group();goal.position.set(x,0,t.z);goal.rotation.y=Math.PI/2;g.add(goal);box(goal,.1,2.4,.1,-2.5,1.2,0,c.line);box(goal,.1,2.4,.1,2.5,1.2,0,c.line);box(goal,5.1,.1,.1,0,2.4,0,c.line)}
+  for(const x of [t.x-22,-72]){const goal=new THREE.Group();goal.position.set(x,0,t.z);goal.rotation.y=Math.PI/2;g.add(goal);box(goal,.1,2.4,.1,-2.5,1.2,0,c.line);box(goal,.1,2.4,.1,2.5,1.2,0,c.line);box(goal,5.1,.1,.1,0,2.4,0,c.line)}
   const s=P.stage,h=s.height,st=new THREE.Group();st.name='stage-photo-model';g.add(st);
   box(st,16,h,7.7,-62,h/2,11.95,c.stage);
   // Ground movement is a continuous stair envelope; visible treads remain stepped.
@@ -88,5 +109,5 @@ const CampusOutdoorWorld=(()=>{
   ROOMS_DB.grandstand={id:'grandstand',code:'OUT-STAND',name:'操場司令台（升旗台）',buildingId:'track',buildingName:'操場及綜合球場',floor:1,cat:'sports',node:'stand-podium'};
   return g;
  }
- return{render};
+ return{render,renderVolleyballCourts};
 })();

@@ -1,0 +1,22 @@
+{
+  "tests": {
+    "files": 4,
+    "passed": 56,
+    "failed": 0
+  },
+  "build": "passed",
+  "navigation": {
+    "destinations": 109,
+    "unreachable": 0,
+    "blockedEdges": 0
+  },
+  "desktop": "passed",
+  "mobile": "390x844 passed",
+  "consoleErrors": [],
+  "proposalSourceMatches": true,
+  "references": [
+    "05_斜向俯瞰日字型校舍群.jpg",
+    "12_西北向鳥瞰_校園層次與周邊環境.jpg"
+  ],
+  "limitations": "Positions fitted from aerial relationships; dimensions illustrative."
+}

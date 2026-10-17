@@ -30,8 +30,11 @@
   const outdoor=CampusOutdoorPlan,hex=n=>'#'+n.toString(16).padStart(6,'0');
   stadium(outdoor.track.outerRadius);c.fillStyle=hex(outdoor.palette.track);c.fill();stadium(outdoor.track.innerRadius);c.fillStyle=hex(outdoor.palette.lawn);c.fill();
   for(let r=20;r<27;r+=1.7){stadium(r);c.strokeStyle='#d6d8d0';c.lineWidth=.16;c.stroke()}
+  c.save();stadium(outdoor.track.innerRadius);c.clip();rect(-70,-43,29,36,'#7b8778');c.restore();rect(-70.6,-41,1.2,32,'#c58e87');
   for(const r of outdoor.courts){rect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0,hex(outdoor.palette.court));c.strokeStyle=hex(outdoor.palette.line);c.lineWidth=.12;c.strokeRect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0)}
-  rect(-29,-52,14,28,'#718c6c');rect(-5,-61,34,46,'#897660');
+  const vbPad=outdoor.volleyball.outerPad;rect(vbPad.x0,vbPad.z0,vbPad.x1-vbPad.x0,vbPad.z1-vbPad.z0,'#a45f59');
+  for(const r of outdoor.outerCourts){rect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0,'#7b9555');c.strokeStyle='#f2f0e4';c.lineWidth=.12;c.strokeRect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0)}
+  rect(-5,-61,34,46,'#897660');
   for(const z of [-52,-38,-24]){rect(-2,z-6.3,28,12.6,'#739078');c.strokeStyle='#e0e4d5';c.lineWidth=.15;c.strokeRect(-2,z-6.3,28,12.6);c.beginPath();c.arc(-8.5,z,2.5,0,Math.PI*2);c.stroke();c.beginPath();c.arc(24.5,z,2.5,0,Math.PI*2);c.stroke()}
   const stage=outdoor.stage;rect(stage.x0,stage.z0,stage.x1-stage.x0,stage.z1-stage.z0,hex(outdoor.palette.stage));rect(stage.stairs.x0,stage.stairs.z0,stage.stairs.x1-stage.stairs.x0,stage.stairs.z1-stage.stairs.z0,hex(outdoor.palette.step));
   for(let z=stage.stairs.z0;z<stage.stairs.z1;z+=.5){c.strokeStyle='#eee8cc';c.lineWidth=.1;c.beginPath();c.moveTo(stage.stairs.x0,z);c.lineTo(stage.stairs.x1,z);c.stroke()}

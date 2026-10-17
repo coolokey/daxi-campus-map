@@ -1114,43 +1114,9 @@
     function createTrackAndPlatform() { CampusOutdoorWorld.render(scene); }
     createTrackAndPlatform();
 
-    // 4.6 戶外排球場 (位於操場與籃球場之間 x=-22, z=-38，綠色地坪)
+    // 4.6 空拍照片中的籃球場旁雙排球場。
     function createVolleyballCourt() {
-      const vbGroup = new THREE.Group();
-      vbGroup.position.set(-22, 0.04, -38);
-
-      const vbFloor = new THREE.Mesh(
-        new THREE.PlaneGeometry(14, 28),
-        new THREE.MeshStandardMaterial({ color: 0x7b9555 })
-      );
-      vbFloor.rotation.x = -Math.PI / 2;
-      vbFloor.receiveShadow = true;
-      vbGroup.add(vbFloor);
-
-      const vbBorder = new THREE.Mesh(
-        new THREE.PlaneGeometry(12, 26),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true })
-      );
-      vbBorder.rotation.x = -Math.PI / 2;
-      vbBorder.position.y = 0.01;
-      vbGroup.add(vbBorder);
-
-      // 排球柱與球網
-      const post1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3.2, 8), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
-      post1.position.set(-7, 1.6, 0);
-      post1.userData.campusSolid=true;
-      vbGroup.add(post1);
-      const post2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3.2, 8), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
-      post2.position.set(7, 1.6, 0);
-      post2.userData.campusSolid=true;
-      vbGroup.add(post2);
-
-      const net = new THREE.Mesh(new THREE.PlaneGeometry(14, 1.2), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.85 }));
-      net.position.set(0, 2.4, 0);
-      vbGroup.add(net);
-
-      scene.add(vbGroup);
-
+      CampusOutdoorWorld.renderVolleyballCourts(scene,CampusOutdoorPlan.outerCourts,'outer',0x7b9555);
       ROOMS_DB["volleyball-out"] = {
         id: "volleyball-out",
         code: "OUT-VB",
@@ -2025,7 +1991,7 @@
       { name: "操場及綜合球場", x: -84, y: 1.8, z: -25 },
       { name: "司令台", x: -62, y: 3.5, z: 12 },
       { name: "蔣公銅像", x: -36, y: 2.5, z: 32 },
-      { name: "戶外排球場", x: -22, y: 1.8, z: -38 },
+      { name: "戶外排球場", ...CampusOutdoorPlan.volleyball.outerCenter, y: 1.8 },
       { name: "籃球場群", x: 12, y: 1.8, z: -38 },
       { name: "蘭亭訓平池", x: -18, y: 2.2, z: -66 },
       { name: "校大門", x: -10, y: 3.5, z: 86 },
@@ -2088,8 +2054,8 @@
   "stand-front": { id: "stand-front", x: -62, y: 0, z: 18, neighbors: ["statue-node", "stand-podium", "track-center", "vb-outer"] },
   "stand-podium": { id: "stand-podium", x: -62, y: 1.8, z: 12, neighbors: ["stand-front"] },
   "track-center": { id: "track-center", x: -84, y: 0, z: -25, neighbors: ["stand-front", "vb-inner"] },
-  "vb-inner": { id: "vb-inner", x: -65, y: 0, z: -25, neighbors: ["track-center", "vb-outer"] },
-  "vb-outer": { id: "vb-outer", x: -22, y: 0, z: -38, neighbors: ["stand-front", "vb-inner", "bb-gate", "lan-pond-gate"] },
+  "vb-inner": { id: "vb-inner", ...CampusOutdoorPlan.volleyball.innerCenter, y: 0, neighbors: ["track-center", "vb-outer"] },
+  "vb-outer": { id: "vb-outer", ...CampusOutdoorPlan.volleyball.outerCenter, y: 0, neighbors: ["stand-front", "vb-inner", "bb-gate", "lan-pond-gate"] },
   "bb-gate": { id: "bb-gate", x: 12, y: 0, z: -38, neighbors: ["vb-outer", "lan-pond-gate", "driveway-n1", "health-porch"] },
   "lan-pond-gate": { id: "lan-pond-gate", x: -18, y: 0, z: -66, neighbors: ["vb-outer", "bb-gate"] },
 
@@ -3173,16 +3139,12 @@
       miniCtx.ellipse(trackCX, trackCZ, trackW * 0.5, trackH * 0.5, 0, 0, Math.PI * 2);
       miniCtx.fill();
 
-      // 操場內東半側綜合球場 / 排球場 (紅色)
-      const inVbX = toMiniX(-84 + 10);
-      const inVbZ = toMiniZ(-25 - 12);
-      const inVbW = 16 * (328 / 250);
-      const inVbH = 24 * (328 / 180);
-      miniCtx.fillStyle = "#b91c1c";
-      miniCtx.fillRect(inVbX, inVbZ, inVbW, inVbH);
-      miniCtx.strokeStyle = "#ffffff";
-      miniCtx.lineWidth = 1;
-      miniCtx.strokeRect(inVbX, inVbZ, inVbW, inVbH);
+      const drawVolleyballRect = (r,color) => {
+        const x=toMiniX(r.x0),z=toMiniZ(r.z0),w=toMiniX(r.x1)-x,h=toMiniZ(r.z1)-z;
+        miniCtx.fillStyle=color;miniCtx.fillRect(x,z,w,h);miniCtx.strokeStyle="#ffffff";miniCtx.lineWidth=1;miniCtx.strokeRect(x,z,w,h);
+      };
+      CampusOutdoorPlan.courts.forEach(r=>drawVolleyballRect(r,"#b91c1c"));
+      const inVbX=toMiniX(CampusOutdoorPlan.volleyball.innerCenter.x),inVbZ=toMiniZ(CampusOutdoorPlan.volleyball.innerCenter.z),inVbW=0,inVbH=0;
 
       // 操場司令台 (位於南側直道下方)
       const standX = toMiniX(-62 - 8);
@@ -3195,16 +3157,9 @@
       miniCtx.lineWidth = 1.2;
       miniCtx.strokeRect(standX, standZ, standW, standH);
 
-      // 5. 戶外排球場 (綠色, 位於操場與籃球場之間 x=-22, z=-38)
-      const vbX = toMiniX(-22 - 7);
-      const vbZ = toMiniZ(-38 - 14);
-      const vbW = 14 * (328 / 250);
-      const vbH = 28 * (328 / 180);
-      miniCtx.fillStyle = "#16a34a";
-      miniCtx.fillRect(vbX, vbZ, vbW, vbH);
-      miniCtx.strokeStyle = "#ffffff";
-      miniCtx.lineWidth = 1.2;
-      miniCtx.strokeRect(vbX, vbZ, vbW, vbH);
+      // 5. 籃球場旁兩面綠色排球場，與 3D 共用座標。
+      CampusOutdoorPlan.outerCourts.forEach(r=>drawVolleyballRect(r,"#7b9555"));
+      const vbX=toMiniX(CampusOutdoorPlan.volleyball.outerCenter.x),vbZ=toMiniZ(CampusOutdoorPlan.volleyball.outerCenter.z),vbW=0,vbH=0;
 
       // 6. 戶外籃球場群 (黃色, 3座全場, x=12, z=-38)
       const bbX = toMiniX(12 - 17);

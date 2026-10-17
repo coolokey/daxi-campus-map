@@ -242,3 +242,10 @@ it('walks across the continuous administrative body on both upper floors',()=>{
   for(const id of ids.slice(1)){const q=campusWalkWorld.graph[id],origin={...p},n=Math.max(1,Math.ceil(Math.hypot(q.x-p.x,q.z-p.z)/.1));for(let i=1;i<=n;i++){const target={x:origin.x+(q.x-origin.x)*i/n,z:origin.z+(q.z-origin.z)*i/n};if(moveAvatarWithCollision(p,target.x-p.x,target.z-p.z)||Math.abs(p.y-q.y)>.15){errors.push(from+' '+id);break}}if(errors.length)break;}
  }return errors})()`);expect(failures).toEqual([]);
 });
+
+it('renders both aerial-matched pairs at the shared coordinates and routes between the green courts',()=>{
+ const r=run(`(()=>{scene.updateMatrixWorld(true);const groups=['inner','outer'].map(id=>{const g=scene.getObjectByName('volleyball-'+id+'-courts');return g.children.filter(m=>m.userData.volleyballCourt).map(m=>({...m.userData.volleyballCourt,x:m.position.x,z:m.position.z}))});const node=NAV_NODES['vb-outer'];return {groups,node:{x:node.x,z:node.z},blocked:checkWallCollision(node.x,0,node.z)}})()`);
+ expect(r.groups.map((g:any[])=>g.length)).toEqual([2,2]);
+ expect(r.groups[0].map((m:any)=>m.x)).toEqual([-58,-58]);expect(r.groups[1].map((m:any)=>m.z)).toEqual([-48,-26]);
+ expect(r.node).toEqual({x:-19.5,z:-37});expect(r.blocked).toBe(false);
+});
