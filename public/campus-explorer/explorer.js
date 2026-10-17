@@ -907,8 +907,8 @@
         stoneCtx.fillRect((i * 47) % 128, (i * 31 + Math.floor(i / 128) * 17) % 128, 1, 1);
       }
       const stone = new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(stoneCanvas), roughness: 0.98 });
-      const bronze = new THREE.MeshStandardMaterial({ color: 0x303337, metalness: 0.55, roughness: 0.64 });
-      const shadowBronze = new THREE.MeshStandardMaterial({ color: 0x222529, metalness: 0.45, roughness: 0.74 });
+      const bronze = new THREE.MeshStandardMaterial({ color: 0x303337, metalness: 0.24, roughness: 0.52 });
+      const shadowBronze = new THREE.MeshStandardMaterial({ color: 0x24272a, metalness: 0.2, roughness: 0.62 });
       const addPart = (name, geometry, material, x, y, z) => {
         const mesh = new THREE.Mesh(geometry, material);
         mesh.name = name;
@@ -932,30 +932,90 @@
       box("stone-cap-upper", 2.5, 0.14, 1.85, stone, 0, 3.01, 0);
       box("bust-foot", 1.9, 0.13, 1.05, shadowBronze, 0, 3.145, 0);
 
-      // 深色半身銅像：肩／胸、頸、頭、耳鼻與立領，非圓柱替身。
-      oval("bust-shoulders", 1.02, 0.52, 0.44, bronze, 0, 3.91, 0);
-      const torso = addPart("bust-torso", new THREE.CylinderGeometry(0.84, 0.85, 1.12, 24), bronze, 0, 3.73, 0);
-      torso.scale.z = 0.48;
-      oval("bust-neck", 0.24, 0.32, 0.23, bronze, 0, 4.47, 0);
-      oval("bust-head", 0.37, 0.52, 0.32, bronze, 0, 5.02, 0.015);
-      oval("bust-hair", 0.37, 0.24, 0.315, shadowBronze, 0, 5.32, -0.018);
-      oval("bust-ear-left", 0.075, 0.17, 0.09, bronze, -0.365, 4.99, 0.02);
-      oval("bust-ear-right", 0.075, 0.17, 0.09, bronze, 0.365, 4.99, 0.02);
-      oval("bust-nose", 0.075, 0.13, 0.13, bronze, 0, 5.01, 0.308);
-      for (const side of [-1, 1]) {
-        oval(`bust-brow-${side}`, 0.105, 0.028, 0.034, shadowBronze, side * 0.16, 5.14, 0.295);
-        oval(`bust-eye-${side}`, 0.065, 0.025, 0.022, shadowBronze, side * 0.16, 5.08, 0.307);
-        oval(`bust-moustache-${side}`, 0.09, 0.035, 0.03, shadowBronze, side * 0.075, 4.88, 0.322);
+      // Reference: NMTH 2006.010.0010, front/profile/three-quarter views.
+      // Continuous surfaces retain the bald forehead and tapered jaw; small reliefs
+      // describe eyelids and smile folds without a separate hair cap or white eyes.
+      function sampleProfile(profile,y){
+        let i=0;while(i<profile.length-2&&y>profile[i+1][0])i++;
+        const t=Math.max(0,Math.min(1,(y-profile[i][0])/(profile[i+1][0]-profile[i][0])));
+        return [1,2,3].map(k=>{
+          const a=profile[Math.max(0,i-1)][k],b=profile[i][k],c=profile[i+1][k],d=profile[Math.min(profile.length-1,i+2)][k];
+          return Math.max(.001,.5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t));
+        });
       }
-      oval("bust-mouth", 0.12, 0.018, 0.026, shadowBronze, 0, 4.83, 0.302);
-      for (const [side, x] of [["left", -0.17], ["right", 0.17]]) {
-        const collar = box(`bust-collar-${side}`, 0.28, 0.22, 0.09, bronze, x, 4.45, 0.265);
-        collar.rotation.z = x < 0 ? -0.26 : 0.26;
-        box(`bust-pocket-${side}`, 0.46, 0.37, 0.045, bronze, x * 2.65, 3.91, 0.395);
-        box(`bust-pocket-flap-${side}`, 0.48, 0.085, 0.06, shadowBronze, x * 2.65, 4.09, 0.417);
+      function sculptSurface(profile,offsetY,deform){
+        const positions=[],uv=[],indices=[],rings=64,sides=72,minY=profile[0][0],maxY=profile.at(-1)[0];
+        for(let j=0;j<=rings;j++){
+          const y=minY+(maxY-minY)*j/rings,[w,front,back]=sampleProfile(profile,y);
+          for(let i=0;i<=sides;i++){
+            const a=i/sides*Math.PI*2,x=w*Math.sin(a),c=Math.cos(a);
+            let z=(c>=0?front:back)*c;if(c>0&&deform)z+=deform(x,y)*Math.pow(c,4);
+            positions.push(x,y+offsetY,z);uv.push(i/sides,j/rings);
+            if(j<rings&&i<sides){const k=j*(sides+1)+i;indices.push(k,k+1,k+sides+1,k+sides+1,k+1,k+sides+2)}
+          }
+        }
+        const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();
+        // UV seam duplicates share positions; weld their normals across the nose.
+        const normals=g.attributes.normal;
+        for(let j=0;j<=rings;j++){
+          const first=j*(sides+1),last=first+sides,n=new THREE.Vector3().fromBufferAttribute(normals,first).add(new THREE.Vector3().fromBufferAttribute(normals,last)).normalize();
+          normals.setXYZ(first,n.x,n.y,n.z);normals.setXYZ(last,n.x,n.y,n.z);
+        }
+        return g;
       }
-      box("bust-button-seam", 0.035, 1.1, 0.025, shadowBronze, 0, 3.8, 0.42);
-      for (let i = 0; i < 4; i++) oval(`bust-button-${i}`, 0.037, 0.037, 0.025, bronze, 0, 4.23 - i * 0.25, 0.448);
+      const headProfile=[[-.52,.015,.12,.13],[-.47,.18,.21,.18],[-.39,.265,.245,.225],[-.27,.315,.27,.26],[-.12,.34,.295,.295],[.04,.35,.304,.32],[.2,.365,.302,.32],[.34,.35,.277,.30],[.45,.285,.22,.245],[.50,.251,.199,.215],[.54,.173,.137,.148],[.56,.102,.081,.088],[.567,.056,.044,.048],[.57,.001,.001,.001]];
+      const gauss=(x,y,cx,cy,sx,sy)=>Math.exp(-(((x-cx)/sx)**2+((y-cy)/sy)**2));
+      const sculptFace=(x,y)=>{
+        let z=.09*gauss(x,y,0,-.025,.046,.205)+.05*gauss(x,y,0,-.135,.057,.058);
+        z+=.024*gauss(x,y,0,-.28,.14,.09)+.02*gauss(x,y,0,-.43,.17,.065);
+        for(const side of [-1,1]){
+          z-=.043*gauss(x,y,side*.145,.065,.08,.052);
+          z+=.019*gauss(x,y,side*.16,.145,.11,.035);
+          z+=.028*gauss(x,y,side*.215,-.09,.065,.10);
+          z+=.032*gauss(x,y,side*.061,-.16,.027,.035);
+        }
+        return z;
+      };
+      const faceZ=(x,y)=>{const [w,front]=sampleProfile(headProfile,y),c=Math.sqrt(Math.max(0,1-(x/w)**2));return front*c+sculptFace(x,y)*c**4+.015};
+      const torsoProfile=[[3.22,.78,.37,.32],[3.32,.86,.41,.35],[3.66,.96,.44,.38],[3.94,1.02,.405,.36],[4.12,.94,.35,.32],[4.28,.68,.29,.28],[4.43,.32,.23,.22],[4.48,.23,.2,.2]];
+      addPart('bust-shoulders',sculptSurface(torsoProfile,0),bronze,0,0,0);
+      oval('bust-neck',.215,.22,.20,bronze,0,4.49,0);
+      addPart('bust-head',sculptSurface(headProfile,0,sculptFace),bronze,0,5.02,.015);
+      // Small tip joins the nose bridge already sculpted into the face.
+      oval('bust-nose',.041,.027,.03,bronze,0,4.88,faceZ(0,-.14)-.026);
+      for(const side of [-1,1]){
+        oval(side<0?'bust-ear-left':'bust-ear-right',.064,.135,.066,bronze,side*.332,5.0,-.015);
+        oval('bust-ear-concha-'+side,.025,.076,.024,shadowBronze,side*.369,5.0,.025);
+      }
+      function curvePart(name,points,radius,material=bronze){
+        return addPart(name,new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points.map(v=>new THREE.Vector3(...v))),24,radius,6,false),material,0,0,0);
+      }
+      function facialCurve(name,points,radius,material=bronze){return curvePart(name,points.map(([x,y,lift=.006])=>[x,5.02+y,faceZ(x,y)+lift]),radius,material)}
+      for(const side of [-1,1]){
+        const x=side*.145;
+        oval('bust-eye-'+side,.056,.012,.014,shadowBronze,x,5.079,faceZ(x,.059)-.004);
+        facialCurve('bust-upper-lid-'+side,[[x-.061,.057],[x-.025,.067],[x+.025,.067],[x+.061,.057]],.0045);
+        facialCurve('bust-lower-lid-'+side,[[x-.056,.052],[x,.046],[x+.056,.052]],.004);
+        facialCurve('bust-brow-'+side,[[x-.067,.132],[x,.142],[x+.068,.126]],.006);
+        facialCurve('bust-under-eye-'+side,[[x-.065,.022],[x,.006],[x+.065,.014]],.0025,shadowBronze);
+        facialCurve('bust-smile-fold-'+side,[[side*.077,-.17],[side*.113,-.215],[side*.145,-.29],[side*.13,-.335]],.0025,shadowBronze);
+        facialCurve('bust-moustache-'+side,[[side*.009,-.228],[side*.058,-.23],[side*.12,-.242]],.008,shadowBronze);
+        facialCurve('bust-mouth-corner-'+side,[[side*.117,-.289],[side*.135,-.277]],.003,shadowBronze);
+      }
+      facialCurve('bust-mouth',[[-.123,-.289],[-.065,-.30],[0,-.303],[.065,-.30],[.123,-.289]],.004,shadowBronze);
+      facialCurve('bust-lower-lip',[[-.085,-.317],[0,-.325],[.085,-.317]],.0045);
+      facialCurve('bust-chin',[[-.115,-.435],[0,-.465],[.115,-.435]],.0025);
+      const torsoZ=(x,y)=>{const [w,front]=sampleProfile(torsoProfile,y);return front*Math.sqrt(Math.max(0,1-(x/w)**2))};
+      for(const [name,side] of [['left',-1],['right',1]]){
+        const shape=new THREE.Shape();shape.moveTo(side*.025,4.31);shape.lineTo(side*.045,4.52);shape.quadraticCurveTo(side*.17,4.53,side*.285,4.43);shape.lineTo(side*.23,4.27);shape.quadraticCurveTo(side*.13,4.26,side*.025,4.31);
+        addPart('bust-collar-'+name,new THREE.ExtrudeGeometry(shape,{depth:.04,bevelEnabled:true,bevelThickness:.008,bevelSize:.008,bevelSegments:1}),bronze,0,0,.22);
+        const pocket=new THREE.PlaneGeometry(.43,.28,8,4),pv=pocket.attributes.position;
+        for(let i=0;i<pv.count;i++){const x=pv.getX(i)+side*.43,y=pv.getY(i)+3.85;pv.setXYZ(i,x,y,torsoZ(x,y)+.006)}pocket.computeVertexNormals();
+        addPart('bust-pocket-'+name,pocket,bronze,0,0,0);
+        curvePart('bust-pocket-flap-'+name,[[side*.65,4.01,torsoZ(side*.65,4.01)+.01],[side*.44,3.985,torsoZ(side*.44,3.985)+.01],[side*.21,4.01,torsoZ(side*.21,4.01)+.01]],.009);
+      }
+      curvePart('bust-button-seam',[[0,3.25,.38],[0,3.7,.443],[0,4.13,.349],[0,4.31,.253]],.009,shadowBronze);
+      for(let i=0;i<4;i++){const y=4.23-i*.27,[,front]=sampleProfile(torsoProfile,y);oval('bust-button-'+i,.026,.026,.014,bronze,0,y,front+.017)}
 
       const plaqueCanvas = document.createElement("canvas");
       plaqueCanvas.width = 256;

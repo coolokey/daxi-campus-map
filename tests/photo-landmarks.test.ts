@@ -43,4 +43,17 @@ describe('photo confirmed gate and statue landmarks', () => {
     const head = group.getObjectByName('bust-head') as THREE.Mesh;
     expect((head.material as THREE.MeshStandardMaterial).color.getHex()).toBe(0x303337);
   });
+  it('sculpts a bald continuous head with eyelids, smile folds and a fitted Zhongshan collar',()=>{
+    const scene=new THREE.Scene(),mock=canvasDocument();
+    new Function('THREE','document','scene','ROOMS_DB','createCypressTree',`${extract('createStatueCourtyard','    createStatueCourtyard();')} createStatueCourtyard();`)(THREE,mock.document,scene,{},()=>new THREE.Group());
+    const g=scene.getObjectByName('photo-statue-courtyard')!,head=g.getObjectByName('bust-head') as THREE.Mesh;
+    expect(head.geometry.type).toBe('BufferGeometry');expect(g.getObjectByName('bust-hair')).toBeUndefined();
+    for(const name of ['bust-upper-lid--1','bust-upper-lid-1','bust-smile-fold--1','bust-smile-fold-1','bust-mouth','bust-chin','bust-collar-left','bust-collar-right'])expect(g.getObjectByName(name),name).toBeDefined();
+    expect(head.geometry.attributes.position.count).toBeGreaterThan(1500);
+    const positions=head.geometry.attributes.position,normals=head.geometry.attributes.normal,seen=new Map<string,THREE.Vector3>();
+    for(let i=0;i<positions.count;i++){
+      const key=[positions.getX(i),positions.getY(i),positions.getZ(i)].map(n=>Math.round(n*1e6)).join(','),normal=new THREE.Vector3().fromBufferAttribute(normals,i);
+      if(seen.has(key))expect(normal.dot(seen.get(key)!),`head seam ${key}`).toBeGreaterThan(.9999);else seen.set(key,normal);
+    }
+  });
 });

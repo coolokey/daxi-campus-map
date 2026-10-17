@@ -1,0 +1,26 @@
+{
+  "tests": {
+    "files": 2,
+    "passed": 7,
+    "failed": 0
+  },
+  "build": "passed",
+  "navigationDestinations": 109,
+  "blockedEdges": 0,
+  "desktopFrontProfile": "passed",
+  "mobile": "390x844 passed",
+  "consoleErrors": [],
+  "review": "approved after seam normal fix",
+  "proposalSourceMatches": true,
+  "preserved": [
+    "black bronze finish",
+    "plinth and plaque",
+    "statue position and orientation",
+    "navigation viewing point"
+  ],
+  "referenceURLs": [
+    "https://collections.nmth.gov.tw/CollectionContent.aspx?RNO=2006.010.0010&a=132",
+    "https://tcmb.culture.tw/zh-tw/detail?id=19000004200&indexCode=MOCCOLLECTIONS"
+  ],
+  "limitations": "Manually modeled interpretation; likeness is qualitative, not a scan."
+}
