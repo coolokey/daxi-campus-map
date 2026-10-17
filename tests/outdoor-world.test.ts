@@ -169,7 +169,7 @@ it('shows the original sports mosaic above the rear windows without stretching i
 });
 
 it('stair flights retain closed risers at walking height without filling the space below',()=>{
- const hits=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),r=l.ramps[0],p=CampusWalkMath.rampPoint(r,.5),g=scene.children.find(g=>g.name==='floor-stairs-2'&&g.userData.buildingId===l.id),meshes=g.children.filter(m=>m.isMesh&&m.material.userData.campusSurface==='stair');g.updateMatrixWorld(true);const origin=new THREE.Vector3(p.x,p.y-.08,p.z),direction=l.horizontal?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0);origin.addScaledVector(direction,-1.2);return new THREE.Raycaster(origin,direction,0,2.4).intersectObjects(meshes).length})()`);
+ const hits=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),r=l.ramps.find(r=>r.floor===1),p=CampusWalkMath.rampPoint(r,.5),g=scene.children.find(g=>g.name==='floor-stairs-2'&&g.userData.buildingId===l.id),meshes=g.children.filter(m=>m.isMesh&&m.material.userData.campusSurface==='stair');g.updateMatrixWorld(true);const origin=new THREE.Vector3(p.x,p.y-.08,p.z),direction=l.horizontal?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0);origin.addScaledVector(direction,-1.2);return new THREE.Raycaster(origin,direction,0,2.4).intersectObjects(meshes).length})()`);
  expect(hits).toBeGreaterThan(0);
 });
 it('corridor ceilings remain above walking height and hide for floor cutaway viewing',()=>{
@@ -184,16 +184,16 @@ it('corridor ceilings, beams and lamps do not bridge any stair opening',()=>{
 });
 
 it('all switchback and exit landings support a whole character footprint and leave clearance from walls',()=>{
- const failures=run(`(()=>{const failures=[],radius=AVATAR_COLLISION_RADIUS;for(const l of campusWalkWorld.layouts)for(const s of l.stairs)for(let f=1;f<l.b.floors;f++)for(const [kind,u,v,y] of [['turn',s.turnU,s.centerV,(f-.5)*FH],['lower',s.innerU,s.centerV+s.sign*1.25,(f-1)*FH],['upper',s.innerU,s.centerV-s.sign*1.25,f*FH]]){const center=l.world(u,v,y);if(checkWallCollision(center.x,center.y,center.z))failures.push({building:l.id,stair:s.id,f,kind,reason:'wall'});for(let i=0;i<16;i++){const a=i*Math.PI/8,x=center.x+Math.cos(a)*radius,z=center.z+Math.sin(a)*radius;if(Math.abs(campusWalkWorld.ground({x,y,z})-y)>.025)failures.push({building:l.id,stair:s.id,f,kind,reason:'unsupported footprint',x,z})}}return failures})()`);
+ const failures=run(`(()=>{const failures=[],radius=AVATAR_COLLISION_RADIUS;for(const l of campusWalkWorld.layouts)for(const s of l.stairs)for(let f=s.fromFloor||1;f<Math.min(l.b.floors,s.toFloor||l.b.floors);f++)for(const [kind,u,v,y] of [['turn',s.turnU,s.centerV,(f-.5)*FH],['lower',s.innerU,s.centerV+s.sign*1.25,(f-1)*FH],['upper',s.innerU,s.centerV-s.sign*1.25,f*FH]]){const center=l.world(u,v,y);if(checkWallCollision(center.x,center.y,center.z))failures.push({building:l.id,stair:s.id,f,kind,reason:'wall'});for(let i=0;i<16;i++){const a=i*Math.PI/8,x=center.x+Math.cos(a)*radius,z=center.z+Math.sin(a)*radius;if(Math.abs(campusWalkWorld.ground({x,y,z})-y)>.025)failures.push({building:l.id,stair:s.id,f,kind,reason:'unsupported footprint',x,z})}}return failures})()`);
  expect(failures).toEqual([]);
 });
 it('switchback navigation traverses the interior of each landing rather than pivoting on the tread edge',()=>{
- const invalid=run(`(()=>{const invalid=[];for(const l of campusWalkWorld.layouts)for(const s of l.stairs)for(let f=1;f<l.b.floors;f++){const a=campusWalkWorld.graph[s.id+'-turn-in-'+f],b=campusWalkWorld.graph[s.id+'-turn-'+f];if(!a||!b||!a.neighbors.includes(b.id))invalid.push(s.id);else if(Math.abs(l.local(a.x,a.z).u-s.turnU)>.001||Math.abs(l.local(b.x,b.z).u-s.turnU)>.001)invalid.push(s.id)}return invalid})()`);
+ const invalid=run(`(()=>{const invalid=[];for(const l of campusWalkWorld.layouts)for(const s of l.stairs)for(let f=s.fromFloor||1;f<Math.min(l.b.floors,s.toFloor||l.b.floors);f++){const a=campusWalkWorld.graph[s.id+'-turn-in-'+f],b=campusWalkWorld.graph[s.id+'-turn-'+f];if(!a||!b||!a.neighbors.includes(b.id))invalid.push(s.id);else if(Math.abs(l.local(a.x,a.z).u-s.turnU)>.001||Math.abs(l.local(b.x,b.z).u-s.turnU)>.001)invalid.push(s.id)}return invalid})()`);
  expect(invalid).toEqual([]);
 });
 
 it('upper stair openings have real guard barriers while both flight entrances remain unobstructed',()=>{
- const failures=run(`(()=>{const failures=[];for(const l of campusWalkWorld.layouts)for(const s of l.stairs){const y=FH,guard=l.world(s.nearU+.04,s.centerV,y),lower=l.world(s.nearU,s.centerV+s.sign*1.25,y),upper=l.world(s.nearU,s.centerV-s.sign*1.25,y);if(!checkWallCollision(guard.x,guard.y,guard.z))failures.push(s.id+' missing guard');if(checkWallCollision(lower.x,lower.y,lower.z)||checkWallCollision(upper.x,upper.y,upper.z))failures.push(s.id+' blocked flight')}return failures})()`);
+ const failures=run(`(()=>{const failures=[];for(const l of campusWalkWorld.layouts)for(const s of l.stairs){const y=(s.hole.fromFloor||2)*FH-FH,guard=l.world(s.nearU+.04,s.centerV,y),lower=l.world(s.nearU,s.centerV+s.sign*1.25,y),upper=l.world(s.nearU,s.centerV-s.sign*1.25,y);if(!checkWallCollision(guard.x,guard.y,guard.z))failures.push(s.id+' missing guard');if(checkWallCollision(lower.x,lower.y,lower.z)||checkWallCollision(upper.x,upper.y,upper.z))failures.push(s.id+' blocked flight')}return failures})()`);
  expect(failures).toEqual([]);
 });
 
@@ -250,13 +250,18 @@ it('renders both aerial-matched pairs at the shared coordinates and routes betwe
  expect(r.node).toEqual({x:-19.5,z:-37});expect(r.blocked).toBe(false);
 });
 
-it('walks through the left stair door and independent east office doors in Scheme C B+E',()=>{
- const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),s=l.stairs[0],bad=[];
-  const walk=(start,end,label)=>{const path=campusWalkWorld.gridPath(start,end,start.y,l);if(!path){bad.push(label+' no path');return;}const p={...start};for(const q of path)if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z)){bad.push(label+' blocked');break;}};
+it('walks the approved rooms, new stair, straight main hall and direct rear-building connector',()=>{
+ const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),s=l.stairs.find(s=>s.fromFloor===1),bad=[];
+  const walk=(start,end,label,interior=l)=>{const path=campusWalkWorld.gridPath(start,end,start.y,interior);if(!path){bad.push(label+' no path');return;}const p={...start};for(const q of path)if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z)){bad.push(label+' blocked');break;}};
   const main=l.entrances.find(e=>e.kind==='main').inside;
-  walk(main,s.groundEntry.outside,'left stair approach');walk(s.groundEntry.outside,s.groundEntry.inside,'left stair door');
-  walk(s.groundEntry.inside,l.world(s.innerU,s.centerV+s.sign*1.25),'stair lower landing');
-  for(const id of ['admin-reception-1f','coach-room','admin-g89-staff','admin-g89-staff-east']){const r=l.rooms.find(r=>r.id===id);walk(main,r.corridor,id+' approach');const p={...r.corridor};for(const q of [r.door,r.center])if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z))bad.push(id+' door');}
-  const e=l.entrances.find(e=>e.kind==='east-breezeway');walk(main,e.inside,'east breezeway');return bad;})()`);
- expect(result).toEqual([]);
+  walk(main,l.world(s.innerU,s.centerV+s.sign*1.25),'new stair lower landing');
+  for(const r of l.cells.filter(r=>r.floor===1&&['room','wc'].includes(r.kind))){walk(main,r.corridor,r.id+' approach');const p={...r.corridor};for(const q of [r.door,r.center])if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z))bad.push(r.id+' door');}
+  const p={...main};for(let v=3.6;v>=-20;v-=.1){const q=l.world(0,v);if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z)){bad.push('straight central hall at '+v);break;}}
+  const j=CampusSpatialPlan.junctions(campusWalkWorld.layouts).find(j=>j.id==='admin-rear');walk(main,j.start,'rear connector');
+  const crossing={...j.start};if(moveAvatarWithCollision(crossing,j.end.x-crossing.x,j.end.z-crossing.z))bad.push('rear junction');
+  const nine=campusWalkWorld.layouts.find(l=>l.id==='grade9-back');walk(j.end,nine.rooms.find(r=>r.id==='907').corridor,'907 corridor',nine);
+  return bad;})()`);expect(result).toEqual([]);
+});
+it('shows separate accessible and general toilet signs in the administrative ground floor',()=>{
+ expect(run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),ids=l.cells.filter(c=>c.floor===1&&c.kind==='wc').map(c=>c.id);const signs=[];scene.traverse(o=>{if(o.userData.nameplateStyle==='wall')signs.push(o.userData.roomId)});return ids.every(id=>signs.includes(id))})()`)).toBe(true);
 });

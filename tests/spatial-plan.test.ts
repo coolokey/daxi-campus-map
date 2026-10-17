@@ -52,7 +52,7 @@ describe('115 平面圖共用配置',()=>{
 it('every switchback has usable turning and floor landings without squeezing the walking corridor',()=>{
  const {buildings,math}=load();
  for(const b of buildings)for(const stair of math.layout(b).stairs){
-  expect(stair.u1-stair.u0,b.id+' shaft').toBeGreaterThanOrEqual(8-1e-6);
+  expect(stair.nearU-stair.farU,b.id+' clear flight run').toBeGreaterThanOrEqual(1.8-1e-6);
   expect(stair.farU-(stair.u0+.2),b.id+' turning depth').toBeGreaterThanOrEqual(1.7);
   expect(stair.u1-stair.nearU,b.id+' exit landing').toBeGreaterThanOrEqual(1.7);
   expect(stair.innerU-stair.nearU,b.id+' exit clearance').toBeGreaterThanOrEqual(.8);
@@ -66,8 +66,8 @@ it('grade seven stair openings stay inside the stair bay instead of cutting the 
 });
 
 it('no stair opening removes any part of a main corridor in any building',()=>{
- const {buildings,math}=load();const cuts:any[]=[];
- for(const b of buildings){const l=math.layout(b);for(const h of l.holes)for(const c of l.corridors)if(h.u0<c.u1-1e-6&&h.u1>c.u0+1e-6&&h.v0<c.v1-1e-6&&h.v1>c.v0+1e-6)cuts.push({building:b.id,h,c});}
+ const {buildings,math,plan}=load();const cuts:any[]=[];
+ for(const b of buildings){const l=math.layout(b);for(const h of l.holes)for(const c of l.corridors)if(plan.onFloor(h,c.floor)&&h.u0<c.u1-1e-6&&h.u1>c.u0+1e-6&&h.v0<c.v1-1e-6&&h.v1>c.v0+1e-6)cuts.push({building:b.id,h,c});}
  expect(cuts).toEqual([]);
 });
 
@@ -99,7 +99,7 @@ describe('activity center photo-confirmed one-storey hall and second-floor balco
 it('keeps teaching joints and puts administrative circulation in its single layout',()=>{
  const {buildings,math,plan}=load(),ls=buildings.map((b:any)=>math.layout(b)),admin=ls.find((l:any)=>l.id==='admin-front'),mid=ls.find((l:any)=>l.id==='grade8-mid'),south=ls.find((l:any)=>l.id==='grade8-front'),nine=ls.find((l:any)=>l.id==='grade9-back');
  expect(plan.galleries(ls)).toEqual([]);expect(admin.footprints.filter((p:any)=>p.part==='connector').map((p:any)=>p.floor)).toEqual([2,3]);
- expect(mid.bounds.z1).toBeCloseTo(south.bounds.z0);expect(nine.b.depth).toBeLessThan(mid.b.depth*.7);expect(plan.junctions(ls)).toHaveLength(3);
+ expect(mid.bounds.z1).toBeCloseTo(south.bounds.z0);expect(nine.b.depth).toBeLessThan(mid.b.depth*.7);expect(plan.junctions(ls)).toHaveLength(4);
 });
 
 it('uses one administrative identity and a broad technology body with one narrow wing',()=>{

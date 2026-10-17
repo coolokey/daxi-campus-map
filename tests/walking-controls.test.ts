@@ -226,7 +226,7 @@ it('walking across the side of a stair cannot drop the player to a lower floor',
  expect(run(`stairFalls`)).toEqual([]);
 });
 it('every stair flight and switchback landing supports ordinary walking up and down',()=>{
- run(`window.stairWalkIssues=[];for(const l of campusWalkWorld.layouts)for(const s of l.stairs||[])for(let f=1;f<l.b.floors;f++){
+ run(`window.stairWalkIssues=[];for(const l of campusWalkWorld.layouts)for(const s of l.stairs||[])for(let f=s.fromFloor||1;f<Math.min(l.b.floors,s.toFloor||l.b.floors);f++){
  const ramps=l.ramps.filter(r=>r.stairId===s.id&&r.floor===f),points=[];
  for(const r of ramps)for(let i=0;i<=36;i++)points.push(CampusWalkMath.rampPoint(r,i/36));
  for(const route of [points,[...points].reverse()])for(const automatic of [false,true]){

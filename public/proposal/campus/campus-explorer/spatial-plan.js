@@ -1,6 +1,7 @@
 /* Geometry compiler shared by scene, physics, navigation, classroom matrix and map. */
 const CampusSpatialPlan = (() => {
  const H=3.6,eps=1e-6;
+ const onFloor=(item,floor)=>floor>=(item.fromFloor||1)&&floor<=(item.toFloor||Infinity);
  const contains=(r,u,v)=>u>=r.u0-eps&&u<=r.u1+eps&&v>=r.v0-eps&&v<=r.v1+eps&&(r.kind!=='tower'||(u-r.centerU)**2+(v-r.centerV)**2<=r.radius**2+eps);
  function layout(b){
   const p=b.spatialProfile;if(!p)return null;
@@ -56,36 +57,46 @@ const CampusSpatialPlan = (() => {
    }
    // Root circulation starts beside the real stairwell; ground-floor parts have outdoor access.
    merge(rear,'inner');merge(front,'entrance');
-   if(p.groundPlan==='scheme-c-be'){
-    // Replace only the ground-floor row compiler with the confirmed 2D topology.
-    for(const list of [cells,corridors])for(let i=list.length-1;i>=0;i--)if(list[i].floor===1)list.splice(i,1);
+   if(p.groundPlan==='approved-crosshall'){
+    // The approved drawing rotates only the ground-floor topology, not the doors.
+    for(const list of [cells,corridors,footprints])for(let i=list.length-1;i>=0;i--)if(list[i].floor===1)list.splice(i,1);
     for(let i=entrances.length-1;i>=0;i--)if(!['main','side'].includes(entrances[i].kind))entrances.splice(i,1);
-    const rearShift=local(rear.b.x,rear.b.z).v,rearBack=rearShift-rear.D/2,rearFront=rearShift+rear.D/2,s=stairs[0],landingV=s.v1,entryV=(landingV+rearFront)/2;
-    const byId=id=>({kind:'room',id});
-    addCell(byId('admin-g89-staff'),1,-L/2,-4.2,-3.5,wallV,'entrance','u1',-2.8);
-    addCell(byId('admin-g89-staff-east'),1,4.2,L/2-2.2,-3.5,wallV,'entrance','u0',2.8);
-    addCell(byId('student-affairs'),1,-rear.L/2,s.u0,rearBack,landingV,'inner','v1',entryV);
-    addCell({kind:'stair',id:'admin-central-ground-stair',label:'中段樓梯（左側入口）'},1,s.u0,s.u1,rearBack,rearFront,'inner');
-    addCell({kind:'wc',label:'後棟男女廁'},1,s.u1,5.5,rearBack,rearFront,'inner','v1',rearFront+.75);
-    const split=(rearBack+rearFront)/2;
-    addCell(byId('admin-reception-1f'),1,5.5,10,rearBack,split,'inner-east','u1',11);
-    addCell(byId('coach-room'),1,5.5,10,split,rearFront,'inner-east','u1',11);
-    addCell({kind:'wc',label:'前棟東側男女廁'},1,7.2,L/2-2.2,-6,-3.5,'entrance-east','u0',6.1);
-    const path=(u0,u1,v0,v1,part)=>{Object.assign(fp(1,u0,u1,v0,v1),{part});Object.assign(co(1,u0,u1,v0,v1),{part})};
-    path(-4.2,4.2,rearFront,outerV,'central-through-hall');
-    path(-4.2,7.2,-6,-3.5,'central-breezeway');
-    path(s.u0-2.2,15,rearFront,-6,'east-breezeway');
-    path(-rear.L/2,s.u0,landingV,rearFront,'stair-left-approach');
-    path(s.u0,s.u1,landingV,rearFront,'stair-ground-landing');
-    path(s.u0-2.2,s.u0,landingV,-6,'stair-left-approach');
-    path(10,rear.L/2,rearBack,-6,'rear-east-corridor');
-    path(L/2-2.2,L/2,-6,outerV,'front-side-passage');
-    co(1,-L/2,L/2,wallV,outerV);
-    s.groundEntry={doorSide:'u0',v:entryV,landingV1:rearFront,outside:world(s.u0-1.1,entryV),inside:world(s.u0+.8,entryV)};
-    entrances.push({floor:1,kind:'east-breezeway',inside:world(14,(rearFront-6)/2),outside:world(16.4,(rearFront-6)/2)});
-    displayRows.push({id:'inner-east',label:'後棟東側・會客室／教練室',axis:'v',start:rearBack,end:rearFront},{id:'entrance-east',label:'前棟東側廁所',axis:'u',start:7.2,end:L/2-2.2});
+    const byId=id=>({kind:'room',id}),path=(u0,u1,v0,v1,part)=>{Object.assign(fp(1,u0,u1,v0,v1),{part});Object.assign(co(1,u0,u1,v0,v1),{part})};
+    fp(1,-13,13,-15.5,5);
+    addCell(byId('admin-reception-1f'),1,-13,-8.8,-15.5,-7.5,'approved-back','v1',-6.1);
+    addCell(byId('coach-room'),1,-8.8,-4.6,-15.5,-7.5,'approved-back','v1',-6.1);
+    addCell({kind:'wc',label:'男女廁所'},1,-4.6,-1.6,-15.5,-7.5,'approved-back','v1',-6.1);
+    addCell({kind:'wc',label:'無障礙廁所',accessible:true},1,1.6,5.2,-15.5,-7.5,'approved-back','v1',-6.1);
+    addCell(byId('admin-g89-staff-east'),1,5.2,10.8,-15.5,-7.5,'approved-back','v1',-6.1);
+    addCell(byId('student-affairs'),1,-13,-7.8,-4.7,2.2,'approved-front','v0',-6.1);
+    addCell(byId('admin-g89-staff'),1,3.6,10.8,-4.7,2.2,'approved-front','v0',-6.1);
+    path(-1.6,1.6,-15.5,5,'central-through-hall');
+    path(-13,15,-7.5,-4.7,'east-breezeway');
+    path(10.8,13,-15.5,5,'front-side-passage');
+    path(-13,13,2.2,5,'front-corridor');
+    path(-7.8,3.6,-4.7,-.1,'stair-approach');path(-1.6,3.6,-4.7,5,'stair-approach');
+    // The former ground stair crossed the newly confirmed through-hall. Its 2F–3F
+    // flight remains in place; a separate 1F–2F flight lands in the front 2F passage.
+    const upper=stairs[0];upper.fromFloor=2;upper.toFloor=3;upper.hole.fromFloor=3;holes[0].fromFloor=3;
+    for(const list of [ramps,platforms])for(let i=list.length-1;i>=0;i--)if(list[i].stairId===upper.id&&list[i].floor===1)list.splice(i,1);
+    const ground=addStair('ground-central','中段樓梯',-7.8,-1.6,-4.6,.6);ground.fromFloor=1;ground.toFloor=2;ground.hole.fromFloor=ground.hole.toFloor=2;
+    for(const list of [ramps,platforms])for(let i=list.length-1;i>=0;i--)if(list[i].stairId===ground.id&&list[i].floor>1)list.splice(i,1);
+    addCell({kind:'stair',id:'admin-central-ground-stair',label:'中段樓梯'},1,ground.u0,ground.u1,ground.v0,ground.v1,'approved-front');
+    path(ground.nearU,ground.u1,ground.v0,ground.v1,'stair-ground-landing');
+    // Keep the unconfirmed small 2F office clear of the new stair opening.
+    const adjacent=cells.find(c=>c.id==='reception'),principal=cells.find(c=>c.id==='principal');
+    cells.splice(cells.indexOf(adjacent),1);cells.splice(cells.indexOf(principal),1);
+    addCell(byId('principal'),2,principal.u0,-7.8,principal.v0,principal.v1,'entrance','v1',front.cV);
+    addCell(byId('reception'),2,-7.8,adjacent.u1,.6,adjacent.v1,'entrance','v1',front.cV);
+    entrances.push({floor:1,kind:'east-breezeway',inside:world(14,-6.75),outside:world(16.4,-6.75)});
+    // A short covered connector meets the existing grade-nine transverse passage.
+    const destination=BUILDINGS_CONFIG.find(b=>b.id==='grade9-back'),target=layout(destination),cross=target.cells.find(c=>c.floor===1&&c.kind==='passage'),targetZ=target.world((cross.u0+cross.u1)/2,0).z;
+    const vEnd=b.x-target.bounds.x0,targetU=targetZ-b.z;
+    path(-1.6,1.6,vEnd-.3,-15.5,'rear-building-link');
+    path(Math.min(-1.6,targetU-1.4),1.6,vEnd-.3,vEnd+2.4,'rear-building-link');
+    entrances.push({floor:1,kind:'rear-link',inside:world(targetU,vEnd+1.2),outside:world(targetU,vEnd-1.2),building:'grade9-back'});
+    displayRows.push({id:'approved-back',label:'後側：會客室・教練室・廁所・導師室',axis:'u',start:-13,end:10.8},{id:'approved-front',label:'入口側：學務處・樓梯・導師室',axis:'u',start:-13,end:10.8});
    }
-
    displayRows.push({id:'entrance',label:'入口側處室',axis:'u',start:-L/2,end:L/2},{id:'inner',label:'內側處室',axis:'u',start:-12,end:12});
    const passage=front.cells.find(c=>c.floor===2&&c.kind==='passage'),u=(passage.u0+passage.u1)/2;
    const v0=rear.cV+local(rear.b.x,rear.b.z).v-.1,v1=-D/2+.1;
@@ -230,7 +241,7 @@ const CampusSpatialPlan = (() => {
  function groundAt(l,x,z,currentY){
   const {u,v}=l.local(x,z);let best=0;
   for(const p of l.footprints){const y=(p.floor-1)*H;
-   if(y<=currentY+.35&&contains(p,u,v)&&(p.floor===1||!l.holes.some(h=>contains(h,u,v))))best=Math.max(best,y);
+   if(y<=currentY+.35&&contains(p,u,v)&&(p.floor===1||!l.holes.some(h=>onFloor(h,p.floor)&&contains(h,u,v))))best=Math.max(best,y);
   }
   for(const p of l.platforms)if(x>=p.x0-eps&&x<=p.x1+eps&&z>=p.z0-eps&&z<=p.z1+eps&&p.y<=currentY+.35)best=Math.max(best,p.y);
   for(const r of l.ramps)if(x>=r.x0-eps&&x<=r.x1+eps&&z>=r.z0-eps&&z<=r.z1+eps){
@@ -249,6 +260,8 @@ const CampusSpatialPlan = (() => {
    if(Math.abs(z-b.bounds.z0)>.01)continue;
    result.push({floor,a:a.id,b:b.id,start:{x,y,z:z-.6},end:{x,y,z:z+.6}});
   }
+  const admin=layouts.find(l=>l.id==='admin-front'),grade9=layouts.find(l=>l.id==='grade9-back'),rear=admin?.entrances.find(e=>e.kind==='rear-link');
+  if(rear&&grade9)result.push({floor:1,a:admin.id,b:grade9.id,start:rear.inside,end:rear.outside,id:'admin-rear'});
   return result;
  }
  function ribbon(points,width=.28){
@@ -260,5 +273,5 @@ const CampusSpatialPlan = (() => {
   }
   return vertices;
  }
- return{layout,groundAt,contains,galleries,junctions,ribbon};
+ return{layout,groundAt,contains,onFloor,galleries,junctions,ribbon};
 })();

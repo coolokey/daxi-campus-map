@@ -66,15 +66,15 @@ const CampusSpatialData = (() => {
  };
  // One building owns every office. Parts are geometry only, never separate destinations.
  const adminFront=profiles['admin-front'],adminRear=profiles['admin-back'];
- // Scheme C, confirmed B + E: independent east doors; left stair approach.
+ // User-approved rotated plan: full student affairs, accessible WC and through-hall.
  adminFront.floors[1]=[room('admin-g89-staff','ADM-F-1W',1,'八、九年級導師室（西側）'),room('admin-g89-staff-east','ADM-F-1E',1,'八、九年級導師室（東側）')];
  adminRear.floors[1]=[room('student-affairs','ADM-B-1W',1.2),stair('central','中段折返梯'),wc(.35),room('admin-reception-1f','ADM-B-1E1',.65,'會客室'),room('coach-room','ADM-B-1E2',.65)];
  aliases['weimei-room']='admin-reception-1f';aliases['admin-back-east']='coach-room';
 
  adminFront.orientation=adminRear.orientation='statue';adminFront.sideEntrance={v:-1.2,width:2.2};
- profiles['admin-front']={shape:'admin',orientation:'statue',sign:1,groundPlan:'scheme-c-be',front:adminFront,rear:adminRear,
+ profiles['admin-front']={shape:'admin',orientation:'statue',sign:1,groundPlan:'approved-crosshall',front:adminFront,rear:adminRear,
   rearBody:{x:-9.5,z:28.5,width:8,depth:24},
-  confidence:'一樓依方案 C 與使用者 B＋E 門位確認；上層用途依既有資料；尺度及梯段為示意'};
+  confidence:'一樓依使用者確認的旋轉配置圖；正門穿廊通往 907 所在棟；上層用途保留；尺度及梯段為示意'};
  custom.admin=[1,2,3].map(f=>[f,...[...adminFront.floors[f],...adminRear.floors[f]].filter(c=>c.kind==='room')]);
  Object.assign(extras,{
   'admin-g89-staff-east':{name:'八、九年級導師室（東側）',cat:'admin'},'admin-reception-1f':{name:'會客室',cat:'admin'},

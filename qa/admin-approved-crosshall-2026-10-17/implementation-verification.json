@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-17",
+  "approvedReference": "approved-reference.png",
+  "layout": "approved-crosshall",
+  "mainEntrance": "unchanged",
+  "sideEntrances": "unchanged",
+  "centralHall": "straight through administration; covered rear link to existing grade-nine transverse passage",
+  "toilets": [
+    "accessible front toilet",
+    "general rear toilet next to coach"
+  ],
+  "studentAffairs": "entire lower-left room, former toilet removed",
+  "stairs": "new 1F-2F stair; preserved 2F-3F stair",
+  "upperFloor": "uses preserved; principal/reception footprints adjusted beside new landing",
+  "spatialDestinations": 111,
+  "physicalRooms": 92,
+  "motorRoutes": 20,
+  "spatialErrors": [],
+  "review": "no blocking findings",
+  "localDesktop": "passed",
+  "localMobile": "390x844 passed",
+  "consoleErrors": [],
+  "tests": "54 files, 320 tests passed"
+}

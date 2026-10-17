@@ -63,7 +63,7 @@
      fill(r,'#647584');c.strokeStyle='#d9e4e6';c.lineWidth=.16;
      for(let i=1;i<7;i++){c.beginPath();if(r.x1-r.x0>r.z1-r.z0){const x=r.x0+(r.x1-r.x0)*i/7;c.moveTo(x,r.z0);c.lineTo(x,r.z1)}else{const z=r.z0+(r.z1-r.z0)*i/7;c.moveTo(r.x0,z);c.lineTo(r.x1,z)}c.stroke()}
     }else if(cell.kind==='wc'){
-     fill(r,'#7894ad');c.fillStyle='#f0f5ed';c.font='bold 1.7px sans-serif';c.textAlign='center';c.fillText('WC',(r.x0+r.x1)/2,(r.z0+r.z1)/2+.6);c.textAlign='start';
+     fill(r,'#7894ad');c.fillStyle='#f0f5ed';c.font='bold 1.7px sans-serif';c.textAlign='center';c.fillText(cell.accessible?'♿':'WC',(r.x0+r.x1)/2,(r.z0+r.z1)/2+.6);c.textAlign='start';
     }else if(cell.kind==='passage')fill(r,'#90a38a');
    }
   }

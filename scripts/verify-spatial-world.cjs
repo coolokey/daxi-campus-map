@@ -25,7 +25,7 @@ const report=vm.runInContext(`(()=>{
  }
  for(const l of world.layouts)for(const r of l.rooms){const points=[r.corridor,r.door,r.center],p={...points[0]};for(const target of points.slice(1))if(moveAvatarWithCollision(p,target.x-p.x,target.z-p.z)){doorFailures.push({id:r.id,p:{...p},target});break}}
  const motorRoutes=[];
- for(const id of ['admin-g89-staff','admin-g89-staff-east','student-affairs','coach-room','admin-reception-1f','academic','901','804','704','computer-lab-1','art-4f','grandstand','gym','weight-room','gym-balcony','fire-room']){
+ for(const id of ['admin-g89-staff','admin-g89-staff-east','student-affairs','coach-room','admin-reception-1f','principal','reception','teacher-study','907','academic','901','804','704','computer-lab-1','art-4f','grandstand','gym','weight-room','gym-balcony','fire-room']){
   const room=ROOMS_DB[id],ids=room&&findShortestPath('gate',room.node),p={...world.graph.gate};let error=null;
   if(!ids)error='missing route';else for(const nid of ids.slice(1)){
    const target=world.graph[nid],origin={...p},steps=Math.max(1,Math.ceil(Math.hypot(target.x-p.x,target.y-p.y,target.z-p.z)/.15));

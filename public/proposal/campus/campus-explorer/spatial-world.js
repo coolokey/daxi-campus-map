@@ -45,7 +45,7 @@
   if(p.kind==='porch')return; // Shared support comes from the entrance steps and access ramp.
   if(p.kind==='tower'){for(let u=p.u0+.3;u<p.u1;u+=.3)xs.push(u);for(let v=p.v0+.3;v<p.v1;v+=.3)zs.push(v);}
   xs.sort((a,b)=>a-b);zs.sort((a,b)=>a-b);
-  for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++)if((p.kind!=='tower'||CampusSpatialPlan.contains(p,(xs[i-1]+xs[i])/2,(zs[j-1]+zs[j])/2))&&((y===0&&!cutAtGround)||!l.holes.some(h=>CampusSpatialPlan.contains(h,(xs[i-1]+xs[i])/2,(zs[j-1]+zs[j])/2))))box(g,l,xs[i-1],xs[i],zs[j-1],zs[j],y-.18,y+(y===0?.045:0),paint||colors.floor);
+  for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++)if((p.kind!=='tower'||CampusSpatialPlan.contains(p,(xs[i-1]+xs[i])/2,(zs[j-1]+zs[j])/2))&&((y===0&&!cutAtGround)||!l.holes.some(h=>CampusSpatialPlan.onFloor(h,Math.round(y/FH)+1)&&CampusSpatialPlan.contains(h,(xs[i-1]+xs[i])/2,(zs[j-1]+zs[j])/2))))box(g,l,xs[i-1],xs[i],zs[j-1],zs[j],y-.18,y+(y===0?.045:0),paint||colors.floor);
  }
  function roomWall(g,l,c,side,y){
   const colors=surfaceMaterials(l),q={u:(c.u0+c.u1)/2,v:(c.v0+c.v1)/2};
@@ -127,7 +127,7 @@
   // Two front-facing planes share a texture; the reverse face is rotated,
   // so names read correctly from either end of the corridor.
   for(const side of [-1,1]){const face=new THREE.Mesh(new THREE.PlaneGeometry(.84,.42),signMaterial);face.position.set(center.x+tx*side*.034,y+2.65,center.z+tz*side*.034);face.rotation.y=Math.atan2(tx*side,tz*side);face.userData={roomId:r.id,nameplateKey:signLabel.key,nameplateStyle:'projecting'};g.add(face);}
-  if(l.id==='gym-bld')return; // Dedicated hall/foyer equipment comes from the photo model.
+  if(l.id==='gym-bld'||r.kind==='wc')return; // Toilets need signs, not office furnishings.
   const plan=CampusRoomLayout.furnishings(r);
   for(const item of plan.parts){const mesh=box(g,l,item.u0,item.u1,item.v0,item.v1,y+item.y0,y+item.y1,colors[item.paint],item.solid);if(mesh)mesh.userData={roomId:r.id,furnitureRole:item.role};}
   box(g,l,r.u-.7,r.u+.7,r.v-.12,r.v+.12,y+FH-.22,y+FH-.2,colors.light);
@@ -150,21 +150,22 @@
    }
    if(l.id==='gym-bld'){
     for(const r of l.rooms.filter(r=>r.floor===f))details(g,l,r,y);
-    if(f>1)for(const s of l.stairs){const h=s.hole;
+    if(f>1)for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f)&&CampusSpatialPlan.onFloor(s.hole,f))){const h=s.hole;
      for(const v of [h.v0-.04,h.v1+.04])landingGuard(g,l,h.u0-.04,h.u1+.04,v-.03,v+.03,y,colors);
      landingGuard(g,l,h.u0-.07,h.u0-.01,h.v0-.04,h.v1+.04,y,colors);
      for(const [a,b] of [[-2.34,-2.05],[-.45,.45],[2.05,2.34]])landingGuard(g,l,s.nearU+.01,s.nearU+.07,s.centerV+a,s.centerV+b,y,colors);
     }
-    if(f>1)for(const s of l.stairs){const h=s.windowLanding;for(const u of [h.u0,h.u1])landingGuard(g,l,u-.03,u+.03,h.v0,17,y,colors);for(const [a,b] of [[s.u0,h.u0],[h.u1,s.u1]])landingGuard(g,l,a,b,16.97,17.03,y,colors);}
+    if(f>1)for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f)&&CampusSpatialPlan.onFloor(s.hole,f))){const h=s.windowLanding;for(const u of [h.u0,h.u1])landingGuard(g,l,u-.03,u+.03,h.v0,17,y,colors);for(const [a,b] of [[s.u0,h.u0],[h.u1,s.u1]])landingGuard(g,l,a,b,16.97,17.03,y,colors);}
     continue;
    }
    // Rooms and WC use identical rectangles for visible walls and blocking volumes.
    for(const r of l.cells.filter(c=>c.floor===f&&(c.kind==='room'||c.kind==='wc'))){
     for(const side of ['u0','u1','v0','v1'])roomWall(g,l,r,side,y);
     if(r.kind==='room')details(g,l,r,y);
+    else if(l.id==='admin-front'&&f===1)details(g,l,{...r,name:r.label,cat:'admin'},y);
    }
-   for(const s of l.stairs)stairEnclosure(g,l,s,y);
-   if(f>1)for(const s of l.stairs){
+   for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f)))stairEnclosure(g,l,s,y);
+   if(f>1)for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f)&&CampusSpatialPlan.onFloor(s.hole,f))){
     const h=s.hole;
     for(const v of [h.v0-.04,h.v1+.04])landingGuard(g,l,h.u0-.04,h.u1+.04,v-.03,v+.03,y,colors);
     landingGuard(g,l,h.u0-.07,h.u0-.01,h.v0-.04,h.v1+.04,y,colors);
@@ -212,7 +213,7 @@
      const u=longU?t:(p.u0+p.u1)/2,v=longU?(p.v0+p.v1)/2:t;
      // Skip any fixture whose footprint would extend over a stair opening.
      const beam={u0:longU?u-.12:p.u0,u1:longU?u+.12:p.u1,v0:longU?p.v0:v-.12,v1:longU?p.v1:v+.12},lamp={u0:longU?u-.7:u-.09,u1:longU?u+.7:u+.09,v0:longU?v-.09:v-.7,v1:longU?v+.09:v+.7};
-     if(l.holes.some(h=>[beam,lamp].some(q=>q.u0<h.u1&&q.u1>h.u0&&q.v0<h.v1&&q.v1>h.v0)))continue;
+     if(l.holes.some(h=>CampusSpatialPlan.onFloor(h,f+1)&&[beam,lamp].some(q=>q.u0<h.u1&&q.u1>h.u0&&q.v0<h.v1&&q.v1>h.v0)))continue;
      box(ceiling,l,longU?u-.12:p.u0,longU?u+.12:p.u1,longU?p.v0:v-.12,longU?p.v1:v+.12,y+FH-.58,y+FH-.4,colors.ceiling);
      box(ceiling,l,longU?u-.7:u-.09,longU?u+.7:u+.09,longU?v-.09:v-.7,longU?v+.09:v+.7,y+FH-.64,y+FH-.59,colors.light);
     }
@@ -263,7 +264,7 @@
    }
   }
   if(l.id==='gym-bld')CampusGymWorld.build({l,scene,floorMeshes,box,slab,surfaceMaterials,cameraVolume,details});
-  for(const s of l.stairs)for(let f=1;f<l.b.floors;f++){
+  for(const s of l.stairs)for(let f=s.fromFloor||1;f<Math.min(l.b.floors,s.toFloor||l.b.floors);f++){
    const g=new THREE.Group();g.name=`floor-stairs-${f+1}`;g.userData={buildingId:l.id,floorNum:f+1};scene.add(g);floorMeshes.push(g);
    const ramps=l.ramps.filter(r=>r.stairId===s.id&&r.floor===f),p=l.platforms.find(p=>p.stairId===s.id&&p.floor===f);
    box(g,l,p.u0,p.u1,p.v0,p.v1,p.y-.16,p.y,colors.stair);
@@ -365,13 +366,13 @@
     const old=ROOMS_DB[r.id].node;ROOMS_DB[r.id].node=target;ROOMS_DB[r.id].spaceCode=r.spaceCode;const badge=roomBadgeElements.find(e=>e.nodeId===old);if(badge)badge.nodeId=target;
     attachPath(hub,corridor,gridPath(p,r.corridor,y,l),l.id);
    }
-   for(const s of l.stairs){
+   for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f))){
     for(const [label,v] of [['lower',s.centerV+s.sign*1.25],['upper',s.centerV-s.sign*1.25]]){
      const q=l.world(s.innerU,v,y),id=node(`${s.id}-${label}-${f}`,q,l.id);attachPath(hub,id,gridPath(p,q,y,l),l.id);
     }
    }
   }
-  for(const s of l.stairs)for(let f=1;f<l.b.floors;f++){
+  for(const s of l.stairs)for(let f=s.fromFloor||1;f<Math.min(l.b.floors,s.toFloor||l.b.floors);f++){
    let previous=`${s.id}-lower-${f}`;
    for(const [ri,r] of l.ramps.filter(r=>r.stairId===s.id&&r.floor===f).entries()){
     if(ri===1){
@@ -385,7 +386,7 @@
  }
  for(const j of CampusSpatialPlan.junctions(layouts)){
   const a=layouts.find(l=>l.id===j.a),b=layouts.find(l=>l.id===j.b),ha=hubs[`${j.a}-${j.floor}`],hb=hubs[`${j.b}-${j.floor}`];
-  const na=node(`teaching-junction-${j.floor}-a`,j.start,j.a),nb=node(`teaching-junction-${j.floor}-b`,j.end,j.b);
+  const na=node(`teaching-junction-${j.id||j.floor}-a`,j.start,j.a),nb=node(`teaching-junction-${j.id||j.floor}-b`,j.end,j.b);
   attachPath(ha,na,gridPath(graph[ha],j.start,j.start.y,a),j.a);link(na,nb);
   attachPath(nb,hb,gridPath(j.end,graph[hb],j.end.y,b),j.b);
  }
