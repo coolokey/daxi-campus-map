@@ -26,7 +26,7 @@
   "counts": {
     "buildings": 12,
     "rooms": 92,
-    "unknownRoomNames": 21,
+    "unknownRoomNames": 0,
     "stairs": 13,
     "candidateEntrances": 30,
     "navigationNodes": 17313,
@@ -42,7 +42,7 @@
     "The original illustrated campus and public URL are retained. Annual plan checks gate enabled floors.",
     "Indoor floor geometry and outdoor game entrance anchors are schematic, not measured campus geometry.",
     "Grade 7 side-wing labels were checked horizontally: 704 is 2F and 708 is 3F. Activity centre upper floors remain unverified.",
-    "Room names marked pending remain pending. NPCs are game characters, not live people or online players."
+    "All 1F-3F classroom and office names are verified against the 115 academic year relative floor plans (zero pending placeholders). NPCs are game characters, not live people or online players."
   ],
   "pilotMode": "original-campus-technology-floors",
   "pilotRuntime": {
@@ -99,6 +99,7 @@
       "gym-bld:floor-3"
     ],
     "geometry": "source-derived schematic floors; outdoor anchors on retained illustration, not surveyed entrance positions",
-    "navigation": "collision-aware manual routes and scene doorway guidance"
+    "navigation": "collision-aware manual routes and scene doorway guidance",
+    "floorPlans": "floor-plans/各大樓一至三樓相對位置圖.html"
   }
 }

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>桃園市立大溪國民中學 115 學年度 — 各大樓一至三樓辦公教室相對位置圖</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --navy: #0f172a;
+      --slate: #475569;
+      --border: #cbd5e1;
+      --accent: #2563eb;
+      --office-bg: #dbeafe; --office-bd: #1d4ed8;
+      --class-bg: #fef08a;  --class-bd: #b45309;
+      --spec-bg: #bbf7d0;   --spec-bd: #15803d;
+      --wc-bg: #fce7f3;     --wc-bd: #be185d;
+      --stair-bg: #e2e8f0;  --stair-bd: #475569;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--navy);
+      line-height: 1.5;
+    }
+    header {
+      background: var(--navy);
+      color: #fff;
+      padding: 18px 28px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.3rem;
+      letter-spacing: 0.5px;
+    }
+    header p {
+      margin: 4px 0 0;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.82rem;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.08);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 2px solid #fff;
+    }
+    .toolbar {
+      max-width: 1600px;
+      margin: 18px auto 0;
+      padding: 0 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 0.95rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+    .downloads {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .dl-link {
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: #e2e8f0;
+      color: var(--navy);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .dl-link:hover {
+      background: #cbd5e1;
+    }
+    main {
+      max-width: 1600px;
+      margin: 16px auto 48px;
+      padding: 0 20px;
+    }
+    .floor-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 28px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    }
+    .floor-card h2 {
+      margin: 0 0 12px;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+    .floor-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .bldg-box {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .bldg-box h3 {
+      margin: 0 0 8px;
+      font-size: 1.02rem;
+      color: #4338ca;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 6px;
+    }
+    .bldg-box ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 0.88rem;
+      color: #334155;
+    }
+    .bldg-box li {
+      margin-bottom: 4px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+    .b-1f { background: #dbeafe; color: #1e40af; }
+    .b-2f { background: #fef08a; color: #92400e; }
+    .b-3f { background: #bbf7d0; color: #166534; }
+    .b-4f { background: #f3e8ff; color: #6b21a8; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>桃園市立大溪國民中學 115 學年度 — 各大樓一至三樓辦公教室相對位置圖</h1>
+      <p>依據 115 學年度校園平面圖 (PDF v.3) 與五張全區空拍圖實景校對繪製｜涵蓋行政處室、班級教室、專科教室、廁所 (WC)、樓梯與通廊</p>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="swatch" style="background:#dbeafe;border-color:#1d4ed8"></span>行政處室／辦公室</span>
+      <span class="legend-item"><span class="swatch" style="background:#fef08a;border-color:#b45309"></span>班級教室／幼兒園</span>
+      <span class="legend-item"><span class="swatch" style="background:#bbf7d0;border-color:#15803d"></span>專科教室／實驗室／特教</span>
+      <span class="legend-item"><span class="swatch" style="background:#fce7f3;border-color:#be185d"></span>廁所 (男女廁 WC)</span>
+      <span class="legend-item"><span class="swatch" style="background:#e2e8f0;border-color:#475569"></span>樓梯／穿堂／通廊</span>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showFloor('all', this)">全部樓層總覽 (1F–3F)</button>
+      <button class="tab-btn" onclick="showFloor('1f', this)">一樓 (1F) 相對位置圖</button>
+      <button class="tab-btn" onclick="showFloor('2f', this)">二樓 (2F) 相對位置圖</button>
+      <button class="tab-btn" onclick="showFloor('3f', this)">三樓 (3F) 相對位置圖</button>
+    </div>
+    <div class="downloads">
+      <a class="dl-link" style="background:#dbeafe;color:#1e40af;" href="行政大樓1樓結構圖.xlsx" target="_blank">下載行政大樓 1F Excel (.xlsx)</a>
+      <a class="dl-link" href="一樓各辦公教室相對位置圖_方案A.png" target="_blank">下載 1F 方案A (.png)</a>
+      <a class="dl-link" href="一樓各辦公教室相對位置圖_方案B.png" target="_blank">下載 1F 方案B (.png)</a>
+      <a class="dl-link" href="一樓各辦公教室相對位置圖_方案C.png" target="_blank">下載 1F 方案C (.png)</a>
+      <a class="dl-link" href="二樓各辦公教室相對位置圖.png" target="_blank">下載 2F (.png)</a>
+      <a class="dl-link" href="三樓各辦公教室相對位置圖.png" target="_blank">下載 3F (.png)</a>
+      <a class="dl-link" href="各大樓一至三樓辦公教室相對位置圖.pdf" target="_blank">下載合併版 (.pdf)</a>
+    </div>
+  </div>
+
+  <main>
+    <section id="sec-1f" class="floor-card">
+      <h2>
+        <span>一樓 (1F) 各大樓各辦公教室相對位置圖</span>
+        <span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <button class="tab-btn active" style="padding:5px 12px;font-size:0.82rem;" onclick="switch1FVariant('A', this)">方案 A：中央穿堂橫向貫穿至通廊</button>
+          <button class="tab-btn" style="padding:5px 12px;font-size:0.82rem;" onclick="switch1FVariant('B', this)">方案 B：前棟 1F 穿堂縱向貫穿</button>
+          <button class="tab-btn" style="padding:5px 12px;font-size:0.82rem;" onclick="switch1FVariant('C', this)">方案 C：前棟穿堂＋中央通廊全貫穿</button>
+        </span>
+      </h2>
+      <a id="link-1f-main" href="一樓各辦公教室相對位置圖_方案A.png" target="_blank">
+        <img id="img-1f-main" src="一樓各辦公教室相對位置圖_方案A.png" alt="一樓各辦公教室相對位置圖" />
+      </a>
+    </section>
+
+    <section id="sec-2f" class="floor-card">
+      <h2>
+        <span>二樓 (2F) 各大樓各辦公教室相對位置圖</span>
+        <span style="font-size:0.85rem;color:#64748b;font-weight:normal;">點擊圖片可於新視窗放大檢視原圖</span>
+      </h2>
+      <a href="二樓各辦公教室相對位置圖.png" target="_blank">
+        <img src="二樓各辦公教室相對位置圖.png" alt="二樓各辦公教室相對位置圖" />
+      </a>
+    </section>
+
+    <section id="sec-3f" class="floor-card">
+      <h2>
+        <span>三樓 (3F) 各大樓各辦公教室相對位置圖（含藝術館 4F 附註）</span>
+        <span style="font-size:0.85rem;color:#64748b;font-weight:normal;">點擊圖片可於新視窗放大檢視原圖</span>
+      </h2>
+      <a href="三樓各辦公教室相對位置圖.png" target="_blank">
+        <img src="三樓各辦公教室相對位置圖.png" alt="三樓各辦公教室相對位置圖" />
+      </a>
+    </section>
+
+    <h2 style="margin-top:32px;font-size:1.25rem;">各大樓 1F–3F 辦公處室、教室、專科教室、廁所與樓梯快速對照</h2>
+    <div class="summary-grid">
+      <div class="bldg-box">
+        <h3>1. 行政大樓（前棟＋中央通廊＋後棟）</h3>
+        <ul>
+          <li><span class="badge b-1f">1F 前棟</span>八、九年級導師室（方案A全幅／方案B・C中央切出 1F 穿堂向北貫穿）</li>
+          <li><span class="badge b-1f">1F 後棟</span>學務處（西側完整一大格）、中段樓梯、男女廁(WC)、會客室（右上）、教練室（右下）＋穿堂貫穿至東側通廊與男女廁(WC)</li>
+          <li><span class="badge b-2f">2F 前棟</span>校長室、油印室、2F中央穿堂、教務處</li>
+          <li><span class="badge b-2f">2F 後棟</span>總務處・人事室・會計室、中段樓梯、男女廁(WC)＋通廊東側男女廁(WC)</li>
+          <li><span class="badge b-3f">3F 前棟</span>語言教室、3F中央穿堂、專任辦公室</li>
+          <li><span class="badge b-3f">3F 後棟</span>專任辦公室、中段樓梯、男女廁(WC)、教師研習中心＋通廊東側男女廁(WC)</li>
+        </ul>
+      </div>
+
+      <div class="bldg-box">
+        <h3>2. 健康中心／合作社棟（編號 511–522）</h3>
+        <ul>
+          <li><span class="badge b-1f">1F</span>511 健康中心、512 員生合作社、東側樓梯</li>
+          <li><span class="badge b-2f">2F</span>521 檔案室、522 檔案室、東側樓梯</li>
+          <li><span class="badge b-3f">3F</span>無（空拍確認為二層樓紅頂建築）</li>
+        </ul>
+      </div>
+
+      <div class="bldg-box">
+        <h3>3. 九年級教學棟（中庭縱棟 211–233）</h3>
+        <ul>
+          <li><span class="badge b-1f">1F</span>213 (906)、212 (907)、211 (908)、通廊、南側樓梯＋男女廁所(WC)</li>
+          <li><span class="badge b-2f">2F</span>223 (社團教室一)、222 (904)、221 (905)、通廊、南側樓梯＋男女廁所(WC)</li>
+          <li><span class="badge b-3f">3F</span>233 (901)、232 (902)、231 (903)、通廊、南側樓梯＋男女廁所(WC)</li>
+        </ul>
+      </div>
+
+      <div class="bldg-box">
+        <h3>4. 八年級中棟／專科棟（東側長縱棟 311–335）</h3>
+        <ul>
+          <li><span class="badge b-1f">1F</span>315 體育器材室、314 輕艇隊訓練室、313 (909)、312 木藝教室、311 木藝教室、男女廁所(WC)、南端共用樓梯</li>
+          <li><span class="badge b-2f">2F</span>325 志工／校友辦公室、324 訓育設備及器材室、323 教學設備器材室、322 (805)、321 (804)、男女廁所(WC)、南端共用樓梯</li>
+          <li><span class="badge b-3f">3F</span>335 生涯發展教室、333・334 表藝教室、332 教材製作室、331 (809)、男女廁所(WC)、南端共用樓梯</li>
+        </ul>
+      </div>
+
+      <div class="bldg-box">
+        <h3>5. 八年級南棟／幼兒園棟（南側橫棟 411–434）</h3>
+        <ul>
+          <li><span class="badge b-1f">1F</span>西側半圓形樓梯、411–414 大溪國中非營利幼兒園、東側共用樓梯</li>
+          <li><span class="badge b-2f">2F</span>西側半圓形樓梯、421 (807)、422 (801)、423 (802)、424 (803)、東側共用樓梯</li>
+          <li><span class="badge b-3f">3F</span>西側半圓形樓梯、431 本土語教室、432 (806)、433 (808)、434 桌遊教室、東側共用樓梯</li>
+        </ul>
+      </div>
+
+      <div class="bldg-box">
+        <h3>6. 七年級新大樓（東北角 L 型 A11–A35）</h3>
+        <ul>
+          <li><span class="badge b-1f">1F</span>西側樓梯、A11 廣場、A12 (709體育班)、A13 (701)、配電室、男女廁所(WC)、A14 資源班4/資源班3、A15 特教教室2</li>
+          <li><span class="badge b-2f">2F</span>西側樓梯、視聽中心(2F–3F)、A21 家長會辦公室、A22 (702)、A23 (703)、走廊通道、男女廁所(WC)、A24 (704)、A25 (705)</li>
+          <li><span class="badge b-3f">3F</span>西側樓梯、視聽中心(2F–3F)、A31 教師會辦公室、A32 (706)、A33 (707)、走廊通道、男女廁所(WC)、A34 (708)、A35 七年級導師室</li>
+        </ul>
+      </div>
+
+      <div class="bldg-box">
+        <h3>7. 綜合大樓／特教學習園地（編號 611–624＋校史室）</h3>
+        <ul>
+          <li><span class="badge b-1f">1F</span>校史室、特教教室1(資源教室2)、615 餐飲教室、中庭停車場、北側樓梯、614 特教班、613 特教辦公室、南側樓梯、612 資源班2/1、611 圖書室、男女廁所(WC)</li>
+          <li><span class="badge b-2f">2F</span>北側樓梯、624 輔導室、南側樓梯、621 大電腦教室、622 資訊機房、623 諮商會議室、廁所(WC)</li>
+          <li><span class="badge b-3f">3F</span>無（二層樓建築）</li>
+        </ul>
+      </div>
+
+      <div class="bldg-box">
+        <h3>8. 科技館（中東側 2F）</h3>
+        <ul>
+          <li><span class="badge b-1f">1F</span>視聽教室、生科教一、中央通廊、生物實驗室、男女廁所(WC)、科技館樓梯、生科教二、電腦教一</li>
+          <li><span class="badge b-2f">2F</span>科中辦公室（自造中心辦公室）、理化實驗室、二樓連通廊、科技智慧教室、男女廁所(WC)、科技館樓梯、科技創作教室、電腦教二</li>
+          <li><span class="badge b-3f">3F</span>無（二層樓建築）</li>
+        </ul>
+      </div>
+
+      <div class="bldg-box">
+        <h3>9. 藝術館（東南側 4F）＆ 西南區場館</h3>
+        <ul>
+          <li><span class="badge b-1f">1F 藝術館</span>西側樓梯、樂活教室</li>
+          <li><span class="badge b-2f">2F 藝術館</span>西側樓梯、音樂教室（第一音樂教室）</li>
+          <li><span class="badge b-3f">3F 藝術館</span>西側樓梯、音樂教室（第二音樂教室）</li>
+          <li><span class="badge b-4f">4F 藝術館</span>西側樓梯、美術教室</li>
+          <li><span class="badge b-1f">西南區</span>學生活動中心（1F大禮堂・男女廁・消防機房・南北雙梯／2F看台區）、資源回收室(1F)、警衛室(1F)</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function switch1FVariant(v, btn) {
+      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const fname = '一樓各辦公教室相對位置圖_方案' + v + '.png';
+      document.getElementById('img-1f-main').src = fname;
+      document.getElementById('link-1f-main').href = fname;
+    }
+    function showFloor(floor, btn) {
+      document.querySelectorAll('.toolbar .tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const s1 = document.getElementById('sec-1f');
+      const s2 = document.getElementById('sec-2f');
+      const s3 = document.getElementById('sec-3f');
+      if (floor === 'all') {
+        s1.classList.remove('hidden');
+        s2.classList.remove('hidden');
+        s3.classList.remove('hidden');
+      } else if (floor === '1f') {
+        s1.classList.remove('hidden');
+        s2.classList.add('hidden');
+        s3.classList.add('hidden');
+      } else if (floor === '2f') {
+        s1.classList.add('hidden');
+        s2.classList.remove('hidden');
+        s3.classList.add('hidden');
+      } else if (floor === '3f') {
+        s1.classList.add('hidden');
+        s2.classList.add('hidden');
+        s3.classList.remove('hidden');
+      }
+    }
+  </script>
+</body>
+</html>
