@@ -1,0 +1,12 @@
+{
+ "baseCommit":"63d09ac8349cbb2a08cef9b2e6fd5a510a83e643",
+ "fullSuite":{"files":52,"passed":309,"failed":0},
+ "finalRelatedTests":{"passed":53,"failed":0},
+ "build":"passed",
+ "navigation":{"destinations":109,"physicalRooms":92,"unreachable":0,"blockedEdges":0,"badStairs":0,"doorFailures":0,"motorRoutesPassed":11},
+ "review":"passed; unconfirmed rear exit closed, shared orientation, roof slopes, collider transformation, legacy tree overlap resolved",
+ "browser":{"desktop":["main entrance faces statue plaza","peacock on track side","cube on gate side","small side door under dark awning","connected roofs"],"mobile":"390x844 rendered and responsive controls checked","consoleErrors":[],"viewportReset":true},
+ "embedded":"seven changed source modules byte-identical",
+ "evidence":["local-front.jpg","local-side.jpg","local-roof.jpg","local-mobile.jpg"],
+ "limitations":["Dimensions and side-passage interior connection are schematic, not surveyed.","Existing semicircle peacock appearance is unchanged."]
+}

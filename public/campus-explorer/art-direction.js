@@ -22,7 +22,7 @@
   }
   const gymTexture=tiledTexture(true);
   for(const group of scene.children){
-    const cfg=api.buildings.find(b=>group.position.x===b.x&&group.position.z===b.z&&group.type==='Group');
+    const cfg=api.buildings.find(b=>group.position.x===b.x&&group.position.z===b.z&&group.type==='Group'&&!group.userData.floorNum);
     if(!cfg)continue;
     group.userData.buildingId=cfg.id;
     group.traverse(obj=>{

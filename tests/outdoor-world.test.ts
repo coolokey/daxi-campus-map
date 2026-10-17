@@ -11,9 +11,26 @@ beforeAll(()=>{
  const file=(f:string)=>{if(existsSync(root+f))run(readFileSync(root+f,'utf8'))};file('vendor/three.min.js');
  w.THREE.WebGLRenderer=class{domElement:any;shadowMap={};capabilities={getMaxAnisotropy:()=>1};constructor({canvas}:any){this.domElement=canvas}setSize(){}setPixelRatio(){}render(){}};
  file('vendor/OrbitControls.js');
- for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','spatial-world.js','photo-facade.js','photo-teaching.js','photo-roofs.js','art-direction.js','photo-reference.js'])file(f);
+ for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','photo-facade.js','landscape-world.js','spatial-world.js','photo-teaching.js','photo-roofs.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('walks through the statue-facing main door and gate-side small door using the physical scene',()=>{
+ const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),bad=[];for(const kind of ['main','side']){
+  const e=l.entrances.find(e=>e.kind===kind);if(!e){bad.push(kind+' missing');continue;}
+  const p={...e.outside};for(const end of [e.inside,...(kind==='side'?[l.world(l.L/2-1.1,l.cV)]:[])]){
+   const start={...p},n=Math.ceil(Math.hypot(end.x-p.x,end.z-p.z)/.1);
+   for(let i=1;i<=n;i++){const q={x:start.x+(end.x-start.x)*i/n,z:start.z+(end.z-start.z)*i/n};if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z)){bad.push(kind+' blocked');break}}
+  }
+ }return bad})()`);expect(result).toEqual([]);
+});
+it('closes the unconfirmed back exit of the administrative side passage',()=>{
+ const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),p=l.world(l.L/2-1.1,-l.D/2-1),q=l.world(l.L/2-1.1,-l.D/2+1);return moveAvatarWithCollision(p,q.x-p.x,q.z-p.z)})()`);
+ expect(result).toBe(true);
+});
+it('keeps the photo-positioned cube clear of obsolete courtyard tree trunks',()=>{
+ const hits=run(`(()=>{scene.updateMatrixWorld(true);const cube=scene.getObjectByName('cube-core'),bounds=new THREE.Box3().setFromObject(cube),hits=[];scene.traverse(o=>{if(o.isMesh&&o.geometry.type==='CylinderGeometry'&&o.geometry.parameters.height>1&&bounds.intersectsBox(new THREE.Box3().setFromObject(o)))hits.push(o.getWorldPosition(new THREE.Vector3()).toArray())});return hits})()`);
+ expect(hits).toEqual([]);
+});
 it('has a continuous visible perimeter that blocks players, jumping students, teachers and cameras',()=>{
  const result=run(`(()=>{const p=CampusOutdoorPlan.perimeter,g=scene.getObjectByName('campus-perimeter'),bad=[];if(!p||!g)return {missing:true};scene.updateMatrixWorld(true);for(const [i,s] of p.segments.entries()){const dx=s.bx-s.ax,dz=s.bz-s.az,d=Math.hypot(dx,dz),nx=-dz/d,nz=dx/d;for(const t of [0,.1,.5,.9,1]){const x=s.ax+dx*t,z=s.az+dz*t;for(const y of [0,1.3])if(!checkWallCollision(x,y,z)||!campusPeopleCollisionIndex.hit(x,y,z))bad.push(i+' collision');if(!campusWalkWorld.cameraBlocked({x,y:1,z}))bad.push(i+' camera');const ray=new THREE.Raycaster(new THREE.Vector3(x+nx*2,1,z+nz*2),new THREE.Vector3(-nx,0,-nz),0,4);if(!ray.intersectObjects(g.children,true).length)bad.push(i+' visual');}}return {missing:false,bad}})()`);
  expect(result).toEqual({missing:false,bad:[]});

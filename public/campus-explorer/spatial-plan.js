@@ -4,10 +4,11 @@ const CampusSpatialPlan = (() => {
  const contains=(r,u,v)=>u>=r.u0-eps&&u<=r.u1+eps&&v>=r.v0-eps&&v<=r.v1+eps&&(r.kind!=='tower'||(u-r.centerU)**2+(v-r.centerV)**2<=r.radius**2+eps);
  function layout(b){
   const p=b.spatialProfile;if(!p)return null;
-  const horizontal=p.shape==='admin'?true:p.shape==='tech'||b.id==='art-building'?false:b.width>=b.depth,L=horizontal?b.width:b.depth,D=horizontal?b.depth:b.width,sign=p.sign||1;
-  const world=(u,v,y=0)=>horizontal?{x:b.x+u,z:b.z+v,y}:{x:b.x+v,z:b.z+u,y};
+  const statueFacing=p.orientation==='statue';
+  const horizontal=statueFacing?false:p.shape==='admin'?true:p.shape==='tech'||b.id==='art-building'?false:b.width>=b.depth,L=horizontal?b.width:b.depth,D=horizontal?b.depth:b.width,sign=p.sign||1;
+  const world=(u,v,y=0)=>statueFacing?{x:b.x-v,z:b.z+u,y}:horizontal?{x:b.x+u,z:b.z+v,y}:{x:b.x+v,z:b.z+u,y};
   const rect=(u0,u1,v0,v1)=>{const a=world(u0,v0),c=world(u1,v1);return{x0:Math.min(a.x,c.x),x1:Math.max(a.x,c.x),z0:Math.min(a.z,c.z),z1:Math.max(a.z,c.z)}};
-  const local=(x,z)=>horizontal?{u:x-b.x,v:z-b.z}:{u:z-b.z,v:x-b.x};
+  const local=(x,z)=>statueFacing?{u:z-b.z,v:b.x-x}:horizontal?{u:x-b.x,v:z-b.z}:{u:z-b.z,v:x-b.x};
   const cells=[],corridors=[],footprints=[],stairs=[],ramps=[],platforms=[],holes=[],entrances=[],displayRows=[];
   const addRect=(target,r)=>{const a={...r,rect:rect(r.u0,r.u1,r.v0,r.v1)};target.push(a);return a};
   function addCell(item,floor,u0,u1,v0,v1,row='main',doorSide='v1',corridorValue){
@@ -43,7 +44,7 @@ const CampusSpatialPlan = (() => {
    // Compile both office rows into one coordinate frame, one building and one graph.
    const front=layout({...b,spatialProfile:p.front}),rear=layout({...b,...p.rearBody,id:'admin-inner',spatialProfile:p.rear});
    function merge(part,name){
-    const shift=part.b.z-b.z;
+    const shift=local(part.b.x,part.b.z).v;
     const localRect=q=>({...q,v0:q.v0+shift,v1:q.v1+shift,part:name});
     for(const key of ['cells','corridors','footprints','platforms','holes'])for(const q of part[key]){
      const r=localRect(q);if(key==='cells')r.row=name;if(r.v!==undefined)r.v+=shift;
@@ -57,7 +58,7 @@ const CampusSpatialPlan = (() => {
    merge(rear,'inner');merge(front,'entrance');
    displayRows.push({id:'entrance',label:'入口側處室',axis:'u',start:-L/2,end:L/2},{id:'inner',label:'內側處室',axis:'u',start:-12,end:12});
    const passage=front.cells.find(c=>c.floor===2&&c.kind==='passage'),u=(passage.u0+passage.u1)/2;
-   const v0=rear.cV+rear.b.z-b.z-.1,v1=-D/2+.1;
+   const v0=rear.cV+local(rear.b.x,rear.b.z).v-.1,v1=-D/2+.1;
    for(let f=2;f<=b.floors;f++){
     Object.assign(fp(f,u-1.7,u+1.7,v0,v1),{part:'connector'});
     Object.assign(co(f,u-1.7,u+1.7,v0,front.cV),{part:'connector'});
@@ -110,14 +111,18 @@ const CampusSpatialPlan = (() => {
     const items=p.floors[f],fixed=items.reduce((n,c)=>n+(c.len||0),0),unit=(L-fixed)/items.reduce((n,c)=>n+(c.len?0:c.units||1),0);let u=-L/2;
     for(const item of items){const u1=u+(item.len||unit*(item.units||1));
      const back=-outerV,v0=Math.min(back,wallV),v1=Math.max(back,wallV);
-     addCell(item,f,u,u1,item.kind==='stair'?-D/2:v0,item.kind==='stair'?D/2:v1,'main',sign===1?'v1':'v0',cV);
+     const roomEnd=p.sideEntrance&&f===1&&item.kind==='room'?Math.min(u1,L/2-p.sideEntrance.width):u1;
+     addCell(item,f,u,roomEnd,item.kind==='stair'?-D/2:v0,item.kind==='stair'?D/2:v1,'main',sign===1?'v1':'v0',cV);
      if(item.kind==='stair'&&f===1)addStair(item.id,item.label,u,u1,Math.min(wallV,wallV-sign*5.2),Math.max(wallV,wallV-sign*5.2));
      if(item.kind==='passage')co(f,u,u1,-D/2,D/2);
      u=u1;
     }
-    if(f===1){entrances.push({floor:1,inside:world(0,cV),outside:world(0,outerV+sign*1.2)});
+    if(f===1){entrances.push({floor:1,kind:p.sideEntrance?'main':undefined,inside:world(0,cV),outside:world(0,outerV+sign*1.2)});
      // Corridor ends are usable entrances and inter-wing connections.
-     for(const side of [-1,1])entrances.push({floor:1,inside:world(side*(L/2-.6),cV),outside:world(side*(L/2+1.2),cV)});
+     if(p.sideEntrance){
+      co(1,L/2-p.sideEntrance.width,L/2,-D/2,D/2);
+      entrances.push({floor:1,kind:'side',inside:world(L/2-p.sideEntrance.width/2,p.sideEntrance.v),outside:world(L/2+1.4,p.sideEntrance.v)});
+     }else for(const side of [-1,1])entrances.push({floor:1,inside:world(side*(L/2-.6),cV),outside:world(side*(L/2+1.2),cV)});
     }
    }
   }else{

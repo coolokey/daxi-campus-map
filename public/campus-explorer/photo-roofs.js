@@ -29,7 +29,7 @@ const CampusPhotoRoofs=(()=>{
    }
    function box(w,h,d,x,cy,z,color,rx=0,rz=0){add(new THREE.BoxGeometry(w,h,d),color,x,cy,z,rx,rz)}
    function localBox(u,v,length,depth,h,cy,color,slope=0){
-    const p=l.world(u,v);box(l.horizontal?length:depth,h,l.horizontal?depth:length,p.x,cy,p.z,color,l.horizontal?slope:0,l.horizontal?0:-slope);
+    const p=l.world(u,v),reverse=l.b.spatialProfile.orientation==='statue';box(l.horizontal?length:depth,h,l.horizontal?depth:length,p.x,cy,p.z,color,l.horizontal?slope:0,l.horizontal?0:(reverse?slope:-slope));
    }
    function pitched(p,{color=0xd8cd9c,rise=.72,overhang=.25,endColor=0xb66c5b,tiles=false}={}){
     const u=(p.u0+p.u1)/2,v=(p.v0+p.v1)/2,length=p.u1-p.u0+overhang*2,half=(p.v1-p.v0)/2+overhang;
@@ -55,7 +55,7 @@ const CampusPhotoRoofs=(()=>{
     for(const p of top.filter(p=>p.part==='inner'))pitched(p,{color:0xd9b38d,rise:.65,overhang:.16});
     for(const p of top.filter(p=>p.part==='connector')){
      const half=(p.u1-p.u0)/2+.16,len=p.v1-p.v0+.5,rise=.28,angle=Math.atan2(rise,half),depth=Math.hypot(half,rise),x=(p.u0+p.u1)/2,z=(p.v0+p.v1)/2;
-     for(const sign of [-1,1])box(depth,.09,len,l.b.x+x+sign*half/2,y+.1+rise/2,l.b.z+z,0xd9b38d,0,-sign*angle);
+     for(const sign of [-1,1]){const p=l.world(x+sign*half/2,z);box(l.horizontal?depth:len,.09,l.horizontal?len:depth,p.x,y+.1+rise/2,p.z,0xd9b38d,l.horizontal?0:sign*angle,l.horizontal?-sign*angle:0);}
     }
    }else if(l.id==='tech-building'){
     // Each white flat roof occupies one existing wing. No rectangle spans the courtyard.

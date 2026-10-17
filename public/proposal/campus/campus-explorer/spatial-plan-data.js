@@ -66,8 +66,9 @@ const CampusSpatialData = (() => {
  };
  // One building owns every office. Parts are geometry only, never separate destinations.
  const adminFront=profiles['admin-front'],adminRear=profiles['admin-back'];
- profiles['admin-front']={shape:'admin',sign:1,front:adminFront,rear:adminRear,
-  rearBody:{x:-12,z:23,width:24,depth:10},
+ adminFront.orientation=adminRear.orientation='statue';adminFront.sideEntrance={v:-1.2,width:2.2};
+ profiles['admin-front']={shape:'admin',orientation:'statue',sign:1,front:adminFront,rear:adminRear,
+  rearBody:{x:-9.5,z:28.5,width:8,depth:24},
   confidence:'1151015 Word 標示與五角度空拍：同一連棟行政樓；各區尺度為照片比例示意'};
  custom.admin=[1,2,3].map(f=>[f,...[...adminFront.floors[f],...adminRear.floors[f]].filter(c=>c.kind==='room')]);
  Object.assign(extras,{

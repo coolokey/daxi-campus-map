@@ -58,10 +58,10 @@ const FH = 3.6; // Floor Height in meters
     color: 0xc7c4b9,
     roofColor: 0xa66b5c,
     hasPitchedRoof: true,
-    x: -12, z: 42, width: 26, depth: 14, floors: 3,
+    // Main facade faces the statue plaza (-X); the gate-side end is +Z.
+    x: -21, z: 28.5, width: 10, depth: 26, floors: 3,
     stairs: [
-      { x: -22, z: 44, name: "行政大樓西側樓梯", floors: 3 },
-      { x: -2, z: 44, name: "行政大樓東側樓梯", floors: 3 }
+      { x: -9.5, z: 28.5, name: "行政大樓中段樓梯", floors: 3 }
     ],
     rooms: [
       { id: "admin-g89-staff", code: "A1-01", name: "八、九年級導師室 (1F)", floor: 1, node: "admin-f-1f-w", cat: "admin" },

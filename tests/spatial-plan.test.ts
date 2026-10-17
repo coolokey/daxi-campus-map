@@ -3,6 +3,21 @@ import {readFileSync,existsSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 function source(){return ['campus-data.js','spatial-plan-data.js','spatial-plan.js','walk-world-math.js'].filter(f=>existsSync(new URL('../public/campus-explorer/'+f,import.meta.url))).map(f=>readFileSync(new URL('../public/campus-explorer/'+f,import.meta.url),'utf8')).join('\n')}
 const load=()=>runInNewContext(source()+';({buildings:BUILDINGS_CONFIG,math:CampusWalkMath,plan:typeof CampusSpatialPlan===\'undefined\'?null:CampusSpatialPlan})');
+
+it('faces the administrative main entrance toward the statue and places the side entrance on the gate end',()=>{
+ const {buildings,math}=load(),b=buildings.find((b:any)=>b.id==='admin-front'),l=math.layout(b);
+ const main=l.entrances.find((e:any)=>e.kind==='main'),side=l.entrances.find((e:any)=>e.kind==='side');
+ expect(main).toBeTruthy();expect(side).toBeTruthy();
+ expect(main.outside.x).toBeLessThan(main.inside.x);expect(main.outside.z).toBeCloseTo(28.5);
+ expect(side.outside.z).toBeGreaterThan(side.inside.z);expect(side.outside.x).toBeGreaterThan(main.outside.x);
+ expect(l.horizontal).toBe(false);
+ for(const [u,v] of [[-12,4],[11,-2],[0,-13]]){
+  const p=l.world(u,v),q=l.local(p.x,p.z);expect(q.u).toBeCloseTo(u);expect(q.v).toBeCloseTo(v);
+ }
+ const rear=l.footprints.find((p:any)=>p.part==='inner');
+ expect(rear.rect.x0).toBeGreaterThan(l.world(0,0).x);
+ expect(rear.rect.x1).toBeLessThanOrEqual(-4);
+});
 describe('115 平面圖共用配置',()=>{
  it('直欄代表樓層，九年級及七年級右翼不再橫列錯置',()=>{
   const {buildings}=load(),room=(id:string)=>buildings.flatMap((b:any)=>b.rooms).find((r:any)=>r.id===id);

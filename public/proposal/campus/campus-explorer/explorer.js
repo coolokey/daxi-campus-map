@@ -994,8 +994,9 @@
         node: "statue-node"
       };
 
-      // 庭園周邊植栽
-      [-42, -30].forEach(tx => {
+      // Plaza planting only. The administrative beds now own the east-side
+      // photo-matched trees; the old x=-30 row intersected the relocated cube.
+      [-42].forEach(tx => {
         [24, 40].forEach(tz => {
           scene.add(createCypressTree(tx, tz));
         });

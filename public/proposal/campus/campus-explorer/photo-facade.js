@@ -2,9 +2,11 @@
  * Attachments are independent of the replaced legacy floor groups.
  */
 (()=>{
- const api=window.campusExplorer,b=BUILDINGS_CONFIG.find(b=>b.id==='admin-front');if(!api||!b)return;
+ const api=window.campusExplorer,actual=BUILDINGS_CONFIG.find(b=>b.id==='admin-front');if(!api||!actual)return;
+ const frame=CampusSpatialPlan.layout(actual),b={...actual,x:0,z:0,width:frame.L,depth:frame.D};
  const materials=new Map(),mat=c=>{if(!materials.has(c))materials.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.97}));return materials.get(c)};
- function group(f,name){const g=new THREE.Group();g.name=name;g.userData={buildingId:b.id,floorNum:f};api.scene.add(g);floorMeshes.push(g);return g}
+ function group(f,name){const g=new THREE.Group();g.name=name;g.userData={buildingId:b.id,floorNum:f};g.position.set(actual.x,0,actual.z);g.rotation.y=-Math.PI/2;api.scene.add(g);floorMeshes.push(g);return g}
+ function photoCollider(x0,x1,z0,z1,y0,y1){const r=frame.rect(x0,x1,z0,z1);registerWallCollider(r.x0,r.x1,r.z0,r.z1,y0,y1);Object.assign(WALL_COLLIDERS.at(-1),{buildingId:b.id,persistent:true});}
  function box(g,w,h,d,x,y,z,c){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),c?.isMaterial?c:mat(c));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;g.add(m);return m}
  const frontZ=b.z+b.depth/2,white=0xb4b8ae,teal=0x447b79;
  const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const ctx=canvas.getContext('2d');ctx.fillStyle='#aaa9a1';ctx.fillRect(0,0,128,128);
@@ -31,7 +33,7 @@
     for(const dx of [-width/2,0,width/2])box(g,.045,1.8,.09,center+dx,y+1.85,frontZ+.08,white);
     for(const dy of [-.9,.42,.9])box(g,width,.045,.09,center,y+1.85+dy,frontZ+.08,white);
    }
-   registerWallCollider(b.x-b.width/2,b.x+b.width/2,frontZ-.08,frontZ+.08,y,y+FH);Object.assign(WALL_COLLIDERS.at(-1),{buildingId:b.id,persistent:true});
+   photoCollider(b.x-b.width/2,b.x+b.width/2,frontZ-.08,frontZ+.08,y,y+FH);
   }
  }
  const entrance=group(1,'photo-admin-entrance');
@@ -39,7 +41,7 @@
  // Its posts and open glass leaves preserve the existing central route.
  for(const x of [b.x-2.8,b.x+2.8]){
   box(entrance,.55,6.85,.55,x,3.425,frontZ+1.65,stone).name='admin-porch-column';
-  registerWallCollider(x-.275,x+.275,frontZ+1.375,frontZ+1.925,0,6.85);Object.assign(WALL_COLLIDERS.at(-1),{buildingId:b.id,persistent:true});
+  photoCollider(x-.275,x+.275,frontZ+1.375,frontZ+1.925,0,6.85);
   for(let y=1.3;y<6.7;y+=1.35)box(entrance,.557,.012,.557,x,y,frontZ+1.65,0x787d78);
  }
  const canopy=box(entrance,6.5,.22,2.55,b.x,6.96,frontZ+.8,stone);canopy.name='admin-porch-canopy';
@@ -50,7 +52,7 @@
   const x=b.x+sign*1.65,pane=box(entrance,.85,2.25,.035,x,1.18,frontZ+.15,glass);
   for(const dx of [-.425,.425])box(entrance,.045,2.25,.06,x+dx,1.18,frontZ+.15,white);
   for(const y of [.06,.85,2.3])box(entrance,.85,.04,.06,x,y,frontZ+.15,white);
-  registerWallCollider(x-.425,x+.425,frontZ+.12,frontZ+.18,0,2.3);Object.assign(WALL_COLLIDERS.at(-1),{buildingId:b.id,persistent:true});
+  photoCollider(x-.425,x+.425,frontZ+.12,frontZ+.18,0,2.3);
  }
  box(entrance,4.15,.58,.035,b.x,2.64,frontZ+.15,glass).name='admin-entrance-transom';
  for(const y of [2.32,2.94])box(entrance,4.2,.045,.06,b.x,y,frontZ+.15,white);
@@ -72,7 +74,7 @@
   box(entrance,c-a,1.55,.025,(a+c)/2,1.85,frontZ+.04,glass);
   for(let x=a+.2;x<c;x+=.5)box(entrance,.035,1.6,.06,x,1.85,frontZ+.075,white);
   for(const y of [1.05,1.6,2.65])box(entrance,c-a,.035,.06,(a+c)/2,y,frontZ+.075,white);
-  registerWallCollider(a,c,frontZ-.08,frontZ+.08,0,FH);Object.assign(WALL_COLLIDERS.at(-1),{buildingId:b.id,persistent:true});
+  photoCollider(a,c,frontZ-.08,frontZ+.08,0,FH);
  }
  // The shared spatial model builds both indexes after all physical scenery.
  // Low entrance threshold and flank ramp are visual guides at the existing zero-level entrance.
@@ -83,6 +85,29 @@
   for(const z of [frontZ+.1,frontZ+1.5,frontZ+2.9])box(entrance,.035,h,.035,x,h/2,z,0xaab5b4);
  }
  for(const x of [b.x-3.9,b.x+5.9]){const urn=new THREE.Mesh(new THREE.CylinderGeometry(.36,.2,.6,12),mat(0xcdcec4));urn.position.set(x,.3,frontZ+.65);entrance.add(urn)}
+ // S__66011292: the small entrance is on the gate-side short wall, under a low dark awning.
+ // Its exact dimensions/interior arrangement are schematic; it is distinct from the tall main porch.
+ const side=group(1,'photo-admin-side-entrance'),sideU=b.width/2,sideV=actual.spatialProfile.front.sideEntrance.v;
+ // The same gate-side end wall is closed above the awning in S__66011292.
+ for(let f=2;f<=b.floors;f++){
+  const wall=group(f,`photo-admin-side-wall-${f}`),y=(f-1)*FH;
+  box(wall,.18,FH,b.depth,sideU+.13,y+FH/2,0,stone).name='admin-gate-side-stone-wall';
+  photoCollider(sideU+.04,sideU+.22,-b.depth/2,b.depth/2,y,y+FH);
+ }
+ for(const [a,c] of [[-b.depth/2,sideV-.95],[sideV+.95,b.depth/2]]){
+  box(side,.16,FH,c-a,sideU,FH/2,(a+c)/2,stone).name='admin-side-wall';photoCollider(sideU-.08,sideU+.08,a,c,0,FH);
+ }
+ box(side,.16,FH-2.25,1.9,sideU,(FH+2.25)/2,sideV,stone);
+ photoCollider(sideU-.08,sideU+.08,sideV-.95,sideV+.95,2.25,FH);
+ for(const z of [sideV-.95,sideV+.95])box(side,.18,2.25,.045,sideU,1.125,z,white);
+ const sideCanopy=box(side,1.5,.12,2.4,sideU+.7,2.65,sideV,0x354b50);sideCanopy.rotation.z=-.12;sideCanopy.name='admin-side-canopy';
+ box(side,1.4,.04,1.9,sideU+.65,.025,sideV,0x93978d).name='admin-side-threshold';
+ // The new side passage has no photo-confirmed rear exit.
+ const passageStart=sideU-actual.spatialProfile.front.sideEntrance.width;
+ box(side,sideU-passageStart,FH,.16,(passageStart+sideU)/2,FH/2,-b.depth/2,stone).name='admin-side-passage-back-wall';
+ photoCollider(passageStart,sideU,-b.depth/2-.08,-b.depth/2+.08,0,FH);
+ // Close the unconfirmed opposite corridor end instead of duplicating the main entrance.
+ box(side,.16,FH,2.8,-sideU,FH/2,frontZ-1.4,stone);photoCollider(-sideU-.08,-sideU+.08,frontZ-2.8,frontZ,0,FH);
  // Two-colour low roof surfaces follow the matched aerial, retaining roof-cut controls.
  const oldRoofs=[];api.scene.traverse(o=>{if(o.userData?.buildingId===b.id&&o.userData.roof)oldRoofs.push(o)});
  for(const o of oldRoofs){o.parent?.remove(o);const i=floorMeshes.indexOf(o);if(i>=0)floorMeshes.splice(i,1);o.geometry?.dispose()}
