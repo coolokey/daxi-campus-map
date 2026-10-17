@@ -56,6 +56,36 @@ const CampusSpatialPlan = (() => {
    }
    // Root circulation starts beside the real stairwell; ground-floor parts have outdoor access.
    merge(rear,'inner');merge(front,'entrance');
+   if(p.groundPlan==='scheme-c-be'){
+    // Replace only the ground-floor row compiler with the confirmed 2D topology.
+    for(const list of [cells,corridors])for(let i=list.length-1;i>=0;i--)if(list[i].floor===1)list.splice(i,1);
+    for(let i=entrances.length-1;i>=0;i--)if(!['main','side'].includes(entrances[i].kind))entrances.splice(i,1);
+    const rearShift=local(rear.b.x,rear.b.z).v,rearBack=rearShift-rear.D/2,rearFront=rearShift+rear.D/2,s=stairs[0],landingV=s.v1,entryV=(landingV+rearFront)/2;
+    const byId=id=>({kind:'room',id});
+    addCell(byId('admin-g89-staff'),1,-L/2,-4.2,-3.5,wallV,'entrance','u1',-2.8);
+    addCell(byId('admin-g89-staff-east'),1,4.2,L/2-2.2,-3.5,wallV,'entrance','u0',2.8);
+    addCell(byId('student-affairs'),1,-rear.L/2,s.u0,rearBack,landingV,'inner','v1',entryV);
+    addCell({kind:'stair',id:'admin-central-ground-stair',label:'中段樓梯（左側入口）'},1,s.u0,s.u1,rearBack,rearFront,'inner');
+    addCell({kind:'wc',label:'後棟男女廁'},1,s.u1,5.5,rearBack,rearFront,'inner','v1',rearFront+.75);
+    const split=(rearBack+rearFront)/2;
+    addCell(byId('admin-reception-1f'),1,5.5,10,rearBack,split,'inner-east','u1',11);
+    addCell(byId('coach-room'),1,5.5,10,split,rearFront,'inner-east','u1',11);
+    addCell({kind:'wc',label:'前棟東側男女廁'},1,7.2,L/2-2.2,-6,-3.5,'entrance-east','u0',6.1);
+    const path=(u0,u1,v0,v1,part)=>{Object.assign(fp(1,u0,u1,v0,v1),{part});Object.assign(co(1,u0,u1,v0,v1),{part})};
+    path(-4.2,4.2,rearFront,outerV,'central-through-hall');
+    path(-4.2,7.2,-6,-3.5,'central-breezeway');
+    path(s.u0-2.2,15,rearFront,-6,'east-breezeway');
+    path(-rear.L/2,s.u0,landingV,rearFront,'stair-left-approach');
+    path(s.u0,s.u1,landingV,rearFront,'stair-ground-landing');
+    path(s.u0-2.2,s.u0,landingV,-6,'stair-left-approach');
+    path(10,rear.L/2,rearBack,-6,'rear-east-corridor');
+    path(L/2-2.2,L/2,-6,outerV,'front-side-passage');
+    co(1,-L/2,L/2,wallV,outerV);
+    s.groundEntry={doorSide:'u0',v:entryV,landingV1:rearFront,outside:world(s.u0-1.1,entryV),inside:world(s.u0+.8,entryV)};
+    entrances.push({floor:1,kind:'east-breezeway',inside:world(14,(rearFront-6)/2),outside:world(16.4,(rearFront-6)/2)});
+    displayRows.push({id:'inner-east',label:'後棟東側・會客室／教練室',axis:'v',start:rearBack,end:rearFront},{id:'entrance-east',label:'前棟東側廁所',axis:'u',start:7.2,end:L/2-2.2});
+   }
+
    displayRows.push({id:'entrance',label:'入口側處室',axis:'u',start:-L/2,end:L/2},{id:'inner',label:'內側處室',axis:'u',start:-12,end:12});
    const passage=front.cells.find(c=>c.floor===2&&c.kind==='passage'),u=(passage.u0+passage.u1)/2;
    const v0=rear.cV+local(rear.b.x,rear.b.z).v-.1,v1=-D/2+.1;

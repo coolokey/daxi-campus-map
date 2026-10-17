@@ -86,6 +86,15 @@
  }
  function stairEnclosure(g,l,s,y){
   const colors=surfaceMaterials(l),stop=s.nearU-.14;
+  if(y===0&&s.groundEntry){
+   const e=s.groundEntry,a=s.v1,b=e.landingV1;
+   // Ground landing is entered only through its left side (confirmed E).
+   box(g,l,s.u0,s.u1,b-.09,b+.09,0,FH,colors.wall,true);
+   box(g,l,s.u1-.09,s.u1+.09,a,b,0,FH,colors.wall,true);
+   for(const [v0,v1] of [[a,e.v-.95],[e.v+.95,b]])box(g,l,s.u0-.09,s.u0+.09,v0,v1,0,FH,colors.wall,true);
+   box(g,l,s.u0-.09,s.u0+.09,e.v-.95,e.v+.95,2.3,FH,colors.wall,true);
+  }
+
   // Thin side walls leave the full 1.8m exit landing open to the corridor.
   for(const v of [s.v0,s.v1])box(g,l,s.u0,stop,v-.09,v+.09,y,y+FH,colors.wall,true);
   // The detached history room has a ground-floor entrance through the north

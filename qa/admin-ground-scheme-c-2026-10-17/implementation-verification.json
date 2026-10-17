@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-17",
+  "scheme": "C",
+  "confirmedEntrances": {
+    "meetingAndCoach": "B: independent doors on right corridor",
+    "centralStair": "E: approach from left"
+  },
+  "geometry": "relative dimensions schematic",
+  "spatialReport": "spatial-verification.json",
+  "testedDestinations": 111,
+  "motorRoutes": 16,
+  "build": "passed",
+  "review": "no blocking findings; admin categories corrected",
+  "localDesktop": "passed",
+  "localMobile": "passed at 390x844",
+  "consoleErrors": [],
+  "upperFloors": "preserved existing room geometry and stair landings",
+  "tests": "54 files, 318 tests passed"
+}

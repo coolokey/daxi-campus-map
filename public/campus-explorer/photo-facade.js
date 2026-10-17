@@ -104,8 +104,10 @@
  box(side,1.4,.04,1.9,sideU+.65,.025,sideV,0x93978d).name='admin-side-threshold';
  // The new side passage has no photo-confirmed rear exit.
  const passageStart=sideU-actual.spatialProfile.front.sideEntrance.width;
+ if(actual.spatialProfile.groundPlan!=='scheme-c-be'){
  box(side,sideU-passageStart,FH,.16,(passageStart+sideU)/2,FH/2,-b.depth/2,stone).name='admin-side-passage-back-wall';
  photoCollider(passageStart,sideU,-b.depth/2-.08,-b.depth/2+.08,0,FH);
+ }
  // Close the unconfirmed opposite corridor end instead of duplicating the main entrance.
  box(side,.16,FH,2.8,-sideU,FH/2,frontZ-1.4,stone);photoCollider(-sideU-.08,-sideU+.08,frontZ-2.8,frontZ,0,FH);
  // Two-colour low roof surfaces follow the matched aerial, retaining roof-cut controls.

@@ -23,9 +23,9 @@ it('walks through the statue-facing main door and gate-side small door using the
   }
  }return bad})()`);expect(result).toEqual([]);
 });
-it('closes the unconfirmed back exit of the administrative side passage',()=>{
+it('opens the administrative side passage into the confirmed Scheme C circulation',()=>{
  const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),p=l.world(l.L/2-1.1,-l.D/2-1),q=l.world(l.L/2-1.1,-l.D/2+1);return moveAvatarWithCollision(p,q.x-p.x,q.z-p.z)})()`);
- expect(result).toBe(true);
+ expect(result).toBe(false);
 });
 it('keeps the photo-positioned cube clear of obsolete courtyard tree trunks',()=>{
  const hits=run(`(()=>{scene.updateMatrixWorld(true);const cube=scene.getObjectByName('cube-core'),bounds=new THREE.Box3().setFromObject(cube),hits=[];scene.traverse(o=>{if(o.isMesh&&o.geometry.type==='CylinderGeometry'&&o.geometry.parameters.height>1&&bounds.intersectsBox(new THREE.Box3().setFromObject(o)))hits.push(o.getWorldPosition(new THREE.Vector3()).toArray())});return hits})()`);
@@ -248,4 +248,15 @@ it('renders both aerial-matched pairs at the shared coordinates and routes betwe
  expect(r.groups.map((g:any[])=>g.length)).toEqual([2,2]);
  expect(r.groups[0].map((m:any)=>m.x)).toEqual([-58,-58]);expect(r.groups[1].map((m:any)=>m.z)).toEqual([-48,-26]);
  expect(r.node).toEqual({x:-19.5,z:-37});expect(r.blocked).toBe(false);
+});
+
+it('walks through the left stair door and independent east office doors in Scheme C B+E',()=>{
+ const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),s=l.stairs[0],bad=[];
+  const walk=(start,end,label)=>{const path=campusWalkWorld.gridPath(start,end,start.y,l);if(!path){bad.push(label+' no path');return;}const p={...start};for(const q of path)if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z)){bad.push(label+' blocked');break;}};
+  const main=l.entrances.find(e=>e.kind==='main').inside;
+  walk(main,s.groundEntry.outside,'left stair approach');walk(s.groundEntry.outside,s.groundEntry.inside,'left stair door');
+  walk(s.groundEntry.inside,l.world(s.innerU,s.centerV+s.sign*1.25),'stair lower landing');
+  for(const id of ['admin-reception-1f','coach-room','admin-g89-staff','admin-g89-staff-east']){const r=l.rooms.find(r=>r.id===id);walk(main,r.corridor,id+' approach');const p={...r.corridor};for(const q of [r.door,r.center])if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z))bad.push(id+' door');}
+  const e=l.entrances.find(e=>e.kind==='east-breezeway');walk(main,e.inside,'east breezeway');return bad;})()`);
+ expect(result).toEqual([]);
 });

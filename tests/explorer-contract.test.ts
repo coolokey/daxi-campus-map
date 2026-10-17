@@ -5,11 +5,12 @@ import {runInNewContext} from 'node:vm';
 const root=new URL('../public/campus-explorer/',import.meta.url);
 const data=readFileSync(new URL('campus-data.js',root),'utf8');
 const script=readFileSync(new URL('explorer.js',root),'utf8');
+const outdoor=readFileSync(new URL('outdoor-plan.js',root),'utf8');
 const nav=script.match(/const NAV_NODES = ([\s\S]*?\n};)/)![0];
 type Room={id:string;floor:number;node:string};
 type Building={id:string;x:number;z:number;width:number;depth:number;rooms:Room[]};
 const buildings:Building[]=runInNewContext(data+'; BUILDINGS_CONFIG');
-const nodes:Record<string,{x:number;y:number;z:number;neighbors:string[]}>=runInNewContext(nav+'; NAV_NODES');
+const nodes:Record<string,{x:number;y:number;z:number;neighbors:string[]}>=runInNewContext(outdoor+';'+nav+'; NAV_NODES');
 describe('平面圖與導航一致性',()=>{
  it('行政大樓只有一棟配置，雙縱棟保留中庭',()=>{
   const b=(id:string)=>buildings.find(b=>b.id===id)!;
