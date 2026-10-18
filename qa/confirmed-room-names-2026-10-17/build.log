@@ -1,0 +1,37 @@
+
+> daxi-campus-map@0.1.0 prebuild
+> node scripts/sync-anniversary.cjs
+
+Synced anniversary modules and recording assets to the embedded proposal campus.
+
+> daxi-campus-map@0.1.0 build
+> tsc -b && vite build && node scripts/package-explorer.cjs
+
+vite v8.3.3 building client environment for production...
+transforming...
+✓ 42 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                              1.84 kB │ gzip:   0.69 kB
+dist/assets/index-BXgbHzS7.css               1.92 kB │ gzip:   0.83 kB
+dist/assets/legacy-bootstrap-XgjTp5ax.css    9.52 kB │ gzip:   2.81 kB
+dist/assets/index-LVQOy2q-.js                4.76 kB │ gzip:   2.25 kB
+dist/assets/legacy-bootstrap-k0r9QrGY.js   220.16 kB │ gzip:  68.91 kB
+dist/assets/LegacyCampusApp-BtrgdvHB.js    556.27 kB │ gzip: 141.88 kB
+
+✓ built in 9.08s
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[PLUGIN_TIMINGS] JavaScript callbacks ran for 8.2s of this 8.9s build (92%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin vite:prepare-out-dir renderStart (47%, 4.1s, 1 call)
+Additional callback time came from the callbacks below and from callbacks under 1s.
+1 callback is listed without a time. Its calls overlapped, so the time inside one call includes work from other calls. To find its cost, profile the build with `node --cpu-prof`:
+  - plugin vite:css-post renderChunk (3 calls)
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+
+Campus delivery: 44 scripts + 13 styles -> 1 script + 1 stylesheet; HTML starts viewer directly.
+Embedded proposal campus bundled with the same anniversary engine.

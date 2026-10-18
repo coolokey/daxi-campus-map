@@ -8,7 +8,7 @@
  const colors=M.colors;
  let year=115,filter='all',saved={},draft={},saveError='',lastFocus=null;
  const drafts=new Map(),originalNames=new Map(Object.values(api.rooms).map(r=>[r.id,r.name]));
- function read(){try{saveError='';return M.parse(localStorage.getItem(M.key(year)),rooms,aliases())}catch{saveError='瀏覽器無法使用本機儲存，仍可檢視配置。';return {...base}}}
+ function read(){try{saveError='';const names=M.parse(localStorage.getItem(M.key(year)),rooms,aliases());return year===115?M.migrateConfirmedNames(names,CampusSpatialData.confirmedNames):names}catch{saveError='瀏覽器無法使用本機儲存，仍可檢視配置。';return {...base}}}
  const dirty=()=>rooms.some(r=>draft[r.id]!==saved[r.id]);
  const actions=document.querySelector('.top-actions');
  document.getElementById('btn-mode-toggle').hidden=true;

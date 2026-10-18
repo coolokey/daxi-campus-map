@@ -1,0 +1,12 @@
+
+ RUN  v5.0.3 F:/1151005---創意教學/admin-garden-release-20261016
+
+
+ Test Files  55 passed (55)
+      Tests  323 passed (323)
+   Start at  23:28:13
+   Duration  114.34s (import 49%, tests 44%, environment 3%, transform 2%, worker 2%)
+
+    Isolate  55 workers spawned · ~645ms startup each (spawn + environment, per file)
+             at least ~34.84s faster with isolate: false — reuses workers across files instead of one per file
+

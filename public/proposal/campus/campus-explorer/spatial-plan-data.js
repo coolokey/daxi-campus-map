@@ -92,5 +92,20 @@ const CampusSpatialData = (() => {
   }));
   b.spatialProfile=p;
  }
- return {profiles,custom,aliases};
+ // Names confirmed by the user's 2026-10-17 space-code comparison table.
+ // Keep IDs, floors and physical geometry independent from these corrections.
+ const namesById={
+  'reception':'油印室','pe-office':'檔案室（521）','pe-storage':'檔案室（522）',
+  'mid-315':'體育器材室','wood-craft-206':'輕艇隊訓練室','mid-325':'志工／校友辦公室','mid-324':'訓育組備用器材室','math-research':'教學設備器材室',
+  'native-lang':'生涯發展教室','inter-disc':'教材製作室','woodwork-front':'本土語教室',
+  'math-lab':'家長會辦公室','sped-classroom':'教師會辦公室',
+  'multi-622':'資訊機房','it-server':'諮商會議室','sped-614':'特教班','sped-612':'資源班 1／2',
+  'tech-sw-1':'生物實驗室','tech-nw-2':'科中辦公室／自造中心辦公室','maker-lab':'科技智慧教室','tech-smart':'科技創作教室',
+  'music-2f':'音樂教室（第一音樂教室）','music-3f':'音樂教室（第二音樂教室）'
+ },confirmedNames={};
+ for(const b of BUILDINGS_CONFIG)for(const r of b.rooms)if(namesById[r.id]){
+  confirmedNames[r.id]={previous:r.name.replace(/\s*\(\d+F\)/,''),name:namesById[r.id]};
+  r.name=`${namesById[r.id]} (${r.floor}F)`;
+ }
+ return {profiles,custom,aliases,confirmedNames};
 })();

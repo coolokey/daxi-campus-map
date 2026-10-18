@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-18",
+  "confirmedRoomNames": 23,
+  "tests": "55 files, 323 tests passed",
+  "spatialDestinations": 111,
+  "motorRoutes": 20,
+  "floorAndSpaceCodes": "unchanged",
+  "groundPlan": "approved-crosshall preserved",
+  "storedNames": "exact previous defaults migrated; custom values retained",
+  "desktop": "23 code/name pairs verified in editor",
+  "mobile": "390x844 long name and floor display checked",
+  "consoleErrors": [],
+  "review": "inline data and migration review completed"
+}
