@@ -107,10 +107,15 @@ const CampusSpatialPlan = (() => {
     const office=id=>({kind:'room',id}),route=(u0,u1,v0,v1)=>co(2,u0,u1,v0,v1);
     const ground=stairs[0];
     // Latest user correction: upper uses must align with the confirmed 1F uses.
-    const west=cells.find(c=>c.id==='admin-g89-staff'),east=cells.find(c=>c.id==='admin-g89-staff-east'),lowerWC=cells.find(c=>c.floor===1&&c.kind==='wc'&&!c.accessible),split=-.5;
-    addCell(office('reception'),2,west.u0,west.u1,west.v0,split,'second-west','u0',1);
-    addCell(office('principal'),2,west.u0,west.u1,split,west.v1,'second-west','u0',1);
-    addCell(office('academic'),2,east.u0,east.u1,east.v0,east.v1,'second-east','v1',-6.1);
+    const west=cells.find(c=>c.id==='admin-g89-staff'),east=cells.find(c=>c.id==='admin-g89-staff-east'),lowerWC=cells.find(c=>c.floor===1&&c.kind==='wc'&&!c.accessible),split=7.8;
+    // Rotate the adjoining pair within the confirmed west-side footprint.
+    const oil=addCell(office('reception'),2,west.u0,split,west.v0,west.v1,'second-west','u0',1);
+    const landingV=ground.centerV;
+    oil.door=world(west.u0,landingV,H);oil.corridor=world(1,landingV,H);oil.entranceOffset=landingV-oil.v;
+    const principal=addCell(office('principal'),2,split,west.u1,west.v0,west.v1,'second-west','v0',-6.1);
+    const academic=addCell(office('academic'),2,east.u0,east.u1,east.v0,east.v1,'second-east','v1',-6.1);
+    // Opposing doors share one axis across the public corridor.
+    academic.door=world(principal.u,east.v1,H);academic.corridor=world(principal.u,-6.1,H);academic.entranceOffset=principal.u-academic.u;
     const general=addCell(office('general'),2,-13,-7.8,-4.7,2.2,'second-general','v0',-6.1);
     const personnel=addCell(office('personnel-accounting'),2,-13,-7.8,-15.5,-7.5,'second-suite','v1',-6.1);
     const accounting=addCell(office('accounting'),2,-7.8,lowerWC.u0,-15.5,-7.5,'second-suite','v1',-6.1);
@@ -133,7 +138,7 @@ const CampusSpatialPlan = (() => {
     displayRows.push({id:'second-general',label:'共用入口內左側：總務處（學務處上方）',axis:'u',start:-13,end:-7.8,floor:2},
      {id:'second-suite',label:'共用入口內右側：內側人事室・入口側會計室',axis:'u',start:-13,end:lowerWC.u0,floor:2},
      {id:'second-stair',label:'總務處旁：一至三樓連續樓梯',axis:'u',start:-7.8,end:-1.6,floor:2},
-     {id:'second-west',label:'西側導師室正上方：油印室・校長室（相連）',axis:'v',start:west.v0,end:west.v1,floor:2},
+     {id:'second-west',label:'西側導師室正上方：油印室朝樓梯・校長室朝教務處',axis:'u',start:west.u0,end:west.u1,floor:2},
      {id:'second-east',label:'東側導師室正上方：教務處',axis:'u',start:east.u0,end:east.u1,floor:2},
      {id:'second-wc',label:'一樓男女廁正上方：二樓男女廁',axis:'u',start:lowerWC.u0,end:lowerWC.u1,floor:2});
    }

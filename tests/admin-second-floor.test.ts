@@ -5,7 +5,7 @@ const load=()=>runInNewContext(['campus-data.js','spatial-plan-data.js','spatial
 const overlaps=(a:any,b:any)=>a.u0<b.u1-1e-6&&a.u1>b.u0+1e-6&&a.v0<b.v1-1e-6&&a.v1>b.v0+1e-6;
 it('connects oil printing and principal above the west staff room with accessible entrances',()=>{
  const l=load(),oil=l.rooms.find((r:any)=>r.id==='reception'),principal=l.rooms.find((r:any)=>r.id==='principal');
- expect(oil.name).toBe('油印室 (2F)');expect(oil.u0).toBe(principal.u0);expect(oil.u1).toBe(principal.u1);expect(oil.v1).toBe(principal.v0);
+ expect(oil.name).toBe('油印室 (2F)');expect(oil.u1).toBe(principal.u0);expect(oil.v0).toBe(principal.v0);expect(oil.v1).toBe(principal.v1);
  expect(oil.doorSide).toBe('u0');
  for(const r of [oil,principal])expect(l.corridors.some((c:any)=>c.floor===2&&c.rect.x0<=r.corridor.x&&c.rect.x1>=r.corridor.x&&c.rect.z0<=r.corridor.z&&c.rect.z1>=r.corridor.z)).toBe(true);
 });

@@ -63,7 +63,16 @@ const CampusRoomLayout = (() => {
   const shelf=(role,x,z)=>{add(role,x,z,.64,.38,0,1.75,'blue',true);for(const y of [.35,.8,1.25]){add('shelf-front',x,z-.2,.6,.04,y,y+.035,'wood');for(let i=0;i<4;i++)add('files',x-.22+i*.145,z-.225,.09,.06,y+.04,y+.34,i%2?'wood':'paper');}};
   const sideX=Math.max(1.04,w/2-.58),hasSides=sideX+.4<w/2-.12;
   const board=()=>{add('blackboard',0,d-.2,Math.min(w-.5,4.2),.08,1.05,2.3,'green');add('chalk-tray',0,d-.29,Math.min(w-.6,4.1),.14,1.03,1.08,'steel');};
-  const rows=(role,spacing,work)=>{if(!hasSides)return;const columns=Math.max(1,Math.min(3,Math.floor((w/2-.85)/1.05)));for(let row=0,z=1.25;z<(d>4.5?d-2:d-.9);row++,z+=spacing)for(const sign of [-1,1])for(let col=0;col<columns;col++){const x=sign*(1.04+col*1.05);if(Math.abs(x)+.4>w/2-.13)continue;desk(role,x,z);chair(role==='student-desk'?'student-chair':'office-chair',x,z-.58);if(work)monitor(x,z+.08);}};
+  // A shifted doorway needs a clear diagonal to the existing room destination.
+  // Test whole desk/chair groups so omitted workstations leave no floating parts.
+  const blocksEntry=(x,z)=>{
+   if(!r.entranceOffset)return false;
+   const origin=r.entranceOffset,dx=-origin,dz=d/2,bounds=[[x-.82,x+.82,origin,dx],[z-1.23,z+.74,0,dz]];
+   let lo=0,hi=1;
+   for(const [min,max,start,delta] of bounds){if(Math.abs(delta)<1e-8){if(start<min||start>max)return false;continue;}const a=(min-start)/delta,b=(max-start)/delta;lo=Math.max(lo,Math.min(a,b));hi=Math.min(hi,Math.max(a,b));if(lo>hi)return false;}
+   return true;
+  };
+  const rows=(role,spacing,work)=>{if(!hasSides)return;const columns=Math.max(1,Math.min(3,Math.floor((w/2-.85)/1.05)));for(let row=0,z=1.25;z<(d>4.5?d-2:d-.9);row++,z+=spacing)for(const sign of [-1,1])for(let col=0;col<columns;col++){const x=sign*(1.04+col*1.05);if(Math.abs(x)+.4>w/2-.13||blocksEntry(x,z))continue;desk(role,x,z);chair(role==='student-desk'?'student-chair':'office-chair',x,z-.58);if(work)monitor(x,z+.08);}};
   if(['classroom','computer','lab','workshop','music','kitchen'].includes(kind)){
    board();
    // The teaching platform is beyond the navigation destination, leaving the

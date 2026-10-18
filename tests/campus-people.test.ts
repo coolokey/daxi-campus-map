@@ -240,3 +240,12 @@ it('隱藏樓層的子牆面不會遮住人物姓名，可見牆面仍會遮擋'
  parent.visible=true;s.api.update(.1,2);expect(guard.isOccluded).toBe(true);
  spy.mockRestore();s.dom.window.close();wall.geometry.dispose();(wall.material as THREE.Material).dispose();
 });
+
+it('keeps shifted office entrance corridors clear when spawning staff',()=>{
+ const s=setup(1280,w=>{
+  w.Math.random=()=>.4;
+  const room={id:'academic',floor:2,u0:-5,u1:5,v0:-4,v1:4,entranceOffset:1,door:{x:30,y:3.6,z:36},center:{x:30,y:3.6,z:40}};
+  w.campusWalkWorld={ground:(p:any)=>p.x>20?3.6:0,layouts:[{bounds:{x0:25,x1:35,z0:36,z1:44},rooms:[room],local:(x:number,z:number)=>({u:x-30,v:z-40}),world:(u:number,v:number,y:number)=>({x:30+u,y,z:40+v})}]};
+ });
+ const teacher=s.api.actors.find((a:any)=>a.person);expect(teacher).toBeTruthy();expect(teacher.room?.id).not.toBe('academic');s.dom.window.close();
+});

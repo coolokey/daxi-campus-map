@@ -111,7 +111,7 @@ const CampusSpatialData = (() => {
   confirmedNames[r.id]={previous:r.name.replace(/\s*\(\d+F\)/,''),name:namesById[r.id]};
   r.name=`${namesById[r.id]} (${r.floor}F)`;
  }
- const officeHints={general:'總務處、人事室與會計室共用入口；進門後左側為總務處。',accounting:'總務處、人事室與會計室共用入口；進門後右側靠入口為會計室。','personnel-accounting':'總務處、人事室與會計室共用入口；進門後右側較內側為人事室。',reception:'油印室與校長室相連，位於一樓西側八、九年級導師室正上方。',principal:'校長室與油印室相連，位於一樓西側八、九年級導師室正上方。',academic:'教務處位於一樓東側八、九年級導師室正上方。'};
+ const officeHints={general:'總務處、人事室與會計室共用入口；進門後左側為總務處。',accounting:'總務處、人事室與會計室共用入口；進門後右側靠入口為會計室。','personnel-accounting':'總務處、人事室與會計室共用入口；進門後右側較內側為人事室。',reception:'油印室與校長室相連，位於一樓西側八、九年級導師室正上方；油印室門口正對連續樓梯。',principal:'校長室與油印室相連，位於一樓西側八、九年級導師室正上方；校長室與教務處門口面對面。',academic:'教務處位於一樓東側八、九年級導師室正上方，門口與校長室面對面。'};
  for(const b of BUILDINGS_CONFIG)for(const r of b.rooms)if(officeHints[r.id])r.entryHint=officeHints[r.id];
  return {profiles,custom,aliases,confirmedNames};
 })();

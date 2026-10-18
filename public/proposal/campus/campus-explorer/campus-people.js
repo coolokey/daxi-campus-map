@@ -60,7 +60,10 @@
   if(!bag.length){bag=roster.slice();for(let i=bag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[bag[i],bag[j]]=[bag[j],bag[i]]}}
   const i=bag.findIndex(p=>!actors.some(a=>a.person?.id===p.id));return i<0?null:bag.splice(i,1)[0];
  }
- function inRoom(actor,p){const q=actor.layout.local(p.x,p.z),r=actor.room;return Math.abs(p.y-(r.floor-1)*3.6)<.24&&q.u>r.u0+.65&&q.u<r.u1-.65&&q.v>r.v0+.65&&q.v<r.v1-.65}
+ function inRoom(actor,p){const q=actor.layout.local(p.x,p.z),r=actor.room;
+  // Shifted entrances reserve the door-to-destination lane for visitors.
+  if(r.entranceOffset&&r.door&&r.center){const a=r.door,b=r.center,dx=b.x-a.x,dz=b.z-a.z,len=dx*dx+dz*dz,t=len?Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.z-a.z)*dz)/len)):0;if(Math.hypot(p.x-a.x-t*dx,p.z-a.z-t*dz)<clearance+.24)return false;}
+  return Math.abs(p.y-(r.floor-1)*3.6)<.24&&q.u>r.u0+.65&&q.u<r.u1-.65&&q.v>r.v0+.65&&q.v<r.v1-.65}
  function allowed(actor,p){return !blockedPoint(p)&&(actor.room?inRoom(actor,p):safe(p))}
  function roomPoint(layout,room){return layout.world(room.u0+.8+Math.random()*Math.max(0,room.u1-room.u0-1.6),room.v0+.8+Math.random()*Math.max(0,room.v1-room.v0-1.6),(room.floor-1)*3.6)}
  function spawnTeacher(){

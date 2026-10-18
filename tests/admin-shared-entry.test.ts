@@ -19,7 +19,7 @@ it('shares one external office entrance, with general left, accounting near-righ
 });
 it('places connected west offices separately from the east academic office and preserves one WC',()=>{
  const l=load(),room=(id:string)=>l.rooms.find((r:any)=>r.id===id),oil=room('reception'),academic=room('academic'),principal=room('principal');
- expect(oil.u0).toBe(principal.u0);expect(oil.v1).toBe(principal.v0);expect(academic.v1).toBeLessThan(oil.v0);
+ expect(oil.u1).toBe(principal.u0);expect(oil.v0).toBe(principal.v0);expect(academic.v1).toBeLessThan(oil.v0);
  expect(l.cells.filter((c:any)=>c.floor===2&&c.kind==='wc')).toHaveLength(1);
 });
 it('keeps office zones, circulation and the continuous stair opening disjoint on every floor',()=>{
