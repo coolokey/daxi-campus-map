@@ -52,7 +52,7 @@
   if(side==='u0')q.u=c.u0-.15;else if(side==='u1')q.u=c.u1+.15;else if(side==='v0')q.v=c.v0-.15;else q.v=c.v1+.15;
   const exposed=!l.footprints.some(p=>p.floor===c.floor&&CampusSpatialPlan.contains(p,q.u,q.v)),paint=exposed?colors.exterior:colors.wall;
   const alongU=side[0]==='v',fixed=side==='v0'?c.v0:side==='v1'?c.v1:side==='u0'?c.u0:c.u1;
-  const start=alongU?c.u0:c.v0,end=alongU?c.u1:c.v1,center=(start+end)/2;
+  const start=alongU?c.u0:c.v0,end=alongU?c.u1:c.v1,door=c.door&&l.local(c.door.x,c.door.z),center=c.doorSide===side&&door?(alongU?door.u:door.v):(start+end)/2;
   const wall=(a,b,y0,y1,mat,solid=true)=>alongU?box(g,l,a,b,fixed-.09,fixed+.09,y0,y1,mat,solid):box(g,l,fixed-.09,fixed+.09,a,b,y0,y1,mat,solid);
   if(c.doorSide===side){
    const half=Math.min(.95,(end-start)/2-.16);
@@ -127,7 +127,7 @@
   // Two front-facing planes share a texture; the reverse face is rotated,
   // so names read correctly from either end of the corridor.
   for(const side of [-1,1]){const face=new THREE.Mesh(new THREE.PlaneGeometry(.84,.42),signMaterial);face.position.set(center.x+tx*side*.034,y+2.65,center.z+tz*side*.034);face.rotation.y=Math.atan2(tx*side,tz*side);face.userData={roomId:r.id,nameplateKey:signLabel.key,nameplateStyle:'projecting'};g.add(face);}
-  if(l.id==='gym-bld'||r.kind==='wc')return; // Toilets need signs, not office furnishings.
+  if(l.id==='gym-bld'||r.kind==='wc'||r.kind==='office-suite')return; // Shells and toilets own signs; open desk zones own furniture.
   const plan=CampusRoomLayout.furnishings(r);
   for(const item of plan.parts){const mesh=box(g,l,item.u0,item.u1,item.v0,item.v1,y+item.y0,y+item.y1,colors[item.paint],item.solid);if(mesh)mesh.userData={roomId:r.id,furnitureRole:item.role};}
   box(g,l,r.u-.7,r.u+.7,r.v-.12,r.v+.12,y+FH-.22,y+FH-.2,colors.light);
@@ -160,9 +160,13 @@
    }
    // Rooms and WC use identical rectangles for visible walls and blocking volumes.
    for(const r of l.cells.filter(c=>c.floor===f&&(c.kind==='room'||c.kind==='wc'))){
-    for(const side of ['u0','u1','v0','v1'])roomWall(g,l,r,side,y);
+    if(!r.openOffice)for(const side of ['u0','u1','v0','v1'])roomWall(g,l,r,side,y);
     if(r.kind==='room')details(g,l,r,y);
     else if(l.id==='admin-front'&&f<=2)details(g,l,{...r,name:r.label,cat:'admin'},y);
+   }
+   for(const shell of l.cells.filter(c=>c.floor===f&&c.kind==='office-suite')){
+    for(const side of ['u0','u1','v0','v1'])if(!shell.omitSides.includes(side))roomWall(g,l,shell,side,y);
+    if(shell.doorSide)details(g,l,{...shell,cat:'admin'},y);
    }
    for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f)))stairEnclosure(g,l,s,y);
    if(f>1)for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f)&&CampusSpatialPlan.onFloor(s.hole,f))){
@@ -341,14 +345,15 @@
  // Static graph requests share BFS work. Runtime searches use fresh state.
  const startupSearches=new Map();let buildingGraph=true;
  // Four-connected grid connectors reject blocked edges, floor holes and courtyard voids.
- function gridPath(start,end,y=0,interior=null,stageSurface=false){
-  const step=(interior||stageSurface)?.35:1,origin=stageSurface?{x:CampusOutdoorPlan.stage.x0-1,z:CampusOutdoorPlan.stage.stairs.z0-1}:interior?{x:interior.bounds.x0-1,z:interior.bounds.z0-1}:{x:-130,z:-100},round=p=>({x:Math.round((p.x-origin.x)/step),z:Math.round((p.z-origin.z)/step)}),a=round(start),b=round(end),f=Math.round(y/FH)+1;
+ function gridPath(start,end,y=0,interior=null,stageSurface=false,avoidPeople=false){
+  const step=(interior||stageSurface||avoidPeople)?.35:1,origin=stageSurface?{x:CampusOutdoorPlan.stage.x0-1,z:CampusOutdoorPlan.stage.stairs.z0-1}:interior?{x:interior.bounds.x0-1,z:interior.bounds.z0-1}:{x:-130,z:-100},round=p=>({x:Math.round((p.x-origin.x)/step),z:Math.round((p.z-origin.z)/step)}),a=round(start),b=round(end),f=Math.round(y/FH)+1;
   const searchKey=`${stageSurface?'stage':interior?.id||'outdoor'}/${y}/${a.x},${a.z}`;
   let state=buildingGraph?startupSearches.get(searchKey):null;if(!state){state=CampusGridSearch.create(a);if(buildingGraph)startupSearches.set(searchKey,state)}
   const stageFree=(x,z)=>CampusOutdoorPlan.onStage({x,z,y})&&Math.abs(CampusOutdoorPlan.ground({x,z})-y)<.15;
+  const peopleFree=(x,z)=>!avoidPeople||(Math.hypot(x-start.x,z-start.z)<=12&&window.campusPeople?.blocksPlayer({x,y,z},{x,y,z})!==true);
   const free=(x,z)=>{const wx=origin.x+x*step,wz=origin.z+z*step;
-   return ((wx>=-125&&wx<=115&&wz>=-100&&wz<=108)||CampusEntranceAvenue.contains(wx,wz))&&!checkWallCollision(wx,y,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.08:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)))};
-  const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||(stageSurface?!stageFree(x,z):!interior&&CampusOutdoorPlan.reserved({x,z}))||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.08)))return false}return true};
+   return ((wx>=-125&&wx<=115&&wz>=-100&&wz<=108)||CampusEntranceAvenue.contains(wx,wz))&&!checkWallCollision(wx,y,wz)&&peopleFree(wx,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.08:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)))};
+  const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||!peopleFree(x,z)||(stageSurface?!stageFree(x,z):!interior&&CampusOutdoorPlan.reserved({x,z}))||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.08)))return false}return true};
   const points=CampusGridSearch.path(state,b,free);if(points){const result=points.map(p=>({x:origin.x+p.x*step,y,z:origin.z+p.z*step}));
     if(result.length===1)return clear(start,end)?[{...start},{...end}]:null;
     if(!clear(start,result[1])||!clear(result.at(-2),end))return null;result[0]={...start};result[result.length-1]={...end};return result;
@@ -363,8 +368,15 @@
    const y=(f-1)*FH,c=l.corridors.find(c=>c.floor===f),p=l.world((c.u0+c.u1)/2,(c.v0+c.v1)/2,y),hub=node(`${l.id}-entry-${f}`,p,l.id);hubs[`${l.id}-${f}`]=hub;
    for(const r of l.rooms.filter(r=>r.floor===f)){
     const corridor=node(`walk-${r.id}-corridor`,r.corridor,l.id),door=node(`walk-${r.id}-door`,r.door,l.id),target=node(`walk-${r.id}`,r.center,l.id);link(corridor,door);link(door,target);roomTargets[r.id]=target;
-    const old=ROOMS_DB[r.id].node;ROOMS_DB[r.id].node=target;ROOMS_DB[r.id].spaceCode=r.spaceCode;const badge=roomBadgeElements.find(e=>e.nodeId===old);if(badge)badge.nodeId=target;
-    attachPath(hub,corridor,gridPath(p,r.corridor,y,l),l.id);
+    const old=ROOMS_DB[r.id].node;ROOMS_DB[r.id].node=target;ROOMS_DB[r.id].spaceCode=r.spaceCode;if(r.entryHint)ROOMS_DB[r.id].entryHint=r.entryHint;const badge=roomBadgeElements.find(e=>e.nodeId===old);if(badge)badge.nodeId=target;
+    if(r.sharedEntrance){
+     const e=r.sharedEntrance,prefix=e.id;
+     if(!graph[prefix+'-outside']){
+      const outside=node(prefix+'-outside',e.corridor,l.id),entry=node(prefix+'-door',e.door,l.id),inside=node(prefix+'-inside',e.inside,l.id);
+      attachPath(hub,outside,gridPath(p,e.corridor,y,l),l.id);link(outside,entry);link(entry,inside);
+     }
+     attachPath(prefix+'-inside',corridor,gridPath(e.inside,r.corridor,y,l),l.id);
+    }else attachPath(hub,corridor,gridPath(p,r.corridor,y,l),l.id);
    }
    for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f))){
     for(const [label,v] of [['lower',s.centerV+s.sign*1.25],['upper',s.centerV-s.sign*1.25]]){
@@ -459,6 +471,18 @@
   for(const n of candidates.slice(0,20)){const path=gridPath(position,n,position.y,l);if(path){start=n.id;connector=path;break}}
   if(!start)return null;const ids=findShortestPath(start,room.node);return ids?[...connector,...ids.slice(1).map(id=>graph[id])]:null;
  }
+ // Rejoin a nearby level part of the existing route; never shortcut stairs.
+ function bypassPeople(position,points){
+  if(!window.campusPeople?.blocksPlayer)return null;
+  const floor=Math.round(position.y/FH)+1,l=layouts.find(l=>insideFloor(l,position.x,position.z,floor));
+  for(let i=0;i<Math.min(points.length,40);i++){
+   const target=points[i],distance=Math.hypot(target.x-position.x,target.z-position.z);
+   if(Math.abs(target.y-position.y)>.15)break;if(distance<2.5||distance>8)continue;
+   const detour=gridPath(position,target,position.y,l||null,false,true);
+   if(detour)return [...detour,...points.slice(i+1)];
+  }
+  return null;
+ }
  function updateCamera(){
   const pose=M.cameraPose(avatarGroup.position,avatarAngle,walkPitch,currentMode==='firstperson',window.campusMouse?.distance||6.5),eye=new THREE.Vector3(avatarGroup.position.x,avatarGroup.position.y+1.55,avatarGroup.position.z),desired=new THREE.Vector3(pose.position.x,pose.position.y,pose.position.z);
   const l=layouts.find(l=>insideFloor(l,avatarGroup.position.x,avatarGroup.position.z,Math.max(1,Math.round(avatarGroup.position.y/FH)+1)));
@@ -472,5 +496,5 @@
  let touch=null;renderer.domElement.addEventListener('touchstart',e=>{if(currentMode!=='bird'&&e.touches.length===1)touch={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});
  renderer.domElement.addEventListener('touchmove',e=>{if(!touch||currentMode==='bird')return;const p=e.touches[0];if(!p)return;applyManualCameraRotation(p.clientX-touch.x,p.clientY-touch.y);touch={x:p.clientX,y:p.clientY};e.preventDefault()},{passive:false});renderer.domElement.addEventListener('touchend',()=>touch=null);
  const roomAt=p=>{const f=Math.floor((p.y+.15)/FH)+1;for(const l of layouts){const q=l.local(p.x,p.z),r=l.rooms.find(r=>r.floor===f&&CampusSpatialPlan.contains(r,q.u,q.v));if(r)return r}return null};
- window.campusWalkWorld={layouts,graph,ground:floorAt,stepHeight,route,gridPath,updateCamera,roomAt,galleries,insideFloor,cameraBlocked:p=>cameraIndex.pointHit(p.x,p.y,p.z)};
+ window.campusWalkWorld={layouts,graph,ground:floorAt,stepHeight,route,gridPath,bypassPeople,updateCamera,roomAt,galleries,insideFloor,cameraBlocked:p=>cameraIndex.pointHit(p.x,p.y,p.z)};
 })();

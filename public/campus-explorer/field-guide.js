@@ -86,7 +86,7 @@
   if(!changed)return;
   const outdoor=room.code?.startsWith('OUT-')||id==='track';
   el('guide-place-meta').textContent=[room.buildingName,outdoor?'戶外景點':room.floor?room.floor+'F':null,room.code?'固定編號：'+room.code:null].filter(Boolean).join(' · ');
-  el('guide-place-hint').textContent=room.floor>1?'帶路將經由走廊與樓梯前往此樓層；手動移動可隨時接管。':'選擇「自動帶路」前往；也可沿著場景中的路線自行走訪。';
+  el('guide-place-hint').textContent=room.entryHint||(room.floor>1?'帶路將經由走廊與樓梯前往此樓層；手動移動可隨時接管。':'選擇「自動帶路」前往；也可沿著場景中的路線自行走訪。');
   let photo=null;
   if(id==='grandstand')photo=['stage-2019','司令台正面','2019 年 10 月 22 日實景紀錄；現況可能已有變更。'];
   else if(id==='track')photo=['track-2019','操場與跑道','2019 年 10 月 22 日實景紀錄；鋪面配色依現版平面圖呈現。'];

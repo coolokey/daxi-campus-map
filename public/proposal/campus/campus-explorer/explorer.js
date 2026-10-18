@@ -3394,6 +3394,11 @@
             if(moveAvatarWithCollision(p,dir.x,dir.z,dir.y)){
               if(avatarPersonBlocked){
                 autoPeopleWait+=delta;
+                if(autoPeopleWait>=.6&&autoPeopleWait-delta<.6){
+                  const remainingPoints=currentNavPoints.slice(autoWalkIndex+1).map(q=>({x:q.x,y:q.y-.6,z:q.z}));
+                  const detour=window.campusWalkWorld?.bypassPeople(p,remainingPoints);
+                  if(detour){renderNavigationPath(detour.map(q=>new THREE.Vector3(q.x,q.y+.6,q.z)));autoWalkIndex=0;autoPeopleWait=0;publishNavigation('walking');break;}
+                }
                 if(autoPeopleWait>=3){stopAutoWalk();publishNavigation('blocked');showToast('前方有人，帶路已暫停。請稍微繞開，再開始帶路。')}
                 break;
               }

@@ -55,7 +55,7 @@
      const room=api.rooms[cell.id]||cell,name=room.name;
      fill(r,colors[CampusRoomLayout.category(name,room.cat)]);c.strokeStyle='#eeeede';c.lineWidth=.3;outline(r);
      const door=cell.door;
-     if(door){
+     if(door&&!cell.sharedEntrance){
       const sides=[{d:Math.abs(door.x-r.x0),x0:r.x0,z0:door.z-.65,x1:r.x0,z1:door.z+.65},{d:Math.abs(door.x-r.x1),x0:r.x1,z0:door.z-.65,x1:r.x1,z1:door.z+.65},{d:Math.abs(door.z-r.z0),x0:door.x-.65,z0:r.z0,x1:door.x+.65,z1:r.z0},{d:Math.abs(door.z-r.z1),x0:door.x-.65,z0:r.z1,x1:door.x+.65,z1:r.z1}];
       const side=sides.sort((a,b)=>a.d-b.d)[0];c.beginPath();c.moveTo(side.x0,side.z0);c.lineTo(side.x1,side.z1);c.strokeStyle='#d7d6c2';c.lineWidth=.65;c.stroke();
      }
@@ -66,6 +66,9 @@
      fill(r,'#7894ad');c.fillStyle='#f0f5ed';c.font='bold 1.7px sans-serif';c.textAlign='center';c.fillText(cell.accessible?'♿':'WC',(r.x0+r.x1)/2,(r.z0+r.z1)/2+.6);c.textAlign='start';
     }else if(cell.kind==='passage')fill(r,'#90a38a');
    }
+  }
+  for(const l of window.campusWalkWorld.layouts)for(const shell of l.cells.filter(c=>c.floor===floor&&c.kind==='office-suite'&&c.doorSide)){
+   const p=shell.door;c.strokeStyle='#d7d6c2';c.lineWidth=.65;c.beginPath();c.moveTo(p.x-.65,p.z);c.lineTo(p.x+.65,p.z);c.stroke();
   }
   // 警衛室、停車區與停車格。
   rect(3,83,6,6,'#a6574b');rect(62,74,30,8,'#797d79');

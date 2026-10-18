@@ -23,7 +23,7 @@ it('keeps existing entrances and an unobstructed central hall to the rear connec
 });
 it('uses the new ground stair beside the hall without leaving the obsolete ramp across it',()=>{
  const {l}=load(),ground=l.stairs.find((s:any)=>s.fromFloor===1);
- expect(ground).toBeTruthy();expect(ground.u1).toBeLessThan(0);expect(ground.toFloor).toBe(2);
+ expect(ground).toBeTruthy();expect(ground.u1).toBeLessThan(0);expect(ground.toFloor).toBe(3);expect(l.stairs).toHaveLength(1);
  expect(l.ramps.filter((r:any)=>r.floor===1).every((r:any)=>Math.max(l.local(r.start.x,r.start.z).u,l.local(r.end.x,r.end.z).u)<0)).toBe(true);
  expect(l.rooms.find((r:any)=>r.id==='academic').floor).toBe(2);
 });

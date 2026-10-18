@@ -266,10 +266,29 @@ it('shows separate accessible and general toilet signs in the administrative gro
  expect(run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),ids=l.cells.filter(c=>c.floor===1&&c.kind==='wc').map(c=>c.id);const signs=[];scene.traverse(o=>{if(o.userData.nameplateStyle==='wall')signs.push(o.userData.roomId)});return ids.every(id=>signs.includes(id))})()`)).toBe(true);
 });
 it('walks from the second-floor stair arrival into each approved office and the relocated WC',()=>{
- const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),s=l.stairs.find(s=>s.toFloor===2),start=l.world(s.innerU,s.centerV-s.sign*1.25,3.6),bad=[];
+ const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),s=l.stairs[0],start=l.world(s.innerU,s.centerV-s.sign*1.25,3.6),bad=[];
  for(const r of l.cells.filter(c=>c.floor===2&&['room','wc'].includes(c.kind))){const path=campusWalkWorld.gridPath(start,r.corridor,3.6,l);if(!path){bad.push(r.id+' approach');continue;}const p={...start};for(const q of [...path.slice(1),r.door,r.center]){if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z)){bad.push(r.id+' movement');break;}}if(r.kind==='room'&&!findShortestPath('gate',ROOMS_DB[r.id].node))bad.push(r.id+' gate route');}
  return bad;})()`);expect(result).toEqual([]);
 });
 it('labels the relocated second-floor WC with readable wall and projecting signs',()=>{
  expect(run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),wc=l.cells.find(c=>c.floor===2&&c.kind==='wc'),styles=[];scene.traverse(o=>{if(o.userData.roomId===wc.id&&o.userData.nameplateStyle)styles.push(o.userData.nameplateStyle)});return {wall:styles.includes('wall'),projecting:styles.filter(s=>s==='projecting').length}})()`)).toEqual({wall:true,projecting:2});
 });
+it('walks entire administrative auto-navigation paths across both flights and the one shared office entrance',()=>{
+ const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),bad=[],rows=[];
+ const walk=(start,room)=>{const path=campusWalkWorld.route(start,ROOMS_DB[room]);if(!path){bad.push(room+' missing');return;}const p={...start};for(const q of path.slice(1)){const a={...p},n=Math.max(1,Math.ceil(Math.hypot(q.x-a.x,q.y-a.y,q.z-a.z)/.1));for(let i=1;i<=n;i++){const t=i/n,target={x:a.x+(q.x-a.x)*t,y:a.y+(q.y-a.y)*t,z:a.z+(q.z-a.z)*t};if(moveAvatarWithCollision(p,target.x-p.x,target.z-p.z,target.y-p.y)){bad.push({room,p:{...p},target});return;}}}rows.push({room,end:p});};
+ for(const room of l.rooms.filter(r=>r.floor>=2))walk({...NAV_NODES.gate},room.id);
+ for(const r of l.rooms.filter(r=>r.floor===2&&r.sharedEntrance)){const ids=findShortestPath('gate',ROOMS_DB[r.id].node);if(!ids?.includes(r.sharedEntrance.id+'-door'))bad.push(r.id+' skipped shared entrance');walk(r.center,'admin-reception-1f');}
+ walk(l.rooms.find(r=>r.id==='teacher-study').center,'reception');return {bad,rows};})()`);expect(result.bad).toEqual([]);expect(result.rows.length).toBeGreaterThan(10);
+});
+it('replans a local detour around a person without crossing walls or changing floors',()=>{
+ const result=run(`(()=>{if(typeof campusWalkWorld.bypassPeople!=='function')return {missing:true};const previous=window.campusPeople,person={x:-14,y:0,z:79},start={x:-14,y:0,z:81};
+ window.campusPeople={blocksPlayer:(a,b)=>{const dx=b.x-a.x,dz=b.z-a.z,d=dx*dx+dz*dz,t=d?Math.max(0,Math.min(1,((person.x-a.x)*dx+(person.z-a.z)*dz)/d)):0;return Math.abs(a.y-person.y)<1.8&&Math.hypot(a.x+t*dx-person.x,a.z+t*dz-person.z)<1.36;}};
+ try{const path=campusWalkWorld.bypassPeople(start,[{x:-14,y:0,z:78},{x:-14,y:0,z:76}]);if(!path)return {missing:false,route:false};const p={...start},bad=[];for(const q of path)if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y))bad.push(q);const vertical=campusWalkWorld.bypassPeople(start,[{x:-14,y:3.6,z:76}]);return {missing:false,route:true,bad,end:p,vertical};}finally{window.campusPeople=previous;}})()`);
+ expect(result).toMatchObject({missing:false,route:true,bad:[],vertical:null});expect(result.end.x).toBeCloseTo(-14);expect(result.end.y).toBe(0);expect(result.end.z).toBeCloseTo(76);
+});
+it('continues the actual auto-walk loop past a stationary person and arrives at the shared office',()=>{
+ const result=run(`(()=>{const previous=window.campusPeople,delta=clock.getDelta,person={x:-14,y:0,z:79};let blocked=0;
+ window.campusPeople={update(){},blocksPlayer:(a,b)=>{const dx=b.x-a.x,dz=b.z-a.z,d=dx*dx+dz*dz,t=d?Math.max(0,Math.min(1,((person.x-a.x)*dx+(person.z-a.z)*dz)/d)):0;const hit=Math.abs(a.y-person.y)<1.8&&Math.hypot(a.x+t*dx-person.x,a.z+t*dz-person.z)<1.36;if(hit)blocked++;return hit;}};
+ try{document.getElementById('guide-landing')?.remove();document.getElementById('welcome-card')?.classList.add('hidden');clock.getDelta=()=>.1;stopAutoWalk();avatarGroup.position.set(-14,0,81);setControlMode('avatar');navigateToRoom('general',false);document.getElementById('btn-auto-walk').click();let frames=0;while(getNavigationState().status==='walking'&&frames++<600)animate();return {status:getNavigationState().status,room:campusWalkWorld.roomAt(avatarGroup.position)?.id,blocked,frames};}finally{clock.getDelta=delta;window.campusPeople=previous;stopAutoWalk();setControlMode('bird');cancelCameraTween();}})()`);
+ expect(result.status).toBe('arrived');expect(result.room).toBe('general');expect(result.blocked).toBeGreaterThan(0);
+},20000);

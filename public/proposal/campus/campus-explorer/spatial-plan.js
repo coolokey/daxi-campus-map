@@ -15,7 +15,7 @@ const CampusSpatialPlan = (() => {
   function addCell(item,floor,u0,u1,v0,v1,row='main',doorSide='v1',corridorValue){
    const r=item.kind==='room'?b.rooms.find(r=>r.id===item.id):null;
    const c=addRect(cells,{...item,...r,id:item.id||`${b.id}-${item.kind}-${floor}-${cells.length}`,floor,u0,u1,v0,v1,row,span:u1-u0,spaceCode:r?.spaceCode||item.spaceCode||'',label:item.label||r?.name||'',kind:item.kind});
-   if(item.kind==='room'||item.kind==='wc'){
+   if(item.kind==='room'||item.kind==='wc'||item.kind==='office-suite'){
     const u=(u0+u1)/2,v=(v0+v1)/2,y=(floor-1)*H,side=doorSide;
     const du=side==='u0'?u0:side==='u1'?u1:u,dv=side==='v0'?v0:side==='v1'?v1:v;
     const cv=corridorValue??(side==='v0'?v0-1.4:side==='v1'?v1+1.4:side==='u0'?u0-1.4:u1+1.4);
@@ -75,19 +75,16 @@ const CampusSpatialPlan = (() => {
     path(10.8,13,-15.5,5,'front-side-passage');
     path(-13,13,2.2,5,'front-corridor');
     path(-7.8,3.6,-4.7,-.1,'stair-approach');path(-1.6,3.6,-4.7,5,'stair-approach');
-    // The former ground stair crossed the newly confirmed through-hall. Its 2F–3F
-    // flight remains in place; a separate 1F–2F flight lands in the front 2F passage.
-    const upper=stairs[0];upper.fromFloor=2;upper.toFloor=3;upper.hole.fromFloor=3;holes[0].fromFloor=3;
-    for(const list of [ramps,platforms])for(let i=list.length-1;i>=0;i--)if(list[i].stairId===upper.id&&list[i].floor===1)list.splice(i,1);
-    const ground=addStair('ground-central','中段樓梯',-7.8,-1.6,-4.6,.6);ground.fromFloor=1;ground.toFloor=2;ground.hole.fromFloor=ground.hole.toFloor=2;
-    for(const list of [ramps,platforms])for(let i=list.length-1;i>=0;i--)if(list[i].stairId===ground.id&&list[i].floor>1)list.splice(i,1);
+    // Photos 47/49 confirm one switchback core, not a different shaft above 2F.
+    for(const list of [stairs,ramps,platforms,holes])list.length=0;
+    const ground=addStair('ground-central','行政大樓連續樓梯',-7.8,-1.6,-4.6,.6);ground.fromFloor=1;ground.toFloor=3;ground.hole.fromFloor=2;ground.hole.toFloor=3;
     addCell({kind:'stair',id:'admin-central-ground-stair',label:'中段樓梯'},1,ground.u0,ground.u1,ground.v0,ground.v1,'approved-front');
     path(ground.nearU,ground.u1,ground.v0,ground.v1,'stair-ground-landing');
-    // Keep the unconfirmed small 2F office clear of the new stair opening.
-    const adjacent=cells.find(c=>c.id==='reception'),principal=cells.find(c=>c.id==='principal');
-    cells.splice(cells.indexOf(adjacent),1);cells.splice(cells.indexOf(principal),1);
-    addCell(byId('principal'),2,principal.u0,-7.8,principal.v0,principal.v1,'entrance','v1',front.cV);
-    addCell(byId('reception'),2,-7.8,adjacent.u1,.6,adjacent.v1,'entrance','v1',front.cV);
+    // Retain 3F uses while clearing the same shaft at every storey.
+    const language=cells.find(c=>c.id==='lang-lab');cells.splice(cells.indexOf(language),1);
+    addCell(byId('lang-lab'),3,language.u0,ground.u0,language.v0,language.v1,'entrance','v1',front.cV);
+    for(let i=cells.length-1;i>=0;i--)if(cells[i].kind==='stair'&&cells[i].floor>1)cells.splice(i,1);
+    for(const f of [2,3]){addCell({kind:'stair',label:'連續樓梯（1F–3F）'},f,ground.u0,ground.u1,ground.v0,ground.v1,'entrance');co(f,ground.nearU,ground.u1,ground.v0,ground.v1);}
     entrances.push({floor:1,kind:'east-breezeway',inside:world(14,-6.75),outside:world(16.4,-6.75)});
     // A short covered connector meets the existing grade-nine transverse passage.
     const destination=BUILDINGS_CONFIG.find(b=>b.id==='grade9-back'),target=layout(destination),cross=target.cells.find(c=>c.floor===1&&c.kind==='passage'),targetZ=target.world((cross.u0+cross.u1)/2,0).z;
@@ -105,29 +102,37 @@ const CampusSpatialPlan = (() => {
     Object.assign(co(f,u-1.7,u+1.7,v0,front.cV),{part:'connector'});
    }
    if(p.secondFloorPlan==='approved-offices'){
-    // Keep the established 1F/3F plan and both real stair shafts. The west
-    // approach wraps around the 1F–2F opening rather than putting an office in it.
+    // One shared office doorway; open desk zones keep their individual destinations.
     for(const list of [cells,corridors])for(let i=list.length-1;i>=0;i--)if(list[i].floor===2)list.splice(i,1);
     const office=id=>({kind:'room',id}),route=(u0,u1,v0,v1)=>co(2,u0,u1,v0,v1);
-    addCell(office('reception'),2,-13,-9.4,-5,-1.8,'second-west','u1',-8.6);
-    addCell(office('principal'),2,-13,-9.4,-1.8,2.2,'second-west','u1',-8.6);
-    addCell(office('academic'),2,1.6,13,-5,2.2,'second-east','u0',0);
-    route(-9.4,-7.8,-5,2.2);route(-9.4,1.6,.6,2.2);
-    route(-13,13,2.2,5);route(-1.6,1.6,-5,5);
-    const upper=stairs.find(s=>s.fromFloor===2),ground=stairs.find(s=>s.toFloor===2);
-    addCell(office('general'),2,-12,upper.u0,-15.5,-10.3,'second-rear','v1',-8.9);
-    addCell(office('personnel-accounting'),2,4.4,12,-15.5,-12.9,'second-rear','u0',3.6);
-    addCell({kind:'wc',label:'男女廁所'},2,4.4,12,-12.9,-10.3,'second-wc','v1',-8.9);
-    addCell({kind:'stair',label:'中段樓梯'},2,upper.u0,upper.u1,upper.v0,upper.v1,'second-rear');
-    route(-12,12,-10.3,-7.5);route(upper.u1,4.4,-15.5,-10.3);
-    route(upper.nearU,upper.u1,upper.v0,upper.v1);
+    const ground=stairs[0];
+    addCell(office('reception'),2,1.6,10.8,-4.7,.6,'second-east','u0',0);
+    addCell(office('academic'),2,1.6,10.8,.6,5,'second-east','u0',0);
+    addCell(office('principal'),2,-7.8,-1.6,.6,5,'second-principal','u1',0);
+    const general=addCell(office('general'),2,-13,-7.8,-4.7,2.2,'second-general','v0',-6.1);
+    const personnel=addCell(office('personnel-accounting'),2,-13,-7.8,-15.5,-7.5,'second-suite','v1',-6.1);
+    const accounting=addCell(office('accounting'),2,-7.8,-1.6,-15.5,-7.5,'second-suite','v1',-6.1);
+    const shell=addCell({kind:'office-suite',id:'admin-office-suite',name:'總務處／會計室／人事室',label:'共用辦公區入口'},2,-13,-1.6,-15.5,-4.7,'second-suite-shell','u1',0);
+    shell.v=-6.1;shell.door=world(-1.6,-6.1,H);shell.corridor=world(0,-6.1,H);shell.inside=world(-3,-6.1,H);shell.omitSides=['v1'];
+    const annex=addCell({kind:'office-suite',id:'admin-office-suite-annex'},2,-13,-7.8,-4.7,2.2,'second-suite-shell');annex.doorSide=null;annex.omitSides=['v0'];
+    // The remaining L-corner boundary closes the office against the stairwell.
+    const corner=addCell({kind:'office-suite',id:'admin-office-suite-corner'},2,-7.8,-1.6,-4.7,-4.7,'second-suite-shell');corner.doorSide=null;corner.omitSides=['u0','u1','v0'];
+    const shared={id:shell.id,door:shell.door,corridor:shell.corridor,inside:shell.inside};
+    for(const zone of [general,accounting,personnel]){zone.openOffice=true;zone.sharedEntrance=shared;}
+    addCell({kind:'wc',label:'男女廁所'},2,1.6,5.2,-15.5,-7.5,'second-wc','v1',-6.1);
+    addCell({kind:'stair',label:'連續樓梯（1F–3F）'},2,ground.u0,ground.u1,ground.v0,ground.v1,'second-stair');
+    Object.assign(fp(2,-13,-1.6,-7.5,-4.7),{part:'office-suite'});
+    Object.assign(fp(2,-1.6,13,-7.5,-4.7),{part:'public-corridor'});
+    route(-1.6,13,-7.5,-4.7);route(-13,-1.6,-7.5,-4.7);
+    route(-1.6,1.6,-15.5,5);route(-13,-7.8,2.2,5);route(10.8,13,-5,5);
     route(ground.nearU,ground.u1,ground.v0,ground.v1);
-    route(u-1.7,u+1.7,v0,front.cV);
     for(const row of displayRows)row.floors=row.id.startsWith('approved-')?[1]:[1,3];
-    displayRows.push({id:'second-west',label:'二樓西側：油印室在校長室前方',axis:'v',start:-5,end:2.2,floor:2},
-     {id:'second-east',label:'二樓東側：教務處',axis:'u',start:1.6,end:13,floor:2},
-     {id:'second-rear',label:'二樓後棟：總務處・樓梯・人事／會計室',axis:'u',start:-12,end:12,floor:2},
-     {id:'second-wc',label:'人事／會計室前方：男女廁所',axis:'u',start:-12,end:12,floor:2});
+    displayRows.push({id:'second-general',label:'共用入口內左側：總務處（學務處上方）',axis:'u',start:-13,end:-7.8,floor:2},
+     {id:'second-suite',label:'共用入口內右側：內側人事室・入口側會計室',axis:'u',start:-13,end:-1.6,floor:2},
+     {id:'second-stair',label:'總務處旁：一至三樓連續樓梯',axis:'u',start:-7.8,end:-1.6,floor:2},
+     {id:'second-principal',label:'走道右側盡頭：校長室',axis:'v',start:.6,end:5,floor:2},
+     {id:'second-east',label:'走道左側：油印室・教務處',axis:'v',start:-4.7,end:5,floor:2},
+     {id:'second-wc',label:'辦公區入口前方：男女廁所',axis:'u',start:1.6,end:5.2,floor:2});
    }
   }else if(p.shape==='gym'){
    // Photo-confirmed 1F foyer/hall and 2F U-shaped balcony. The outer

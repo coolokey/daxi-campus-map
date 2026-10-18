@@ -70,19 +70,20 @@ const CampusSpatialData = (() => {
  adminFront.floors[1]=[room('admin-g89-staff','ADM-F-1W',1,'八、九年級導師室（西側）'),room('admin-g89-staff-east','ADM-F-1E',1,'八、九年級導師室（東側）')];
  adminRear.floors[1]=[room('student-affairs','ADM-B-1W',1.2),stair('central','中段折返梯'),wc(.35),room('admin-reception-1f','ADM-B-1E1',.65,'會客室'),room('coach-room','ADM-B-1E2',.65)];
  // Approved 2026-10-18 second-floor design; rectangles are compiled separately.
- adminRear.floors[2]=[room('general','ADM-B-2W',1.2),stair('central','中段折返梯'),room('personnel-accounting','ADM-B-2E',1.3,'人事室／會計室')];
+ adminRear.floors[2]=[room('general','ADM-B-2W',1.2),room('personnel-accounting','ADM-B-2E',.65,'人事室／會計室'),room('accounting','ADM-B-2A',.65,'會計室')];
  aliases['weimei-room']='admin-reception-1f';aliases['admin-back-east']='coach-room';
 
  adminFront.orientation=adminRear.orientation='statue';adminFront.sideEntrance={v:-1.2,width:2.2};
  profiles['admin-front']={shape:'admin',orientation:'statue',sign:1,groundPlan:'approved-crosshall',secondFloorPlan:'approved-offices',front:adminFront,rear:adminRear,
   rearBody:{x:-9.5,z:28.5,width:8,depth:24},
-  confidence:'一樓依確認旋轉圖，正門穿廊通往 907 所在棟；二樓依 2026-10-18 確認配置，油印室在校長室前方、廁所在人事會計室前方；三樓沿用原配置；尺度及梯段為示意'};
+  confidence:'依照片與使用者確認：總務、人事、會計共用入口，進門左總務、右前會計、右後人事；同一梯井連通一至三樓，梯口對面為油印室；尺寸為示意'};
  custom.admin=[1,2,3].map(f=>[f,...[...adminFront.floors[f],...adminRear.floors[f]].filter(c=>c.kind==='room')]);
  Object.assign(extras,{
   'admin-g89-staff-east':{name:'八、九年級導師室（東側）',cat:'admin'},'admin-reception-1f':{name:'會客室',cat:'admin'},
   'student-affairs':{name:'學務處',cat:'admin'},'coach-room':{name:'教練室',cat:'sports'},
   'general':{name:'總務處 / 人事室 / 會計室',cat:'admin'},
   'personnel-accounting':{name:'人事室／會計室',cat:'admin'},
+  'accounting':{name:'會計室',cat:'admin'},
   'spec-staff-back':{name:'專任辦公室',cat:'admin'},'teacher-study':{name:'教師研習中心',cat:'admin'}
  });
  delete profiles['admin-back'];
@@ -98,7 +99,7 @@ const CampusSpatialData = (() => {
  // Names confirmed by the user's 2026-10-17 space-code comparison table.
  // Keep IDs, floors and physical geometry independent from these corrections.
  const namesById={
-  'reception':'油印室','general':'總務處','pe-office':'檔案室（521）','pe-storage':'檔案室（522）',
+  'reception':'油印室','general':'總務處','personnel-accounting':'人事室','pe-office':'檔案室（521）','pe-storage':'檔案室（522）',
   'mid-315':'體育器材室','wood-craft-206':'輕艇隊訓練室','mid-325':'志工／校友辦公室','mid-324':'訓育組備用器材室','math-research':'教學設備器材室',
   'native-lang':'生涯發展教室','inter-disc':'教材製作室','woodwork-front':'本土語教室',
   'math-lab':'家長會辦公室','sped-classroom':'教師會辦公室',
@@ -110,5 +111,7 @@ const CampusSpatialData = (() => {
   confirmedNames[r.id]={previous:r.name.replace(/\s*\(\d+F\)/,''),name:namesById[r.id]};
   r.name=`${namesById[r.id]} (${r.floor}F)`;
  }
+ const officeHints={general:'總務處、人事室與會計室共用入口；進門後左側為總務處。',accounting:'總務處、人事室與會計室共用入口；進門後右側靠入口為會計室。','personnel-accounting':'總務處、人事室與會計室共用入口；進門後右側較內側為人事室。',reception:'油印室入口位於二樓梯口對面，與教務處在走道同側。'};
+ for(const b of BUILDINGS_CONFIG)for(const r of b.rooms)if(officeHints[r.id])r.entryHint=officeHints[r.id];
  return {profiles,custom,aliases,confirmedNames};
 })();
