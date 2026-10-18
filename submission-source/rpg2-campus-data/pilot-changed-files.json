@@ -28,6 +28,8 @@
   "src/presentation/pilot-controls.test.ts",
   "src/presentation/pilot-controls.ts",
   "src/presentation/pilot-renderer.ts",
+  "src/presentation/room-furnishings.test.ts",
+  "src/presentation/room-furnishings.ts",
   "src/presentation/startup-profile.ts",
   "src/presentation/viewport.test.ts",
   "src/presentation/viewport.ts",
