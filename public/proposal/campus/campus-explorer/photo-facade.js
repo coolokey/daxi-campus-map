@@ -110,11 +110,14 @@
  }
  // Close the unconfirmed opposite corridor end instead of duplicating the main entrance.
  box(side,.16,FH,2.8,-sideU,FH/2,frontZ-1.4,stone);photoCollider(-sideU-.08,-sideU+.08,frontZ-2.8,frontZ,0,FH);
- // Two-colour low roof surfaces follow the matched aerial, retaining roof-cut controls.
+ // One complete main roof follows the confirmed admin body, independent of
+ // the front facade depth and any external bridge added to the layout bounds.
+ // Keep its owning floor group for the existing roof-cut controls.
  const oldRoofs=[];api.scene.traverse(o=>{if(o.userData?.buildingId===b.id&&o.userData.roof)oldRoofs.push(o)});
  for(const o of oldRoofs){o.parent?.remove(o);const i=floorMeshes.indexOf(o);if(i>=0)floorMeshes.splice(i,1);o.geometry?.dispose()}
  const roof=group(b.floors,'photo-admin-roof');roof.userData.roof=true;
- const h=b.floors*FH,rise=1.35,halfDepth=b.depth/2+.45,halfWidth=b.width/2+.45,ridgeHalf=halfWidth-halfDepth;
+ const roofEnvelope={u0:-13,u1:13,v0:-15.5,v1:5},roofU=(roofEnvelope.u0+roofEnvelope.u1)/2,roofV=(roofEnvelope.v0+roofEnvelope.v1)/2;
+ const h=b.floors*FH,rise=1.35,halfDepth=(roofEnvelope.v1-roofEnvelope.v0)/2+.45,halfWidth=(roofEnvelope.u1-roofEnvelope.u0)/2+.45,ridgeHalf=halfWidth-halfDepth;
  // Four planes share their hip edges and one inset ridge: no rectangular
  // slope projects past the two triangular end roofs into an adjacent wing.
  const lf=[-halfWidth,0,halfDepth],rf=[halfWidth,0,halfDepth],lb=[-halfWidth,0,-halfDepth],rb=[halfWidth,0,-halfDepth];
@@ -126,9 +129,9 @@
  }
  roofGeometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));roofGeometry.computeVertexNormals();
  const panel=new THREE.Mesh(roofGeometry,[mat(0xb76f62),mat(0xb9b28b),mat(0xb9b28b),mat(0xb9b28b)]);
- panel.name='admin-hip-roof';panel.position.set(b.x,h+.15,b.z);panel.castShadow=panel.receiveShadow=true;roof.add(panel);
- for(const z of [b.z-halfDepth,b.z+halfDepth])box(roof,halfWidth*2,.12,.12,b.x,h+.08,z,teal);
- for(const x of [b.x-halfWidth,b.x+halfWidth])box(roof,.12,.12,halfDepth*2,x,h+.08,b.z,teal);
+ panel.name='admin-hip-roof';panel.position.set(roofU,h+.15,roofV);panel.castShadow=panel.receiveShadow=true;roof.add(panel);
+ for(const z of [roofV-halfDepth,roofV+halfDepth])box(roof,halfWidth*2,.12,.12,roofU,h+.08,z,teal);
+ for(const x of [roofU-halfWidth,roofU+halfWidth])box(roof,.12,.12,halfDepth*2,x,h+.08,roofV,teal);
  // S__66011287.jpg fixes the front-view order and outer-bed placement:
  // peacock left, cube right, both beyond the main cypresses. Units are schematic.
  const garden=group(1,'photo-admin-garden');

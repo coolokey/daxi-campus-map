@@ -99,7 +99,7 @@ describe('activity center photo-confirmed one-storey hall and second-floor balco
 it('keeps teaching joints and puts administrative circulation in its single layout',()=>{
  const {buildings,math,plan}=load(),ls=buildings.map((b:any)=>math.layout(b)),admin=ls.find((l:any)=>l.id==='admin-front'),mid=ls.find((l:any)=>l.id==='grade8-mid'),south=ls.find((l:any)=>l.id==='grade8-front'),nine=ls.find((l:any)=>l.id==='grade9-back');
  expect(plan.galleries(ls)).toEqual([]);expect(admin.footprints.filter((p:any)=>p.part==='connector').map((p:any)=>p.floor)).toEqual([2,3]);
- expect(mid.bounds.z1).toBeCloseTo(south.bounds.z0);expect(nine.b.depth).toBeLessThan(mid.b.depth*.7);expect(plan.junctions(ls)).toHaveLength(4);
+ expect(mid.bounds.z1).toBeCloseTo(south.bounds.z0);expect(nine.b.depth).toBeLessThan(mid.b.depth*.7);expect(plan.junctions(ls)).toHaveLength(6);expect(plan.junctions(ls).filter((j:any)=>j.a==='admin-front').map((j:any)=>[j.floor,j.targetRoom])).toEqual([[1,'907'],[2,'904'],[3,'902']]);
 });
 
 it('uses one administrative identity and a broad technology body with one narrow wing',()=>{

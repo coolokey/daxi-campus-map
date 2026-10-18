@@ -110,8 +110,8 @@ it('builds a separate low side canopy on the gate end with an open doorway benea
  expect(ray.intersectObject(s.scene.getObjectByName('photo-admin-side-entrance')!,true)).toHaveLength(0);
  s.dom.window.close();
 });
-it('uses a compact four-hip roof with a red front slope and cream rear and end slopes',()=>{
- const s=build(),l=s.w.campusWalkWorld.layouts.find((l:any)=>l.id==='admin-front'),b=l.b;
+it('uses one complete four-hip main roof with a red front slope and cream rear and end slopes',()=>{
+ const s=build(),l=s.w.campusWalkWorld.layouts.find((l:any)=>l.id==='admin-front');
  const roof=s.scene.getObjectByName('photo-admin-roof')!,panels=roof.children.filter(o=>o.name==='admin-hip-roof') as THREE.Mesh[];
  expect(panels).toHaveLength(1);const panel=panels[0],geo=panel.geometry;
  expect(geo.groups).toHaveLength(4);
@@ -121,7 +121,16 @@ it('uses a compact four-hip roof with a red front slope and cream rear and end s
   directions.add(Math.abs(x)>Math.abs(z)?(x>0?'east':'west'):(z>0?'front':'rear'));
  }
  expect([...directions].sort()).toEqual(['east','front','rear','west']);
- const bounds=new THREE.Box3().setFromObject(roof);expect(bounds.max.x-b.x).toBeLessThanOrEqual(b.width/2+.6);expect(bounds.max.z-b.z).toBeLessThanOrEqual(b.depth/2+.6);
+ s.scene.updateMatrixWorld(true);
+ const points=Array.from({length:geo.attributes.position.count},(_,i)=>{
+  const p=new THREE.Vector3().fromBufferAttribute(geo.attributes.position,i).applyMatrix4(panel.matrixWorld);return l.local(p.x,p.z);
+ });
+ expect(Math.min(...points.map(p=>p.u))).toBeCloseTo(-13.45,4);expect(Math.max(...points.map(p=>p.u))).toBeCloseTo(13.45,4);
+ expect(Math.min(...points.map(p=>p.v))).toBeCloseTo(-15.95,4);expect(Math.max(...points.map(p=>p.v))).toBeCloseTo(5.45,4);
+ // The main roof ends at its own envelope, before the external bridge extents.
+ const bounds=new THREE.Box3().setFromObject(roof),main=l.rect(-13,13,-15.5,5);
+ expect(bounds.min.x).toBeCloseTo(main.x0-.51,4);expect(bounds.max.x).toBeCloseTo(main.x1+.51,4);
+ expect(bounds.min.z).toBeCloseTo(main.z0-.51,4);expect(bounds.max.z).toBeCloseTo(main.z1+.51,4);
  const palette=panel.material as THREE.MeshStandardMaterial[];
  expect(palette[0].color.getHex()).toBe(0xb76f62);expect(palette[1].color.getHex()).toBe(0xb9b28b);
  expect(roof.userData.roof).toBe(true);s.dom.window.close();

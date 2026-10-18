@@ -16,7 +16,9 @@ const CampusPhotoRoofs=(()=>{
   for(const o of obsolete){o.parent?.remove(o);const i=floorMeshes.indexOf(o);if(i>=0)floorMeshes.splice(i,1);o.traverse(c=>c.geometry?.dispose())}
   const built=[];
   for(const l of layouts){
-   if(!ids.has(l.id))continue;
+   // photo-facade owns the entire administrative hip roof, including the
+   // inner/connector body. Cleanup above still removes its inherited sheets.
+   if(!ids.has(l.id)||l.id==='admin-front')continue;
    const g=new THREE.Group();g.name='photo-roof-'+l.id;g.userData={buildingId:l.id,floorNum:l.b.floors,roof:true};
    const y=l.b.floors*height,batches=new Map();
    // Merge opaque details per colour into one static mesh, including tile lines.
@@ -50,14 +52,7 @@ const CampusPhotoRoofs=(()=>{
     if(tiles)for(let d=.75;d<half;d+=.75)for(const sign of [-1,1])localBox(u,v+sign*d,length,.025,.018,y+.17+rise*(1-d/half),0xb9ad81);
    }
    const top=l.footprints.filter(p=>p.floor===l.b.floors);
-   if(l.id==='admin-front'){
-    // The front hip roof belongs to photo-facade; the connected roof reaches it.
-    for(const p of top.filter(p=>p.part==='inner'))pitched(p,{color:0xd9b38d,rise:.65,overhang:.16});
-    for(const p of top.filter(p=>p.part==='connector')){
-     const half=(p.u1-p.u0)/2+.16,len=p.v1-p.v0+.5,rise=.28,angle=Math.atan2(rise,half),depth=Math.hypot(half,rise),x=(p.u0+p.u1)/2,z=(p.v0+p.v1)/2;
-     for(const sign of [-1,1]){const p=l.world(x+sign*half/2,z);box(l.horizontal?depth:len,.09,l.horizontal?len:depth,p.x,y+.1+rise/2,p.z,0xd9b38d,l.horizontal?0:sign*angle,l.horizontal?-sign*angle:0);}
-    }
-   }else if(l.id==='tech-building'){
+   if(l.id==='tech-building'){
     // Each white flat roof occupies one existing wing. No rectangle spans the courtyard.
     for(const p of top){
      const u=(p.u0+p.u1)/2,v=(p.v0+p.v1)/2,L=p.u1-p.u0,D=p.v1-p.v0;

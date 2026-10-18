@@ -8,7 +8,7 @@ const CampusSpatialData = (() => {
  const passage=(units=.5,label='穿堂')=>({kind:'passage',label,units});
  const vacant=(units=1,label='通道')=>({kind:'void',label,units});
  const profiles={
-  'grade9-back':{sign:1,floors:{
+  'grade9-back':{sign:-1,floors:{
    1:[room('906','213'),room('907','212'),room('908','211'),passage(.35,'通廊'),wc(),stair('south','南端樓梯')],
    2:[room('g9-clubs','223',1,'社團教室'),room('904','222'),room('905','221'),passage(.35,'通廊'),wc(),stair('south','南端樓梯')],
    3:[room('901','233'),room('902','232'),room('903','231'),passage(.35,'通廊'),wc(),stair('south','南端樓梯')]

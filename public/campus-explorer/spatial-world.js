@@ -176,7 +176,7 @@
     for(const [a,b] of [[-2.34,-2.05],[-.45,.45],[2.05,2.34]])landingGuard(g,l,s.nearU+.01,s.nearU+.07,s.centerV+a,s.centerV+b,y,colors);
    }
    // Corridor edges: split against footprint intersections so internal joints stay open.
-   const neighbors=layouts.filter(q=>['grade8-front','grade8-mid'].includes(l.id)&&['grade8-front','grade8-mid'].includes(q.id)&&q.id!==l.id),neighborCorridors=neighbors.flatMap(q=>q.corridors.filter(c=>c.floor===f).map(c=>{const a=l.local(c.rect.x0,c.rect.z0),b=l.local(c.rect.x1,c.rect.z1);return {u0:Math.min(a.u,b.u),u1:Math.max(a.u,b.u),v0:Math.min(a.v,b.v),v1:Math.max(a.v,b.v)}}));
+   const neighbors=layouts.filter(q=>q.id!==l.id&&((['grade8-front','grade8-mid'].includes(l.id)&&['grade8-front','grade8-mid'].includes(q.id))||(['admin-front','grade9-back'].includes(l.id)&&['admin-front','grade9-back'].includes(q.id)))),neighborCorridors=neighbors.flatMap(q=>q.corridors.filter(c=>c.floor===f).map(c=>{const a=l.local(c.rect.x0,c.rect.z0),b=l.local(c.rect.x1,c.rect.z1);return {u0:Math.min(a.u,b.u),u1:Math.max(a.u,b.u),v0:Math.min(a.v,b.v),v1:Math.max(a.v,b.v)}}));
    const parts=l.footprints.filter(p=>p.floor===f),divisions=[...parts,...l.corridors.filter(p=>p.floor===f),...neighborCorridors,...galleryLayouts.flatMap(q=>q.footprints.filter(p=>p.floor===f).map(p=>{const a=l.local(p.rect.x0,p.rect.z0),b=l.local(p.rect.x1,p.rect.z1);return {u0:Math.min(a.u,b.u),u1:Math.max(a.u,b.u),v0:Math.min(a.v,b.v),v1:Math.max(a.v,b.v)}}))],us=[...new Set(divisions.flatMap(p=>[p.u0,p.u1]))].sort((a,b)=>a-b),vs=[...new Set(divisions.flatMap(p=>[p.v0,p.v1]))].sort((a,b)=>a-b);
    const present=(u,v)=>parts.some(p=>u>p.u0+1e-5&&u<p.u1-1e-5&&v>p.v0+1e-5&&v<p.v1-1e-5);
    function edge(alongU,fixed,a,b){
@@ -399,7 +399,7 @@
  for(const j of CampusSpatialPlan.junctions(layouts)){
   const a=layouts.find(l=>l.id===j.a),b=layouts.find(l=>l.id===j.b),ha=hubs[`${j.a}-${j.floor}`],hb=hubs[`${j.b}-${j.floor}`];
   const na=node(`teaching-junction-${j.id||j.floor}-a`,j.start,j.a),nb=node(`teaching-junction-${j.id||j.floor}-b`,j.end,j.b);
-  attachPath(ha,na,gridPath(graph[ha],j.start,j.start.y,a),j.a);link(na,nb);
+  attachPath(ha,na,gridPath(graph[ha],j.start,j.start.y,a),j.a);if(j.path)attachPath(na,nb,j.path,j.a);else link(na,nb);
   attachPath(nb,hb,gridPath(j.end,graph[hb],j.end.y,b),j.b);
  }
  const gate=node('gate',{x:-10,y:0,z:90});

@@ -11,7 +11,7 @@ beforeAll(()=>{
  const file=(f:string)=>{if(existsSync(root+f))run(readFileSync(root+f,'utf8'))};file('vendor/three.min.js');
  w.THREE.WebGLRenderer=class{domElement:any;shadowMap={};capabilities={getMaxAnisotropy:()=>1};constructor({canvas}:any){this.domElement=canvas}setSize(){}setPixelRatio(){}render(){}};
  file('vendor/OrbitControls.js');
- for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','photo-facade.js','landscape-world.js','spatial-world.js','photo-teaching.js','photo-roofs.js','art-direction.js','photo-reference.js'])file(f);
+ for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','photo-facade.js','campus-forecourt.js','landscape-world.js','spatial-world.js','photo-teaching.js','photo-roofs.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
 it('walks through the statue-facing main door and gate-side small door using the physical scene',()=>{
@@ -227,7 +227,7 @@ it('keeps the curved-window midlanding free of low overhead concrete',()=>{
 });
 
 it('walks across each teaching L junction at its own floor without a guard, wall or support drop',()=>{
- const failures=run(`(()=>{const bad=[];for(const j of CampusSpatialPlan.junctions(campusWalkWorld.layouts)){const p={...j.start};for(let i=1;i<=24;i++){const z=j.start.z+(j.end.z-j.start.z)*i/24;if(moveAvatarWithCollision(p,0,z-p.z)||Math.abs(p.y-j.start.y)>.1){bad.push({floor:j.floor,p:{...p}});break;}}}return bad})()`);expect(failures).toEqual([]);
+ const failures=run(`(()=>{const bad=[];for(const j of CampusSpatialPlan.junctions(campusWalkWorld.layouts)){const p={...j.start};for(const q of j.path?.slice(1)||[j.end]){const a={...p},steps=Math.ceil(Math.hypot(q.x-a.x,q.z-a.z)/.1);for(let i=1;i<=steps;i++){const x=a.x+(q.x-a.x)*i/steps,z=a.z+(q.z-a.z)*i/steps;if(moveAvatarWithCollision(p,x-p.x,z-p.z)||Math.abs(p.y-j.start.y)>.1){bad.push({floor:j.floor,p:{...p}});break;}}}}return bad})()`);expect(failures).toEqual([]);
 });
 
 it('keeps the technology rounded extension solid and all room doors clear after the two-part rebuild',()=>{
@@ -258,7 +258,7 @@ it('walks the approved rooms, new stair, straight main hall and direct rear-buil
   for(const r of l.cells.filter(r=>r.floor===1&&['room','wc'].includes(r.kind))){walk(main,r.corridor,r.id+' approach');const p={...r.corridor};for(const q of [r.door,r.center])if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z))bad.push(r.id+' door');}
   const p={...main};for(let v=3.6;v>=-20;v-=.1){const q=l.world(0,v);if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z)){bad.push('straight central hall at '+v);break;}}
   const j=CampusSpatialPlan.junctions(campusWalkWorld.layouts).find(j=>j.id==='admin-rear');walk(main,j.start,'rear connector');
-  const crossing={...j.start};if(moveAvatarWithCollision(crossing,j.end.x-crossing.x,j.end.z-crossing.z))bad.push('rear junction');
+  const crossing={...j.start};for(const q of j.path?.slice(1)||[j.end])if(moveAvatarWithCollision(crossing,q.x-crossing.x,q.z-crossing.z))bad.push('rear junction');
   const nine=campusWalkWorld.layouts.find(l=>l.id==='grade9-back');walk(j.end,nine.rooms.find(r=>r.id==='907').corridor,'907 corridor',nine);
   return bad;})()`);expect(result).toEqual([]);
 });
@@ -292,3 +292,13 @@ it('continues the actual auto-walk loop past a stationary person and arrives at 
  try{document.getElementById('guide-landing')?.remove();document.getElementById('welcome-card')?.classList.add('hidden');clock.getDelta=()=>.1;stopAutoWalk();avatarGroup.position.set(-14,0,81);setControlMode('avatar');navigateToRoom('general',false);document.getElementById('btn-auto-walk').click();let frames=0;while(getNavigationState().status==='walking'&&frames++<600)animate();return {status:getNavigationState().status,room:campusWalkWorld.roomAt(avatarGroup.position)?.id,blocked,frames};}finally{clock.getDelta=delta;window.campusPeople=previous;stopAutoWalk();setControlMode('bird');cancelCameraTween();}})()`);
  expect(result.status).toBe('arrived');expect(result.room).toBe('general');expect(result.blocked).toBeGreaterThan(0);
 },20000);
+
+it('walks directly across all three administrative bridges into the matching ninth-grade room without changing floors',()=>{
+ const bad=run(`(()=>{const a=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),bad=[];for(const [i,id] of ['907','904','902'].entries()){
+  const f=i+1,link=a.externalLinks?.find(j=>j.floor===f);if(!link){bad.push(id+' missing bridge');continue;}
+  const start=a.rooms.find(r=>r.id===(f===1?'admin-g89-staff':f===2?'reception':'teacher-study')).center;
+  const path=campusWalkWorld.route(start,ROOMS_DB[id]);if(!path){bad.push(id+' route missing');continue;}const pos={...start};
+  for(const q of path.slice(1)){if(Math.abs(q.y-i*3.6)>.01){bad.push(id+' changed floor');break;}if(moveAvatarWithCollision(pos,q.x-pos.x,q.z-pos.z)){bad.push({id,blocked:{...pos},target:q});break;}}
+  if(campusWalkWorld.roomAt(pos)?.id!==id)bad.push(id+' not arrived');
+ }return bad})()`);expect(bad).toEqual([]);
+});

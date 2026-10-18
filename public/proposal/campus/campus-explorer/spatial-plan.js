@@ -10,7 +10,7 @@ const CampusSpatialPlan = (() => {
   const world=(u,v,y=0)=>statueFacing?{x:b.x-v,z:b.z+u,y}:horizontal?{x:b.x+u,z:b.z+v,y}:{x:b.x+v,z:b.z+u,y};
   const rect=(u0,u1,v0,v1)=>{const a=world(u0,v0),c=world(u1,v1);return{x0:Math.min(a.x,c.x),x1:Math.max(a.x,c.x),z0:Math.min(a.z,c.z),z1:Math.max(a.z,c.z)}};
   const local=(x,z)=>statueFacing?{u:z-b.z,v:b.x-x}:horizontal?{u:x-b.x,v:z-b.z}:{u:z-b.z,v:x-b.x};
-  const cells=[],corridors=[],footprints=[],stairs=[],ramps=[],platforms=[],holes=[],entrances=[],displayRows=[];
+  const cells=[],corridors=[],footprints=[],stairs=[],ramps=[],platforms=[],holes=[],entrances=[],displayRows=[],externalLinks=[];
   const addRect=(target,r)=>{const a={...r,rect:rect(r.u0,r.u1,r.v0,r.v1)};target.push(a);return a};
   function addCell(item,floor,u0,u1,v0,v1,row='main',doorSide='v1',corridorValue){
    const r=item.kind==='room'?b.rooms.find(r=>r.id===item.id):null;
@@ -141,6 +141,20 @@ const CampusSpatialPlan = (() => {
      {id:'second-west',label:'西側導師室正上方：油印室朝樓梯・校長室朝教務處',axis:'u',start:west.u0,end:west.u1,floor:2},
      {id:'second-east',label:'東側導師室正上方：教務處',axis:'u',start:east.u0,end:east.u1,floor:2},
      {id:'second-wc',label:'一樓男女廁正上方：二樓男女廁',axis:'u',start:lowerWC.u0,end:lowerWC.u1,floor:2});
+   }
+   // Same-floor bridges exit the central administrative hall, then follow
+   // the gap between buildings to the classroom-facing ninth-grade corridor.
+   const nine=layout(BUILDINGS_CONFIG.find(q=>q.id==='grade9-back'));
+   for(const [index,id] of ['907','904','902'].entries()){
+    const floor=index+1,y=index*H,room=nine.rooms.find(r=>r.id===id);
+    const path=[world(0,-14.6,y),{x:-2.3,y,z:b.z},{x:-2.3,y,z:room.corridor.z},{...room.corridor}];
+    const bridge={id:floor===1?'admin-rear':`admin-rear-${floor}`,floor,a:b.id,b:nine.id,targetRoom:id,path,start:path[0],end:path.at(-1)};externalLinks.push(bridge);
+    for(let i=1;i<path.length;i++){
+     const a=path[i-1],z=path[i],half=1.2;
+     const x0=Math.min(a.x,z.x)-half,x1=Math.max(a.x,z.x)+half,z0=Math.min(a.z,z.z)-half,z1=Math.max(a.z,z.z)+half;
+     const q=local(x0,z0),r=local(x1,z1),u0=Math.min(q.u,r.u),u1=Math.max(q.u,r.u),v0=Math.min(q.v,r.v),v1=Math.max(q.v,r.v);
+     Object.assign(fp(floor,u0,u1,v0,v1),{part:'admin-grade9-bridge'});Object.assign(co(floor,u0,u1,v0,v1),{part:'admin-grade9-bridge'});
+    }
    }
   }else if(p.shape==='gym'){
    // Photo-confirmed 1F foyer/hall and 2F U-shaped balcony. The outer
@@ -274,7 +288,7 @@ const CampusSpatialPlan = (() => {
    }
   }
   const bounds={x0:Math.min(...footprints.map(p=>p.rect.x0)),x1:Math.max(...footprints.map(p=>p.rect.x1)),z0:Math.min(...footprints.map(p=>p.rect.z0)),z1:Math.max(...footprints.map(p=>p.rect.z1))};
-  return{id:b.id,b,facadeFeatures:p.shape==='tech'?{roundedNose:{u:0,v:D/2,radius:1.4}}:null,horizontal,L,D,sign,cV,wallV,outerV,world,local,rect,bounds,cells,corridors,footprints,displayRows,stairs,ramps,platforms,holes,rooms:cells.filter(c=>c.kind==='room'),entrances,entrance:entrances[0]?.outside,confidence:p.confidence||'依平面圖房間順序；未測量尺度'};
+  return{id:b.id,b,facadeFeatures:p.shape==='tech'?{roundedNose:{u:0,v:D/2,radius:1.4}}:null,horizontal,L,D,sign,cV,wallV,outerV,world,local,rect,bounds,cells,corridors,footprints,displayRows,stairs,ramps,platforms,holes,externalLinks,rooms:cells.filter(c=>c.kind==='room'),entrances,entrance:entrances[0]?.outside,confidence:p.confidence||'依平面圖房間順序；未測量尺度'};
  }
  function groundAt(l,x,z,currentY){
   const {u,v}=l.local(x,z);let best=0;
@@ -298,8 +312,8 @@ const CampusSpatialPlan = (() => {
    if(Math.abs(z-b.bounds.z0)>.01)continue;
    result.push({floor,a:a.id,b:b.id,start:{x,y,z:z-.6},end:{x,y,z:z+.6}});
   }
-  const admin=layouts.find(l=>l.id==='admin-front'),grade9=layouts.find(l=>l.id==='grade9-back'),rear=admin?.entrances.find(e=>e.kind==='rear-link');
-  if(rear&&grade9)result.push({floor:1,a:admin.id,b:grade9.id,start:rear.inside,end:rear.outside,id:'admin-rear'});
+  const admin=layouts.find(l=>l.id==='admin-front');
+  result.push(...(admin?.externalLinks||[]));
   return result;
  }
  function ribbon(points,width=.28){
