@@ -63,6 +63,7 @@
   "scripts/verify-published-rpg.cjs",
   "scripts/verify-rpg-characters.node-check.cjs",
   "scripts/verify-technology-pilot.cjs",
+  "scripts/__pycache__/check_admin.cpython-312.pyc",
   "scripts/fixtures/character-source-v3/campus-people.js",
   "scripts/fixtures/character-source-v3/explorer.js",
   "scripts/fixtures/character-source-v3/staff-data.js",
