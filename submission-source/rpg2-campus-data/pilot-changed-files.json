@@ -32,6 +32,7 @@
   "src/presentation/viewport.test.ts",
   "src/presentation/viewport.ts",
   "src/game/core/world.test.ts",
+  "src/game/core/world.ts",
   "src/game/data/residents.ts",
   "src/game/data/types.ts",
   "src/game/data/maps/campus-field.test.ts",
