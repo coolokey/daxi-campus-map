@@ -104,6 +104,31 @@ const CampusSpatialPlan = (() => {
     Object.assign(fp(f,u-1.7,u+1.7,v0,v1),{part:'connector'});
     Object.assign(co(f,u-1.7,u+1.7,v0,front.cV),{part:'connector'});
    }
+   if(p.secondFloorPlan==='approved-offices'){
+    // Keep the established 1F/3F plan and both real stair shafts. The west
+    // approach wraps around the 1F–2F opening rather than putting an office in it.
+    for(const list of [cells,corridors])for(let i=list.length-1;i>=0;i--)if(list[i].floor===2)list.splice(i,1);
+    const office=id=>({kind:'room',id}),route=(u0,u1,v0,v1)=>co(2,u0,u1,v0,v1);
+    addCell(office('reception'),2,-13,-9.4,-5,-1.8,'second-west','u1',-8.6);
+    addCell(office('principal'),2,-13,-9.4,-1.8,2.2,'second-west','u1',-8.6);
+    addCell(office('academic'),2,1.6,13,-5,2.2,'second-east','u0',0);
+    route(-9.4,-7.8,-5,2.2);route(-9.4,1.6,.6,2.2);
+    route(-13,13,2.2,5);route(-1.6,1.6,-5,5);
+    const upper=stairs.find(s=>s.fromFloor===2),ground=stairs.find(s=>s.toFloor===2);
+    addCell(office('general'),2,-12,upper.u0,-15.5,-10.3,'second-rear','v1',-8.9);
+    addCell(office('personnel-accounting'),2,4.4,12,-15.5,-12.9,'second-rear','u0',3.6);
+    addCell({kind:'wc',label:'男女廁所'},2,4.4,12,-12.9,-10.3,'second-wc','v1',-8.9);
+    addCell({kind:'stair',label:'中段樓梯'},2,upper.u0,upper.u1,upper.v0,upper.v1,'second-rear');
+    route(-12,12,-10.3,-7.5);route(upper.u1,4.4,-15.5,-10.3);
+    route(upper.nearU,upper.u1,upper.v0,upper.v1);
+    route(ground.nearU,ground.u1,ground.v0,ground.v1);
+    route(u-1.7,u+1.7,v0,front.cV);
+    for(const row of displayRows)row.floors=row.id.startsWith('approved-')?[1]:[1,3];
+    displayRows.push({id:'second-west',label:'二樓西側：油印室在校長室前方',axis:'v',start:-5,end:2.2,floor:2},
+     {id:'second-east',label:'二樓東側：教務處',axis:'u',start:1.6,end:13,floor:2},
+     {id:'second-rear',label:'二樓後棟：總務處・樓梯・人事／會計室',axis:'u',start:-12,end:12,floor:2},
+     {id:'second-wc',label:'人事／會計室前方：男女廁所',axis:'u',start:-12,end:12,floor:2});
+   }
   }else if(p.shape==='gym'){
    // Photo-confirmed 1F foyer/hall and 2F U-shaped balcony. The outer
    // shell height is independent of the number of usable floors.

@@ -1,7 +1,7 @@
 /* Presentation adapters consume shared geometry without changing physical cells. */
 window.CampusSpatialUI = (() => {
  function rows(layout,floor){
-  return layout.displayRows.map(row=>{
+  return layout.displayRows.filter(row=>(!row.floor||row.floor===floor)&&(!row.floors||row.floors.includes(floor))).map(row=>{
    const axis=row.axis||'u',cells=layout.cells.filter(c=>c.floor===floor&&(c.row||'main')===row.id)
     .map(c=>({...c,start:c[`${axis}0`],end:c[`${axis}1`]})).sort((a,b)=>a.start-b.start);
    const filled=[];let cursor=row.start;

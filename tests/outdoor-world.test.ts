@@ -265,3 +265,11 @@ it('walks the approved rooms, new stair, straight main hall and direct rear-buil
 it('shows separate accessible and general toilet signs in the administrative ground floor',()=>{
  expect(run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),ids=l.cells.filter(c=>c.floor===1&&c.kind==='wc').map(c=>c.id);const signs=[];scene.traverse(o=>{if(o.userData.nameplateStyle==='wall')signs.push(o.userData.roomId)});return ids.every(id=>signs.includes(id))})()`)).toBe(true);
 });
+it('walks from the second-floor stair arrival into each approved office and the relocated WC',()=>{
+ const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),s=l.stairs.find(s=>s.toFloor===2),start=l.world(s.innerU,s.centerV-s.sign*1.25,3.6),bad=[];
+ for(const r of l.cells.filter(c=>c.floor===2&&['room','wc'].includes(c.kind))){const path=campusWalkWorld.gridPath(start,r.corridor,3.6,l);if(!path){bad.push(r.id+' approach');continue;}const p={...start};for(const q of [...path.slice(1),r.door,r.center]){if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z)){bad.push(r.id+' movement');break;}}if(r.kind==='room'&&!findShortestPath('gate',ROOMS_DB[r.id].node))bad.push(r.id+' gate route');}
+ return bad;})()`);expect(result).toEqual([]);
+});
+it('labels the relocated second-floor WC with readable wall and projecting signs',()=>{
+ expect(run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),wc=l.cells.find(c=>c.floor===2&&c.kind==='wc'),styles=[];scene.traverse(o=>{if(o.userData.roomId===wc.id&&o.userData.nameplateStyle)styles.push(o.userData.nameplateStyle)});return {wall:styles.includes('wall'),projecting:styles.filter(s=>s==='projecting').length}})()`)).toEqual({wall:true,projecting:2});
+});

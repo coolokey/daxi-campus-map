@@ -162,7 +162,7 @@
    for(const r of l.cells.filter(c=>c.floor===f&&(c.kind==='room'||c.kind==='wc'))){
     for(const side of ['u0','u1','v0','v1'])roomWall(g,l,r,side,y);
     if(r.kind==='room')details(g,l,r,y);
-    else if(l.id==='admin-front'&&f===1)details(g,l,{...r,name:r.label,cat:'admin'},y);
+    else if(l.id==='admin-front'&&f<=2)details(g,l,{...r,name:r.label,cat:'admin'},y);
    }
    for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f)))stairEnclosure(g,l,s,y);
    if(f>1)for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f)&&CampusSpatialPlan.onFloor(s.hole,f))){
