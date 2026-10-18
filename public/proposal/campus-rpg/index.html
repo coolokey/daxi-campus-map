@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>桃園市立大溪國中 115 學年度 · 真實版校園導覽 RPG</title>
+  <meta name="description" content="依據大溪國中 115 學年度校園平面圖與實景照片製作之 2D RPG 風格智慧校園探索系統，走訪全校 12 棟建築、92 間教室處室、操場跑道與在地大溪木藝傳承。">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏫</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Preload Essential Assets -->
+  <link rel="preload" as="image" href="../rpg/assets/maps/daxi-realistic-campus-rpg-v1.webp" fetchpriority="high">
+</head>
+<body>
+  <!-- Main Game Canvas -->
+  <div id="game-container">
+    <canvas id="world" tabindex="0" aria-label="大溪國中校園 RPG 地圖，使用 WASD 或方向鍵移動，按 E 互動"></canvas>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header id="top-nav">
+    <div class="brand-btn glass" id="btn-home" title="返回校門口出發點">
+      <div class="brand-logo">溪</div>
+      <div>
+        <div class="brand-title">桃園市立大溪國中</div>
+        <div class="brand-subtitle">115 學年度・真實版 RPG 導覽</div>
+      </div>
+    </div>
+
+    <!-- Search Box with Live Results -->
+    <div class="search-box">
+      <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="搜尋處室、班級 (例如: 701, 教務處, 木藝, 體育館...)" autocomplete="off">
+      </div>
+      <ul id="search-results" class="glass"></ul>
+    </div>
+
+    <!-- Top Action Buttons -->
+    <div class="top-actions">
+      <button class="btn-action" id="btn-map-overlay" title="查看 115 官方平面圖 (快捷鍵 M)">
+        <span>🗺️</span>
+        <span>總平面圖</span>
+      </button>
+      <button class="btn-action" id="btn-photo-gallery" title="查看校園實景照片與歷史藝廊">
+        <span>📸</span>
+        <span>實景藝廊</span>
+      </button>
+      <button class="btn-action gold-btn" id="btn-fireworks" title="燃放 115 校慶慶典煙火">
+        <span>🎆</span>
+        <span>校慶煙火</span>
+      </button>
+      <button class="btn-action" id="btn-avatar" title="切換學生制服或便服">
+        <span>🧑‍🎓</span>
+        <span>換裝</span>
+      </button>
+      <button class="btn-action" id="btn-sound" title="切換遊戲音效">
+        <span>🔊</span>
+        <span>音效</span>
+      </button>
+      <button class="btn-action" id="btn-help" title="查看操作說明與快捷鍵">
+        <span>❓</span>
+        <span>說明</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Quick Filter Chips -->
+  <div id="quick-bar">
+    <div class="venue-chip" data-to="principal">🏛️ 校長室 (前棟2F)</div>
+    <div class="venue-chip" data-to="academic">📚 教務處 (前棟2F)</div>
+    <div class="venue-chip" data-to="student-affairs">🎖️ 學務處 (後棟1F)</div>
+    <div class="venue-chip" data-to="general">💼 總務處 (後棟2F)</div>
+    <div class="venue-chip" data-to="counseling">💬 輔導室 (特教2F)</div>
+    <div class="venue-chip" data-to="health">🩺 健康中心 (北棟1F)</div>
+    <div class="venue-chip" data-to="701">🎒 701 教室 (1F)</div>
+    <div class="venue-chip" data-to="801">🎒 801 教室 (南棟2F)</div>
+    <div class="venue-chip" data-to="901">🎒 901 教室 (西棟3F)</div>
+    <div class="venue-chip" data-to="woodwork-1">🪵 大溪木藝教室 (中棟1F)</div>
+    <div class="venue-chip" data-to="library">📖 中央圖書室 (綜合棟1F)</div>
+    <div class="venue-chip" data-to="gym">🏀 學生活動中心禮堂</div>
+    <div class="venue-chip" data-to="grandstand">🏃 操場司令台</div>
+    <div class="venue-chip" data-to="court-bb">🏀 戶外雙籃球場</div>
+    <div class="venue-chip" data-to="volleyball-out">🏐 戶外排球場</div>
+    <div class="venue-chip" data-to="statue">🗿 蔣公銅像庭園</div>
+  </div>
+
+  <!-- Floor Selector Widget -->
+  <div id="floor-selector" class="glass">
+    <button class="floor-btn active" data-f="all" title="全校鳥瞰視野">全</button>
+    <button class="floor-btn" data-f="4" title="透視 4F 樓層空間">4F</button>
+    <button class="floor-btn" data-f="3" title="透視 3F 樓層空間">3F</button>
+    <button class="floor-btn" data-f="2" title="透視 2F 樓層空間">2F</button>
+    <button class="floor-btn" data-f="1" title="透視 1F 樓層空間">1F</button>
+  </div>
+
+  <!-- Navigation HUD -->
+  <div id="nav-hud" class="glass">
+    <div class="nav-info">
+      <div class="nav-badge">🚩 導航目的地</div>
+      <div class="nav-target" id="hud-target-name">目標處室</div>
+      <div class="nav-route" id="hud-route-desc">路線規劃中...</div>
+    </div>
+    <div class="nav-stat">
+      <div class="nav-dist"><span id="hud-dist-val">0</span><small>m</small></div>
+    </div>
+    <div class="nav-actions">
+      <button class="auto-walk-btn" id="btn-auto-walk">🚶‍♂️ 自動帶路</button>
+      <button class="nav-close" id="btn-cancel-nav" title="結束導航">✕</button>
+    </div>
+  </div>
+
+  <!-- Quest Tracker Floating Pill -->
+  <div id="quest-tracker" class="glass" title="點擊查看詳細任務日誌">
+    <div class="quest-tracker-badge">
+      <span>📜 校園任務進行中</span>
+      <button id="btn-open-quest-log" style="background:none;border:none;color:var(--accent-gold);cursor:pointer;font-size:11px;font-weight:bold;">日誌 ↗</button>
+    </div>
+    <div id="quest-tracker-title">【新生報到】校園初訪與處室巡禮</div>
+    <div id="quest-tracker-step">向正門警衛伯伯打招呼並領取手冊</div>
+  </div>
+
+  <!-- 2D High-Definition Minimap -->
+  <div id="minimap-card" title="點擊小地圖可快速傳送">
+    <canvas id="minimap-canvas"></canvas>
+    <div class="minimap-compass" title="圖面上方">圖上</div>
+    <div class="minimap-floor-badge" id="minimap-floor-badge">全校</div>
+  </div>
+
+  <!-- RPG Dialogue Modal -->
+  <div id="dialogue-modal">
+    <div class="dialogue-portrait-wrap">
+      <img id="dialogue-portrait" src="" alt="對話人物頭像">
+    </div>
+    <div class="dialogue-body">
+      <div class="dialogue-header">
+        <div class="speaker-wrap">
+          <span id="dialogue-speaker">師長姓名</span>
+          <span id="dialogue-title">職稱</span>
+        </div>
+        <button class="dialogue-close-btn" id="btn-dialogue-close" title="結束對話">✕</button>
+      </div>
+      <div id="dialogue-text">對話內容載入中...</div>
+      <div id="dialogue-choices"></div>
+    </div>
+  </div>
+
+  <!-- Mobile On-Screen Controls -->
+  <div id="mobile-controls">
+    <div class="dpad-container">
+      <button class="dpad-btn dpad-up" id="dpad-up">▲</button>
+      <button class="dpad-btn dpad-left" id="dpad-left">◀</button>
+      <button class="dpad-btn dpad-right" id="dpad-right">▶</button>
+      <button class="dpad-btn dpad-down" id="dpad-down">▼</button>
+    </div>
+  </div>
+  <button id="mobile-action-btn" class="dpad-action" id="dpad-action" title="互動">E</button>
+
+  <!-- Modal Backdrop -->
+  <div id="modal-backdrop"></div>
+
+  <!-- 115 Official Campus Plan Modal -->
+  <div class="rpg-modal glass" id="campus-map-modal">
+    <div class="modal-header">
+      <h3>🗺️ 大溪國中 115 學年度官方校園平面圖對照</h3>
+      <button class="nav-close" id="btn-close-map-modal">✕</button>
+    </div>
+    <div style="text-align:center;max-height:70vh;overflow:auto;">
+      <img src="../campus/campus-explorer/campus_plan_115.jpg" alt="115 學年度校園平面圖" style="max-width:100%;height:auto;border-radius:12px;border:1px solid rgba(255,255,255,0.2);">
+      <p style="color:#94a3b8;font-size:12px;margin-top:10px;">依大溪國中 115 學年度官方平面圖校對，涵蓋 12 棟建築、92 間教室處室與體育運動場。</p>
+    </div>
+  </div>
+
+  <!-- Real Campus Photos Exhibit Modal -->
+  <div class="rpg-modal glass" id="photo-modal">
+    <div class="modal-header">
+      <h3>📸 大溪國中 實景照片與校園歷史藝廊</h3>
+      <button class="nav-close" id="btn-close-photo-modal">✕</button>
+    </div>
+    <div class="photo-grid" id="photo-grid"></div>
+  </div>
+
+  <!-- Quest Log Modal -->
+  <div class="rpg-modal glass" id="quest-log-modal">
+    <div class="modal-header">
+      <h3>📜 校園探索任務日誌 (Campus Quests)</h3>
+      <button class="nav-close" id="btn-close-quest-log">✕</button>
+    </div>
+    <div id="quest-log-list"></div>
+  </div>
+
+  <!-- Avatar & Settings Modal -->
+  <div class="rpg-modal glass" id="avatar-modal">
+    <div class="modal-header">
+      <h3>🧑‍🎓 學生造型外觀與操作偏好</h3>
+      <button class="nav-close" id="btn-close-avatar">✕</button>
+    </div>
+    <h4 style="color:#cbd5e1;font-size:14px;margin-bottom:12px;">選擇學生外觀：</h4>
+    <div class="avatar-options-grid" id="avatar-options-list"></div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:13px;color:#cbd5e1;">行走速度設定：</span>
+        <span style="font-size:13px;color:var(--accent-gold);font-weight:bold;" id="speed-display">100%</span>
+      </div>
+      <input type="range" id="slider-speed" min="50" max="180" step="10" value="100" style="width:100%;accent-color:var(--accent-gold);">
+      <small style="color:#94a3b8;font-size:11px;display:block;margin-top:4px;">按 Shift 鍵可隨時衝刺加速！</small>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div class="rpg-modal glass" id="help-modal">
+    <div class="modal-header">
+      <h3>🎮 大溪國中 真實版 RPG 導覽操作指南</h3>
+      <button class="nav-close" id="btn-close-help">✕</button>
+    </div>
+    <ul style="list-style:none;line-height:2.0;font-size:14px;color:#cbd5e1;">
+      <li>⌨️ <b>鍵盤操作</b>：<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 或方向鍵控制角色 8 方向移動，<kbd>Shift</kbd> 衝刺跑步。</li>
+      <li>💬 <b>互動與進門</b>：靠近師長、警衛或建築大門時，按 <kbd>E</kbd> 或 <kbd>空白鍵</kbd> 進行對話或進入建築室內！</li>
+      <li>🚶‍♂️ <b>金色導航與自動帶路</b>：在上方搜尋欄輸入教室/處室名稱（如「701」、「教務處」），金色動態虛線路線將指引方向，點擊「自動帶路」即可自動前往。</li>
+      <li>🪜 <b>跨樓層探索</b>：進入建築後可走訪走廊各間教室，走到樓梯間按 <kbd>E</kbd> 可漫遊 1F ~ 4F。</li>
+      <li>🗺️ <b>總平面圖與實景</b>：按 <kbd>M</kbd> 可快速展開 115 官方校園平面圖，點「實景藝廊」可比對真實校舍歷史照片。</li>
+      <li>📱 <b>手機觸控支援</b>：手機平版支援螢幕左下角虛擬十字鍵與右下角 E 互動按鈕。</li>
+    </ul>
+    <button class="btn-action gold-btn" style="width:100%;justify-content:center;margin-top:16px;padding:12px;" onclick="document.getElementById('btn-close-help').click()">我知道了！開始走進大溪國中</button>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="campus-data.js"></script>
+  <script src="audio.js"></script>
+  <script src="rpg-engine.js"></script>
+  <script src="rpg-ui.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
