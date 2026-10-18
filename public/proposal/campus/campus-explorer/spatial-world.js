@@ -346,15 +346,24 @@
  const startupSearches=new Map();let buildingGraph=true;
  // Four-connected grid connectors reject blocked edges, floor holes and courtyard voids.
  function gridPath(start,end,y=0,interior=null,stageSurface=false,avoidPeople=false){
-  const step=(interior||stageSurface||avoidPeople)?.35:1,origin=stageSurface?{x:CampusOutdoorPlan.stage.x0-1,z:CampusOutdoorPlan.stage.stairs.z0-1}:interior?{x:interior.bounds.x0-1,z:interior.bounds.z0-1}:{x:-130,z:-100},round=p=>({x:Math.round((p.x-origin.x)/step),z:Math.round((p.z-origin.z)/step)}),a=round(start),b=round(end),f=Math.round(y/FH)+1;
-  const searchKey=`${stageSurface?'stage':interior?.id||'outdoor'}/${y}/${a.x},${a.z}`;
-  let state=buildingGraph?startupSearches.get(searchKey):null;if(!state){state=CampusGridSearch.create(a);if(buildingGraph)startupSearches.set(searchKey,state)}
+  const step=(interior||stageSurface||avoidPeople)?.35:1,origin=stageSurface?{x:CampusOutdoorPlan.stage.x0-1,z:CampusOutdoorPlan.stage.stairs.z0-1}:interior?{x:interior.bounds.x0-1,z:interior.bounds.z0-1}:{x:-130,z:-100},round=p=>({x:Math.round((p.x-origin.x)/step),z:Math.round((p.z-origin.z)/step)}),f=Math.round(y/FH)+1;
+  let a=round(start),b=round(end);
   const stageFree=(x,z)=>CampusOutdoorPlan.onStage({x,z,y})&&Math.abs(CampusOutdoorPlan.ground({x,z})-y)<.15;
   const peopleFree=(x,z)=>!avoidPeople||(Math.hypot(x-start.x,z-start.z)<=12&&window.campusPeople?.blocksPlayer({x,y,z},{x,y,z})!==true);
   const free=(x,z)=>{const wx=origin.x+x*step,wz=origin.z+z*step;
    return ((wx>=-125&&wx<=115&&wz>=-100&&wz<=108)||CampusEntranceAvenue.contains(wx,wz))&&!checkWallCollision(wx,y,wz)&&peopleFree(wx,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.08:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)))};
   const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||!peopleFree(x,z)||(stageSurface?!stageFree(x,z):!interior&&CampusOutdoorPlan.reserved({x,z}))||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.08)))return false}return true};
+  // A safe continuous position may round into a person's clearance. Anchor
+  // detours to a nearby free cell connected to the exact position instead.
+  if(avoidPeople){
+   const anchor=p=>{const c=round(p),candidates=[];for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++)candidates.push({x:c.x+dx,z:c.z+dz});
+    return candidates.sort((a,b)=>Math.hypot(origin.x+a.x*step-p.x,origin.z+a.z*step-p.z)-Math.hypot(origin.x+b.x*step-p.x,origin.z+b.z*step-p.z)).find(c=>free(c.x,c.z)&&clear(p,{x:origin.x+c.x*step,z:origin.z+c.z*step}));};
+   a=anchor(start);b=anchor(end);if(!a||!b)return null;
+  }
+  const searchKey=`${stageSurface?'stage':interior?.id||'outdoor'}/${y}/${a.x},${a.z}`;
+  let state=buildingGraph?startupSearches.get(searchKey):null;if(!state){state=CampusGridSearch.create(a);if(buildingGraph)startupSearches.set(searchKey,state)}
   const points=CampusGridSearch.path(state,b,free,Infinity,(p,q)=>clear({x:origin.x+p.x*step,z:origin.z+p.z*step},{x:origin.x+q.x*step,z:origin.z+q.z*step}));if(points){const result=points.map(p=>({x:origin.x+p.x*step,y,z:origin.z+p.z*step}));
+    if(avoidPeople)return [{...start},...result,{...end}];
     if(result.length===1)return clear(start,end)?[{...start},{...end}]:null;
     if(!clear(start,result[1])||!clear(result.at(-2),end))return null;result[0]={...start};result[result.length-1]={...end};return result;
   }
