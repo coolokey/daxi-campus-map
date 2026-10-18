@@ -3,9 +3,9 @@ import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 const load=()=>runInNewContext(['campus-data.js','spatial-plan-data.js','spatial-plan.js'].map(f=>readFileSync('public/campus-explorer/'+f,'utf8')).join('\n')+';CampusSpatialPlan.layout(BUILDINGS_CONFIG.find(b=>b.id==="admin-front"))');
 const overlaps=(a:any,b:any)=>a.u0<b.u1-1e-6&&a.u1>b.u0+1e-6&&a.v0<b.v1-1e-6&&a.v1>b.v0+1e-6;
-it('puts oil printing opposite the stairs and academic opposite the principal, as in the photos',()=>{
+it('connects oil printing and principal above the west staff room with accessible entrances',()=>{
  const l=load(),oil=l.rooms.find((r:any)=>r.id==='reception'),principal=l.rooms.find((r:any)=>r.id==='principal');
- expect(oil.name).toBe('油印室 (2F)');expect(oil.u0).toBeGreaterThan(principal.u1);expect(oil.v1).toBe(principal.v0);
+ expect(oil.name).toBe('油印室 (2F)');expect(oil.u0).toBe(principal.u0);expect(oil.u1).toBe(principal.u1);expect(oil.v1).toBe(principal.v0);
  expect(oil.doorSide).toBe('u0');
  for(const r of [oil,principal])expect(l.corridors.some((c:any)=>c.floor===2&&c.rect.x0<=r.corridor.x&&c.rect.x1>=r.corridor.x&&c.rect.z0<=r.corridor.z&&c.rect.z1>=r.corridor.z)).toBe(true);
 });

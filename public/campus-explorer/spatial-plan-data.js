@@ -76,7 +76,7 @@ const CampusSpatialData = (() => {
  adminFront.orientation=adminRear.orientation='statue';adminFront.sideEntrance={v:-1.2,width:2.2};
  profiles['admin-front']={shape:'admin',orientation:'statue',sign:1,groundPlan:'approved-crosshall',secondFloorPlan:'approved-offices',front:adminFront,rear:adminRear,
   rearBody:{x:-9.5,z:28.5,width:8,depth:24},
-  confidence:'依照片與使用者確認：總務、人事、會計共用入口，進門左總務、右前會計、右後人事；同一梯井連通一至三樓，梯口對面為油印室；尺寸為示意'};
+  confidence:'依使用者確認上下對位：西側導師室上方為相連的油印與校長室，東側導師室上方為教務，男女廁上下同址；總務、人事、會計共用入口；同一梯井連通一至三樓；尺寸為示意'};
  custom.admin=[1,2,3].map(f=>[f,...[...adminFront.floors[f],...adminRear.floors[f]].filter(c=>c.kind==='room')]);
  Object.assign(extras,{
   'admin-g89-staff-east':{name:'八、九年級導師室（東側）',cat:'admin'},'admin-reception-1f':{name:'會客室',cat:'admin'},
@@ -111,7 +111,7 @@ const CampusSpatialData = (() => {
   confirmedNames[r.id]={previous:r.name.replace(/\s*\(\d+F\)/,''),name:namesById[r.id]};
   r.name=`${namesById[r.id]} (${r.floor}F)`;
  }
- const officeHints={general:'總務處、人事室與會計室共用入口；進門後左側為總務處。',accounting:'總務處、人事室與會計室共用入口；進門後右側靠入口為會計室。','personnel-accounting':'總務處、人事室與會計室共用入口；進門後右側較內側為人事室。',reception:'油印室入口位於二樓梯口對面，與教務處在走道同側。'};
+ const officeHints={general:'總務處、人事室與會計室共用入口；進門後左側為總務處。',accounting:'總務處、人事室與會計室共用入口；進門後右側靠入口為會計室。','personnel-accounting':'總務處、人事室與會計室共用入口；進門後右側較內側為人事室。',reception:'油印室與校長室相連，位於一樓西側八、九年級導師室正上方。',principal:'校長室與油印室相連，位於一樓西側八、九年級導師室正上方。',academic:'教務處位於一樓東側八、九年級導師室正上方。'};
  for(const b of BUILDINGS_CONFIG)for(const r of b.rooms)if(officeHints[r.id])r.entryHint=officeHints[r.id];
  return {profiles,custom,aliases,confirmedNames};
 })();

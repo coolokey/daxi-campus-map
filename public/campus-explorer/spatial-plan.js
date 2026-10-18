@@ -106,33 +106,36 @@ const CampusSpatialPlan = (() => {
     for(const list of [cells,corridors])for(let i=list.length-1;i>=0;i--)if(list[i].floor===2)list.splice(i,1);
     const office=id=>({kind:'room',id}),route=(u0,u1,v0,v1)=>co(2,u0,u1,v0,v1);
     const ground=stairs[0];
-    addCell(office('reception'),2,1.6,10.8,-4.7,.6,'second-east','u0',0);
-    addCell(office('academic'),2,1.6,10.8,.6,5,'second-east','u0',0);
-    addCell(office('principal'),2,-7.8,-1.6,.6,5,'second-principal','u1',0);
+    // Latest user correction: upper uses must align with the confirmed 1F uses.
+    const west=cells.find(c=>c.id==='admin-g89-staff'),east=cells.find(c=>c.id==='admin-g89-staff-east'),lowerWC=cells.find(c=>c.floor===1&&c.kind==='wc'&&!c.accessible),split=-.5;
+    addCell(office('reception'),2,west.u0,west.u1,west.v0,split,'second-west','u0',1);
+    addCell(office('principal'),2,west.u0,west.u1,split,west.v1,'second-west','u0',1);
+    addCell(office('academic'),2,east.u0,east.u1,east.v0,east.v1,'second-east','v1',-6.1);
     const general=addCell(office('general'),2,-13,-7.8,-4.7,2.2,'second-general','v0',-6.1);
     const personnel=addCell(office('personnel-accounting'),2,-13,-7.8,-15.5,-7.5,'second-suite','v1',-6.1);
-    const accounting=addCell(office('accounting'),2,-7.8,-1.6,-15.5,-7.5,'second-suite','v1',-6.1);
-    const shell=addCell({kind:'office-suite',id:'admin-office-suite',name:'總務處／會計室／人事室',label:'共用辦公區入口'},2,-13,-1.6,-15.5,-4.7,'second-suite-shell','u1',0);
-    shell.v=-6.1;shell.door=world(-1.6,-6.1,H);shell.corridor=world(0,-6.1,H);shell.inside=world(-3,-6.1,H);shell.omitSides=['v1'];
+    const accounting=addCell(office('accounting'),2,-7.8,lowerWC.u0,-15.5,-7.5,'second-suite','v1',-6.1);
+    const shell=addCell({kind:'office-suite',id:'admin-office-suite',name:'總務處／會計室／人事室',label:'共用辦公區入口'},2,-13,lowerWC.u0,-15.5,-4.7,'second-suite-shell','u1',lowerWC.u0+1.4);
+    shell.v=-6.1;shell.door=world(lowerWC.u0,-6.1,H);shell.corridor=world(lowerWC.u0+1.4,-6.1,H);shell.inside=world(lowerWC.u0-1.4,-6.1,H);shell.omitSides=['v1'];
     const annex=addCell({kind:'office-suite',id:'admin-office-suite-annex'},2,-13,-7.8,-4.7,2.2,'second-suite-shell');annex.doorSide=null;annex.omitSides=['v0'];
     // The remaining L-corner boundary closes the office against the stairwell.
-    const corner=addCell({kind:'office-suite',id:'admin-office-suite-corner'},2,-7.8,-1.6,-4.7,-4.7,'second-suite-shell');corner.doorSide=null;corner.omitSides=['u0','u1','v0'];
+    const corner=addCell({kind:'office-suite',id:'admin-office-suite-corner'},2,-7.8,lowerWC.u0,-4.7,-4.7,'second-suite-shell');corner.doorSide=null;corner.omitSides=['u0','u1','v0'];
     const shared={id:shell.id,door:shell.door,corridor:shell.corridor,inside:shell.inside};
     for(const zone of [general,accounting,personnel]){zone.openOffice=true;zone.sharedEntrance=shared;}
-    addCell({kind:'wc',label:'男女廁所'},2,1.6,5.2,-15.5,-7.5,'second-wc','v1',-6.1);
+    addCell({kind:'wc',label:'男女廁所'},2,lowerWC.u0,lowerWC.u1,lowerWC.v0,lowerWC.v1,'second-wc','v1',-6.1);
     addCell({kind:'stair',label:'連續樓梯（1F–3F）'},2,ground.u0,ground.u1,ground.v0,ground.v1,'second-stair');
-    Object.assign(fp(2,-13,-1.6,-7.5,-4.7),{part:'office-suite'});
-    Object.assign(fp(2,-1.6,13,-7.5,-4.7),{part:'public-corridor'});
-    route(-1.6,13,-7.5,-4.7);route(-13,-1.6,-7.5,-4.7);
-    route(-1.6,1.6,-15.5,5);route(-13,-7.8,2.2,5);route(10.8,13,-5,5);
+    Object.assign(fp(2,-13,lowerWC.u0,-7.5,-4.7),{part:'office-suite'});
+    Object.assign(fp(2,lowerWC.u0,13,-7.5,-4.7),{part:'public-corridor'});
+    route(lowerWC.u0,13,-7.5,-4.7);route(-13,lowerWC.u0,-7.5,-4.7);
+    route(-1.6,1.6,-15.5,-4.7);route(-1.6,west.u0,-4.7,west.v1);route(-7.8,west.u0,.6,west.v1);
+    route(-13,13,west.v1,5);route(west.u1,13,-5,5);
     route(ground.nearU,ground.u1,ground.v0,ground.v1);
     for(const row of displayRows)row.floors=row.id.startsWith('approved-')?[1]:[1,3];
     displayRows.push({id:'second-general',label:'共用入口內左側：總務處（學務處上方）',axis:'u',start:-13,end:-7.8,floor:2},
-     {id:'second-suite',label:'共用入口內右側：內側人事室・入口側會計室',axis:'u',start:-13,end:-1.6,floor:2},
+     {id:'second-suite',label:'共用入口內右側：內側人事室・入口側會計室',axis:'u',start:-13,end:lowerWC.u0,floor:2},
      {id:'second-stair',label:'總務處旁：一至三樓連續樓梯',axis:'u',start:-7.8,end:-1.6,floor:2},
-     {id:'second-principal',label:'走道右側盡頭：校長室',axis:'v',start:.6,end:5,floor:2},
-     {id:'second-east',label:'走道左側：油印室・教務處',axis:'v',start:-4.7,end:5,floor:2},
-     {id:'second-wc',label:'辦公區入口前方：男女廁所',axis:'u',start:1.6,end:5.2,floor:2});
+     {id:'second-west',label:'西側導師室正上方：油印室・校長室（相連）',axis:'v',start:west.v0,end:west.v1,floor:2},
+     {id:'second-east',label:'東側導師室正上方：教務處',axis:'u',start:east.u0,end:east.u1,floor:2},
+     {id:'second-wc',label:'一樓男女廁正上方：二樓男女廁',axis:'u',start:lowerWC.u0,end:lowerWC.u1,floor:2});
    }
   }else if(p.shape==='gym'){
    // Photo-confirmed 1F foyer/hall and 2F U-shaped balcony. The outer
