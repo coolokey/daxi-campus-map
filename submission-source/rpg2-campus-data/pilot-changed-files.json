@@ -41,6 +41,7 @@
   "src/game/data/maps/campus-obstacles.test.ts",
   "src/game/data/maps/campus-obstacles.ts",
   "src/game/data/maps/campus.ts",
+  "src/game/data/maps/gate-access.test.ts",
   "src/game/data/maps/index.ts",
   "scripts/build-plan-crosswalk.py",
   "scripts/compile-technology-demo.mjs",
