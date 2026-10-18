@@ -102,8 +102,8 @@ it('matches the plan orientation for the running track and basketball courts',()
 it('keeps the adjusted grade-nine label and gate spawn aligned with the map',()=>{
  const explorer=readFileSync(root+'explorer.js','utf8'),spatial=readFileSync(root+'spatial-world.js','utf8');
  expect(explorer).toContain('{ name: "九年級棟 (縱向)", x: 7.5, y: 6.0, z: 28 }');
- expect(explorer).toContain('avatarGroup.position.set(-10, 0, 90)');
- expect(spatial).toContain("const gate=node('gate',{x:-10,y:0,z:90})");
+ expect(explorer).toContain('CampusOutdoorPlan.entrance.spawn');
+ expect(spatial).toContain("CampusOutdoorPlan.entrance.spawn");
 });
 it('walks up the stage stairs and down using the actual ground motor',()=>{
  const p=run(`(()=>{const p={x:-62,y:0,z:4.3};for(let i=0;i<80;i++)moveAvatarWithCollision(p,0,.08);return p})()`);

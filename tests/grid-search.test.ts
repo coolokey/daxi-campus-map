@@ -22,3 +22,10 @@ it('returns null for unreachable targets and keeps isolated searches independent
  const M=model.CampusGridSearch;expect(M).toBeDefined();expect(M.path(M.create({x:0,z:0}),{x:1,z:1},()=>false)).toBe(null);
  const state=M.create({x:0,z:0});expect(M.path(state,{x:2,z:0},(x:number,z:number)=>x>=0&&x<=2&&z===0)).toHaveLength(3);
 });
+
+it('finds a detour when free endpoints have an obstructed connecting edge',()=>{
+ const M=model.CampusGridSearch,state=M.create({x:0,z:0});
+ const result=M.path(state,{x:2,z:0},(x:number,z:number)=>x>=0&&x<=2&&z>=0&&z<=1,Infinity,(a:any,b:any)=>!(a.z===0&&b.z===0&&Math.min(a.x,b.x)===0));
+ expect(result.at(-1)).toEqual({x:2,z:0});expect(result.some((p:any)=>p.z===1)).toBe(true);
+ for(let i=1;i<result.length;i++)expect(result[i-1].z!==0||result[i].z!==0||Math.min(result[i-1].x,result[i].x)!==0).toBe(true);
+});

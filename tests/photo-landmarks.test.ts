@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
 
+const outdoorPlan=new Function(readFileSync(new URL('../public/campus-explorer/outdoor-plan.js',import.meta.url),'utf8')+';return CampusOutdoorPlan;')();
 const source = readFileSync(new URL('../public/campus-explorer/explorer.js', import.meta.url), 'utf8');
 function extract(name: string, next: string) {
   return source.slice(source.indexOf(`function ${name}()`), source.indexOf(next, source.indexOf(`function ${name}()`)));
@@ -27,7 +28,7 @@ describe('photo confirmed gate and statue landmarks', () => {
     const scene = new THREE.Scene();
     const rooms: Record<string, any> = {};
     const mock = canvasDocument();
-    new Function('THREE', 'document', 'scene', 'ROOMS_DB', 'createCypressTree', `${extract('createStatueCourtyard', '    createStatueCourtyard();')} createStatueCourtyard();`)(THREE, mock.document, scene, rooms, () => new THREE.Group());
+    new Function('THREE', 'document', 'scene', 'ROOMS_DB', 'createCypressTree', 'CampusOutdoorPlan', `${extract('createStatueCourtyard', '    createStatueCourtyard();')} createStatueCourtyard();`)(THREE, mock.document, scene, rooms, () => new THREE.Group(), outdoorPlan);
     const group = scene.children.find(child => child.name === 'photo-statue-courtyard')!;
     expect(group).toBeDefined();
     for (const name of ['stone-plinth', 'front-step', 'bust-head', 'bust-nose', 'bust-ear-left', 'bust-ear-right', 'bust-shoulders', 'bust-collar-left', 'bust-collar-right', 'statue-plaque']) {
@@ -45,7 +46,7 @@ describe('photo confirmed gate and statue landmarks', () => {
   });
   it('sculpts a bald continuous head with eyelids, smile folds and a fitted Zhongshan collar',()=>{
     const scene=new THREE.Scene(),mock=canvasDocument();
-    new Function('THREE','document','scene','ROOMS_DB','createCypressTree',`${extract('createStatueCourtyard','    createStatueCourtyard();')} createStatueCourtyard();`)(THREE,mock.document,scene,{},()=>new THREE.Group());
+    new Function('THREE','document','scene','ROOMS_DB','createCypressTree','CampusOutdoorPlan',`${extract('createStatueCourtyard','    createStatueCourtyard();')} createStatueCourtyard();`)(THREE,mock.document,scene,{},()=>new THREE.Group(),outdoorPlan);
     const g=scene.getObjectByName('photo-statue-courtyard')!,head=g.getObjectByName('bust-head') as THREE.Mesh;
     expect(head.geometry.type).toBe('BufferGeometry');expect(g.getObjectByName('bust-hair')).toBeUndefined();
     for(const name of ['bust-upper-lid--1','bust-upper-lid-1','bust-smile-fold--1','bust-smile-fold-1','bust-mouth','bust-chin','bust-collar-left','bust-collar-right'])expect(g.getObjectByName(name),name).toBeDefined();

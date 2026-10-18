@@ -227,8 +227,9 @@
     function createStudentAvatar() {
       avatarGroup = new THREE.Group();
       avatarGroup.scale.setScalar(.65);
-      avatarGroup.position.set(-10, 0, 90);
-      avatarAngle = Math.PI;
+      const entrance = CampusOutdoorPlan.entrance;
+      avatarGroup.position.copy(entrance.spawn);
+      avatarAngle = Math.atan2(entrance.axis.x, entrance.axis.z);
       avatarGroup.rotation.y = avatarAngle;
       prevAvatarPos.copy(avatarGroup.position);
       const material=color=>new THREE.MeshStandardMaterial({color,roughness:.9,metalness:0});
@@ -762,7 +763,11 @@
     // 4.2 正門迎賓廣場、彩繪大門柱、金色圓球、黃牆紅瓦警衛室與大王椰子樹林蔭大道
     function createMainEntrancePlaza() {
       const plazaGroup = new THREE.Group();
-      plazaGroup.position.set(-10, 0.03, 76);
+      const entrance = CampusOutdoorPlan.entrance;
+      plazaGroup.name = 'main-entrance-plaza';
+      plazaGroup.position.copy(entrance.world(0, 10, .03));
+      plazaGroup.rotation.y = entrance.yaw;
+      plazaGroup.userData.entrance = {gate:{...entrance.gate},target:{...entrance.target},axis:{...entrance.axis}};
 
       // 迎賓鋪面 (人字拼紅灰高質感地磚)
       const plaza = new THREE.Mesh(
@@ -805,7 +810,10 @@
       );
       // 入口採開門狀態，收起的門仍有碰撞體。
       slidingGate.position.set(-7.5, 0.8, 10);
-      registerWallCollider(-19, -16, 85.9, 86.1, 0, 1.6);
+      slidingGate.name = 'main-entrance-sliding-gate';
+      const ga=entrance.world(-9,0),gb=entrance.world(-6,0),gx=Math.abs(entrance.axis.x)*.075,gz=Math.abs(entrance.axis.z)*.075;
+      registerWallCollider(Math.min(ga.x,gb.x)-gx,Math.max(ga.x,gb.x)+gx,Math.min(ga.z,gb.z)-gz,Math.max(ga.z,gb.z)+gz,.03,1.63);
+      WALL_COLLIDERS.at(-1).segment={ax:ga.x,az:ga.z,bx:gb.x,bz:gb.z,thickness:.15};
       slidingGate.castShadow = true;
       plazaGroup.add(slidingGate);
 
@@ -849,8 +857,8 @@
       scene.add(guardGroup);
       registerWallCollider(3.2, 8.8, 83.2, 88.8, 0, 3.2);
       // 門柱是實體；中央入口保留通行空間。
-      registerWallCollider(-22.2, -19.8, 84.8, 87.2, 0, 6.2);
-      registerWallCollider(-0.2, 2.2, 84.8, 87.2, 0, 6.2);
+      const pylonExtent=1.2*(Math.abs(entrance.right.x)+Math.abs(entrance.axis.x));
+      for(const cross of [-11,11]){const p=entrance.world(cross,0);registerWallCollider(p.x-pylonExtent,p.x+pylonExtent,p.z-pylonExtent,p.z+pylonExtent,.03,6.23);WALL_COLLIDERS.at(-1).gatePylon=true;}
 
       ROOMS_DB["guard"] = {
         id: "guard",
@@ -896,7 +904,7 @@
       const statueGroup = new THREE.Group();
       statueGroup.name = "photo-statue-courtyard";
       // 尺寸沿既有模型比例；本體後移，保留 z=32 的既有前方觀賞目的地。
-      statueGroup.position.set(-36, 0.02, 28.5);
+      statueGroup.position.set(CampusOutdoorPlan.entrance.target.x, 0.02, CampusOutdoorPlan.entrance.target.z);
       const stoneCanvas = document.createElement("canvas");
       stoneCanvas.width = stoneCanvas.height = 128;
       const stoneCtx = stoneCanvas.getContext("2d");
@@ -2092,7 +2100,7 @@
        ========================================================================== */
     const NAV_NODES = {
   // 1. 正門、迎賓廣場、銅像
-  "gate": { id: "gate", x: -10, y: 0, z: 86, neighbors: ["gate-guard", "plaza-center", "driveway-s1"] },
+  "gate": { id: "gate", ...CampusOutdoorPlan.entrance.spawn, neighbors: ["gate-guard", "plaza-center", "driveway-s1"] },
   "gate-guard": { id: "gate-guard", x: 6, y: 0, z: 86, neighbors: ["gate", "plaza-center", "driveway-s1"] },
   "plaza-center": { id: "plaza-center", x: -10, y: 0, z: 72, neighbors: ["gate", "gate-guard", "statue-node", "admin-f-porch", "g8f-porch"] },
   "statue-node": { id: "statue-node", x: -36, y: 0, z: 32, neighbors: ["plaza-center", "gym-path-1", "admin-f-porch", "stand-front"] },

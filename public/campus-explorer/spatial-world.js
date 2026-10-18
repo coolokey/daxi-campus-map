@@ -354,7 +354,7 @@
   const free=(x,z)=>{const wx=origin.x+x*step,wz=origin.z+z*step;
    return ((wx>=-125&&wx<=115&&wz>=-100&&wz<=108)||CampusEntranceAvenue.contains(wx,wz))&&!checkWallCollision(wx,y,wz)&&peopleFree(wx,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.08:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)))};
   const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||!peopleFree(x,z)||(stageSurface?!stageFree(x,z):!interior&&CampusOutdoorPlan.reserved({x,z}))||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.08)))return false}return true};
-  const points=CampusGridSearch.path(state,b,free);if(points){const result=points.map(p=>({x:origin.x+p.x*step,y,z:origin.z+p.z*step}));
+  const points=CampusGridSearch.path(state,b,free,Infinity,(p,q)=>clear({x:origin.x+p.x*step,z:origin.z+p.z*step},{x:origin.x+q.x*step,z:origin.z+q.z*step}));if(points){const result=points.map(p=>({x:origin.x+p.x*step,y,z:origin.z+p.z*step}));
     if(result.length===1)return clear(start,end)?[{...start},{...end}]:null;
     if(!clear(start,result[1])||!clear(result.at(-2),end))return null;result[0]={...start};result[result.length-1]={...end};return result;
   }
@@ -402,7 +402,7 @@
   attachPath(ha,na,gridPath(graph[ha],j.start,j.start.y,a),j.a);if(j.path)attachPath(na,nb,j.path,j.a);else link(na,nb);
   attachPath(nb,hb,gridPath(j.end,graph[hb],j.end.y,b),j.b);
  }
- const gate=node('gate',{x:-10,y:0,z:90});
+ const gate=node('gate',{...CampusOutdoorPlan.entrance.spawn});
  for(const l of layouts)for(const [i,e] of l.entrances.entries()){
   const steps=Math.ceil(Math.hypot(e.outside.x-e.inside.x,e.outside.z-e.inside.z)/.12);
   if(Array.from({length:steps+1},(_,j)=>j/steps).some(t=>checkWallCollision(e.inside.x+(e.outside.x-e.inside.x)*t,0,e.inside.z+(e.outside.z-e.inside.z)*t)))continue;

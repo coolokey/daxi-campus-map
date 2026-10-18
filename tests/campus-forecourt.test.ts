@@ -14,10 +14,10 @@ beforeAll(()=>{
 },180000);
 afterAll(()=>dom?.window.close());
 it('keeps six painted stalls outside the tree ground with an unobstructed gate approach',()=>{
- const result=evaluate(`(()=>{const f=campusForecourt;return {plan:f.plan,stalls:f.stalls.map(s=>({x:s.x,z:s.z,width:s.width,depth:s.depth})),blocked:Array.from({length:31},(_,i)=>checkWallCollision(-10,0,55+i)),paint:f.group.children.filter(m=>m.name.startsWith('forecourt-stall-')).length}})()`);
+ const result=evaluate(`(()=>{const f=campusForecourt;return {plan:f.plan,stalls:f.stalls.map(s=>({x:s.x,z:s.z,width:s.width,depth:s.depth})),blocked:Array.from({length:39},(_,i)=>{const p=CampusOutdoorPlan.entrance.world(0,i);return checkWallCollision(p.x,0,p.z)}),paint:f.group.getObjectByName('forecourt-parking-aligned').children.filter(m=>m.name.startsWith('forecourt-stall-')).length}})()`);
  expect(result.stalls).toHaveLength(6);expect(result.paint).toBeGreaterThanOrEqual(18);
  expect(result.plan.parking.z0).toBeGreaterThan(43.5);expect(result.plan.parking.z1).toBeLessThan(86);
- for(const s of result.stalls){expect(s.x+s.width/2).toBeLessThan(-11.5);expect(s.z).toBeGreaterThan(55);expect(s.z).toBeLessThan(74)}
+ for(const s of result.stalls){expect(s.x).toBeGreaterThan(result.plan.parking.x0);expect(s.x).toBeLessThan(result.plan.parking.x1);expect(s.z).toBeGreaterThan(result.plan.parking.z0);expect(s.z).toBeLessThan(result.plan.parking.z1)}
  expect(result.blocked.every((v:boolean)=>!v)).toBe(true);
 });
 it('keeps visible planted soil and trees between the administration and guard without intersecting buildings',()=>{
@@ -37,15 +37,24 @@ it('loads the new scene before landscape collision registration and navigation i
  const html=readFileSync('public/campus-explorer/index.html','utf8');expect(html.indexOf('campus-forecourt.js')).toBeGreaterThan(html.indexOf('explorer.js'));expect(html.indexOf('campus-forecourt.js')).toBeLessThan(html.indexOf('landscape-world.js'));
 });
 
-it('restores the main tree ground at the former painted bays and separates parking from it',()=>{
+it('keeps main planting beside the aligned parking and clear of its central aisle',()=>{
  const r=evaluate(`(()=>{const f=campusForecourt;return {plan:f.plan,main:f.trees.filter(t=>t.zone==='main'),node:NAV_NODES['forecourt-parking'],stalls:f.stalls};})()`);
- expect(r.plan.planting).toEqual({x0:-23,x1:-13,z0:55,z1:75});expect(r.main).toHaveLength(6);
- for(let i=0;i<6;i++){const x=-19.5,z=56.75+i*3;expect(x).toBeGreaterThan(r.plan.planting.x0);expect(x).toBeLessThan(r.plan.planting.x1);expect(z).toBeGreaterThan(r.plan.planting.z0);expect(z).toBeLessThan(r.plan.planting.z1);}
- for(const s of r.stalls)expect(s.x+s.width/2).toBeLessThan(r.plan.planting.x0);
+ expect(r.plan.planting).toEqual({x0:-11,x1:-7,z0:66,z1:78});expect(r.main).toHaveLength(6);
+ for(const t of r.main){expect(t.x).toBeGreaterThan(r.plan.planting.x0);expect(t.x).toBeLessThan(r.plan.planting.x1);expect(t.z).toBeGreaterThan(r.plan.planting.z0);expect(t.z).toBeLessThan(r.plan.planting.z1);}
+ expect(r.plan.parking.x1).toBeLessThan(r.plan.planting.x0);
  expect(r.node.x).toBeGreaterThan(r.plan.parking.x0);expect(r.node.x).toBeLessThan(r.plan.parking.x1);
 });
 it('retains a single line of trees along the south teaching wing and the existing driveway',()=>{
  const r=evaluate(`(()=>{const f=campusForecourt;return {row:f.trees.filter(t=>t.zone==='south-row').map(t=>({x:t.x,z:t.z})),road:!!f.drivewayMesh,geometry:f.drivewayMesh?.geometry.parameters,position:f.drivewayMesh?.position,blocked:Array.from({length:36},(_,i)=>checkWallCollision(17+i,0,86))};})()`);
  expect(r.row).toHaveLength(7);expect(new Set(r.row.map((p:any)=>p.z)).size).toBe(1);expect(r.row[0].x).toBe(0);expect(r.row.at(-1).x).toBe(36);
  expect(r.road).toBe(true);expect(r.geometry).toMatchObject({width:158,height:9});expect(r.position.z).toBe(86);expect(r.blocked.some(Boolean)).toBe(false);
+});
+
+it('puts the parking destination on the gate-to-statue sightline with trees outside that line',()=>{
+ const r=evaluate(`(()=>{const p=NAV_NODES['forecourt-parking'],g={x:-10,z:86},target={x:-36,z:28.5},dx=target.x-g.x,dz=target.z-g.z,len=Math.hypot(dx,dz);return {cross:((p.x-g.x)*dz-(p.z-g.z)*dx)/len,forward:((p.x-g.x)*dx+(p.z-g.z)*dz)/len,length:len};})()`);
+ expect(Math.abs(r.cross)).toBeLessThan(.01);expect(r.forward).toBeGreaterThan(10);expect(r.forward).toBeLessThan(r.length-10);
+});
+it('keeps a direct eye-height view from the gate to the actual statue head',()=>{
+ const hits=evaluate(`(()=>{scene.updateMatrixWorld(true);const statue=scene.getObjectByName('photo-statue-courtyard'),head=statue.getObjectByName('bust-head'),target=new THREE.Box3().setFromObject(head).getCenter(new THREE.Vector3()),eye=new THREE.Vector3(-10,1.6,86),ray=new THREE.Raycaster(eye,target.clone().sub(eye).normalize(),.05,eye.distanceTo(target)-.7);return ray.intersectObjects(scene.children,true).filter(h=>{let p=h.object;while(p){if(p===statue||!p.visible)return false;p=p.parent;}return h.object.isMesh&&(Array.isArray(h.object.material)?h.object.material:[h.object.material]).some(m=>!m.transparent&&m.opacity>.85)}).map(h=>h.object.name);})()`);
+ expect(hits).toEqual([]);
 });
