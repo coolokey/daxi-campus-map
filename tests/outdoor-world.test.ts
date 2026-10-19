@@ -329,3 +329,12 @@ it('keeps all rendered overhead slabs clear of the full body on every stair flig
 it('keeps legacy canopy support columns outside every stair enclosure',()=>{
  expect(run(`(()=>{scene.updateMatrixWorld(true);const rects=campusWalkWorld.layouts.flatMap(l=>l.ramps.length?l.stairs.map(s=>l.rect(s.u0,s.u1,s.v0,s.v1)):[]),bad=[];scene.traverse(o=>{if(!o.userData.legacyBreezewaySupport)return;const b=new THREE.Box3().setFromObject(o);if(rects.some(r=>r.x0<b.max.x&&r.x1>b.min.x&&r.z0<b.max.z&&r.z1>b.min.z))bad.push(o.getWorldPosition(new THREE.Vector3()).toArray())});return bad})()`)).toEqual([]);
 });
+it('keeps actual overhead geometry clear along every upper-floor corridor, including the 802-facing passage',()=>{
+ const result=run(`(()=>{scene.updateMatrixWorld(true);const meshes=[],bad=[];let samples=0;scene.traverse(o=>{if(o.isMesh&&!o.material.transparent)meshes.push(o)});
+ for(const l of campusWalkWorld.layouts)for(const c of l.corridors.filter(c=>c.floor>1)){const rect=l.rect(c.u0,c.u1,c.v0,c.v1),y=(c.floor-1)*FH;
+  for(let x=rect.x0+.3;x<rect.x1;x+=1)for(let z=rect.z0+.3;z<rect.z1;z+=1){if(checkWallCollision(x,y,z)||Math.abs(CampusWalkMath.groundAt(l,x,z,y)-y)>.1)continue;samples++;const ray=new THREE.Raycaster(new THREE.Vector3(x,y+.18,z),new THREE.Vector3(0,1,0),0,AVATAR_HEIGHT-.18),hit=ray.intersectObjects(meshes,false).find(h=>Math.abs(h.face.normal.clone().transformDirection(h.object.matrixWorld).y)>.9);if(hit)bad.push({building:l.id,floor:c.floor,x,z,hit:hit.point.toArray()});}
+ }return {samples,bad}})()`);expect(result.samples).toBeGreaterThan(500);expect(result.bad).toEqual([]);
+},30000);
+it('walks around the administrative exterior corner with accumulated route rounding error',()=>{
+ expect(run(`(()=>{const p={x:-26.499999999999996,y:0,z:15.000000000000004},blocked=moveAvatarWithCollision(p,.5,0);return {blocked,x:p.x,y:p.y}})()`)).toMatchObject({blocked:false,y:0});
+});

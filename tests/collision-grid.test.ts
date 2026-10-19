@@ -3,6 +3,11 @@ import {readFileSync,existsSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 const file=new URL('../public/campus-explorer/collision-grid.js',import.meta.url);
 describe('共用牆面空間索引',()=>{
+ it('不因切線上的浮點誤差阻擋轉角，但仍阻擋實際進入牆體',()=>{
+  const m=runInNewContext(readFileSync(file,'utf8')+';CampusCollisionGrid'),wall={minX:-26,maxX:-23.2,minZ:15.42,maxZ:15.58,minY:0,maxY:3.6},index=m.create([wall]);
+  expect(index.hit(-26,0,15)).toBe(false);expect(index.hit(-26,0,15.000000000000004)).toBe(false);
+  expect(index.hit(-26,0,15.00001)).toBe(true);
+ });
  it('斜牆只阻擋實際牆面，保留包圍框內的空地與人物轉角淨空',()=>{
   const m=runInNewContext(readFileSync(file,'utf8')+';CampusCollisionGrid');
   const wall={minX:-.36,maxX:10.36,minZ:-.36,maxZ:10.36,minY:0,maxY:2.9,segment:{ax:0,az:0,bx:10,bz:10,thickness:.7}};
