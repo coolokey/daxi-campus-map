@@ -39,7 +39,7 @@ it('loads the new scene before landscape collision registration and navigation i
 
 it('keeps main planting beside the aligned parking and clear of its central aisle',()=>{
  const r=evaluate(`(()=>{const f=campusForecourt;return {plan:f.plan,main:f.trees.filter(t=>t.zone==='main'),node:NAV_NODES['forecourt-parking'],stalls:f.stalls};})()`);
- expect(r.plan.planting).toEqual({x0:-11,x1:-7,z0:66,z1:78});expect(r.main).toHaveLength(6);
+ expect(r.plan.planting).toEqual({x0:-24,x1:-16,z0:56,z1:68});expect(r.main).toHaveLength(6);
  for(const t of r.main){expect(t.x).toBeGreaterThan(r.plan.planting.x0);expect(t.x).toBeLessThan(r.plan.planting.x1);expect(t.z).toBeGreaterThan(r.plan.planting.z0);expect(t.z).toBeLessThan(r.plan.planting.z1);}
  expect(r.plan.parking.x1).toBeLessThan(r.plan.planting.x0);
  expect(r.node.x).toBeGreaterThan(r.plan.parking.x0);expect(r.node.x).toBeLessThan(r.plan.parking.x1);
@@ -57,4 +57,9 @@ it('puts the parking destination on the gate-to-statue sightline with trees outs
 it('keeps a direct eye-height view from the gate to the actual statue head',()=>{
  const hits=evaluate(`(()=>{scene.updateMatrixWorld(true);const statue=scene.getObjectByName('photo-statue-courtyard'),head=statue.getObjectByName('bust-head'),target=new THREE.Box3().setFromObject(head).getCenter(new THREE.Vector3()),eye=new THREE.Vector3(CampusOutdoorPlan.entrance.gate.x,1.6,86),ray=new THREE.Raycaster(eye,target.clone().sub(eye).normalize(),.05,eye.distanceTo(target)-.7);return ray.intersectObjects(scene.children,true).filter(h=>{let p=h.object;while(p){if(p===statue||!p.visible)return false;p=p.parent;}return h.object.isMesh&&(Array.isArray(h.object.material)?h.object.material:[h.object.material]).some(m=>!m.transparent&&m.opacity>.85)}).map(h=>h.object.name);})()`);
  expect(hits).toEqual([]);
+});
+
+it('moves the independent bed out of the circled south-wing end into the marked forecourt gap',()=>{
+ const r=evaluate(`(()=>{const f=campusForecourt,bed=f.plan.planting,soil=scene.getObjectByName('forecourt-tree-bed-soil'),main=f.trees.filter(t=>t.zone==='main');return {bed,soil:{x:soil.position.x,z:soil.position.z,w:soil.geometry.parameters.width,d:soil.geometry.parameters.depth},oldTrunkBlocked:checkWallCollision(-10,0,72),oldMainTrees:main.filter(t=>t.x>=-11&&t.x<=-7&&t.z>=66&&t.z<=78).length};})()`);
+ expect(r.bed).toEqual({x0:-24,x1:-16,z0:56,z1:68});expect(r.soil).toEqual({x:-20,z:62,w:8,d:12});expect(r.oldTrunkBlocked).toBe(false);expect(r.oldMainTrees).toBe(0);
 });

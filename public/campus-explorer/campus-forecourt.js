@@ -9,8 +9,8 @@
     gate:entrance.gate,
     parking:{x0:Math.min(...corners.map(p=>p.x)),x1:Math.max(...corners.map(p=>p.x)),z0:Math.min(...corners.map(p=>p.z)),z1:Math.max(...corners.map(p=>p.z))},
     approach:{cross0:-1.8,cross1:1.8,near:0,far:38},
-    // Keep planting beside the gate-to-statue axis, clear of the south building.
-    planting:{x0:-11,x1:-7,z0:66,z1:78},
+    // User-marked forecourt gap between administration and guard, beside parking.
+    planting:{x0:-24,x1:-16,z0:56,z1:68},
     southTreeRow:{x0:-4,x1:40,z0:68,z1:72},
     driveway:{x0:-65,x1:93,z0:81.5,z1:90.5}
   };
@@ -33,8 +33,9 @@
     const back=box(`forecourt-stall-${id}-back`,.1,.015,depth,cross+Math.sign(cross)*width/2,.077,27-inward,0xf0edde);parking.add(back);
     for(const side of [-1,1]){const line=box(`forecourt-stall-${id}-side-${side}`,width,.015,.1,cross,.077,27-inward+side*depth/2,0xf0edde);parking.add(line);}
   }
-  box('forecourt-tree-bed-soil',4,.025,12,-9,.055,72,0x8b7257);
-  box('forecourt-tree-bed-grass',3.35,.018,11.35,-9,.079,72,0x8a9c66);
+  const bed=plan.planting,bedWidth=bed.x1-bed.x0,bedDepth=bed.z1-bed.z0,bedX=(bed.x0+bed.x1)/2,bedZ=(bed.z0+bed.z1)/2;
+  box('forecourt-tree-bed-soil',bedWidth,.025,bedDepth,bedX,.055,bedZ,0x8b7257);
+  box('forecourt-tree-bed-grass',bedWidth-.65,.018,bedDepth-.65,bedX,.079,bedZ,0x8a9c66);
   box('south-wing-tree-strip-soil',44,.025,4,18,.055,70,0x8b7257);
   box('south-wing-tree-strip-grass',43.4,.018,3.4,18,.079,70,0x8a9c66);
   const trees=[];
@@ -47,7 +48,7 @@
     crown.name=`forecourt-tree-${id}-canopy`;crown.position.set(x,4,z);crown.scale.set(1,.9,1);crown.castShadow=true;group.add(crown);
     trees.push({id,x,z,zone,trunk,crown});
   }
-  for(const z of [67.5,72,76.5])for(const x of [-10,-8])plant(x,z,'main');
+  for(const z of [bedZ-4.5,bedZ,bedZ+4.5])for(const x of [bedX-2,bedX+2])plant(x,z,'main');
   for(let x=0;x<=36;x+=6)plant(x,70,'south-row');
   // Reference the original road without replacing its geometry or markings.
   const drivewayMesh=scene.children.find(m=>m.isMesh&&m.geometry.parameters.width===158&&m.geometry.parameters.height===9&&m.position.z===86);
