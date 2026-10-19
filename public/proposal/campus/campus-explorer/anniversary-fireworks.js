@@ -17,8 +17,9 @@
   const banner=document.createElement('div');banner.id='anniversary-banner';banner.setAttribute('aria-live','polite');banner.hidden=true;
   banner.innerHTML='<span id="anniversary-countdown">10</span><small id="anniversary-preparation"></small><button id="anniversary-audio-retry" type="button" hidden>重試音效</button>';
   const countdown=banner.querySelector('#anniversary-countdown'),preparation=banner.querySelector('#anniversary-preparation'),audioRetry=banner.querySelector('#anniversary-audio-retry');
-  const cover=document.getElementById('guide-landing'),coverEntry=document.createElement('button');coverEntry.type='button';coverEntry.className='anniversary-cover-entry';coverEntry.textContent='80 週年煙火秀 ↗';
-  cover?.querySelector('footer')?.append(coverEntry);document.body.append(launcher,panel,banner);
+  const cover=document.getElementById('guide-landing'),staticEntry=document.getElementById('guide-anniversary'),coverEntry=staticEntry||document.createElement('button');
+  if(!staticEntry){coverEntry.type='button';coverEntry.className='anniversary-cover-entry';coverEntry.textContent='80 週年煙火秀 ↗';cover?.querySelector('footer')?.append(coverEntry);}
+  document.body.append(launcher,panel,banner);
   const $=id=>panel.querySelector('#anniversary-'+id);
   let running=false,fx=null,saved=null,elapsed=0,last=0,cueIndex=0,cues=[],phase='',cameraSaved=null,interacted=false,previousFocus=null;
   let audio=null,audioEngine=null,soundWanted=true,soundEnabled=false,soundGeneration=0,waitingForSound=false,low=false,quality=null,slowSum=0,slowFrames=0,lastDowngrade=0;
@@ -163,6 +164,8 @@
     }
   }
   $('replay').onclick=start;$('close').onclick=()=>stop();launcher.onclick=start;coverEntry.onclick=start;
+  coverEntry.disabled=false;
+  if(staticEntry&&cover?.open&&document.activeElement?.id==='guide-start')coverEntry.focus({preventScroll:true});
   audioRetry.onclick=()=>{if(running&&soundWanted)void resumeSound();};
   $('settings-toggle').onclick=()=>setSettingsOpen($('settings').hidden);
   listen(window,'resize',()=>{const compact=compactControls();if(compact!==wasCompact){wasCompact=compact;setSettingsOpen(!compact||!running);}});
@@ -179,5 +182,5 @@
   listen(reduced,'change',()=>{quality=qualityValue();fx?.setQuality(quality);});
   function unlock(questId){if(questId!==config.questId)return false;unlocked=true;launcher.dataset.unlocked='true';launcher.title='任務完成，已解鎖校慶煙火獎勵';return true;}
   listen(window,'campus:quest-complete',event=>unlock(event.detail?.questId));
-  window.campusAnniversary={start,stop,update,unlock,configure:options=>{config={...config,...options};},stats:()=>({running,elapsed,phase,quality:quality?.tier,reduced:isReduced(),unlocked,visual:fx?.stats()||null,audio:audioEngine?.stats()||null,soundWanted,soundEnabled}),dispose:()=>{disposed=true;stop();audioEngine?.dispose();audio?.close?.();listeners.splice(0).forEach(remove=>remove());launcher.remove();panel.remove();banner.remove();coverEntry.remove();}};
+  window.campusAnniversary={start,stop,update,unlock,configure:options=>{config={...config,...options};},stats:()=>({running,elapsed,phase,quality:quality?.tier,reduced:isReduced(),unlocked,visual:fx?.stats()||null,audio:audioEngine?.stats()||null,soundWanted,soundEnabled}),dispose:()=>{disposed=true;stop();audioEngine?.dispose();audio?.close?.();listeners.splice(0).forEach(remove=>remove());launcher.remove();panel.remove();banner.remove();if(staticEntry){coverEntry.disabled=true;coverEntry.onclick=null;}else coverEntry.remove();}};
 })();

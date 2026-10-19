@@ -14,7 +14,7 @@ it('手機直向與橫向開始時收合設定，重播仍預設有聲，結束�
   s.click('replay');expect(settings.hidden).toBe(true);s.click('close');s.dom.window.close();
  }
 });
-function setup(options:{slowLoad?:boolean,emptyLoad?:boolean}={}){
+function setup(options:{slowLoad?:boolean,emptyLoad?:boolean,staticCover?:boolean}={}){
  const dom=new JSDOM('<body></body>',{url:'https://campus.test',runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window as any;
  const pending:Array<()=>void>=[],instances:any[]=[];let finishLoad:()=>void=()=>{},expire:()=>void=()=>{},engineVolume=1;
  w.setTimeout=(callback:()=>void)=>{expire=callback;return 1;};w.clearTimeout=()=>{};
@@ -25,11 +25,17 @@ function setup(options:{slowLoad?:boolean,emptyLoad?:boolean}={}){
  w.AudioContext=class{state='suspended';currentTime=0;destination={};constructor(){instances.push(this)}createGain=node;createOscillator=node;resume(){return new Promise<void>(resolve=>pending.push(()=>{this.state='running';resolve()}));}suspend(){this.state='suspended';return Promise.resolve()}};
  const scene=new THREE.Scene();scene.background=new THREE.Color(0xffffff);
  Object.assign(w,{THREE,currentMode:'bird',cancelCameraTween(){},matchMedia:()=>({matches:true,addEventListener(){}}),requestAnimationFrame:()=>1,cancelAnimationFrame(){},CampusFireworkAudio:{create:()=>({load:async()=>({loaded:options.emptyLoad?0:18,failed:options.emptyLoad?['manifest: offline']:[]}),play(){},stop(){},dispose(){},setVolume(value:number){engineVolume=value},stats:()=>({active:0,loaded:18,volume:engineVolume})})},CampusFireworkScene:{create:()=>({launch(){},update(){},setQuality(){},dispose(){},stats:()=>({active:0})})},campusExplorer:{scene,camera:new THREE.PerspectiveCamera(),controls:{target:new THREE.Vector3(),enabled:true,enableDamping:true,autoRotate:false,update(){}},manualTakeover(){},resetManualInput(){},setControlMode(){}}});
+ if(options.staticCover)w.document.body.innerHTML=readFileSync('public/campus-explorer/index.html','utf8').match(/<dialog id="guide-landing"[\s\S]*?<\/dialog>/)![0];
  for(const file of ['anniversary-model.js','anniversary-fireworks.js'])w.eval(readFileSync('public/campus-explorer/'+file,'utf8'));
  if(options.slowLoad)w.CampusFireworkAudio.create=()=>({load:()=>new Promise(resolve=>{finishLoad=()=>resolve({loaded:18,failed:[]})}),play(){},stop(){},dispose(){},setVolume(){},stats:()=>({active:0,loaded:0})});
  const click=(id:string)=>w.document.getElementById('anniversary-'+id).click(),flush=async()=>{for(const resolve of pending.splice(0))resolve();for(let i=0;i<8;i++)await Promise.resolve();};
  return {dom,w,click,flush,instances,finishLoad:()=>finishLoad(),expire:()=>expire()};
 }
+it('首頁主視覺沿用同一煙火入口，單次點擊關閉首頁並啟動有聲倒數',async()=>{
+ const s=setup({staticCover:true}),d=s.w.document,entry=d.getElementById('guide-anniversary');
+ expect(entry.disabled).toBe(false);expect(d.querySelectorAll('.anniversary-cover-entry').length).toBe(1);
+ entry.click();await s.flush();expect(d.getElementById('guide-landing').open).toBe(false);expect(s.w.campusAnniversary.stats()).toMatchObject({running:true,soundWanted:true,soundEnabled:true,phase:'countdown'});expect(d.getElementById('anniversary-volume').value).toBe('100');s.click('close');s.w.campusAnniversary.dispose();expect(d.getElementById('guide-anniversary')).toBe(entry);expect(entry.disabled).toBe(true);expect(entry.onclick).toBeNull();s.dom.window.close();
+});
 it('桌面轉手機會收合設定，旋轉手機保留選擇，收合後焦點可繼續操作',()=>{
  const s=setup();s.w.matchMedia=()=>({matches:false});
  const resize=(width:number,height:number)=>{Object.defineProperty(s.w,'innerWidth',{value:width,configurable:true});Object.defineProperty(s.w,'innerHeight',{value:height,configurable:true});s.w.dispatchEvent(new s.w.Event('resize'));};

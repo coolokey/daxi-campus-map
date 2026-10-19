@@ -113,10 +113,10 @@
  el('btn-cancel-nav').addEventListener('click',()=>{if(route.contains(document.activeElement))toggle.focus({preventScroll:true});});
  const cover=el('guide-landing');
  let previousFocus=null;
- function openCover(){previousFocus=document.activeElement;api.manualTakeover();if(cover.open)cover.close();cover.showModal();el('guide-start').focus()}
+ function openCover(){previousFocus=document.activeElement;api.manualTakeover();if(cover.open)cover.close();cover.showModal();const featured=el('guide-anniversary');(featured&&!featured.disabled?featured:el('guide-start')).focus()}
  function enter(chapter){cover.close();if(chapter==='first')el('btn-walk').click();el('welcome-card').classList.add('hidden');setPanel(chapter==='stories'||chapter==='first'&&innerWidth>=769);if(chapter==='search')el('search-input').focus();else if(chapter==='stories'){el('guide-stories').scrollIntoView({block:'nearest'});el('guide-stories').querySelector('button').focus()}else toggle.focus()}
  el('guide-start').onclick=()=>enter('first');cover.querySelectorAll('[data-chapter]').forEach(b=>b.onclick=()=>enter(b.dataset.chapter));el('guide-cover').onclick=openCover;
  cover.addEventListener('cancel',()=>{if(previousFocus?.isConnected)previousFocus.focus();else toggle.focus()});
- cover.querySelectorAll('button').forEach(button=>button.disabled=false);
+ cover.querySelectorAll('button:not(#guide-anniversary)').forEach(button=>button.disabled=false);
  if(!new URLSearchParams(location.search).has('to')&&!new URLSearchParams(location.search).has('view'))openCover();else cover.close();
 })();
