@@ -86,12 +86,7 @@ const CampusSpatialPlan = (() => {
     for(let i=cells.length-1;i>=0;i--)if(cells[i].kind==='stair'&&cells[i].floor>1)cells.splice(i,1);
     for(const f of [2,3]){addCell({kind:'stair',label:'連續樓梯（1F–3F）'},f,ground.u0,ground.u1,ground.v0,ground.v1,'entrance');co(f,ground.nearU,ground.u1,ground.v0,ground.v1);}
     entrances.push({floor:1,kind:'east-breezeway',inside:world(14,-6.75),outside:world(16.4,-6.75)});
-    // A short covered connector meets the existing grade-nine transverse passage.
-    const destination=BUILDINGS_CONFIG.find(b=>b.id==='grade9-back'),target=layout(destination),cross=target.cells.find(c=>c.floor===1&&c.kind==='passage'),targetZ=target.world((cross.u0+cross.u1)/2,0).z;
-    const vEnd=b.x-target.bounds.x0,targetU=targetZ-b.z;
-    path(-1.6,1.6,vEnd-.3,-15.5,'rear-building-link');
-    path(Math.min(-1.6,targetU-1.4),1.6,vEnd-.3,vEnd+2.4,'rear-building-link');
-    entrances.push({floor:1,kind:'rear-link',inside:world(targetU,vEnd+1.2),outside:world(targetU,vEnd-1.2),building:'grade9-back'});
+    entrances.push({floor:1,kind:'rear-link',inside:world(0,-14.3),outside:world(0,-16.7),building:'grade9-back'});
     displayRows.push({id:'approved-back',label:'後側：會客室・教練室・廁所・導師室',axis:'u',start:-13,end:10.8},{id:'approved-front',label:'入口側：學務處・樓梯・導師室',axis:'u',start:-13,end:10.8});
    }
    displayRows.push({id:'entrance',label:'入口側處室',axis:'u',start:-L/2,end:L/2},{id:'inner',label:'內側處室',axis:'u',start:-12,end:12});
@@ -142,12 +137,11 @@ const CampusSpatialPlan = (() => {
      {id:'second-east',label:'東側導師室正上方：教務處',axis:'u',start:east.u0,end:east.u1,floor:2},
      {id:'second-wc',label:'一樓男女廁正上方：二樓男女廁',axis:'u',start:lowerWC.u0,end:lowerWC.u1,floor:2});
    }
-   // Same-floor bridges exit the central administrative hall, then follow
-   // the gap between buildings to the classroom-facing ninth-grade corridor.
+   // All three bridges follow one straight central axis into the middle classroom corridor.
    const nine=layout(BUILDINGS_CONFIG.find(q=>q.id==='grade9-back'));
    for(const [index,id] of ['907','904','902'].entries()){
     const floor=index+1,y=index*H,room=nine.rooms.find(r=>r.id===id);
-    const path=[world(0,-14.6,y),{x:-2.3,y,z:b.z},{x:-2.3,y,z:room.corridor.z},{...room.corridor}];
+    const path=[world(0,-14.6,y),{...room.corridor}];
     const bridge={id:floor===1?'admin-rear':`admin-rear-${floor}`,floor,a:b.id,b:nine.id,targetRoom:id,path,start:path[0],end:path.at(-1)};externalLinks.push(bridge);
     for(let i=1;i<path.length;i++){
      const a=path[i-1],z=path[i],half=1.2;
@@ -156,6 +150,25 @@ const CampusSpatialPlan = (() => {
      Object.assign(fp(floor,u0,u1,v0,v1),{part:'admin-grade9-bridge'});Object.assign(co(floor,u0,u1,v0,v1),{part:'admin-grade9-bridge'});
     }
    }
+  }else if(p.shape==='grade9'){
+   // Three equal classroom bays form the aerial-visible main body. Services
+   // occupy the separate side tower instead of displacing the middle bay.
+   const u0=-L/2,u1=L/2,serviceEnd=u1+11,stairStart=u1+3,roomV0=wallV,roomV1=-outerV;
+   displayRows.push({id:'main',label:'三間教室主體',axis:'u',start:u0,end:u1},{id:'service',label:'側邊通廊・廁所・樓梯',axis:'u',start:u1,end:serviceEnd});
+   for(let f=1;f<=b.floors;f++){
+    Object.assign(fp(f,u0,u1,-D/2,D/2),{part:'grade9-classroom-body'});
+    Object.assign(fp(f,u1,serviceEnd,-D/2,D/2),{part:'grade9-side-service'});
+    co(f,u0,serviceEnd,outerV,wallV);
+    const list=p.floors[f].filter(item=>item.kind==='room'),span=(u1-u0)/list.length;
+    list.forEach((item,i)=>addCell(item,f,u0+i*span,u0+(i+1)*span,roomV0,roomV1,'main','v0',cV));
+    addCell({kind:'passage',label:'側邊通廊'},f,u1,stairStart,outerV,wallV,'service');
+    addCell({kind:'wc',label:'廁所'},f,u1,stairStart,wallV,-outerV,'service','v0',cV);
+    addCell({kind:'stair',label:'南端樓梯'},f,stairStart,serviceEnd,wallV,wallV+5.2,'service');
+   }
+   addStair('south','九年級側邊連續樓梯',stairStart,serviceEnd,wallV,wallV+5.2,-1);
+   entrances.push({floor:1,inside:world(0,cV),outside:world(0,outerV-1.2)},
+    {floor:1,inside:world(u0+.6,cV),outside:world(u0-1.2,cV)},
+    {floor:1,inside:world(serviceEnd-.6,cV),outside:world(serviceEnd+1.2,cV)});
   }else if(p.shape==='gym'){
    // Photo-confirmed 1F foyer/hall and 2F U-shaped balcony. The outer
    // shell height is independent of the number of usable floors.

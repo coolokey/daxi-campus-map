@@ -271,7 +271,8 @@ const FH = 3.6; // Floor Height in meters
 
 
 // 樓層及固定空間由 spatial-plan-data.js 校對；保留縱棟與行政棟的通行間距。
-BUILDINGS_CONFIG.find(b=>b.id==='grade9-back').x=7.5;
+const grade9Main=BUILDINGS_CONFIG.find(b=>b.id==='grade9-back'),adminMain=BUILDINGS_CONFIG.find(b=>b.id==='admin-front');
+Object.assign(grade9Main,{x:7.5,z:adminMain.z,depth:adminMain.depth});
 // 每棟屋頂採低彩度的獨立色調，保留同一校園的整體配色。
 const BUILDING_ROOF_COLORS={
  'gym-bld':0x60756f,       // 灰綠

@@ -52,7 +52,17 @@ const CampusPhotoRoofs=(()=>{
     if(tiles)for(let d=.75;d<half;d+=.75)for(const sign of [-1,1])localBox(u,v+sign*d,length,.025,.018,y+.17+rise*(1-d/half),0xb9ad81);
    }
    const top=l.footprints.filter(p=>p.floor===l.b.floors);
-   if(l.id==='tech-building'){
+   if(l.id==='grade9-back'){
+    for(const p of top){
+     if(p.part==='grade9-classroom-body')pitched(p,{color:0xd9d0a3,rise:.58});
+     else if(p.part==='grade9-side-service'){
+      const u=(p.u0+p.u1)/2,v=(p.v0+p.v1)/2;
+      localBox(u,v,p.u1-p.u0,p.v1-p.v0,.16,y+.08,0x969b94);
+      for(const side of [p.v0+.07,p.v1-.07])localBox(u,side,p.u1-p.u0,.14,.4,y+.2,0x858d87);
+     }
+    }
+   }else if(l.id==='tech-building'){
+
     // Each white flat roof occupies one existing wing. No rectangle spans the courtyard.
     for(const p of top){
      const u=(p.u0+p.u1)/2,v=(p.v0+p.v1)/2,L=p.u1-p.u0,D=p.v1-p.v0;

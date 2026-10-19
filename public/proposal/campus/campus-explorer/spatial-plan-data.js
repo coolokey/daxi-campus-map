@@ -8,7 +8,7 @@ const CampusSpatialData = (() => {
  const passage=(units=.5,label='穿堂')=>({kind:'passage',label,units});
  const vacant=(units=1,label='通道')=>({kind:'void',label,units});
  const profiles={
-  'grade9-back':{sign:-1,floors:{
+  'grade9-back':{shape:'grade9',sign:-1,floors:{
    1:[room('906','213'),room('907','212'),room('908','211'),passage(.35,'通廊'),wc(),stair('south','南端樓梯')],
    2:[room('g9-clubs','223',1,'社團教室'),room('904','222'),room('905','221'),passage(.35,'通廊'),wc(),stair('south','南端樓梯')],
    3:[room('901','233'),room('902','232'),room('903','231'),passage(.35,'通廊'),wc(),stair('south','南端樓梯')]
@@ -87,6 +87,7 @@ const CampusSpatialData = (() => {
   'spec-staff-back':{name:'專任辦公室',cat:'admin'},'teacher-study':{name:'教師研習中心',cat:'admin'}
  });
  delete profiles['admin-back'];
+ custom.grade9=Object.entries(profiles['grade9-back'].floors).map(([f,cells])=>[Number(f),...cells.filter(c=>c.kind==='room')]);
  for(const b of BUILDINGS_CONFIG){
   const p=profiles[b.id],old=new Map(b.rooms.map(r=>[r.id,r]));
   const rows=p.shape?custom[p.shape]:Object.entries(p.floors).map(([f,cells])=>[Number(f),...cells.filter(c=>c.kind==='room')]);
