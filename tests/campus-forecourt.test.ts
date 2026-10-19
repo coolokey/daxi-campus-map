@@ -51,10 +51,10 @@ it('retains a single line of trees along the south teaching wing and the existin
 });
 
 it('puts the parking destination on the gate-to-statue sightline with trees outside that line',()=>{
- const r=evaluate(`(()=>{const p=NAV_NODES['forecourt-parking'],g={x:-10,z:86},target={x:-36,z:28.5},dx=target.x-g.x,dz=target.z-g.z,len=Math.hypot(dx,dz);return {cross:((p.x-g.x)*dz-(p.z-g.z)*dx)/len,forward:((p.x-g.x)*dx+(p.z-g.z)*dz)/len,length:len};})()`);
+ const r=evaluate(`(()=>{const p=NAV_NODES['forecourt-parking'],g=CampusOutdoorPlan.entrance.gate,target={x:-36,z:28.5},dx=target.x-g.x,dz=target.z-g.z,len=Math.hypot(dx,dz);return {cross:((p.x-g.x)*dz-(p.z-g.z)*dx)/len,forward:((p.x-g.x)*dx+(p.z-g.z)*dz)/len,length:len};})()`);
  expect(Math.abs(r.cross)).toBeLessThan(.01);expect(r.forward).toBeGreaterThan(10);expect(r.forward).toBeLessThan(r.length-10);
 });
 it('keeps a direct eye-height view from the gate to the actual statue head',()=>{
- const hits=evaluate(`(()=>{scene.updateMatrixWorld(true);const statue=scene.getObjectByName('photo-statue-courtyard'),head=statue.getObjectByName('bust-head'),target=new THREE.Box3().setFromObject(head).getCenter(new THREE.Vector3()),eye=new THREE.Vector3(-10,1.6,86),ray=new THREE.Raycaster(eye,target.clone().sub(eye).normalize(),.05,eye.distanceTo(target)-.7);return ray.intersectObjects(scene.children,true).filter(h=>{let p=h.object;while(p){if(p===statue||!p.visible)return false;p=p.parent;}return h.object.isMesh&&(Array.isArray(h.object.material)?h.object.material:[h.object.material]).some(m=>!m.transparent&&m.opacity>.85)}).map(h=>h.object.name);})()`);
+ const hits=evaluate(`(()=>{scene.updateMatrixWorld(true);const statue=scene.getObjectByName('photo-statue-courtyard'),head=statue.getObjectByName('bust-head'),target=new THREE.Box3().setFromObject(head).getCenter(new THREE.Vector3()),eye=new THREE.Vector3(CampusOutdoorPlan.entrance.gate.x,1.6,86),ray=new THREE.Raycaster(eye,target.clone().sub(eye).normalize(),.05,eye.distanceTo(target)-.7);return ray.intersectObjects(scene.children,true).filter(h=>{let p=h.object;while(p){if(p===statue||!p.visible)return false;p=p.parent;}return h.object.isMesh&&(Array.isArray(h.object.material)?h.object.material:[h.object.material]).some(m=>!m.transparent&&m.opacity>.85)}).map(h=>h.object.name);})()`);
  expect(hits).toEqual([]);
 });

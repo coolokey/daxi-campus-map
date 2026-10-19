@@ -1,7 +1,7 @@
 const {chromium}=require('C:/Users/MAO YU REN/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const base=process.env.CAMPUS_QA_URL||'http://127.0.0.1:4187/';
-const out=path.resolve(process.env.CAMPUS_QA_OUT||'qa/gate-parking-statue-axis-20261018/local');fs.mkdirSync(out,{recursive:true});
+const out=path.resolve(process.env.CAMPUS_QA_OUT||'qa/straight-entrance-20261019/local');fs.mkdirSync(out,{recursive:true});
 (async()=>{
  const report={revision:process.env.CAMPUS_RELEASE_SHA||'local',entries:[],errors:[]};
  const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=swiftshader','--enable-webgl']});
@@ -26,12 +26,14 @@ const out=path.resolve(process.env.CAMPUS_QA_OUT||'qa/gate-parking-statue-axis-2
    const statue=a.scene.getObjectByName('photo-statue-courtyard'),head=statue.getObjectByName('bust-head'),target=new THREE.Box3().setFromObject(head).getCenter(new THREE.Vector3()),eye=new THREE.Vector3(e.gate.x,1.6,e.gate.z);
    const ray=new THREE.Raycaster(eye,target.clone().sub(eye).normalize(),.05,eye.distanceTo(target)-.7),hits=ray.intersectObjects(a.scene.children,true).filter(h=>{let p=h.object;while(p){if(p===statue||!p.visible||p.name.startsWith('campus-person'))return false;p=p.parent;}return h.object.isMesh&&(Array.isArray(h.object.material)?h.object.material:[h.object.material]).some(m=>!m.transparent&&m.opacity>.85)}).map(h=>h.object.name);
    const p=a.nodes['forecourt-parking'],g=a.scene.getObjectByName('main-entrance-plaza'),normal=new THREE.Vector3(0,0,-1).transformDirection(g.matrixWorld);
-   return {opaqueHits:hits,facingDot:normal.x*e.axis.x+normal.z*e.axis.z,parkingCross:(p.x-e.gate.x)*e.right.x+(p.z-e.gate.z)*e.right.z};
-  });assert.deepEqual(entry.gateView.opaqueHits,[]);assert(entry.gateView.facingDot>.9999);assert(Math.abs(entry.gateView.parkingCross)<.01);
+   return {gateYaw:g.rotation.y,gateX:e.gate.x,statueX:e.target.x,avenueX:CampusEntranceAvenue.plan.x,avenueCenterBlocked:Array.from({length:88},(_,i)=>checkWallCollision(e.gate.x,0,86+i)).some(Boolean),opaqueHits:hits,facingDot:normal.x*e.axis.x+normal.z*e.axis.z,parkingCross:(p.x-e.gate.x)*e.right.x+(p.z-e.gate.z)*e.right.z};
+  });assert.equal(entry.gateView.gateYaw,0);assert.equal(entry.gateView.gateX,entry.gateView.statueX);assert.equal(entry.gateView.gateX,entry.gateView.avenueX);assert.equal(entry.gateView.avenueCenterBlocked,false);assert.deepEqual(entry.gateView.opaqueHits,[]);assert(entry.gateView.facingDot>.9999);assert(Math.abs(entry.gateView.parkingCross)<.01);
   const clean=await frame.addStyleTag({content:'body *{visibility:hidden!important}canvas[data-qa-scene]{visibility:visible!important}'});
   const aim=async(which)=>{
-   await frame.evaluate(which=>{const a=window.campusExplorer,l=campusWalkWorld.layouts.find(l=>l.id==='admin-front');a.renderer.domElement.dataset.qaScene='';a.setControlMode('bird');cancelCameraTween();a.setFloorFilter('2');
-    if(which==='gate-eye'){a.setFloorFilter('all');const e=CampusOutdoorPlan.entrance,p=e.world(0,-1.5,1.6),head=a.scene.getObjectByName('photo-statue-courtyard').getObjectByName('bust-head'),target=new THREE.Box3().setFromObject(head).getCenter(new THREE.Vector3());a.camera.position.set(p.x,p.y,p.z);a.controls.target.copy(target);}
+   await frame.evaluate(which=>{const a=window.campusExplorer,l=campusWalkWorld.layouts.find(l=>l.id==='admin-front');a.renderer.domElement.dataset.qaScene='';a.camera.fov=60;a.camera.updateProjectionMatrix();a.setControlMode('bird');cancelCameraTween();a.setFloorFilter('2');
+    if(which==='entrance-plan'){a.setFloorFilter('all');const x=CampusOutdoorPlan.entrance.gate.x;a.camera.position.set(x,150,95.01);a.controls.target.set(x,0,95);}
+    else if(which==='avenue-eye'){a.setFloorFilter('all');const e=CampusOutdoorPlan.entrance,head=a.scene.getObjectByName('photo-statue-courtyard').getObjectByName('bust-head'),target=new THREE.Box3().setFromObject(head).getCenter(new THREE.Vector3());a.camera.position.set(e.gate.x,1.6,112);a.controls.target.copy(target);}
+    else if(which==='gate-eye'){a.setFloorFilter('all');const e=CampusOutdoorPlan.entrance,p=e.world(0,-1.5,1.6),head=a.scene.getObjectByName('photo-statue-courtyard').getObjectByName('bust-head'),target=new THREE.Box3().setFromObject(head).getCenter(new THREE.Vector3());a.camera.position.set(p.x,p.y,p.z);a.controls.target.copy(target);}
     else if(which==='forecourt'){a.setFloorFilter('all');a.camera.position.set(-42,53,104);a.controls.target.set(-12,0,64);}
     else if(which==='roof'){a.setFloorFilter('all');a.camera.position.set(-45,40,51);a.controls.target.set(-12,8,27);}
     else if(which==='plan'){const p=l.world(-5,-5,3.6);a.camera.position.set(p.x-16,32,p.z+20);a.controls.target.set(p.x,3.6,p.z);}
@@ -39,7 +41,7 @@ const out=path.resolve(process.env.CAMPUS_QA_OUT||'qa/gate-parking-statue-axis-2
     else{const s=l.stairs[0],p=l.world(s.innerU,s.centerV-s.sign*1.25,3.6),oil=l.rooms.find(r=>r.id==='reception');a.camera.position.set(p.x,p.y+1.55,p.z);a.controls.target.set(oil.door.x,oil.door.y+1.55,oil.door.z);}
     a.controls.update();},which);await page.waitForTimeout(350);await page.screenshot({path:path.join(out,label+'-'+which+'.png')});
   };
-  await aim('gate-eye');await aim('forecourt');await aim('roof');await aim('plan');await aim('entry');await aim('stair');await clean.evaluate(n=>n.remove());
+  await aim('entrance-plan');await aim('avenue-eye');await aim('gate-eye');await aim('forecourt');await aim('roof');await aim('plan');await aim('entry');await aim('stair');await clean.evaluate(n=>n.remove());
   const auto=async(id,fromGate=false,device='desktop',fromAdminFloor=0)=>{
    const start=Date.now(),attempts=[];
    console.log(label+' '+device+' starting '+id);
@@ -56,9 +58,9 @@ const out=path.resolve(process.env.CAMPUS_QA_OUT||'qa/gate-parking-statue-axis-2
    entry.routes.push({id,device,fromGate,fromAdminFloor,plannedFloors,elapsedMs:Date.now()-start,attempts,...check});
    fs.writeFileSync(path.join(out,'release-verification.json'),JSON.stringify(report,null,2));
    console.log(label+' '+device+' '+id+': '+last.status+' floor='+check.floor+' distance='+check.distance.toFixed(2));
-   assert.equal(last.status,'arrived');assert(check.distance<.35);if(id!=='forecourt-parking')assert.equal(check.inside,id);
+   assert.equal(last.status,'arrived');assert(check.distance<.35);if(!['forecourt-parking','palm-avenue'].includes(id))assert.equal(check.inside,id);
   };
-  if(process.env.CAMPUS_QA_ROUTE_MODE==='forecourt'){await auto('forecourt-parking',true);await auto('reception',true);}
+  if(process.env.CAMPUS_QA_ROUTE_MODE==='forecourt'){await auto('palm-avenue',true);await auto('forecourt-parking');await auto('reception',true);}
   else if(label==='main'){await auto('forecourt-parking',true);await auto('reception',true);await auto('904',false,'desktop',2);await auto('teacher-study');await auto('902',false,'desktop',3);await auto('admin-g89-staff',true);await auto('907',false,'desktop',1);}
   else{for(const [i,id]of ['907','904','902'].entries())await auto(id,false,'desktop',i+1);}
   for(const floor of ['1','3','2']){await frame.evaluate(f=>window.campusExplorer.setFloorFilter(f),floor);assert.equal(await frame.evaluate(()=>String(window.campusExplorer.getFloorFilter())),floor);}

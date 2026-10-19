@@ -63,7 +63,7 @@
   // 補上車道標線，採低對比標線避免畫面喧賓奪主。
   for(let z=-66;z<79;z+=10)box(.18,.015,3.5,52.5,.045,z,0xdfdecd);
   for(let x=2;x<90;x+=10)box(3.5,.015,.18,x,.045,86,0xdfdecd);
-  for(let i=0;i<7;i++)box(1,.015,7,-19+i*2,.055,79,0xf0efdf);
+  for(let i=0;i<7;i++)box(1,.015,7,CampusEntranceAvenue.plan.x-9+i*2,.055,79,0xf0efdf);
 
   // Register only physical parts. Ground paint, tree canopies and distant hills
   // remain visual; bounding the whole group would close surrounding paths.

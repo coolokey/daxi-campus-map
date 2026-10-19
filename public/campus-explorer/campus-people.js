@@ -51,7 +51,7 @@
  function ground(p){return window.campusWalkWorld?.ground(p)??0}
  // Find the initial position once. Walking never teleports to a new route point.
  function place(x,z,index){for(let ring=0;ring<=6;ring++)for(let n=0;n<(ring?12:1);n++){const angle=(n+index*.37)*Math.PI/6,p={x:x+Math.cos(angle)*ring*1.8,y:0,z:z+Math.sin(angle)*ring*1.8};p.y=ground(p);if(safe(p)&&!actors.some(a=>Math.hypot(a.position.x-p.x,a.position.z-p.z)<clearance))return p}return null}
- const guardPosition=place(-18,87,0);
+ const guardPoint=CampusOutdoorPlan.entrance.world(-8,-1),guardPosition=place(guardPoint.x,guardPoint.z,0);
  if(guardPosition)actors.push({id:'gate-guard',label:'警衛先生',stationary:true,position:guardPosition,spec:{role:'guard',gender:'male',hairStyle:'short',outfit:'casual',shirtColor:0x465e76,hairColor:0x45403b}});
  zones.forEach((z,i)=>{const companion=i%4===1?actors.filter(a=>a.spec.role==='student').at(-1):null;const position=(companion&&place(companion.position.x+2.4,companion.position.z,i))||place(z[0],z[1],i);if(position)actors.push({id:'student-'+i,position,start:{...position},direction:1,axis:z[2]?'x':'z',length:z[2]||z[3],speed:.85+(i%3)*.12,nextWalk:0,spec:{gender:i%2?'female':'male',outfit:'uniform',role:'student'}})});
  const roster=people.filter(p=>p.portrait),teacherLimit=()=>Math.min(roster.length,window.innerWidth<=768?3:6);

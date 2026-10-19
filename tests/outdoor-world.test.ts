@@ -36,7 +36,7 @@ it('has a continuous visible perimeter that blocks players, jumping students, te
  expect(result).toEqual({missing:false,bad:[]});
 });
 it('stops high-speed and jumping movement through perimeter faces without sealing the gate approach',()=>{
- const result=run(`(()=>{const perimeter=CampusOutdoorPlan.perimeter;if(!perimeter)return {missing:true};const failures=[];for(const [i,s] of perimeter.segments.entries()){const dx=s.bx-s.ax,dz=s.bz-s.az,d=Math.hypot(dx,dz),nx=-dz/d,nz=dx/d,mx=(s.ax+s.bx)/2,mz=(s.az+s.bz)/2;for(const side of [-1,1]){const p={x:mx+nx*2*side,y:0,z:mz+nz*2*side};const blocked=moveAvatarWithCollision(p,-nx*4*side,-nz*4*side);if(!blocked||((p.x-mx)*nx+(p.z-mz)*nz)*side<0)failures.push(i+' fast crossing');}if(!checkWallCollision(mx,1.3,mz))failures.push(i+' jumping');}const p={x:-10,y:0,z:80};moveAvatarWithCollision(p,0,50);return {missing:false,failures,gate:p}})()`);
+ const result=run(`(()=>{const perimeter=CampusOutdoorPlan.perimeter;if(!perimeter)return {missing:true};const failures=[];for(const [i,s] of perimeter.segments.entries()){const dx=s.bx-s.ax,dz=s.bz-s.az,d=Math.hypot(dx,dz),nx=-dz/d,nz=dx/d,mx=(s.ax+s.bx)/2,mz=(s.az+s.bz)/2;for(const side of [-1,1]){const p={x:mx+nx*2*side,y:0,z:mz+nz*2*side};const blocked=moveAvatarWithCollision(p,-nx*4*side,-nz*4*side);if(!blocked||((p.x-mx)*nx+(p.z-mz)*nz)*side<0)failures.push(i+' fast crossing');}if(!checkWallCollision(mx,1.3,mz))failures.push(i+' jumping');}const p={x:CampusOutdoorPlan.entrance.gate.x,y:0,z:80};moveAvatarWithCollision(p,0,50);return {missing:false,failures,gate:p}})()`);
  expect(result.missing).toBe(false);expect(result.failures).toEqual([]);expect(result.gate.z).toBeCloseTo(130);expect(result.gate.y).toBe(0);
 });
 it('keeps every real room inside the plan perimeter while excluding the surrounding off-campus land',()=>{
@@ -152,9 +152,9 @@ it('photo reference navigation returns focus on close and can switch source grou
 });
 
 it('places feathered palms outside the gate and connects the avenue to walking navigation',()=>{
- const info=run(`({palms:CampusEntranceAvenue.palms,triangles:CampusEntranceAvenue.crownGeometry().attributes.position.count/3,route:campusWalkWorld.route({x:-10,y:0,z:90},ROOMS_DB['palm-avenue']),centerBlocked:checkWallCollision(-10,0,130),trunkBlocked:checkWallCollision(-16.5,0,96)})`);
+ const info=run(`({palms:CampusEntranceAvenue.palms,triangles:CampusEntranceAvenue.crownGeometry().attributes.position.count/3,axisX:CampusEntranceAvenue.plan.x,route:campusWalkWorld.route({...CampusOutdoorPlan.entrance.spawn},ROOMS_DB['palm-avenue']),centerBlocked:checkWallCollision(CampusEntranceAvenue.plan.x,0,130),trunkBlocked:checkWallCollision(CampusEntranceAvenue.plan.x-6.5,0,96)})`);
  expect(info.palms).toHaveLength(20);
- expect(info.palms.every((p:any)=>p.z>90&&p.height>13&&Math.abs(p.x+10)>4.5)).toBe(true);
+ expect(info.palms.every((p:any)=>p.z>90&&p.height>13&&Math.abs(p.x-info.axisX)>4.5)).toBe(true);
  expect(info.triangles).toBeLessThan(1800);
  expect(info.route).toBeTruthy();
  expect(info.centerBlocked).toBe(false);expect(info.trunkBlocked).toBe(true);

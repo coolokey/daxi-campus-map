@@ -4,10 +4,10 @@
  */
 const CampusOutdoorPlan=(()=>{
  // Gate, parking approach and the existing Chiang statue share one inward axis.
- const gate={x:-10,z:86},target={x:-36,z:28.5},distance=Math.hypot(target.x-gate.x,target.z-gate.z);
+ const gate={x:-36,z:86},target={x:-36,z:28.5},distance=Math.hypot(target.x-gate.x,target.z-gate.z);
  const axis={x:(target.x-gate.x)/distance,z:(target.z-gate.z)/distance},right={x:-axis.z,z:axis.x};
  const world=(cross,inward,y=0)=>({x:gate.x+right.x*cross+axis.x*inward,y,z:gate.z+right.z*cross+axis.z*inward});
- const entrance={gate,target,axis,right,yaw:Math.atan2(-axis.x,-axis.z),world,spawn:world(0,-4)};
+ const entrance={gate,target,axis,right,yaw:axis.x===0?0:Math.atan2(-axis.x,-axis.z),world,spawn:world(0,-4)};
  const palette={track:0xc93434,lawn:0x7b9555,court:0xb91c1c,line:0xf2f0e4,stage:0x83b0bf,step:0xd9bf6f,roof:0x9e5148};
  const track={x:-84,z:-25,halfStraight:25,outerRadius:27,innerRadius:18};
  const stage={id:'grandstand',x0:-70,x1:-54,z0:8.1,z1:15.8,height:1.4,center:{x:-62,y:1.4,z:11},foot:{x:-62,y:0,z:4.3},stairs:{x0:-69,x1:-55,z0:4.5,z1:8.1}};
@@ -28,6 +28,7 @@ const CampusOutdoorPlan=(()=>{
  // The open polyline ends at the outside edges of the existing gate pylons.
  const outline=[[-22.2,86],[-22.2,100],[-40,100],[-95,91],[-112,83],[-127,57],[-123,54],[-141,20],[-144,22],[-149,12],[-152,-25],[-151,-52],[-142,-64],[-123,-71],[-121,-79],[111,-79],[114,-75],[111,-65],[109,-12],[111,-3],[103,2],[106,14],[108,24],[107,34],[99,39],[99,64],[98,86],[94,99],[66,94],[2.2,100],[2.2,86]];
  for(const [index,cross] of [[0,-12.2],[outline.length-1,12.2]]){const p=world(cross,0);outline[index]=[p.x,p.z];}
+ outline[1]=[gate.x-12.2,100];outline[2]=[-65,100];outline[outline.length-2]=[gate.x+12.2,100];
  const perimeter={height:2.9,thickness:.7,outline,segments:outline.slice(1).map(([bx,bz],i)=>({ax:outline[i][0],az:outline[i][1],bx,bz,thickness:.7}))};
  perimeter.contains=(x,z)=>{let inside=false;for(let i=0,j=outline.length-1;i<outline.length;j=i++){const [ax,az]=outline[i],[bx,bz]=outline[j];if((az>z)!==(bz>z)&&x<(bx-ax)*(z-az)/(bz-az)+ax)inside=!inside;}return inside};
  return{entrance,palette,track,stage,courts,outerCourts,volleyball,perimeter,inside,ground,onStage,onStairs,stairWidth,reserved,stairsPath,exitPath};

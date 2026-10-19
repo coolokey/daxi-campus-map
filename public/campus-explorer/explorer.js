@@ -819,9 +819,10 @@
 
       scene.add(plazaGroup);
 
-      // 2. 警衛室 (正門右側 x=6, z=86)：黃色外牆、紅色斜瓦屋頂、電子LED跑馬燈
+      // 2. 警衛室 (正門右側，隨共用入口位置更新)：黃色外牆、紅色斜瓦屋頂、電子LED跑馬燈
       const guardGroup = new THREE.Group();
-      guardGroup.position.set(6, 0, 86);
+      guardGroup.name='main-entrance-guard';
+      const guard=entrance.world(16,0);guardGroup.position.copy(guard);
 
       const guardBody = new THREE.Mesh(
         new THREE.BoxGeometry(5.6, 3.2, 5.6),
@@ -855,7 +856,7 @@
       guardGroup.add(ledSign);
 
       scene.add(guardGroup);
-      registerWallCollider(3.2, 8.8, 83.2, 88.8, 0, 3.2);
+      registerWallCollider(guard.x-2.8,guard.x+2.8,guard.z-2.8,guard.z+2.8,0,3.2);
       // 門柱是實體；中央入口保留通行空間。
       const pylonExtent=1.2*(Math.abs(entrance.right.x)+Math.abs(entrance.axis.x));
       for(const cross of [-11,11]){const p=entrance.world(cross,0);registerWallCollider(p.x-pylonExtent,p.x+pylonExtent,p.z-pylonExtent,p.z+pylonExtent,.03,6.23);WALL_COLLIDERS.at(-1).gatePylon=true;}
@@ -2062,8 +2063,8 @@
       { name: "戶外排球場", ...CampusOutdoorPlan.volleyball.outerCenter, y: 1.8 },
       { name: "籃球場群", x: 12, y: 1.8, z: -38 },
       { name: "蘭亭訓平池", x: -18, y: 2.2, z: -66 },
-      { name: "校大門", x: -10, y: 3.5, z: 86 },
-      { name: "警衛室", x: 6, y: 3.2, z: 86 },
+      { name: "校大門", ...CampusOutdoorPlan.entrance.world(0,0,3.5) },
+      { name: "警衛室", ...CampusOutdoorPlan.entrance.world(16,0,3.2) },
       { name: "學生活動中心", x: -80, y: 6.0, z: 58 },
       { name: "行政大樓", x: -12, y: 6.0, z: 32 },
       { name: "八年級棟 (南棟)", x: 16, y: 6.0, z: 60 },
@@ -2101,8 +2102,8 @@
     const NAV_NODES = {
   // 1. 正門、迎賓廣場、銅像
   "gate": { id: "gate", ...CampusOutdoorPlan.entrance.spawn, neighbors: ["gate-guard", "plaza-center", "driveway-s1"] },
-  "gate-guard": { id: "gate-guard", x: 6, y: 0, z: 86, neighbors: ["gate", "plaza-center", "driveway-s1"] },
-  "plaza-center": { id: "plaza-center", x: -10, y: 0, z: 72, neighbors: ["gate", "gate-guard", "statue-node", "admin-f-porch", "g8f-porch"] },
+  "gate-guard": { id: "gate-guard", ...CampusOutdoorPlan.entrance.world(16,-4), neighbors: ["gate", "plaza-center", "driveway-s1"] },
+  "plaza-center": { id: "plaza-center", ...CampusOutdoorPlan.entrance.world(0,14), neighbors: ["gate", "gate-guard", "statue-node", "admin-f-porch", "g8f-porch"] },
   "statue-node": { id: "statue-node", x: -36, y: 0, z: 32, neighbors: ["plaza-center", "gym-path-1", "admin-f-porch", "stand-front"] },
 
   // 2. 西側：學生活動中心 & 資源回收室
@@ -2304,7 +2305,7 @@
   "art-4f-art": { id: "art-4f-art", x: 74, y: 10.8, z: 46, neighbors: ["art-stair-mid3"] }
 };
 
-    NAV_NODES['palm-avenue-end']={x:-10,y:0,z:158,neighbors:['gate']};
+    NAV_NODES['palm-avenue-end']={x:CampusEntranceAvenue.plan.x,y:0,z:158,neighbors:['gate']};
     Object.keys(NAV_NODES).forEach(nid => {
       const node = NAV_NODES[nid];
       node.neighbors.forEach(neighId => {

@@ -1,8 +1,8 @@
 /* Photo-derived exterior approach. Dimensions are illustrative, not a survey. */
 const CampusEntranceAvenue = (() => {
-  const plan = {x:-10,z0:89,z1:171,width:9,gateZ:86};
+  const plan = {x:CampusOutdoorPlan.entrance.gate.x,z0:89,z1:171,width:9,gateZ:86};
   const palms = Array.from({length:20},(_,i)=>({x:plan.x+(i%2?6.5:-6.5),z:96+Math.floor(i/2)*7.7,height:13.6+(i*7%9)*.35,rotation:i*2.399}));
-  const contains = (x,z) => x>=-19&&x<=-1&&z>=89&&z<=174;
+  const contains = (x,z) => x>=plan.x-9&&x<=plan.x+9&&z>=89&&z<=174;
   function crownGeometry() {
     const positions=[],colors=[],green=new THREE.Color();
     function triangle(a,b,c,tone){positions.push(...a,...b,...c);green.setHex(tone);for(let i=0;i<3;i++)colors.push(green.r,green.g,green.b);}
@@ -24,8 +24,9 @@ const CampusEntranceAvenue = (() => {
     }
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));g.computeVertexNormals();return g;
   }
-  function render(scene,collider) {
-    const group=new THREE.Group();group.name='entrance-palm-avenue';scene.add(group);
+  function render(scene,registerCollider) {
+    const offset=plan.x+10,collider=(x0,x1,...rest)=>registerCollider(x0+offset,x1+offset,...rest);
+    const group=new THREE.Group();group.name='entrance-palm-avenue';group.position.x=offset;scene.add(group);
     const material=color=>new THREE.MeshStandardMaterial({color,roughness:.95});
     function box(w,h,d,x,y,z,color){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material(color));m.position.set(x,y,z);m.receiveShadow=true;group.add(m);return m;}
     const length=plan.z1-plan.z0,mid=(plan.z1+plan.z0)/2;
@@ -45,10 +46,10 @@ const CampusEntranceAvenue = (() => {
     trunks.name='royal-palm-trunks';crowns.name='feathered-palm-crowns';
     const dummy=new THREE.Object3D();
     for(const [i,p] of palms.entries()) {
-      dummy.rotation.set(0,p.rotation,0);dummy.position.set(p.x,p.height/2,p.z);dummy.scale.set(1,p.height,1);dummy.updateMatrix();trunks.setMatrixAt(i,dummy.matrix);
+      dummy.rotation.set(0,p.rotation,0);dummy.position.set(p.x-offset,p.height/2,p.z);dummy.scale.set(1,p.height,1);dummy.updateMatrix();trunks.setMatrixAt(i,dummy.matrix);
       dummy.position.y=p.height+.65;dummy.scale.set(1,1.3,1);dummy.updateMatrix();shafts.setMatrixAt(i,dummy.matrix);
       dummy.position.y=p.height+1.1;dummy.scale.set(1,1,1);dummy.updateMatrix();crowns.setMatrixAt(i,dummy.matrix);
-      collider(p.x-.44,p.x+.44,p.z-.44,p.z+.44,0,p.height);
+      collider(p.x-offset-.44,p.x-offset+.44,p.z-.44,p.z+.44,0,p.height);
     }
     for(const mesh of [trunks,shafts,crowns]){mesh.castShadow=true;mesh.receiveShadow=true;mesh.instanceMatrix.needsUpdate=true;mesh.frustumCulled=false;group.add(mesh);}
     // Low open fence on the left and darker boundary on the right, as in the photos.

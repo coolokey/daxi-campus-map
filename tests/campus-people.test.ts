@@ -20,6 +20,7 @@ function setup(width=1280, configure?: (w:any)=>void) {
   createCharacter:()=>new THREE.Group()};
  w.campusCollisionIndex={pointHit:()=>false};w.campusWalkWorld={ground:()=>0};
  configure?.(w);
+ w.eval(readFileSync('public/campus-explorer/outdoor-plan.js','utf8')+';window.CampusOutdoorPlan=CampusOutdoorPlan;');
  w.eval(readFileSync('public/campus-explorer/grid-search.js','utf8'));
  const path='public/campus-explorer/campus-people.js';
  if(existsSync(path))w.eval(readFileSync(path,'utf8'));
@@ -156,10 +157,10 @@ describe('示意人物效能與碰撞',()=>{
 
 describe('人物場景安全邊界',()=>{
  it('校門口有不戴帽子、穿深藍服裝的固定警衛先生，手機亦可見',()=>{
-  const s=setup(390,w=>{w.campusExplorer.getPlayerPosition=()=>new THREE.Vector3(-10,0,90)});s.api.update(.1,1);
+  const s=setup(390,w=>{w.campusExplorer.getPlayerPosition=()=>new THREE.Vector3(-36,0,90)});s.api.update(.1,1);
   const guard=s.api.actors.find((a:any)=>a.id==='gate-guard');expect(guard).toBeDefined();
   expect(guard.spec).toMatchObject({gender:'male',role:'guard',outfit:'casual'});expect(guard.root.visible).toBe(true);
-  expect(Math.hypot(guard.position.x+10,guard.position.z-90)).toBeLessThan(12);
+  expect(Math.hypot(guard.position.x+36,guard.position.z-90)).toBeLessThan(12);
   const before={...guard.position};s.api.update(.1,2);expect(guard.position).toEqual(before);s.dom.window.close();
  });
  it('大量已核對老師在桌面最多顯示 14 位，配置不重疊',()=>{
@@ -235,7 +236,7 @@ describe('老師輪替與人物避讓',()=>{
 it('隱藏樓層的子牆面不會遮住人物姓名，可見牆面仍會遮擋',()=>{
  const parent=new THREE.Group(),wall=new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshBasicMaterial());parent.add(wall);parent.visible=false;
  const spy=vi.spyOn(THREE.Raycaster.prototype,'intersectObjects').mockReturnValue([{object:wall}] as any);
- const s=setup(1280,w=>{w.campusExplorer.camera.position.set(-18,3,95);w.campusExplorer.camera.lookAt(-18,2,87);w.campusExplorer.camera.updateMatrixWorld();w.campusExplorer.getPlayerPosition=()=>new THREE.Vector3(-18,0,92)});
+ const s=setup(1280,w=>{w.campusExplorer.camera.position.set(-44,3,95);w.campusExplorer.camera.lookAt(-44,2,87);w.campusExplorer.camera.updateMatrixWorld();w.campusExplorer.getPlayerPosition=()=>new THREE.Vector3(-44,0,92)});
  s.api.update(.1,1);const guard=s.api.actors.find((a:any)=>a.id==='gate-guard');expect(guard.isOccluded).toBe(false);
  parent.visible=true;s.api.update(.1,2);expect(guard.isOccluded).toBe(true);
  spy.mockRestore();s.dom.window.close();wall.geometry.dispose();(wall.material as THREE.Material).dispose();
