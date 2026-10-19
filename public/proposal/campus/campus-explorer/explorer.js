@@ -1410,6 +1410,7 @@
       bw.position.set(x, 0, z);
       const roof = new THREE.Mesh(new THREE.BoxGeometry(width, 0.35, depth), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
       roof.position.y = 4.0;
+      roof.userData.legacyBreezewayRoof = {width, depth};
       roof.castShadow = true;
       bw.add(roof);
 
@@ -1417,6 +1418,7 @@
         for (let pz of [-depth / 2 + 0.4, depth / 2 - 0.4]) {
           const col = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 4.0, 8), new THREE.MeshStandardMaterial({ color: 0x64748b }));
           col.position.set(px, 2.0, pz);
+          col.userData.legacyBreezewaySupport = true;
           col.castShadow = true;
           bw.add(col);
         }

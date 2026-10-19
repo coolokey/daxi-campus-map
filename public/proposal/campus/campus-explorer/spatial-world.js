@@ -36,6 +36,26 @@
   for(let i=0;i<=count;i++){const u=alongU?u0+(u1-u0)*i/count:(u0+u1)/2,v=alongU?(v0+v1)/2:v0+(v1-v0)*i/count;box(g,l,u-.022,u+.022,v-.022,v+.022,y,y+.95,colors.steel);}
  }
  const insideFloor=(l,x,z,floor)=>{const q=l.local(x,z);return l.footprints.some(p=>p.floor===floor&&CampusSpatialPlan.contains(p,q.u,q.v))};
+ // Legacy outdoor canopies predate the shared floor plan. Keep their exterior
+ // shade, but subtract real stair enclosures so a canopy cannot enter a flight.
+ scene.updateMatrixWorld(true);
+ const stairRects=layouts.flatMap(l=>l.ramps.length?l.stairs.map(s=>l.rect(s.u0,s.u1,s.v0,s.v1)):[]);
+ const canopySupports=[];scene.traverse(o=>{if(o.userData.legacyBreezewaySupport)canopySupports.push(o)});
+ for(const post of canopySupports){const b=new THREE.Box3().setFromObject(post);if(stairRects.some(r=>r.x0<b.max.x&&r.x1>b.min.x&&r.z0<b.max.z&&r.z1>b.min.z)){post.parent.remove(post);post.geometry.dispose();}}
+ const canopyRoofs=[];scene.traverse(o=>{if(o.userData.legacyBreezewayRoof)canopyRoofs.push(o)});
+ for(const roof of canopyRoofs){
+  const bounds=new THREE.Box3().setFromObject(roof),cuts=stairRects.filter(r=>r.x0<bounds.max.x&&r.x1>bounds.min.x&&r.z0<bounds.max.z&&r.z1>bounds.min.z);
+  if(!cuts.length)continue;
+  const xs=[bounds.min.x,bounds.max.x],zs=[bounds.min.z,bounds.max.z];
+  for(const r of cuts){for(const x of [r.x0,r.x1])if(x>bounds.min.x&&x<bounds.max.x)xs.push(x);for(const z of [r.z0,r.z1])if(z>bounds.min.z&&z<bounds.max.z)zs.push(z)}
+  xs.sort((a,b)=>a-b);zs.sort((a,b)=>a-b);
+  for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++){
+   const x=(xs[i-1]+xs[i])/2,z=(zs[j-1]+zs[j])/2;if(cuts.some(r=>x>r.x0&&x<r.x1&&z>r.z0&&z<r.z1))continue;
+   const mesh=new THREE.Mesh(new THREE.BoxGeometry(xs[i]-xs[i-1],bounds.max.y-bounds.min.y,zs[j]-zs[j-1]),roof.material);
+   mesh.name='stair-cleared-breezeway-roof';mesh.position.copy(roof.parent.worldToLocal(new THREE.Vector3(x,(bounds.min.y+bounds.max.y)/2,z)));mesh.castShadow=mesh.receiveShadow=true;roof.parent.add(mesh);
+  }
+  roof.parent.remove(roof);roof.geometry.dispose();
+ }
  // Subtract the same stair holes that groundAt uses from every slab.
  // Raise only the visual 1F paving slightly above the outdoor ground plane.
  function slab(g,l,p,y,paint=null,cutAtGround=false){

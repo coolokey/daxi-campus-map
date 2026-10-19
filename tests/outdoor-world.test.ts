@@ -318,3 +318,14 @@ it('registers the actual inclined rail boundary as solid at its own flight heigh
  const bad=run(`(()=>{const bad=[];for(const l of campusWalkWorld.layouts)for(const r of l.ramps.filter(r=>l.stairs.some(s=>s.id===r.stairId)))for(const t of [.2,.5,.8])for(const side of [-1,1]){const p=CampusWalkMath.rampPoint(r,t);p[r.axis==='x'?'z':'x']+=side*.78;if(!checkWallCollision(p.x,p.y,p.z))bad.push({stair:r.stairId,t,side});}return bad})()`);
  expect(bad).toEqual([]);
 });
+it('keeps all rendered overhead slabs clear of the full body on every stair flight and turn landing',()=>{
+ const result=run(`(()=>{scene.updateMatrixWorld(true);const meshes=[],bad=[];let samples=0;scene.traverse(o=>{if(o.isMesh&&!o.material.transparent)meshes.push(o)});
+ for(const l of campusWalkWorld.layouts)for(const r of l.ramps.filter(r=>l.stairs.some(s=>s.id===r.stairId))){
+  const points=[];for(let i=4;i<=36;i++)for(const offset of [-.2,0,.2]){const p=CampusWalkMath.rampPoint(r,i/40);p[r.axis==='x'?'z':'x']+=offset;points.push(p)}
+  const s=l.stairs.find(s=>s.id===r.stairId),p=l.platforms.find(p=>p.stairId===s.id&&p.floor===r.floor);for(const v of [s.centerV-1.25,s.centerV,s.centerV+1.25])points.push(l.world(s.turnU,v,p.y));
+  for(const p of points){if(checkWallCollision(p.x,p.y,p.z))continue;samples++;const ray=new THREE.Raycaster(new THREE.Vector3(p.x,p.y+.3,p.z),new THREE.Vector3(0,1,0),0,AVATAR_HEIGHT-.3);const hit=ray.intersectObjects(meshes,false).find(h=>Math.abs(h.face.normal.clone().transformDirection(h.object.matrixWorld).y)>.9);if(hit)bad.push({building:l.id,stair:r.stairId,floor:r.floor,p,hit:hit.point.toArray()});}
+ }return {samples,bad}})()`);expect(result.samples).toBeGreaterThan(4000);expect(result.bad).toEqual([]);
+},30000);
+it('keeps legacy canopy support columns outside every stair enclosure',()=>{
+ expect(run(`(()=>{scene.updateMatrixWorld(true);const rects=campusWalkWorld.layouts.flatMap(l=>l.ramps.length?l.stairs.map(s=>l.rect(s.u0,s.u1,s.v0,s.v1)):[]),bad=[];scene.traverse(o=>{if(!o.userData.legacyBreezewaySupport)return;const b=new THREE.Box3().setFromObject(o);if(rects.some(r=>r.x0<b.max.x&&r.x1>b.min.x&&r.z0<b.max.z&&r.z1>b.min.z))bad.push(o.getWorldPosition(new THREE.Vector3()).toArray())});return bad})()`)).toEqual([]);
+});
