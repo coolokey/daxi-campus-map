@@ -302,6 +302,15 @@
      const rail=(a,c,colour,radius)=>{const mesh=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,a.distanceTo(c),8),colour);mesh.position.copy(a).add(c).multiplyScalar(.5);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),c.clone().sub(a).normalize());g.add(mesh)};
      const a=shift(r.start),c=shift(r.end);a.y+=.9;c.y+=.9;rail(a,c,colors.handrail,.04);
      const posts=Math.max(2,Math.ceil(runLength/.8));for(let j=0;j<=posts;j++){const q=shift(M.rampPoint(r,j/posts));rail(q,q.clone().add(new THREE.Vector3(0,.9,0)),colors.steel,.022);}
+     // Physical side guards follow each flight's slope. Short volumes protect
+     // the whole body without filling the headroom beneath stacked stairs.
+     const guards=Math.ceil(runLength/.24);
+     for(let j=0;j<guards;j++){
+      const a=shift(M.rampPoint(r,j/guards)),c=shift(M.rampPoint(r,(j+1)/guards)),rect={x0:Math.min(a.x,c.x)-.04,x1:Math.max(a.x,c.x)+.04,z0:Math.min(a.z,c.z)-.04,z1:Math.max(a.z,c.z)+.04},low=Math.min(a.y,c.y)-.08,high=Math.max(a.y,c.y)+.98;
+      registerWallCollider(rect.x0,rect.x1,rect.z0,rect.z1,low,high);
+      Object.assign(WALL_COLLIDERS.at(-1),{stairRail:true,stairId:s.id,floor:f});
+      cameraVolume(rect,low,high);
+     }
      // Administrative stair safety mesh is schematic, without reproducing notices.
      if(l.b.spatialProfile.shape==='admin'){
       const points=[];

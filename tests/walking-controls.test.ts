@@ -228,7 +228,11 @@ it('walking across the side of a stair cannot drop the player to a lower floor',
 it('every stair flight and switchback landing supports ordinary walking up and down',()=>{
  run(`window.stairWalkIssues=[];for(const l of campusWalkWorld.layouts)for(const s of l.stairs||[])for(let f=s.fromFloor||1;f<Math.min(l.b.floors,s.toFloor||l.b.floors);f++){
  const ramps=l.ramps.filter(r=>r.stairId===s.id&&r.floor===f),points=[];
- for(const r of ramps)for(let i=0;i<=36;i++)points.push(CampusWalkMath.rampPoint(r,i/36));
+ // The real switchback goes behind the flight mouths, not through side rails.
+ for(const [ri,r] of ramps.entries()){
+  for(let i=0;i<=36;i++)points.push(CampusWalkMath.rampPoint(r,i/36));
+  if(ri<ramps.length-1){const next=ramps[ri+1];points.push(l.world(s.turnU,l.local(r.end.x,r.end.z).v,r.end.y),l.world(s.turnU,l.local(next.start.x,next.start.z).v,r.end.y));}
+ }
  for(const route of [points,[...points].reverse()])for(const automatic of [false,true]){
  avatarGroup.position.set(route[0].x,route[0].y,route[0].z);isJumping=false;
  for(const p of route.slice(1)){moveAvatarWithCollision(avatarGroup.position,p.x-avatarGroup.position.x,p.z-avatarGroup.position.z,automatic?p.y-avatarGroup.position.y:0);

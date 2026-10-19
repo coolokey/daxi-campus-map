@@ -309,3 +309,12 @@ it('detours past a person when the nearest rounded start cell overlaps their cle
  try{const points=Array.from({length:8},(_,i)=>({x:-21,y:0,z:71-i})),path=campusWalkWorld.bypassPeople(start,points);if(!path)return {route:false};const p={...start},bad=[];for(const q of path)if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y))bad.push(q);return {route:true,bad,end:p};}finally{window.campusPeople=previous;}})()`);
  expect(r).toMatchObject({route:true,bad:[]});expect(r.end.x).toBeCloseTo(-21);expect(r.end.y).toBe(0);expect(r.end.z).toBeCloseTo(64);
 });
+
+it('blocks sideways stair movement before the avatar body overlaps either rail or safety mesh',()=>{
+ const failures=run(`(()=>{const bad=[],l=campusWalkWorld.layouts.find(l=>l.id==='admin-front');for(const r of l.ramps)for(const t of [.25,.5,.75])for(const side of [-1,1]){const start=CampusWalkMath.rampPoint(r,t),p={...start},axis=r.axis==='x'?'z':'x',blocked=moveAvatarWithCollision(p,axis==='x'?side*.9:0,axis==='z'?side*.9:0),offset=Math.abs(p[axis]-start[axis]);if(!blocked||offset>.78-.04-AVATAR_COLLISION_RADIUS+.02)bad.push({stair:r.stairId,floor:r.floor,t,side,offset,blocked});}return bad})()`);
+ expect(failures).toEqual([]);
+});
+it('registers the actual inclined rail boundary as solid at its own flight height',()=>{
+ const bad=run(`(()=>{const bad=[];for(const l of campusWalkWorld.layouts)for(const r of l.ramps.filter(r=>l.stairs.some(s=>s.id===r.stairId)))for(const t of [.2,.5,.8])for(const side of [-1,1]){const p=CampusWalkMath.rampPoint(r,t);p[r.axis==='x'?'z':'x']+=side*.78;if(!checkWallCollision(p.x,p.y,p.z))bad.push({stair:r.stairId,t,side});}return bad})()`);
+ expect(bad).toEqual([]);
+});
