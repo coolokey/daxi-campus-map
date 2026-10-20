@@ -497,19 +497,19 @@
     // 每次最多前進 0.18 m，避免高速／掉幀時跨過薄牆。
     // 自動帶路與鍵盤、手機共用人物體積及碰撞體。
     let avatarPersonBlocked=false,autoPeopleWait=0;
-    function moveAvatarWithCollision(position, dx, dz, dy = 0) {
-      avatarPersonBlocked=false;
+    function moveAvatarWithCollision(position, dx, dz, dy = 0, staticOnly = false) {
+      if(!staticOnly)avatarPersonBlocked=false;
       const steps = Math.max(1, Math.ceil(Math.hypot(dx, dy, dz) / 0.18));
       const sx = dx / steps, sz = dz / steps, sy = dy / steps;
       let blocked = false;
       for (let step = 0; step < steps; step++) {
-        const world=typeof window!=='undefined'?window.campusWalkWorld:null,followsGround=world&&!isJumping;
+        const world=typeof window!=='undefined'?window.campusWalkWorld:null,followsGround=world&&(!isJumping||staticOnly);
         const tryStep=(x,z)=>{
           const surface=world?.stepHeight?world.stepHeight(position,x,z):world?.ground({x,y:position.y,z});
           if(surface===null){blocked=true;return}
           const y=followsGround?surface:position.y+sy;
           if(followsGround&&typeof CampusOutdoorPlan!=='undefined'&&(CampusOutdoorPlan.reserved(position)||CampusOutdoorPlan.reserved({x,z}))&&Math.abs(y-position.y)>.24){blocked=true;return}
-          const person=typeof window!=='undefined'&&window.campusPeople?.blocksPlayer(position,{x,y,z})===true;
+          const person=!staticOnly&&typeof window!=='undefined'&&window.campusPeople?.blocksPlayer(position,{x,y,z})===true;
           if(person)avatarPersonBlocked=true;
           if(checkWallCollision(x,y,z)||person){blocked=true;return}
           position.x=x;position.z=z;if(followsGround)position.y=y;
@@ -2485,7 +2485,8 @@
       if(motionBlocked())return;
       cancelCameraTween();
       resetManualInput();
-      if (activeNavigationId && !navigateToRoom(activeNavigationId, false)) return;
+      const first=currentNavPoints[0],atStart=first&&avatarGroup&&Math.hypot(first.x-avatarGroup.position.x,first.y-.6-avatarGroup.position.y,first.z-avatarGroup.position.z)<.05;
+      if (activeNavigationId && (!atStart||currentNavPoints.length<2||navigationStatus==='blocked') && !navigateToRoom(activeNavigationId, false)) return;
       if (!currentNavPoints || currentNavPoints.length < 2) return;
       if(currentMode==='bird')setControlMode('avatar');
       window.campusWalkWorld?.updateCamera();
@@ -2517,6 +2518,7 @@
     }
     function resetManualInput() {
       keyMovementKeys.clear();
+      dpadResets.forEach(reset=>reset());
       Object.keys(dpadInput).forEach(k=>dpadInput[k]=false);
       Object.keys(moveInput).forEach(k=>moveInput[k]=false);
       isMouseDownDragging=false;
@@ -2531,7 +2533,7 @@
        ========================================================================== */
     let currentMode = "bird"; // Start in Overview Mode (鳥瞰全景) with Welcome Card
     const moveInput = { forward: false, backward: false, left: false, right: false, sprint: false };
-    const keyMovementKeys=new Set(),dpadInput={forward:false,backward:false,left:false,right:false};
+    const keyMovementKeys=new Set(),dpadInput={forward:false,backward:false,left:false,right:false},dpadResets=[];
     const movementKeys={forward:['w','arrowup'],backward:['s','arrowdown'],left:['a','arrowleft'],right:['d','arrowright']};
     function syncMoveInput(){for(const [direction,keys] of Object.entries(movementKeys))moveInput[direction]=dpadInput[direction]||keys.some(k=>keyMovementKeys.has(k));}
     let walkAnimCycle = 0;
@@ -2660,27 +2662,43 @@
 
     function bindDpad(btnId, directionKey) {
       const el = document.getElementById(btnId);
-      const start = (e) => {
+      const pointers=new Map(),touches=new Set();let mouseHeld=false;
+      const sync=()=>{dpadInput[directionKey]=mouseHeld||pointers.size>0||touches.size>0;syncMoveInput();el.classList.toggle('pressed',dpadInput[directionKey]);};
+      const release=id=>{if(!pointers.has(id))return;pointers.delete(id);sync();try{el.releasePointerCapture(id)}catch{}};
+      dpadResets.push(()=>{const ids=[...pointers.keys()];pointers.clear();touches.clear();mouseHeld=false;sync();for(const id of ids)try{el.releasePointerCapture(id)}catch{}});
+      el.style.touchAction='none';
+      const start = e => {
+        if(e.button!==undefined&&e.button!==0)return;
+        if(e.type==='touchstart'&&window.PointerEvent)return;
+        if(e.type==='mousedown'&&(pointers.size||e.sourceCapabilities?.firesTouchEvents))return;
         e.preventDefault();
         if(motionBlocked())return;
         if(currentMode==='bird')setControlMode('avatar');
         manualTakeover();
-        dpadInput[directionKey] = true;syncMoveInput();
-        el.classList.add("pressed");
+        if(e.type==='pointerdown'){mouseHeld=false;pointers.set(e.pointerId,e.pointerType||'mouse');try{el.setPointerCapture(e.pointerId)}catch{}}
+        else if(e.type==='touchstart'){for(const t of e.changedTouches||[])touches.add(t.identifier)}
+        else mouseHeld=true;
+        sync();
       };
-      const end = (e) => {
-        e.preventDefault();
-        dpadInput[directionKey] = false;syncMoveInput();
-        el.classList.remove("pressed");
+      const end = e => {
+        if(e.type.startsWith('pointer')||e.type==='lostpointercapture')release(e.pointerId);
+        else if(e.type.startsWith('touch')){
+          const active=new Set(Array.from(e.touches||[],t=>t.identifier));for(const id of touches)if(!active.has(id))touches.delete(id);
+          if(!active.size)for(const [id,type] of pointers)if(type==='touch')release(id);
+        }else mouseHeld=false;
+        sync();
       };
+      el.addEventListener('pointerdown',start);
+      el.addEventListener('pointermove',e=>{if(e.buttons===0)release(e.pointerId)});
+      el.addEventListener('lostpointercapture',end);
+      for(const type of ['pointerup','pointercancel','mouseup','touchend','touchcancel'])window.addEventListener(type,end,{capture:true,passive:true});
       el.addEventListener("mousedown", start);
-      el.addEventListener("mouseup", end);
       el.addEventListener("mouseleave", end);
       el.addEventListener("touchstart", start, { passive: false });
-      el.addEventListener("touchend", end, { passive: false });
-      el.addEventListener("touchcancel", end, { passive: false });
     }
     window.addEventListener('blur',()=>{resetManualInput();stopAutoWalk()});
+    window.addEventListener('pagehide',()=>{resetManualInput();stopAutoWalk()});
+    window.addEventListener('orientationchange',resetManualInput);
     document.addEventListener('visibilitychange',()=>{if(document.hidden){resetManualInput();stopAutoWalk()}});
     let wasMotionBlocked=false;
     new MutationObserver(()=>{const blocked=motionBlocked();if(blocked&&!wasMotionBlocked){resetManualInput();stopAutoWalk()}wasMotionBlocked=blocked;}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['open','class']});
@@ -2702,19 +2720,11 @@
 
       focusedBuildingId=room.buildingId;
       const targetNodeId = room.node;
-      const startNodeId = avatarGroup ? findClosestNavNode(avatarGroup.position) : "gate";
-      const nodePath = findShortestPath(startNodeId, targetNodeId);
-
       const pathPoints = [];
-      if (nodePath && nodePath.length > 0) {
-        nodePath.forEach(nid => {
-          const n = NAV_NODES[nid];
-          pathPoints.push(new THREE.Vector3(n.x, (n.y || 0) + 0.6, n.z));
-        });
-      } else {
-        const destNode = NAV_NODES[targetNodeId] || { x: 0, y: 0, z: 0 };
-        pathPoints.push(new THREE.Vector3(0, 0.6, 96));
-        pathPoints.push(new THREE.Vector3(destNode.x, (destNode.y || 0) + 0.6, destNode.z));
+      if(!window.campusWalkWorld){
+        const startNodeId=avatarGroup?findClosestNavNode(avatarGroup.position):'gate',nodePath=findShortestPath(startNodeId,targetNodeId);
+        if(nodePath?.length)for(const nid of nodePath){const n=NAV_NODES[nid];pathPoints.push(new THREE.Vector3(n.x,(n.y||0)+.6,n.z));}
+        else{const n=NAV_NODES[targetNodeId]||{x:0,y:0,z:0};pathPoints.push(new THREE.Vector3(0,.6,96),new THREE.Vector3(n.x,(n.y||0)+.6,n.z));}
       }
 
       if(window.campusWalkWorld){
@@ -2726,7 +2736,7 @@
           document.getElementById('hud-target-name').textContent=`[${room.buildingName} ${room.floor}F] ${room.name}`;
           document.getElementById('hud-route-desc').textContent='目前位置無可通行路徑，請先移到走廊或入口。';
           btnAutoWalk.textContent='重新規劃';publishNavigation('blocked');
-          showToast('目前位置無可通行路徑，請先移到走廊或入口。');return;
+          showToast('目前位置無可通行路徑，請先移到走廊或入口。');return false;
         }
         pathPoints.length=0;actual.forEach(p=>pathPoints.push(new THREE.Vector3(p.x,p.y+.6,p.z)));
       }
@@ -3394,7 +3404,7 @@
 
       // 1. AUTO-WALK：每幀用完行走距離，可跨越數個相鄰節點。
       if (isAutoWalking && currentNavPoints.length > 1) {
-        let remaining=14*avatarSpeedMultiplier*delta;
+        let remaining=7*avatarSpeedMultiplier*delta;
         for(let n=0;n<64 && remaining>1e-6 && isAutoWalking;n++){
           const point=currentNavPoints[autoWalkIndex+1];
           if(!point){stopAutoWalk();break;}
@@ -3416,7 +3426,10 @@
               stopAutoWalk();publishNavigation('blocked');showToast('前方有牆壁，帶路已停止。請沿走廊或門口通行。');break;
             }
             autoPeopleWait=0;isMoving=true;jumpBaseY=p.y;remaining-=amount;
-            if(Math.hypot(dir.x,dir.z)>1e-6){avatarAngle=Math.atan2(dir.x,dir.z);avatarGroup.rotation.y=avatarAngle;}
+            if(Math.hypot(dir.x,dir.z)>1e-6){
+              const wanted=Math.atan2(dir.x,dir.z),turn=Math.atan2(Math.sin(wanted-avatarAngle),Math.cos(wanted-avatarAngle));
+              avatarAngle+=turn*(1-Math.exp(-10*amount/(7*avatarSpeedMultiplier)));avatarGroup.rotation.y=avatarAngle;
+            }
             if(amount<distance-1e-6)break;
           }
           autoWalkIndex++;
@@ -3501,7 +3514,7 @@
         else if (currentAvatarY >= 6.5) detectedFloor = "3F";
         else if (currentAvatarY >= 2.5) detectedFloor = "2F";
         const floorBadgeEl = document.getElementById("minimap-floor-badge");
-        if (floorBadgeEl && currentFloorFilter === "all") {
+        if (floorBadgeEl && currentFloorFilter === "all" && floorBadgeEl.textContent!==detectedFloor) {
           floorBadgeEl.textContent = detectedFloor;
         }
 

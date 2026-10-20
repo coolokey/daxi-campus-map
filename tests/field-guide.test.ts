@@ -2,12 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 
-function setup(width = 390, query = '') {
+function setup(width = 390, query = '', coarse = false) {
  const dom = new JSDOM(`<body><div id="welcome-card"></div><div class="search-box"><input id="search-input"></div><div class="top-actions"><div id="campus-main-controls"><button id="btn-walk"></button></div></div><div id="floor-selector"></div><div id="scene-toolbar"></div><div id="nav-hud"><div id="hud-target-name"></div><span id="hud-dist-val">0</span><button id="btn-auto-walk">自動帶路</button><button id="btn-cancel-nav">取消</button></div></body>`, { runScripts: 'outside-only', url: `https://campus.example/${query}` });
  const coverHtml=readFileSync('public/campus-explorer/index.html','utf8').match(/<dialog id="guide-landing"[\s\S]*?<\/dialog>/)![0];
  dom.window.document.body.insertAdjacentHTML('afterbegin',coverHtml);
  const w = dom.window as any;
  w.innerWidth = width;
+ w.matchMedia=()=>({matches:coarse});
  w.HTMLDialogElement.prototype.showModal = function() { this.setAttribute('open', ''); };
  w.HTMLDialogElement.prototype.close = function() { this.removeAttribute('open'); };
  w.HTMLElement.prototype.scrollIntoView = function() {};
@@ -27,6 +28,29 @@ function setup(width = 390, query = '') {
 }
 
 describe('探索手冊導覽卡', () => {
+ it('reselecting the same destination closes touch tools on ready, but walking progress does not',async()=>{
+  const s=setup(1024,'?view=bird',true),d=s.w.document;
+  s.w.campusExplorer.navigateToRoom('academic');await s.tick();d.getElementById('guide-tools-toggle').click();
+  const update=(status:string)=>s.w.dispatchEvent(new s.w.CustomEvent('campus:navigation',{detail:{destination:'academic',status,points:[],index:0}}));
+  update('ready');await s.tick();expect(d.body.classList.contains('guide-tools-open')).toBe(false);
+  d.getElementById('guide-tools-toggle').click();update('walking');await s.tick();expect(d.body.classList.contains('guide-tools-open')).toBe(true);
+  s.dom.window.close();
+ });
+ it('closes the touch search tools when a destination is chosen so navigation can be pressed',async()=>{
+  const s=setup(1024,'?view=bird',true),d=s.w.document;
+  d.getElementById('guide-tools-toggle').click();expect(d.body.classList.contains('guide-tools-open')).toBe(true);
+  s.w.campusExplorer.navigateToRoom('academic');await s.tick();
+  expect(d.body.classList.contains('guide-tools-open')).toBe(false);
+  expect(d.getElementById('guide-route').hidden).toBe(false);s.dom.window.close();
+ });
+ it('wide touch tablets reveal navigation after selecting a destination from the handbook',async()=>{
+  const s=setup(1366,'',true),d=s.w.document;s.w.innerHeight=1024;
+  d.getElementById('guide-start').click();
+  expect(d.body.classList.contains('guide-collapsed')).toBe(false);
+  s.w.campusExplorer.navigateToRoom('library');await s.tick();
+  expect(d.body.classList.contains('guide-collapsed')).toBe(true);
+  expect(d.getElementById('guide-route').hidden).toBe(false);s.dom.window.close();
+ });
  it('手機選取目的地後收合手冊，但帶路按鈕保留在獨立卡片', async () => {
   const s = setup();
   s.w.document.getElementById('guide-start').click();

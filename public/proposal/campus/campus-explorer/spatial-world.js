@@ -362,6 +362,8 @@
  }
  const cameraIndex=CampusCollisionGrid.create(cameraVolumes,0,0);
  window.campusCollisionIndex=CampusCollisionGrid.create(WALL_COLLIDERS,AVATAR_COLLISION_RADIUS,AVATAR_HEIGHT);
+ // A small planning margin keeps interpolated turns away from exact wall tangents.
+ const navigationIndex=CampusCollisionGrid.create(WALL_COLLIDERS,AVATAR_COLLISION_RADIUS+.08,AVATAR_HEIGHT);
  // Adults are wider and taller than the player. Their own broad-phase grid
  // includes the whole animated body instead of letting shoulders enter walls.
  window.campusPeopleCollisionIndex=CampusCollisionGrid.create(WALL_COLLIDERS,.64,2.15);
@@ -385,11 +387,11 @@
   const stageFree=(x,z)=>CampusOutdoorPlan.onStage({x,z,y})&&Math.abs(CampusOutdoorPlan.ground({x,z})-y)<.15;
   const peopleFree=(x,z)=>!avoidPeople||(Math.hypot(x-start.x,z-start.z)<=12&&window.campusPeople?.blocksPlayer({x,y,z},{x,y,z})!==true);
   const free=(x,z)=>{const wx=origin.x+x*step,wz=origin.z+z*step;
-   return ((wx>=-125&&wx<=115&&wz>=-100&&wz<=108)||CampusEntranceAvenue.contains(wx,wz))&&!checkWallCollision(wx,y,wz)&&peopleFree(wx,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.08:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)))};
-  const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||!peopleFree(x,z)||(stageSurface?!stageFree(x,z):!interior&&CampusOutdoorPlan.reserved({x,z}))||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.08)))return false}return true};
+   return ((wx>=-125&&wx<=115&&wz>=-100&&wz<=108)||CampusEntranceAvenue.contains(wx,wz))&&!navigationIndex.hit(wx,y,wz)&&peopleFree(wx,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.08:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)))};
+  const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||((p!==start||t*dist>.3)&&(q!==end||(1-t)*dist>.3)&&navigationIndex.hit(x,y,z))||!peopleFree(x,z)||(stageSurface?!stageFree(x,z):!interior&&CampusOutdoorPlan.reserved({x,z}))||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.08)))return false}return true};
   // A safe continuous position may round into a person's clearance. Anchor
   // detours to a nearby free cell connected to the exact position instead.
-  if(avoidPeople){
+  if(avoidPeople||!buildingGraph){
    const anchor=p=>{const c=round(p),candidates=[];for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++)candidates.push({x:c.x+dx,z:c.z+dz});
     return candidates.sort((a,b)=>Math.hypot(origin.x+a.x*step-p.x,origin.z+a.z*step-p.z)-Math.hypot(origin.x+b.x*step-p.x,origin.z+b.z*step-p.z)).find(c=>free(c.x,c.z)&&clear(p,{x:origin.x+c.x*step,z:origin.z+c.z*step}));};
    a=anchor(start);b=anchor(end);if(!a||!b)return null;
@@ -496,6 +498,52 @@
   }
   return path;
  }
+ // Goal-rooted shortest paths are reused while the static graph is unchanged.
+ // A heap avoids repeatedly scanning the entire open set during touch actions.
+ const navigationCache=new Map();
+ function pathsTo(goal){
+  if(navigationCache.has(goal))return navigationCache.get(goal);
+  const distance=new Map([[goal,0]]),next=new Map(),heap=[];
+  const push=item=>{heap.push(item);let i=heap.length-1;while(i){const parent=(i-1)>>1;if(heap[parent].cost<=item.cost)break;heap[i]=heap[parent];i=parent}heap[i]=item};
+  const pop=()=>{const first=heap[0],last=heap.pop();if(heap.length){let i=0;while(i*2+1<heap.length){let child=i*2+1;if(child+1<heap.length&&heap[child+1].cost<heap[child].cost)child++;if(heap[child].cost>=last.cost)break;heap[i]=heap[child];i=child}heap[i]=last}return first};
+  push({id:goal,cost:0});
+  while(heap.length){const current=pop();if(current.cost!==distance.get(current.id))continue;
+   const a=graph[current.id];for(const id of a.neighbors){const b=graph[id];if(!b)continue;const cost=current.cost+Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z);
+    if(cost<(distance.get(id)??Infinity)){distance.set(id,cost);next.set(id,current.id);push({id,cost})}
+   }
+  }
+  // Several room branches reuse the same physical corridor coordinates. Test
+  // each attachment once, retaining the branch with the lowest remaining cost.
+  const anchors=new Map();for(const id of distance.keys()){const n=graph[id],key=[n.buildingId||'',n.x.toFixed(5),n.y.toFixed(5),n.z.toFixed(5)].join('/'),previous=anchors.get(key);if(!previous||distance.get(id)<distance.get(previous.id))anchors.set(key,n);}
+  const result={distance,next,anchors:[...anchors.values()]};if(navigationCache.size>=8)navigationCache.delete(navigationCache.keys().next().value);navigationCache.set(goal,result);return result;
+ }
+ // Use the same body clearance, stair support and sliding-axis rules as walking.
+ // People are transient: the automatic walker handles them while executing.
+ function supportedSegment(a,b){
+  if(Math.abs(floorAt(a)-a.y)>.12)return false;
+  const p={x:a.x,y:a.y,z:a.z},length=Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z),steps=Math.max(1,Math.ceil(length/.16));
+  for(let i=1;i<=steps;i++){const t=i/steps,q={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z:a.z+(b.z-a.z)*t};
+   if(i*length/steps>.25&&navigationIndex.hit(q.x,q.y,q.z))return false;
+   if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y,true)||Math.hypot(p.x-q.x,p.z-q.z)>.02||Math.abs(p.y-q.y)>.12)return false;
+  }
+  return true;
+ }
+ function simplifyRoute(points){
+  const turns=[];
+  for(const p of points){const b=turns.at(-1),a=turns.at(-2);if(b&&Math.hypot(p.x-b.x,p.y-b.y,p.z-b.z)<1e-7)continue;
+   if(a){const ux=b.x-a.x,uy=b.y-a.y,uz=b.z-a.z,vx=p.x-b.x,vy=p.y-b.y,vz=p.z-b.z;
+    const cross=Math.hypot(uy*vz-uz*vy,uz*vx-ux*vz,ux*vy-uy*vx);
+    if(cross<1e-7&&ux*vx+uy*vy+uz*vz>0)turns.pop();
+   }turns.push({x:p.x,y:p.y,z:p.z});
+  }
+  if(turns.length<2)return points.map(p=>({x:p.x,y:p.y,z:p.z}));
+  const result=[turns[0]];let i=0;
+  while(i<turns.length-1){let j=turns.length-1;
+   for(;j>i+1;j--)if(Math.abs(turns[i].y-turns[j].y)<.08&&supportedSegment(turns[i],turns[j]))break;
+   result.push(turns[j]);i=j;
+  }
+  return result;
+ }
  function route(position,room){
   const target=graph[room.node];if(!target)return null;
   const gymExit=gymSurfaceExit(position);
@@ -509,10 +557,20 @@
    const ids=findShortestPath(stageFoot,room.node);return ids?[...stageExit,...ids.slice(1).map(id=>graph[id])]:null;
   }
   const f=Math.max(1,Math.round(position.y/FH)+1),l=layouts.find(l=>insideFloor(l,position.x,position.z,f));
-  let connector=null,start=null;
-  const candidates=Object.values(graph).filter(n=>Math.abs(n.y-position.y)<.36&&(l?n.buildingId===l.id:n.id==='gate'||n.id.includes('-outside-'))).sort((a,b)=>Math.hypot(a.x-position.x,a.z-position.z)-Math.hypot(b.x-position.x,b.z-position.z));
-  for(const n of candidates.slice(0,20)){const path=gridPath(position,n,position.y,l);if(path){start=n.id;connector=path;break}}
-  if(!start)return null;const ids=findShortestPath(start,room.node);return ids?[...connector,...ids.slice(1).map(id=>graph[id])]:null;
+  const cached=pathsTo(room.node),distance=n=>Math.hypot(n.x-position.x,n.y-position.y,n.z-position.z);
+  if(supportedSegment(position,target))return [{x:position.x,y:position.y,z:position.z},{x:target.x,y:target.y,z:target.z}];
+  const reachable=cached.anchors.filter(n=>Math.abs(n.y-position.y)<=FH+.36).sort((a,b)=>distance(a)-distance(b));
+  const candidates=reachable.slice(0,48);
+  let best=null;
+  for(const n of candidates){const cost=distance(n)+cached.distance.get(n.id);if(best&&cost>=best.cost)continue;
+   if(supportedSegment(position,n))best={start:n.id,connector:[{x:position.x,y:position.y,z:position.z},n],cost};
+  }
+  if(!best)for(const n of reachable.filter(n=>Math.abs(n.y-position.y)<.08&&(l?n.buildingId===l.id:n.id==='gate'||n.id.includes('-outside-'))).slice(0,20)){
+   const connector=gridPath(position,n,position.y,l);if(connector){best={start:n.id,connector};break}
+  }
+  if(!best)return null;const tail=[];let id=best.start;
+  while(id!==room.node){id=cached.next.get(id);if(!id)return null;tail.push(graph[id]);}
+  return simplifyRoute([...best.connector,...tail]);
  }
  // Rejoin a nearby level part of the existing route; never shortcut stairs.
  function bypassPeople(position,points){

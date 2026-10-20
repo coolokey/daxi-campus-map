@@ -42,6 +42,40 @@ describe('mobile joystick math', () => {
 })
 
 describe('independent pointer controls', () => {
+  it('ignores a second native touch on the same stick without losing its first owner',()=>{
+    const s=setup();const touch=(type:string,id:number,active:number[])=>{const e=new s.w.Event(type,{bubbles:true});Object.assign(e,{changedTouches:[{identifier:id,target:s.move}],touches:active.map(identifier=>({identifier,target:s.move}))});s.move.dispatchEvent(e)};
+    s.pointer(s.move,'pointerdown',11);touch('touchstart',101,[101]);
+    s.pointer(s.move,'pointerdown',22);touch('touchstart',102,[101,102]);touch('touchend',102,[101]);
+    expect(s.w.campusMobileControls.move.y).toBe(1);expect(s.move.dataset.active).toBe('true');
+    touch('touchend',101,[]);expect(s.w.campusMobileControls.move.y).toBe(0);
+  });
+  it('recovers a lost release when the next pointer move reports no buttons held', () => {
+    const s = setup(); s.pointer(s.move, 'pointerdown', 11);
+    const event = new s.w.Event('pointermove', { bubbles: true, cancelable: true });
+    Object.assign(event, {pointerId:11,clientX:56,clientY:16,buttons:0,pointerType:'touch'});
+    s.move.dispatchEvent(event);
+    expect(s.w.campusMobileControls.move).toEqual({x:0,y:0});
+    expect(s.move.dataset.active).toBe('false');
+  });
+  it('observes outside releases even when an overlay stops bubbling', () => {
+    const s=setup();s.pointer(s.move,'pointerdown',11);
+    const overlay=s.w.document.createElement('div');s.w.document.body.append(overlay);
+    overlay.addEventListener('pointerup',(e:any)=>e.stopPropagation());
+    s.pointer(overlay,'pointerup',11);
+    expect(s.w.campusMobileControls.move).toEqual({x:0,y:0});
+  });
+  it('reconciles cancelled native touches without stopping a still-held second finger', () => {
+    const s=setup();s.pointer(s.move,'pointerdown',11);s.pointer(s.look,'pointerdown',22,96,56);
+    const e=new s.w.Event('touchcancel',{bubbles:true});Object.assign(e,{touches:[]});s.w.document.dispatchEvent(e);
+    expect(s.w.campusMobileControls.move).toEqual({x:0,y:0});
+    expect(s.w.campusMobileControls.look).toEqual({x:0,y:0});
+  });
+  it('clears input on pagehide and screen rotation', () => {
+    const s=setup();for(const type of ['pagehide','orientationchange']){
+      s.pointer(s.move,'pointerdown',11);s.w.dispatchEvent(new s.w.Event(type));
+      expect(s.w.campusMobileControls.move).toEqual({x:0,y:0});
+    }
+  });
   it('supports two pointers and keeps the other joystick held after pointerup', () => {
     const s = setup()
     s.pointer(s.move, 'pointerdown', 11)

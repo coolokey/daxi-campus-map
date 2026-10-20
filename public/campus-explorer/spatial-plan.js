@@ -258,6 +258,8 @@ const CampusSpatialPlan = (() => {
     for(let f=1;f<=b.floors;f++){
      fp(f,a,north,left,east);fp(f,south,A,left,right);fp(f,a,A,inner,right);
      co(f,north-2.8,north,left,right);co(f,south,south+2.8,left,east);co(f,a,A,inner,east);
+     // Keep a body-width passage between the library wall and south stair shaft.
+     co(f,south,south+8,east,east+1.4);
      const byId=id=>({...b.rooms.find(r=>r.id===id),kind:'room'});
      if(f===1){
       addCell(byId('food-classroom'),f,a,north-2.8,left,east,'north','u1',north-1.4);
@@ -278,7 +280,7 @@ const CampusSpatialPlan = (() => {
      addCell({kind:'void',label:'停車場・留空'},f,north,south,left,inner,'parking');
     }
     // Stairwells sit at the ends of the courtyard's east circulation strip.
-    addStair('north','停車場東北側梯',a,a+8,east+1,right,-1);addStair('south','停車場東南側梯',south,south+8,east+1,right,-1);
+    addStair('north','停車場東北側梯',a,a+8,east+1,right,-1);addStair('south','停車場東南側梯',south,south+8,east+1.6,right,-1);
     entrances.push({floor:1,inside:world(south+1.4,left+1),outside:world(south+1.4,left-1.2)});
    }
    if(p.shape==='tech'){

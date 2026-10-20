@@ -1,5 +1,5 @@
 /* One header, one scrollable panel, and a reserved walking area on compact screens. */
-@media(max-width:768px),(max-height:500px){
+@media(max-width:768px),(max-height:500px),(hover:none) and (pointer:coarse){
  .field-guide{--mobile-top:calc(8px + env(safe-area-inset-top,0px));--mobile-content-top:calc(64px + env(safe-area-inset-top,0px));--mobile-reserve:calc(272px + env(safe-area-inset-bottom,0px));--mobile-panel-height:calc(100dvh - var(--mobile-content-top) - var(--mobile-reserve));--mobile-left:calc(12px + env(safe-area-inset-left,0px));--mobile-right:calc(12px + env(safe-area-inset-right,0px))}
  .field-guide #guide-toggle,.field-guide.guide-collapsed #guide-toggle{top:var(--mobile-top);left:var(--mobile-left);width:88px;height:44px;padding:0 8px;writing-mode:horizontal-tb;letter-spacing:0;border:1px solid #b9c3ac;box-sizing:border-box}
  .field-guide #guide-tools-toggle{top:var(--mobile-top);right:var(--mobile-right);width:58px;height:44px;min-height:44px;box-sizing:border-box}

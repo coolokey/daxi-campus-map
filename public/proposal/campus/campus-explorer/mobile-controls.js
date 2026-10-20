@@ -25,6 +25,7 @@
     const pointer = stick.pointer;
     // Clear ownership before release: lostpointercapture can fire synchronously.
     stick.pointer = null;
+    stick.touchId = null;
     stick.takenOver = false;
     controls[stick.kind].x = controls[stick.kind].y = 0;
     paint(stick, 0, 0);
@@ -71,11 +72,13 @@
       event.preventDefault();
       event.stopPropagation();
       stick.pointer = event.pointerId;
+      stick.pointerType = event.pointerType;
       try { el.setPointerCapture(event.pointerId); } catch (_) { /* Window release handlers remain available. */ }
       update(stick, event);
     });
     el.addEventListener('pointermove', event => {
       if (event.pointerId !== stick.pointer) return;
+      if (event.buttons === 0) { clear(stick); return; }
       event.preventDefault();
       event.stopPropagation();
       update(stick, event);
@@ -86,8 +89,25 @@
   }
   for (const type of ['pointerup', 'pointercancel']) window.addEventListener(type, event => {
     sticks.forEach(stick => { if (event.pointerId === stick.pointer) clear(stick); });
-  });
+  }, true);
+  // Native touch lifecycle is an independent safety net for Safari interruptions.
+  document.addEventListener('touchstart', event => {
+    for (const touch of event.changedTouches || []) {
+      const stick = sticks.find(s => s.el.contains(touch.target));
+      if (stick && stick.pointer !== null && stick.touchId == null) stick.touchId = touch.identifier;
+    }
+  }, {capture:true, passive:true});
+  for (const type of ['touchend','touchcancel']) document.addEventListener(type, event => {
+    const active = new Set(Array.from(event.touches || [], t => t.identifier));
+    for (const stick of sticks) {
+      if (stick.pointer === null) continue;
+      if ((stick.touchId != null && !active.has(stick.touchId)) ||
+          (!active.size && stick.pointerType !== 'mouse' && stick.pointerType !== 'pen')) clear(stick);
+    }
+  }, {capture:true, passive:true});
   window.addEventListener('blur', reset);
+  window.addEventListener('pagehide', reset);
+  window.addEventListener('orientationchange', reset);
   document.addEventListener('visibilitychange', () => { if (document.hidden) reset(); });
   new MutationObserver(records => {
     const changedMode = records.some(record => record.target === document.body && record.attributeName === 'data-control-mode');

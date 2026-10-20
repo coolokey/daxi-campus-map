@@ -37,6 +37,37 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','spatial-world.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('does not rewrite the unchanged floor badge on every walking frame',async()=>{
+ run(`clearNavigation();resetManualInput();setControlMode('avatar');setFloorFilter('all');avatarGroup.position.set(-10,0,96);document.getElementById('minimap-floor-badge').textContent='1F';window.badgeChanges=0;window.badgeObserver=new MutationObserver(records=>badgeChanges+=records.length);badgeObserver.observe(document.getElementById('minimap-floor-badge'),{childList:true});for(let i=0;i<10;i++)animate();`);
+ await Promise.resolve();expect(run('badgeChanges')).toBe(0);run('badgeObserver.disconnect()');
+});
+it('uses the spatial router without first computing an obsolete graph route',()=>{
+ const calls=run(`(()=>{clearNavigation();avatarGroup.position.set(-10,0,96);const original=findShortestPath;let calls=0;findShortestPath=(...args)=>{calls++;return original(...args)};try{navigateToRoom('academic');return calls}finally{findShortestPath=original;clearNavigation()}})()`);
+ expect(calls).toBe(0);
+});
+it('eases automatic corner turns instead of snapping the following camera',()=>{
+ const angle=run(`(()=>{clearNavigation();resetManualInput();setControlMode('avatar');avatarGroup.position.set(-10,0,96);avatarAngle=0;avatarSpeedMultiplier=1;renderNavigationPath([new THREE.Vector3(-10,.6,96),new THREE.Vector3(10,.6,96)]);isAutoWalking=true;clock.getDelta=()=>.1;animate();const angle=avatarAngle;clearNavigation();return angle})()`);
+ expect(angle).toBeGreaterThan(0);expect(angle).toBeLessThan(1.2);
+});
+it('starts a freshly planned route without computing it twice, and uses a slower guide pace',()=>{
+ const result=run(`(()=>{clearNavigation();resetManualInput();setControlMode('avatar');avatarGroup.position.set(-10,0,96);avatarSpeedMultiplier=1;const original=campusWalkWorld.route;let calls=0;campusWalkWorld.route=(...args)=>{calls++;return original(...args)};navigateToRoom('academic');startAutoWalk();campusWalkWorld.route=original;const before=avatarGroup.position.clone();clock.getDelta=()=>.1;animate();const distance=before.distanceTo(avatarGroup.position);clearNavigation();return{calls,distance}})()`);
+ expect(result.calls).toBe(1);expect(result.distance).toBeGreaterThan(.6);expect(result.distance).toBeLessThan(.8);
+});
+it('can plan and physically execute a route from the middle of every stair flight',()=>{
+ const failures=run(`(()=>{
+  const failures=[];isJumping=false;
+  for(const l of campusWalkWorld.layouts)for(const r of l.ramps){
+   const p=CampusWalkMath.rampPoint(r,.43),path=campusWalkWorld.route(p,ROOMS_DB.academic);
+   if(!path||Math.hypot(path[0].x-p.x,path[0].y-p.y,path[0].z-p.z)>.01){failures.push({building:l.id,stair:r.stairId,floor:r.floor,p});continue;}
+   for(const q of path.slice(1))if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y)||Math.abs(p.y-q.y)>.14||Math.hypot(p.x-q.x,p.z-q.z)>.1){failures.push({building:l.id,stair:r.stairId,floor:r.floor,p,q});break;}
+  }return failures;
+ })()`);
+ expect(failures).toEqual([]);
+},180000);
+it('direction buttons stop on release outside the button and lost pointer capture',()=>{
+ const result=run(`(()=>{setControlMode('avatar');resetManualInput();const b=document.getElementById('dpad-up');const send=(el,type)=>{const e=new Event(type,{bubbles:true,cancelable:true});Object.assign(e,{pointerId:81,button:0,buttons:type==='pointerdown'?1:0});el.dispatchEvent(e)};send(b,'pointerdown');const held=moveInput.forward;send(window,'pointerup');const released=!moveInput.forward;send(b,'pointerdown');send(b,'lostpointercapture');const lost=!moveInput.forward;resetManualInput();return{held,released,lost}})()`);
+ expect(result).toEqual({held:true,released:true,lost:true});
+});
 it('keeps native button Space activation while retaining WASD movement',()=>{
  const result=run(`(()=>{const b=document.createElement('button');document.body.append(b);const original=triggerJump;let jumps=0;triggerJump=()=>jumps++;setControlMode('avatar');const e=new KeyboardEvent('keydown',{key:' ',code:'Space',bubbles:true,cancelable:true});b.dispatchEvent(e);b.dispatchEvent(new KeyboardEvent('keydown',{key:'w',code:'KeyW',bubbles:true,cancelable:true}));const forward=moveInput.forward;b.dispatchEvent(new KeyboardEvent('keyup',{key:'w',bubbles:true}));triggerJump=original;b.remove();return {jumps,cancelled:e.defaultPrevented,forward}})()`);
  expect(result).toEqual({jumps:0,cancelled:false,forward:true});
