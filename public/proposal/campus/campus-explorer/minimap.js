@@ -78,7 +78,7 @@
   for(let i=0;i<6;i++){c.fillStyle=['#76555e','#6f88a0','#536454'][i%3];c.fillRect(66+i*3.7,75.5,1.5,3.2)}
   layers.set(floor,layer);return layer;
  }
- const locate=position=>CampusSpatialUI.locate(position,window.campusWalkWorld.layouts,p=>CampusOutdoorPlan.onStage(p)?{floor:1,label:'操場司令台',buildingId:null}:CampusMinimapMath.locate(p,[]));
+ const locate=position=>CampusSpatialUI.locate(position,window.campusWalkWorld.layouts,p=>CampusOutdoorPlan.onLanBank(p)?{floor:1,label:'蘭亭旁階梯',buildingId:null}:CampusOutdoorPlan.onStage(p)?{floor:1,label:'操場司令台',buildingId:null}:CampusMinimapMath.locate(p,[]));
  let lastTime=0,lastCaption='';
  function render(force=false){
   const now=performance.now();if(!force&&now-lastTime<70)return;lastTime=now;

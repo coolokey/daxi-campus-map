@@ -293,6 +293,11 @@ it('continues the actual auto-walk loop past a stationary person and arrives at 
  expect(result.status).toBe('arrived');expect(result.room).toBe('general');expect(result.blocked).toBeGreaterThan(0);
 },20000);
 
+it('rejoins long simplified segments after a nearby corner without cutting through a wall',()=>{
+ const result=run(`(()=>{const previous=window.campusPeople,start={x:-34,y:0,z:16},target={x:0,y:0,z:14};window.campusPeople={blocksPlayer:()=>false};try{const path=campusWalkWorld.bypassPeople(start,[{x:-34,y:0,z:14},target]);if(!path)return {missing:true};const p={...start},bad=[];for(const q of path)if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y))bad.push(q);return {bad,end:p};}finally{window.campusPeople=previous}})()`);
+ expect(result.missing).not.toBe(true);expect(result.bad).toEqual([]);expect(result.end.x).toBeCloseTo(0);expect(result.end.z).toBeCloseTo(14);
+});
+
 it('walks directly across all three administrative bridges into the matching ninth-grade room without changing floors',()=>{
  const bad=run(`(()=>{const a=campusWalkWorld.layouts.find(l=>l.id==='admin-front'),bad=[];for(const [i,id] of ['907','904','902'].entries()){
   const f=i+1,link=a.externalLinks?.find(j=>j.floor===f);if(!link){bad.push(id+' missing bridge');continue;}

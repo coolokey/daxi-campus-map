@@ -44,6 +44,34 @@
   }
   // The plan-derived outdoor perimeter now owns the visible northern barrier
   // and its collision. Keep the trees, avoiding a second non-solid decor wall.
+  // Aerial reference: retain the existing fence behind a continuous west bank
+  // and low stepped east bank, with the pavilion/pond gap left open.
+  const banks=CampusOutdoorPlan.lanBanks,bankStone=0x8b9387,bankCap=0xb4b9ac;
+  const bankBox=(name,w,h,d,x,y,z,color,solid=true)=>{const m=box(w,h,d,x,y,z,color,solid);m.name=name;m.userData.lanBank=true;return m};
+  const w=banks.wall,wallX=(w.x0+w.x1)/2,wallZ=(w.z0+w.z1)/2;
+  bankBox('lan-left-retaining-wall',w.x1-w.x0,w.height,w.z1-w.z0,wallX,w.height/2,wallZ,bankStone);
+  bankBox('lan-left-wall-cap',w.x1-w.x0+.18,.16,w.z1-w.z0+.24,wallX,w.height+.08,wallZ,bankCap);
+  for(let x=w.x0+.25;x<w.x1;x+=7.8){
+    bankBox('lan-left-wall-buttress',.42,w.height,.28,x,w.height/2,w.z1+.1,0x7a8478);
+    bankBox('lan-left-wall-joint',.035,w.height-.2,.016,x+.65,w.height/2,w.z1+.012,0x697569,false);
+  }
+  const s=banks.steps,run=(s.z1-s.z0)/s.count;
+  for(let i=0;i<s.count;i++){
+    const h=(i+1)*s.rise,z=s.z1-(i+.5)*run;
+    // Treads share their exact elevations with the support/movement model.
+    const tread=bankBox('lan-right-tread-'+(i+1),s.x1-s.x0,h,run,(s.x0+s.x1)/2,h/2,z,i%2?0x929b8f:0x9da598,false);
+    tread.userData.lanBankTread=true;
+    bankBox('lan-right-tread-nosing-'+(i+1),s.x1-s.x0,.018,.055,(s.x0+s.x1)/2,h+.009,z+run/2-.04,bankCap,false);
+  }
+  const backHeight=s.count*s.rise+.9;
+  bankBox('lan-right-bank-back-wall',s.x1-s.x0+.4,backHeight,.4,(s.x0+s.x1)/2,backHeight/2,s.z0-.2,bankStone);
+  bankBox('lan-right-bank-back-cap',s.x1-s.x0+.6,.13,.55,(s.x0+s.x1)/2,backHeight+.065,s.z0-.2,bankCap);
+  // Low side cheeks ascend with the treads; they prevent leaving a high tier
+  // sideways while leaving the full front edge open toward the court apron.
+  for(const x of [s.x0,s.x1])for(let i=0;i<s.count;i++){
+    const h=(i+1)*s.rise+.42;
+    bankBox('lan-right-bank-side',.3,h,run,x,h/2,s.z1-(i+.5)*run,bankStone);
+  }
   // Track-side shade, tree wells and low brick seating from the 2019 series.
   paved(86,2.2,-88,5.4);
   for(let x=-126;x<=-79;x+=7.8){
@@ -78,5 +106,6 @@
     registerWallCollider(bounds.min.x,bounds.max.x,bounds.min.z,bounds.max.z,bounds.min.y,bounds.max.y);
     const collider=WALL_COLLIDERS[WALL_COLLIDERS.length-1];
     collider.landmark=true;collider.source=mesh.name||mesh.geometry.type;
+    if(mesh.userData.lanBank)collider.lanBank=true;
   });
 })();

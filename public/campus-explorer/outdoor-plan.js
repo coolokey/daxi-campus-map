@@ -11,12 +11,23 @@ const CampusOutdoorPlan=(()=>{
  const palette={track:0xc93434,lawn:0x7b9555,court:0xb91c1c,line:0xf2f0e4,stage:0x83b0bf,step:0xd9bf6f,roof:0x9e5148};
  const track={x:-84,z:-25,halfStraight:25,outerRadius:27,innerRadius:18};
  const stage={id:'grandstand',x0:-70,x1:-54,z0:8.1,z1:15.8,height:1.4,center:{x:-62,y:1.4,z:11},foot:{x:-62,y:0,z:4.3},stairs:{x0:-69,x1:-55,z0:4.5,z1:8.1}};
+ // Photo-confirmed silhouettes beside Lan pavilion: a long west wall and
+ // ascending east terraces behind the courts. Dimensions are illustrative.
+ const lanBanks={wall:{x0:-120,x1:-26,z0:-76.1,z1:-74.9,height:2.6},steps:{x0:9,x1:38,z0:-76.2,z1:-69.6,count:12,rise:.18}};
  const inside=(r,p)=>p.x>=r.x0&&p.x<=r.x1&&p.z>=r.z0&&p.z<=r.z1;
+ function lanBankGround(p){const s=lanBanks.steps;if(!inside(s,p))return null;const i=Math.min(s.count-1,Math.floor((s.z1-p.z)/(s.z1-s.z0)*s.count));return (i+1)*s.rise}
+ const onLanBank=p=>{const y=lanBankGround(p);return y!==null&&Math.abs(p.y-y)<.25};
+ function lanBankExit(p){
+  if(!onLanBank(p))return null;
+  const s=lanBanks.steps,end=s.z1+.8,n=Math.ceil((end-p.z)/.1),points=[{x:p.x,y:p.y,z:p.z}];
+  for(let i=1;i<=n;i++){const z=p.z+(end-p.z)*i/n;points.push({x:p.x,y:lanBankGround({x:p.x,z})??0,z})}
+  return points;
+ }
  const stairWidth=p=>14-Math.min(6,Math.max(0,Math.floor((p.z-4.5)/3.6*7)))*.38;
  const onStairs=p=>inside(stage.stairs,p)&&Math.abs(p.x+62)<=stairWidth(p)/2;
- function ground(p){if(inside(stage,p))return stage.height;if(onStairs(p))return (p.z-stage.stairs.z0)/(stage.stairs.z1-stage.stairs.z0)*stage.height;return 0}
+ function ground(p){const bank=lanBankGround(p);if(bank!==null)return bank;if(inside(stage,p))return stage.height;if(onStairs(p))return (p.z-stage.stairs.z0)/(stage.stairs.z1-stage.stairs.z0)*stage.height;return 0}
  const onStage=p=>(inside(stage,p)||onStairs(p))&&Math.abs(p.y-ground(p))<.35;
- const reserved=p=>inside(stage,p)||inside(stage.stairs,p);
+ const reserved=p=>inside(stage,p)||inside(stage.stairs,p)||inside(lanBanks.steps,p);
  const stairsPath=()=>Array.from({length:37},(_,i)=>({x:-62,z:4.5+i*.1,y:stage.height*i/36}));
  function exitPath(p){if(!onStage(p))return null;const points=[{x:p.x,y:p.y,z:p.z},{x:-62,y:ground(p),z:p.z}];if(p.z>8.1)points.push({x:-62,y:1.4,z:8.1});for(const q of stairsPath().reverse())if(q.z<p.z)points.push(q);points.push({...stage.foot});return points}
  // Aerial 05 / 12: red pair in the basketball-side inner bend, green pair in the adjacent strip.
@@ -31,5 +42,5 @@ const CampusOutdoorPlan=(()=>{
  outline[1]=[gate.x-12.2,100];outline[2]=[-65,100];outline[outline.length-2]=[gate.x+12.2,100];
  const perimeter={height:2.9,thickness:.7,outline,segments:outline.slice(1).map(([bx,bz],i)=>({ax:outline[i][0],az:outline[i][1],bx,bz,thickness:.7}))};
  perimeter.contains=(x,z)=>{let inside=false;for(let i=0,j=outline.length-1;i<outline.length;j=i++){const [ax,az]=outline[i],[bx,bz]=outline[j];if((az>z)!==(bz>z)&&x<(bx-ax)*(z-az)/(bz-az)+ax)inside=!inside;}return inside};
- return{entrance,palette,track,stage,courts,outerCourts,volleyball,perimeter,inside,ground,onStage,onStairs,stairWidth,reserved,stairsPath,exitPath};
+ return{entrance,palette,track,stage,lanBanks,lanBankGround,onLanBank,lanBankExit,courts,outerCourts,volleyball,perimeter,inside,ground,onStage,onStairs,stairWidth,reserved,stairsPath,exitPath};
 })();

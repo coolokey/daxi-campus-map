@@ -1,0 +1,22 @@
+# Lan pavilion banks implementation plan
+
+**Goal:** Add the photo-confirmed stepped bank to the pavilion's right and continuous retaining wall to its left, preserving the existing pavilion, pond, running track, courts, buildings and fireworks defaults.
+
+**Architecture:** Keep dimensions and walking support in `public/campus-explorer/outdoor-plan.js`; render the concrete landforms in `landscape-world.js` before collision indexing. Use `spatial-world.js` to connect a person standing on the new raised treads back to the existing navigation graph. Photo left/right corresponds to the existing west/east model arrangement; dimensions and structural purpose are illustrative, not surveyed.
+
+**Approved appearance:** The user accepted the immediately preceding description: right side has multiple visible horizontal steps, left side is a continuous gray wall. Use twelve low treads between the basketball apron and northern perimeter, a long capped wall behind the track on the opposite side, and a gap around the pavilion/pond. Retain the existing perimeter fence behind both.
+
+- [x] Add meaningful failing tests in `tests/lan-pavilion-banks.test.ts`: photo-side placement and visible tiers; wall collision at speed and while jumping; full motor ascent/descent; navigation from raised treads to the pavilion and academic office; unblocked track/court/pavilion approaches.
+- [x] Add shared `lanBanks` geometry data, `lanBankGround`, `onLanBank`, and `lanBankExit` to `outdoor-plan.js`. Integrate ground and reserved-surface checks without changing the stage contract.
+- [x] Render named concrete wall/treads, caps, joints, side cheeks and rear wall in `landscape-world.js`. Register physical walls through existing `campusSolid`; treads use the shared support surface rather than a collider enclosing the whole bank.
+- [x] Add a collision-validated descent connector to `spatial-world.js` for navigation from any supported tread. Include new solid walls in camera obstruction volumes.
+- [x] Run focused landscape, outdoor, movement and fireworks-default tests, plus spatial verification. Build and synchronize canonical/embedded sources. Review before publishing.
+- [ ] Browser-check both entries, bird and ground views, desktop/mobile touch control clearance, actual ascent/descent and route arrival; save screenshots. Publish the existing Pages route, wait for exact-SHA Actions success, compare live source and repeat focused live checks.
+
+Validation commands: `node node_modules/vitest/vitest.mjs run tests/lan-pavilion-banks.test.ts tests/landmark-collision.test.ts tests/outdoor-world.test.ts tests/walking-controls.test.ts tests/firework-defaults.test.ts --maxWorkers=1 --testTimeout=180000`; `node scripts/verify-spatial-world.cjs qa/lan-pavilion-banks-20261020/spatial-world-verification.json`; `npm run build`.
+
+The broader outdoor suite exposed a pre-existing baseline failure when a stationary person blocked a long simplified route segment. Baseline 23ef2c4 and the initial landscape change both stopped at the same position after 30 frames. Fix `bypassPeople` to rejoin six units along the original segment, retain the far endpoint and validate the complete remaining segment with the collision motor. The original full auto-walk regression and an added nearby-corner regression passed after RED/GREEN verification. Independent review reproduced the corner with a stationary person and confirmed collision-free arrival.
+
+Spatial verification passed: 114 room records, 94 physical rooms and 17,197 nodes, with no unreachable rooms, blocked edges, bad stairs, door failures or motor failures. Broad route audit passed 586 cases / 479 origins; added terrace-specific tests cover raised origins. Fireworks source defaults remain protected by the existing hash fixture.
+
+Final pre-publication tests: five suites / 106 tests passed; minimap/spatial UI suites / 12 tests passed (118 total). A raised terrace originally inherited the height-based outdoor `2F` fallback; a failing regression caught this and minimap now identifies it as `蘭亭旁階梯 / 1F`. Buildings and stage location behavior remain unchanged. Independent review confirmed no remaining P1/P2 issues. Browser evidence under `qa/lan-pavilion-banks-20261020/` checks both entries, visible geometry and actual motor ascent/descent, side-wall and camera blocking, native hit targets on mobile, and complete auto-walk arrival. Touch/device coverage uses Edge viewport emulation rather than physical devices.

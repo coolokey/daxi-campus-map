@@ -8,7 +8,7 @@
  colors.light.emissive.setHex(0x8a8467);colors.light.emissiveIntensity=.4;
  const techWindowFrame=material(0x4d8773);
  const safetyMeshMaterial=new THREE.LineBasicMaterial({color:0x7f8880,transparent:true,opacity:.45});
- const surfaces=new Map(),cameraVolumes=WALL_COLLIDERS.filter(c=>c.perimeter).map(c=>({...c}));
+ const surfaces=new Map(),cameraVolumes=WALL_COLLIDERS.filter(c=>c.perimeter||c.lanBank).map(c=>({...c}));
  const cameraVolume=(r,y0,y1)=>cameraVolumes.push({minX:r.x0,maxX:r.x1,minZ:r.z0,maxZ:r.z1,minY:y0,maxY:y1});
  function surfaceMaterials(l){
   if(surfaces.has(l.id))return surfaces.get(l.id);
@@ -546,6 +546,8 @@
  }
  function route(position,room){
   const target=graph[room.node];if(!target)return null;
+  const bankExit=CampusOutdoorPlan.lanBankExit(position);
+  if(bankExit){const tail=route(bankExit.at(-1),room);return tail?[...bankExit,...tail.slice(1)]:null;}
   const gymExit=gymSurfaceExit(position);
   if(gymExit){const rest=route(gymExit.at(-1),room);return rest?[...gymExit,...rest.slice(1)]:null;}
   let stageExit=CampusOutdoorPlan.exitPath(position);
@@ -578,9 +580,14 @@
   const floor=Math.round(position.y/FH)+1,l=layouts.find(l=>insideFloor(l,position.x,position.z,floor));
   for(let i=0;i<Math.min(points.length,40);i++){
    const target=points[i],distance=Math.hypot(target.x-position.x,target.z-position.z);
-   if(Math.abs(target.y-position.y)>.15)break;if(distance<2.5||distance>8)continue;
-   const detour=gridPath(position,target,position.y,l||null,false,true);
-   if(detour)return [...detour,...points.slice(i+1)];
+   if(Math.abs(target.y-position.y)>.15)break;if(distance<2.5)continue;
+   // Simplified routes can have long straight segments. Rejoin six units
+   // along that segment instead of skipping every distant waypoint.
+   const previous=i?points[i-1]:position,segment=Math.hypot(target.x-previous.x,target.z-previous.z),along=Math.min(6,segment)/Math.max(segment,1e-6);
+   const rejoin=distance>8?{x:previous.x+(target.x-previous.x)*along,y:position.y,z:previous.z+(target.z-previous.z)*along}:target;
+   if(rejoin!==target&&!supportedSegment(rejoin,target))continue;
+   const detour=gridPath(position,rejoin,position.y,l||null,false,true);
+   if(detour)return [...detour,...(rejoin!==target?[target]:[]),...points.slice(i+1)];
   }
   return null;
  }
