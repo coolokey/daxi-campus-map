@@ -47,7 +47,10 @@ try{for(const route of (process.env.TOUCH_QA_MAIN_ONLY?['']:['','proposal/campus
  if(!process.env.TOUCH_QA_MOTOR_ONCE||profile===profiles[0]){
   row.motor=await frame.evaluate(()=>{const realRAF=requestAnimationFrame,realRender=renderer.render,realDelta=clock.getDelta;requestAnimationFrame=()=>0;renderer.render=()=>{};clock.getDelta=()=>.05;try{let frames=0;while(isAutoWalking&&frames++<8000)animate();return{frames,status:campusExplorer.getNavigationState().status,end:campusExplorer.getPlayerPosition()}}finally{requestAnimationFrame=realRAF;renderer.render=realRender;clock.getDelta=realDelta}});assert.equal(row.motor.status,'arrived');
  }else{
-  const before=await frame.evaluate(()=>campusExplorer.getPlayerPosition());await page.waitForTimeout(350);
+  const before=await frame.evaluate(()=>campusExplorer.getPlayerPosition());
+  // Software WebGL may not produce a frame inside a fixed 350 ms window.
+  // Require real movement, with a bounded deadline, instead of assuming frame timing.
+  await frame.waitForFunction(p=>campusExplorer.getPlayerPosition().distanceTo(new THREE.Vector3(p.x,p.y,p.z))>.02,before,{timeout:10000});
   row.progress=await frame.evaluate(p=>({distance:campusExplorer.getPlayerPosition().distanceTo(new THREE.Vector3(p.x,p.y,p.z)),status:campusExplorer.getNavigationState().status}),before);assert(row.progress.distance>.02);assert.equal(row.progress.status,'walking');
   await frame.locator('#btn-auto-walk').click();assert.equal(await frame.evaluate(()=>campusExplorer.getNavigationState().status),'paused');
  }

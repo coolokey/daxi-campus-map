@@ -24,3 +24,5 @@ Five frozen fireworks module hashes remain unchanged, including defaults, cues a
 ## Publication acceptance
 
 Publish the existing GitHub Pages route, require successful Actions for the exact commit, compare live canonical/embedded source content, and repeat the browser checks against both published entries. Do not report the release as verified if the browser report has errors or the process exits nonzero.
+
+Initial live 1366x1024 progress sampling failed because no animation frame occurred within the fixed 350 ms test window. A diagnostic recorded zero RAF callbacks, visible document, no person blocking and no people wait; movement then resumed (0.657 model units) while navigation remained walking. Browser verification now waits for observable movement with a bounded 10-second deadline. It still asserts actual movement and walking state, and does not force input or skip collision checks. This adjusts the software-WebGL test timing; no runtime change was needed.
