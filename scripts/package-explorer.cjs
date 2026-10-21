@@ -13,6 +13,7 @@ fs.writeFileSync(path.join(dir,jsName),js);fs.writeFileSync(path.join(dir,cssNam
 for(const m of scripts)html=html.replace(m[0],'');for(const m of styles)html=html.replace(m[0],'');
 html=html.replace('</head>',`<link rel="stylesheet" href="${cssName}"></head>`).replace('</body>',`<script defer src="${jsName}"></script></body>`);
 fs.writeFileSync(path.join(dir,'index.html'),html);
+const buildVersion=hash(html);
 // Start the iframe directly from HTML; load the React entry only for legacy mode.
 const entryFile=path.join(dist,'index.html');let entry=fs.readFileSync(entryFile,'utf8');
 const moduleTag=entry.match(/<script\b[^>]*type="module"[^>]*><\/script>/)[0],moduleUrl=/src="([^"]+)"/.exec(moduleTag)[1];
@@ -23,7 +24,7 @@ ${loadingSource}
 if(new URLSearchParams(location.search).get('viewer')==='legacy'){const s=document.createElement('script');s.type='module';s.src=${JSON.stringify(moduleUrl)};document.head.append(s);return;}
 const p=document.createElement('link');p.rel='preload';p.as='script';p.href='./campus-explorer/${jsName}';document.head.append(p);
 const shell=document.createElement('main'),frame=document.createElement('iframe'),loading=document.createElement('div');
-shell.className='campus-explorer-shell';frame.className='campus-explorer-frame';frame.title='大溪國中立體校園探索';frame.allow='fullscreen';frame.src=explorerUrl('./',location.search);
+shell.className='campus-explorer-shell';frame.className='campus-explorer-frame';frame.title='大溪國中立體校園探索';frame.allow='fullscreen';frame.src=explorerUrl('./',location.search);frame.src+=(frame.src.includes('?')?'&':'?')+'build=${buildVersion}';
 loading.className='campus-loading';loading.setAttribute('role','status');loading.setAttribute('aria-live','polite');
 attachCampusLoading(frame,loading);shell.append(frame,loading);document.getElementById('root').replaceChildren(shell);})();`;
 new vm.Script(boot);
@@ -42,6 +43,11 @@ for(const m of [...embeddedScripts,...embeddedStyles])embeddedHtml=embeddedHtml.
 embeddedHtml=embeddedHtml.replace('</head>',`<link rel="stylesheet" href="${embeddedCssName}"></head>`).replace('</body>',`<script defer src="${embeddedJsName}"></script></body>`);
 fs.writeFileSync(path.join(embedded,'index.html'),embeddedHtml);
 // Rebuild the alternate outer shell too; its bundle hint and routing must not fossilize.
-const nestedEntry=entry.replaceAll('./assets/','../../assets/').replace(`./campus-explorer/${jsName}`,`./campus-explorer/${embeddedJsName}`);
+const embeddedVersion=hash(embeddedHtml);
+const nestedEntry=entry.replaceAll('./assets/','../../assets/').replaceAll(jsName,embeddedJsName).replace('build='+buildVersion,'build='+embeddedVersion);
 fs.writeFileSync(path.join(dist,'proposal/campus/index.html'),nestedEntry);
+const portalFile=path.join(dist,'proposal/app.js'),portalEntry=path.join(dist,'proposal/index.html');
+const portal=fs.readFileSync(portalFile,'utf8').replace('./campus/campus-explorer/index.html','./campus/campus-explorer/index.html?build='+embeddedVersion);
+fs.writeFileSync(portalFile,portal);
+fs.writeFileSync(portalEntry,fs.readFileSync(portalEntry,'utf8').replace(/src="\.\/app\.js(?:\?[^"]*)?"/,'src="./app.js?build='+hash(portal)+'"'));
 console.log('Embedded proposal campus bundled with the same anniversary engine.');
