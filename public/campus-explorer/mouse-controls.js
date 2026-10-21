@@ -18,7 +18,7 @@
   if(mouseTurnMode==='move'){if(e.button===0){paused=!paused;pendingX=pendingY=0;last={x:e.clientX,y:e.clientY};inside=!paused;x=e.clientX;show()}return}
   if(e.button!==(mouseTurnMode==='right'?2:0))return;
   pointer=e.pointerId;last={x:e.clientX,y:e.clientY};inside=true;x=e.clientX;try{canvas.setPointerCapture(e.pointerId)}catch{}
-  if(mouseTurnMode==='lock'&&document.pointerLockElement!==canvas)lock();
+  if(mouseTurnMode==='lock'&&!fallback&&document.pointerLockElement!==canvas)lock();
  });
  canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||!walking()||blocked())return;
   if(document.pointerLockElement===canvas){if(performance.now()-lockedAt>120)add(e.movementX||0,e.movementY||0);return}
@@ -26,12 +26,13 @@
   if(pointer!==e.pointerId||!last)return;add(e.clientX-last.x,e.clientY-last.y);last={x:e.clientX,y:e.clientY};x=e.clientX;
  });
  function release(e){if(e.pointerId!==pointer)return;if(e.type==='pointerup'&&walking()&&!blocked()&&document.pointerLockElement!==canvas&&(pendingX||pendingY))applyManualCameraRotation(pendingX,pendingY);clear(false)}
- for(const type of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(type,release);
+ for(const type of ['pointerup','pointercancel'])window.addEventListener(type,release,true);
+ canvas.addEventListener('lostpointercapture',release);
  canvas.addEventListener('pointerleave',()=>{if(pointer===null){inside=false;last=null;pendingX=pendingY=0}});
  canvas.addEventListener('contextmenu',e=>e.preventDefault());
  canvas.addEventListener('wheel',e=>{if(!walking())return;e.preventDefault();if(!blocked()&&currentMode==='avatar')distance=M.zoom(distance,e.deltaY,e.deltaMode)},{passive:false});
  document.addEventListener('pointerlockchange',()=>{lockedAt=performance.now();clear(false);show()});
- document.addEventListener('pointerlockerror',()=>{fallback=true;clear(false);show()});
+ document.addEventListener('pointerlockerror',()=>{fallback=true;pendingX=pendingY=0;show()});
  window.addEventListener('blur',reset);document.addEventListener('visibilitychange',()=>{if(document.hidden)reset()});
  for(const el of [sliderTurn,sliderSpeed,checkInvertY,selectMouseTurn])el.addEventListener(el.tagName==='SELECT'||el.type==='checkbox'?'change':'input',()=>{if(el===selectMouseTurn){clear();paused=false;fallback=false}save();show()});
  btnResetTurn.addEventListener('click',()=>{clear();paused=false;fallback=false;save();show()});btnResetSpeed.addEventListener('click',save);

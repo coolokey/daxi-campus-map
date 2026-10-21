@@ -39,6 +39,7 @@
  for(const [id,num,title,copy]of stories){const b=document.createElement('button');b.className='guide-story';b.innerHTML='<span>'+num+'</span><div><strong>'+title+'</strong><p>'+copy+'</p></div><b>↗</b>';b.onclick=()=>api.navigateToRoom(id);el('guide-stories').append(b)}
  const toggle=document.createElement('button');toggle.id='guide-toggle';toggle.textContent='校園手冊';toggle.setAttribute('aria-controls','guide-panel');document.body.append(toggle);
  function isCompact(){return innerWidth<=768||innerHeight<=500||matchMedia('(hover:none) and (pointer:coarse)').matches}
+ function showSearch(){if(isCompact())setToolsOpen(true);el('search-input').focus({preventScroll:true});}
  function setPanel(open){if(open&&isCompact())setToolsOpen(false);document.body.classList.toggle('guide-collapsed',!open);toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'收合手冊':'開啟手冊'}
  toggle.onclick=()=>setPanel(document.body.classList.contains('guide-collapsed'));
  setPanel(innerWidth>=1100&&!isCompact());
@@ -106,7 +107,7 @@
  function dismissArrival(search){
   if(api.clearNavigation)api.clearNavigation();else el('btn-cancel-nav').click();
   navigation=null;shownDestination=null;arrival.hidden=true;route.hidden=true;hud.hidden=false;
-  (search?el('search-input'):toggle).focus({preventScroll:true});
+  if(search)showSearch();else toggle.focus({preventScroll:true});
  }
  el('guide-arrival-close').onclick=()=>dismissArrival(false);
  el('guide-arrival-search').onclick=()=>dismissArrival(true);
@@ -115,7 +116,7 @@
  const cover=el('guide-landing');
  let previousFocus=null;
  function openCover(){previousFocus=document.activeElement;api.manualTakeover();if(cover.open)cover.close();cover.showModal();const featured=el('guide-anniversary');(featured&&!featured.disabled?featured:el('guide-start')).focus()}
- function enter(chapter){cover.close();if(chapter==='first')el('btn-walk').click();el('welcome-card').classList.add('hidden');setPanel(chapter==='stories'||chapter==='first'&&innerWidth>=769);if(chapter==='search')el('search-input').focus();else if(chapter==='stories'){el('guide-stories').scrollIntoView({block:'nearest'});el('guide-stories').querySelector('button').focus()}else toggle.focus()}
+ function enter(chapter){cover.close();if(chapter==='first')el('btn-walk').click();el('welcome-card').classList.add('hidden');setPanel(chapter==='stories'||chapter==='first'&&innerWidth>=769);if(chapter==='search')showSearch();else if(chapter==='stories'){el('guide-stories').scrollIntoView({block:'nearest'});el('guide-stories').querySelector('button').focus()}else toggle.focus()}
  el('guide-start').onclick=()=>enter('first');cover.querySelectorAll('[data-chapter]').forEach(b=>b.onclick=()=>enter(b.dataset.chapter));el('guide-cover').onclick=openCover;
  cover.addEventListener('cancel',()=>{if(previousFocus?.isConnected)previousFocus.focus();else toggle.focus()});
  cover.querySelectorAll('button:not(#guide-anniversary)').forEach(button=>button.disabled=false);

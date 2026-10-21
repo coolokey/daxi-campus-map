@@ -47,6 +47,21 @@ it('normalizes wheel units and bounds third-person zoom',()=>{
  expect(M?.zoom).toBeTypeOf('function');expect(M.zoom(6.5,10000,0)).toBe(9);expect(M.zoom(6.5,-10000,0)).toBe(1.8)
  expect(M.zoom(6.5,1,1)).toBeCloseTo(M.zoom(6.5,16,0))
 })
+it('keeps drag fallback usable after pointer lock is denied, and retries only after mode selection',()=>{
+ const f=fixture({mode:'lock',sens:1,speed:1});let attempts=0;
+ f.canvas.requestPointerLock=()=>{attempts++;f.w.document.dispatchEvent(new f.w.Event('pointerlockerror'))};
+ f.pointer('pointerdown');f.pointer('pointermove',520);f.w.campusMouse.update(.016);
+ expect(f.rotations.length).toBeGreaterThan(0);expect(attempts).toBe(1);f.pointer('pointerup',520);
+ const n=f.rotations.length;f.pointer('pointerdown');f.pointer('pointermove',530);f.w.campusMouse.update(.016);
+ expect(f.rotations.length).toBeGreaterThan(n);expect(attempts).toBe(1);f.pointer('pointerup',530);
+ f.w.selectMouseTurn.dispatchEvent(new f.w.Event('change'));f.pointer('pointerdown');expect(attempts).toBe(2);f.dom.window.close();
+})
+it('stops dragging after release outside the canvas when pointer capture is unavailable',()=>{
+ const f=fixture();f.canvas.setPointerCapture=()=>{throw new Error('capture unavailable')};
+ f.pointer('pointerdown',990);f.w.campusMouse.update(.05);expect(f.rotations.length).toBeGreaterThan(0);
+ const release=new f.w.Event('pointerup',{bubbles:true});Object.assign(release,{pointerId:1});f.w.dispatchEvent(release);
+ const n=f.rotations.length;f.w.campusMouse.update(.1);expect(f.rotations.length).toBe(n);f.dom.window.close();
+})
 it('ignores pointer-lock startup jumps and releases lock on Escape',()=>{
  const f=fixture();let locked:any=null,now=0;f.w.performance.now=()=>now
  Object.defineProperty(f.w.document,'pointerLockElement',{get:()=>locked})

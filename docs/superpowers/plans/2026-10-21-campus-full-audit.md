@@ -1,0 +1,19 @@
+# Campus website full audit and repair plan
+
+**Goal:** Find and fix reproducible defects across the existing campus website while preserving approved geometry, user-local custom values, fireworks defaults and published URLs.
+
+**Architecture:** The public React/Vite shell embeds the classic Three.js explorer; `public/campus-explorer` is canonical and build scripts synchronize/bundle `public/proposal/campus/campus-explorer`. Shared outdoor/spatial plans own walking support and route geometry; the explorer owns input, animation and navigation state. Guide, minimap, floor exhibit, local room naming, people, camera and fireworks are separate modules. Use these boundaries; do not replace the site or edit generated bundles.
+
+- [x] Establish the exact local/live revision, clean tracked working tree, available tests and verification scripts. Run the full unit suite with one worker and preserve machine-readable results.
+- [x] Inspect startup/loading recovery, deep links, metadata, navigation state, input lifecycle, stored preferences and editor operations for concrete defects. Check formal and proposal root entrypoints, direct explorer entry and legacy compatibility where exposed.
+- [x] Exercise live/local search, representative room categories/floors, floor switching, room-name persistence, reset/reload, keyboard/mouse/touch modes, interrupted movement, orientation/viewport resizing, panels and modal hit targets.
+- [x] Verify full spatial graph/collisions/doors/stairs, sampled actual-motor routes from room centers, galleries, intermediate stair flights and outdoor/terrace origins. Exercise pause/resume/reselection/manual takeover and dynamic people avoidance.
+- [ ] Verify anniversary launch, countdown/loading failure/retry, playback stop/replay, audio defaults/persistence, reduced motion and WebGL fallback with existing scripts; inspect page/console/HTTP failures and unloaded assets. Keep all protected default values unchanged.
+- [x] Add a failing regression for each confirmed defect, apply the smallest repair, rerun affected tests and request an independent review. Maintain an audit report distinguishing fixed defects, passing coverage and device/performance limitations.
+- [ ] Build/synchronize both entries, complete desktop/tablet/mobile browser checks, publish through the existing Pages route if code changed, wait for exact-SHA Actions success, compare live files and rerun relevant public interactions. Deliver a concise outcome and linked report.
+
+Evidence: `qa/full-audit-20261021/`. Baseline: commit `83ed7e9aa40c99d5e068e0a667b9045153c9c4bd`. Previous checks are context, not a substitute for current evidence. Browser viewport/touch emulation is not physical Safari/iPad verification and software WebGL timings are not hardware FPS benchmarks.
+
+Confirmed repairs: (1) compact cover search did not open its hidden tools drawer, (2) arrival's next-search had the same defect, (3) the outer shell discarded the supported bird-view direct-entry parameter, (4) denied pointer lock repeatedly cleared the advertised drag fallback, and (5) mouse capture failure left drag active after release outside the canvas. All were observed failing before repair. New regressions bring the complete suite from 397 to 403 passing tests across 63 files. Independent review accepted the repairs without remaining P1/P2 findings in reviewed code. All five protected fireworks modules remain byte-equivalent after LF normalization.
+
+Pre-release evidence: six usability cases passed across formal/proposal desktop, phone, tablet and landscape viewports; annual room-name/appearance persistence, input isolation and editor undo were exercised in isolated contexts. Spatial audit passed 114 room records / 94 physical rooms / 17,197 graph nodes, plus 586 route executions from 479 origins. Static delivery inspection found no missing initial HTML/CSS resources in five entry documents.

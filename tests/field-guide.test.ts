@@ -28,6 +28,19 @@ function setup(width = 390, query = '', coarse = false) {
 }
 
 describe('探索手冊導覽卡', () => {
+ it.each([[390,false],[1024,true]])('opens the search drawer from both search entry points at width %s',async(width,coarse)=>{
+  const s=setup(width as number,'',coarse as boolean),d=s.w.document;
+  d.querySelector('[data-chapter="search"]').click();
+  expect(d.body.classList.contains('guide-tools-open')).toBe(true);
+  expect(d.body.classList.contains('guide-collapsed')).toBe(true);
+  expect(d.activeElement.id).toBe('search-input');
+  s.w.campusExplorer.navigateToRoom('library');await s.tick();
+  s.w.dispatchEvent(new s.w.CustomEvent('campus:navigation',{detail:{status:'arrived',destination:'library',points:[],index:0}}));
+  d.getElementById('guide-arrival-search').click();await s.tick();
+  expect(d.body.classList.contains('guide-tools-open')).toBe(true);
+  expect(d.getElementById('guide-route').hidden).toBe(true);
+  expect(d.activeElement.id).toBe('search-input');s.dom.window.close();
+ });
  it('reselecting the same destination closes touch tools on ready, but walking progress does not',async()=>{
   const s=setup(1024,'?view=bird',true),d=s.w.document;
   s.w.campusExplorer.navigateToRoom('academic');await s.tick();d.getElementById('guide-tools-toggle').click();
