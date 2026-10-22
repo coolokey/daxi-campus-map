@@ -104,6 +104,41 @@ describe('探索手冊導覽卡', () => {
 });
 
 describe('固定工具與導航狀態', () => {
+ it('導航期間收起次要工具，取消或關閉抵達卡後恢復探索',async()=>{
+  const s=setup(1280,'?to=academic'),d=s.w.document;
+  s.w.campusExplorer.navigateToRoom('academic');await s.tick();
+  const points=[{x:0,y:.6,z:0},{x:1,y:.6,z:0}];
+  const send=(status:string)=>s.w.dispatchEvent(new s.w.CustomEvent('campus:navigation',{detail:{status,destination:'academic',points,index:0}}));
+  expect(d.body.classList.contains('guide-navigation-active')).toBe(true);
+  expect(d.body.classList.contains('guide-collapsed')).toBe(true);
+  send('ready');d.getElementById('guide-tools-toggle').click();send('ready');
+  expect(d.body.classList.contains('guide-tools-open')).toBe(true);
+  d.getElementById('guide-tools-toggle').click();
+  send('walking');expect(d.body.classList.contains('guide-tools-open')).toBe(false);
+  d.getElementById('guide-tools-toggle').click();send('walking');
+  expect(d.body.classList.contains('guide-tools-open')).toBe(true);
+  for(const status of ['paused','blocked','arrived']){send(status);expect(d.body.classList.contains('guide-navigation-active')).toBe(true);}
+  d.getElementById('guide-arrival-close').click();await s.tick();
+  expect(d.body.classList.contains('guide-navigation-active')).toBe(false);
+  expect(d.body.classList.contains('guide-tools-open')).toBe(false);
+  s.w.campusExplorer.navigateToRoom('academic');await s.tick();send('cancelled');
+  expect(d.body.classList.contains('guide-navigation-active')).toBe(false);
+  s.dom.window.close();
+ });
+ it('目前階段清楚顯示，完整階段可展開且換目的地會收起',async()=>{
+  const s=setup(390,'?to=academic'),d=s.w.document;
+  s.w.campusExplorer.navigateToRoom('academic');await s.tick();
+  const send=(index:number)=>s.w.dispatchEvent(new s.w.CustomEvent('campus:navigation',{detail:{status:'walking',destination:'academic',points:[{x:0,y:.6,z:0},{x:1,y:.6,z:0},{x:1,y:4.2,z:1},{x:4,y:4.2,z:1}],index,remaining:6}}));
+  send(1);expect(d.getElementById('guide-current-step').textContent).toContain('上樓');
+  expect(d.getElementById('guide-stages').open).toBe(false);
+  d.getElementById('guide-stages').open=true;send(2);
+  expect(d.getElementById('guide-stages').open).toBe(true);
+  expect(d.getElementById('guide-current-step').textContent).toContain('教務處');
+  s.w.campusExplorer.navigateToRoom('library');await s.tick();
+  expect(d.getElementById('guide-stages').open).toBe(false);
+  expect(d.getElementById('guide-current-step').textContent).toContain('圖書室');
+  s.dom.window.close();
+ });
  it('手機手冊與工具互相收合，旋轉後關閉面板而不留下遮擋', () => {
   const s=setup(390,'?view=bird'),d=s.w.document;
   d.getElementById('guide-toggle').click();

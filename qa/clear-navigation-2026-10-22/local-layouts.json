@@ -1,0 +1,130 @@
+[
+  {
+    "choicesHidden": true,
+    "height": 568,
+    "horizontalOverflow": false,
+    "rects": {
+      "anniversary-launch": {
+        "h": 44,
+        "w": 104,
+        "x": 138,
+        "y": 8
+      },
+      "btn-auto-walk": {
+        "h": 44,
+        "w": 87.8125,
+        "x": 157.1875,
+        "y": 151.6875
+      },
+      "guide-route": {
+        "h": 201.6875,
+        "w": 296,
+        "x": 12,
+        "y": 64
+      },
+      "guide-tools-toggle": {
+        "h": 44,
+        "w": 58,
+        "x": 250,
+        "y": 8
+      }
+    },
+    "width": 320
+  },
+  {
+    "choicesHidden": true,
+    "height": 844,
+    "horizontalOverflow": false,
+    "rects": {
+      "anniversary-launch": {
+        "h": 44,
+        "w": 104,
+        "x": 208,
+        "y": 8
+      },
+      "btn-auto-walk": {
+        "h": 44,
+        "w": 87.8125,
+        "x": 227.1875,
+        "y": 151.6875
+      },
+      "guide-route": {
+        "h": 201.6875,
+        "w": 340,
+        "x": 38,
+        "y": 64
+      },
+      "guide-tools-toggle": {
+        "h": 44,
+        "w": 58,
+        "x": 320,
+        "y": 8
+      }
+    },
+    "width": 390
+  },
+  {
+    "choicesHidden": true,
+    "height": 932,
+    "horizontalOverflow": false,
+    "rects": {
+      "anniversary-launch": {
+        "h": 44,
+        "w": 104,
+        "x": 248,
+        "y": 8
+      },
+      "btn-auto-walk": {
+        "h": 44,
+        "w": 87.8125,
+        "x": 267.1875,
+        "y": 151.6875
+      },
+      "guide-route": {
+        "h": 201.6875,
+        "w": 340,
+        "x": 78,
+        "y": 64
+      },
+      "guide-tools-toggle": {
+        "h": 44,
+        "w": 58,
+        "x": 360,
+        "y": 8
+      }
+    },
+    "width": 430
+  },
+  {
+    "choicesHidden": true,
+    "height": 390,
+    "horizontalOverflow": false,
+    "rects": {
+      "anniversary-launch": {
+        "h": 44,
+        "w": 104,
+        "x": 662,
+        "y": 8
+      },
+      "btn-auto-walk": {
+        "h": 44,
+        "w": 87.8125,
+        "x": 426.1875,
+        "y": 183.96875
+      },
+      "guide-route": {
+        "h": 238,
+        "w": 340,
+        "x": 252,
+        "y": 64
+      },
+      "guide-tools-toggle": {
+        "h": 44,
+        "w": 58,
+        "x": 774,
+        "y": 8
+      }
+    },
+    "width": 844
+  }
+]

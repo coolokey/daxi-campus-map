@@ -45,6 +45,13 @@
  .field-guide #mode-toast,.field-guide #mouse-look-hint,.field-guide #fe-summary{display:none}
  .field-guide .campus-speech,.field-guide .campus-person-tag{z-index:25}
 }
+@media(max-width:768px),(max-height:500px),(hover:none) and (pointer:coarse){
+ body.field-guide.guide-navigation-active:not(.guide-tools-open){--mobile-reserve:calc(160px + env(safe-area-inset-bottom,0px))}
+ body.field-guide.guide-navigation-active:not(.guide-tools-open) .mobile-stick-group{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+ body.field-guide.guide-navigation-active #guide-route{max-height:min(340px,var(--mobile-panel-height))}
+ body.field-guide.guide-navigation-active #guide-current-step{font-size:13px;margin-bottom:10px;padding:6px 9px}
+}
+@media(max-height:500px) and (orientation:landscape){body.field-guide.guide-navigation-active:not(.guide-tools-open){--mobile-reserve:calc(88px + env(safe-area-inset-bottom,0px))}}
 /* Compact fireworks dock also covers tablets and short landscape screens. */
 .anniversary-quick-controls{display:none}
 .anniversary-quick-controls button{flex:1}

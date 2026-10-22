@@ -16,7 +16,7 @@
  tools.innerHTML='<div id="guide-quick-main"></div><div id="guide-quick-floors"></div>';
  document.body.append(tools);
  const toolsToggle=document.createElement('button');toolsToggle.id='guide-tools-toggle';toolsToggle.type='button';toolsToggle.textContent='工具';toolsToggle.setAttribute('aria-label','開啟導覽工具');toolsToggle.setAttribute('aria-controls','guide-quick-tools');document.body.append(toolsToggle);
- function setToolsOpen(open){if(open&&isCompact())setPanel(false);document.body.classList.toggle('guide-tools-open',open);toolsToggle.setAttribute('aria-expanded',String(open));toolsToggle.setAttribute('aria-label',open?'收合導覽工具':'開啟導覽工具');toolsToggle.textContent=open?'收合':'工具'}
+ function setToolsOpen(open){if(open&&(isCompact()||document.body.classList.contains('guide-navigation-active')))setPanel(false);document.body.classList.toggle('guide-tools-open',open);toolsToggle.setAttribute('aria-expanded',String(open));toolsToggle.setAttribute('aria-label',open?'收合導覽工具':'開啟導覽工具');toolsToggle.textContent=open?'收合':'工具'}
  toolsToggle.onclick=()=>setToolsOpen(!document.body.classList.contains('guide-tools-open'));
  tools.addEventListener('click',event=>{if(document.body.classList.contains('guide-tools-open')&&event.target.closest('#campus-main-controls button,.floor-btn,#fe-list-toggle'))setToolsOpen(false)});
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.body.classList.contains('guide-tools-open')){setToolsOpen(false);toolsToggle.focus();}});
@@ -32,7 +32,9 @@
  route.append(notes);
  const status=document.createElement('p');status.id='guide-route-status';status.setAttribute('role','status');
  const steps=document.createElement('ol');steps.id='guide-route-steps';steps.setAttribute('aria-label','導航階段');
- hud.before(status,steps);
+ const stages=document.createElement('details');stages.id='guide-stages';stages.innerHTML='<summary>完整路線階段</summary>';stages.append(steps);
+ const currentStep=document.createElement('p');currentStep.id='guide-current-step';
+ hud.before(status,currentStep);hud.after(stages);
  const arrival=document.createElement('section');arrival.id='guide-arrival';arrival.hidden=true;
  arrival.innerHTML='<div class="guide-arrival-heading"><span>已抵達</span><button id="guide-arrival-close" aria-label="關閉抵達資訊">×</button></div><h2 id="guide-arrival-title"></h2><p id="guide-arrival-meta"></p><p>已到達導覽模型中的目的地。請依現場門牌確認入口。</p><button id="guide-arrival-search">繼續找下一站 ↗</button>';
  notes.before(arrival);
@@ -41,8 +43,8 @@
  for(const [id,num,title,copy]of stories){const b=document.createElement('button');b.className='guide-story';b.innerHTML='<span>'+num+'</span><div><strong>'+title+'</strong><p>'+copy+'</p></div><b>↗</b>';b.onclick=()=>api.navigateToRoom(id);el('guide-stories').append(b)}
  const toggle=document.createElement('button');toggle.id='guide-toggle';toggle.textContent='校園手冊';toggle.setAttribute('aria-controls','guide-panel');document.body.append(toggle);
  function isCompact(){return innerWidth<=768||innerHeight<=500||matchMedia('(hover:none) and (pointer:coarse)').matches}
- function showSearch(){if(isCompact())setToolsOpen(true);el('search-input').focus({preventScroll:true});}
- function setPanel(open){if(open&&isCompact())setToolsOpen(false);document.body.classList.toggle('guide-collapsed',!open);toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'收合手冊':'開啟手冊'}
+ function showSearch(){if(isCompact()||document.body.classList.contains('guide-navigation-active'))setToolsOpen(true);el('search-input').focus({preventScroll:true});}
+ function setPanel(open){if(open&&(isCompact()||document.body.classList.contains('guide-navigation-active')))setToolsOpen(false);document.body.classList.toggle('guide-collapsed',!open);toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'收合手冊':'開啟手冊'}
  toggle.onclick=()=>setPanel(document.body.classList.contains('guide-collapsed'));
  setPanel(innerWidth>=1100&&!isCompact());
  let compactBefore=isCompact(),landscapeBefore=innerWidth>innerHeight;
@@ -55,15 +57,18 @@
   if(isCompact()&&event.target.closest('#anniversary-launch,.anniversary-cover-entry')){setPanel(false);setToolsOpen(false)}
  });
  let shownDestination=null,navigation=null,plan=[],lastPoints=null;
+ function setNavigationActive(active){const previous=document.body.classList.contains('guide-navigation-active');document.body.classList.toggle('guide-navigation-active',active);if(!active&&previous)setToolsOpen(false);}
  const setText=(node,text)=>{if(node.textContent!==text)node.textContent=text;};
  function displayNavigation(state){
-  const previousStatus=navigation?.status;
+  const previousStatus=navigation?.status,previousDestination=navigation?.destination,previousPoints=navigation?.points;
   navigation=state;
-  if(state.status==='cancelled'){route.hidden=true;arrival.hidden=true;shownDestination=null;return;}
+  if(state.status==='cancelled'){route.hidden=true;arrival.hidden=true;shownDestination=null;setNavigationActive(false);return;}
   const room=api.rooms[state.destination];if(!room)return;
-  if(state.status==='ready'&&isCompact()){setToolsOpen(false);setPanel(false);}
+  setNavigationActive(true);
+  if(state.status==='ready'&&(previousStatus!=='ready'||previousDestination!==state.destination||previousPoints!==state.points)){setToolsOpen(false);setPanel(false);}
   route.hidden=false;route.dataset.status=state.status;
   arrival.hidden=state.status!=='arrived';hud.hidden=state.status==='arrived';
+  stages.hidden=state.status==='arrived';currentStep.hidden=state.status==='arrived';
   const labels={ready:'路線已備妥，選擇自動帶路或沿路線走訪。',walking:'自動帶路中 · 手動移動或轉頭可接管',paused:'帶路已暫停 · 可手動探索，或按繼續帶路',blocked:'路線受阻 · 請移到走廊或入口，再按繼續帶路',arrived:'已抵達目的地'};
   setText(status,labels[state.status]||labels.ready);
   if(lastPoints!==state.points||shownDestination!==state.destination){
@@ -71,9 +76,11 @@
    steps.replaceChildren(...plan.map(s=>{const li=document.createElement('li');li.textContent=s.label;return li;}));
   }
   const current=window.CampusNavigationGuide.active(plan,state.index||0,state.status);
+  setText(currentStep,plan[current]?.label||room.name);
   [...steps.children].forEach((li,i)=>{const value=i===current?'step':null;if(li.getAttribute('aria-current')!==value){if(value)li.setAttribute('aria-current',value);else li.removeAttribute('aria-current');}li.classList.toggle('complete',i<current);});
   if(state.remaining!=null&&state.status!=='arrived')setText(el('hud-dist-val'),state.status==='blocked'?'—':String(Math.round(state.remaining)));
   if(state.status==='walking'&&previousStatus!=='walking')setPanel(false);
+  if(state.status==='arrived'&&previousStatus!=='arrived')setToolsOpen(false);
   syncDestination();
   if(state.status==='arrived'){
    setText(el('guide-arrival-title'),room.name);
@@ -83,6 +90,7 @@
  }
  function syncDestination(){
   const visible=hud.classList.contains('visible')||navigation?.status==='arrived';route.hidden=!visible;
+  setNavigationActive(visible);
   if(!visible){shownDestination=null;return;}
   const id=navigation?.destination||hud.dataset.destination,room=api.rooms[id];
   if(!room)return;
@@ -99,7 +107,7 @@
   notes.querySelector('summary').textContent=photo?'目的地筆記與實景':'目的地筆記';
   if(photo){el('guide-place-photo').src='photos/'+photo[0]+'.jpg';el('guide-place-photo').alt=photo[1];el('guide-place-caption').textContent=photo[2];}
   else{el('guide-place-photo').removeAttribute('src');el('guide-place-caption').textContent='';}
-  if(changed){notes.open=false;if(isCompact()){setToolsOpen(false);setPanel(false);el('btn-auto-walk').focus({preventScroll:true});}}
+  if(changed){notes.open=false;stages.open=false;if(isCompact()){setToolsOpen(false);setPanel(false);el('btn-auto-walk').focus({preventScroll:true});}}
  }
  window.addEventListener('campus:navigation',event=>displayNavigation(event.detail));
  new MutationObserver(()=>{
@@ -109,6 +117,7 @@
  function dismissArrival(search){
   if(api.clearNavigation)api.clearNavigation();else el('btn-cancel-nav').click();
   navigation=null;shownDestination=null;arrival.hidden=true;route.hidden=true;hud.hidden=false;
+  setNavigationActive(false);
   if(search)showSearch();else toggle.focus({preventScroll:true});
  }
  el('guide-arrival-close').onclick=()=>dismissArrival(false);

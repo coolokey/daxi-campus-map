@@ -36,5 +36,22 @@ window.CampusNavigationGuide=(()=>{
   if(status==='arrived')return steps.length-1;
   return Math.max(0,steps.slice(0,-1).findIndex(s=>index<s.end));
  }
- return {steps,active};
+ // x/y are the physical anchor projected into viewport pixels; labels are centred
+ // on this anchor, never moved to invent a clearer but incorrect room position.
+ function selectWalkingLabels(candidates,{floor,width,height,mobile=false,destinationId=null,reserved=[]}){
+  if(![floor,width,height].every(Number.isFinite)||width<=0||height<=0)return [];
+  const overlaps=(a,b)=>a.left<b.right+6&&a.right>b.left-6&&a.top<b.bottom+6&&a.bottom>b.top-6;
+  const boxes=reserved.filter(b=>b&&[b.left,b.top,b.right,b.bottom].every(Number.isFinite)&&b.right>b.left&&b.bottom>b.top).slice();
+  const eligible=candidates.filter(c=>c&&c.floor===floor&&[c.distance,c.x,c.y,c.z,c.width,c.height].every(Number.isFinite)&&c.distance>=0&&c.distance<=(c.id===destinationId?65:24)&&c.z>=-1&&c.z<=1&&c.width>0&&c.height>0)
+   .sort((a,b)=>Number(b.id===destinationId)-Number(a.id===destinationId)||a.distance-b.distance||String(a.id).localeCompare(String(b.id)));
+  const selected=[];
+  for(const c of eligible){
+   const box={left:c.x-c.width/2,right:c.x+c.width/2,top:c.y-c.height/2,bottom:c.y+c.height/2};
+   if(box.left<8||box.top<8||box.right>width-8||box.bottom>height-8||boxes.some(b=>overlaps(box,b)))continue;
+   selected.push(c);boxes.push(box);
+   if(selected.length>=(mobile?3:5))break;
+  }
+  return selected;
+ }
+ return {steps,active,selectWalkingLabels};
 })();

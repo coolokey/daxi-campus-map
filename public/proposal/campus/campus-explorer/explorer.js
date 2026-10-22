@@ -2036,12 +2036,12 @@
         };
         labelsContainer.appendChild(badgeDiv);
 
-        roomBadgeElements.push({
+        roomBadgeElements.push(Object.defineProperty({
           element: badgeDiv,
           buildingId: cfg.id,
           floor: r.floor,
           nodeId: r.node
-        });
+        },'roomId',{value:r.id,enumerable:true}));
       });
 
       const labelDiv = document.createElement("div");
@@ -3391,6 +3391,54 @@
     const clock = new THREE.Clock();
     const avatarNametag = document.getElementById("avatar-nametag");
 
+    let walkingLabelLayoutTime=-Infinity;
+    let roomBadgeMode=null;
+    // Read only visible UI rectangles once per walking layout. The mobile root
+    // spans the viewport, so reserve its actual sticks rather than its wrapper.
+    function walkingLabelReservedBounds(){
+      const reserved=[];
+      for(const el of document.querySelectorAll('#guide-route, #guide-quick-tools, #guide-tools-toggle, #guide-panel, #guide-toggle, #minimap-card, #avatar-quick-choices, #avatar-bottom-controls, #guide-movement-settings, .mobile-stick-group, #dpad-controller, #anniversary-launch, #scene-toolbar')){
+        const style=getComputedStyle(el);
+        if(style.display==='none'||style.visibility==='hidden'||Number(style.opacity)===0||!el.getClientRects().length)continue;
+        const r=el.getBoundingClientRect();
+        if(r.width>0&&r.height>0)reserved.push({left:r.left,top:r.top,right:r.right,bottom:r.bottom});
+      }
+      return reserved;
+    }
+    function updateWalkingRoomBadges(now){
+      if(now-walkingLabelLayoutTime<80)return;
+      walkingLabelLayoutTime=now;
+      const select=window.CampusNavigationGuide?.selectWalkingLabels;
+      const candidates=[];
+      if(select&&avatarGroup&&!window.campusFloorExhibit?.active){
+        for(const item of roomBadgeElements){
+          // Room layout corrections replace canonical nodes after scene setup.
+          const room=ROOMS_DB[item.roomId],node=room&&NAV_NODES[room.node];
+          if(!node)continue;
+          const distance=Math.hypot(node.x-avatarGroup.position.x,node.z-avatarGroup.position.z);
+          if(distance>(item.roomId===activeNavigationId?65:24))continue;
+          const wp=new THREE.Vector3(node.x,(node.y||0)+2.2,node.z).project(camera);
+          // Conservative text sizing avoids forced measurements of hidden badges.
+          const signature=item.element.textContent;
+          if(item.sizeSignature!==signature){
+            item.sizeSignature=signature;
+            item.walkingWidth=Math.max(78,Array.from(signature.replace(/\s/g,'')).length*13+36);
+          }
+          candidates.push({id:item.roomId,floor:room.floor,distance,x:(wp.x*.5+.5)*window.innerWidth,y:(-wp.y*.5+.5)*window.innerHeight,z:wp.z,width:item.walkingWidth,height:38,item});
+        }
+      }
+      const feetY=avatarGroup?(isJumping?jumpBaseY:avatarGroup.position.y):0;
+      // Match the existing player-floor indication, independent of cutaway filters.
+      const floor=feetY>=10?4:feetY>=6.5?3:feetY>=2.5?2:1;
+      const selected=select?select(candidates,{floor,width:window.innerWidth,height:window.innerHeight,mobile:window.innerWidth<=768,destinationId:activeNavigationId,reserved:walkingLabelReservedBounds()}):[];
+      const visible=new Map(selected.map(c=>[c.id,c]));
+      for(const item of roomBadgeElements){
+        const candidate=visible.get(item.roomId);
+        item.element.style.display=candidate?'flex':'none';
+        item.element.dataset.walkingSelected=candidate?'true':'false';
+        if(candidate){item.element.style.left=`${candidate.x}px`;item.element.style.top=`${candidate.y}px`;}
+      }
+    }
     function animate() {
       requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.1);
@@ -3575,8 +3623,12 @@
       // 3D Floating Room Badges Position Updating
       const camDist = camera.position.distanceTo(controls.target);
 
+      if(roomBadgeMode!==currentMode){walkingLabelLayoutTime=-Infinity;roomBadgeMode=currentMode;}
+      if(currentMode!=='bird')updateWalkingRoomBadges(performance.now());
+      else{
       let shownRoomBadges=0;
       roomBadgeElements.forEach(item => {
+        delete item.element.dataset.walkingSelected;
         const node=NAV_NODES[item.nodeId];
         const wp=node?new THREE.Vector3(node.x,(node.y||0)+2.2,node.z).project(camera):null;
         const floor=currentFloorFilter==='all'?1:Number(currentFloorFilter);
@@ -3590,6 +3642,7 @@
           item.element.style.top=`${(-wp.y*.5+.5)*window.innerHeight}px`;
         }
       });
+      }
 
       if (navTargetPoint && navTargetPoint.visible) {
         navTargetPoint.position.y = navTargetPoint.userData.baseY + Math.sin(clock.elapsedTime * 4) * 0.25;
