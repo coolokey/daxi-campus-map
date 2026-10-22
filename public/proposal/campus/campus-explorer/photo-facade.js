@@ -139,7 +139,7 @@
   {name:'admin-right-flowerbed',min:b.x+5.5,max:b.x+b.width/2+1}];
  for(const bed of beds){
   const center=(bed.min+bed.max)/2,width=bed.max-bed.min;
-  box(garden,width,.16,3.9,center,.08,frontZ+3.55,0x5b703f).name=bed.name;
+  const soil=box(garden,width,.16,3.9,center,.08,frontZ+3.55,0x5b703f);soil.name=bed.name;soil.userData.campusPlanting=true;
   // Low edging encloses each planting strip without crossing either approach.
   for(const z of [frontZ+1.6,frontZ+5.5])box(garden,width,.14,.12,center,.07,z,0x9c927e);
   for(const x of [bed.min,bed.max])box(garden,.12,.14,3.9,x,.07,frontZ+3.55,0x9c927e);

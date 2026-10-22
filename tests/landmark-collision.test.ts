@@ -14,6 +14,28 @@ const evaluate=(code:string)=>runInContext(code,context,{timeout:180000});
 afterAll(()=>dom.window.close());
 
 describe('景觀實體碰撞與通行',{timeout:60000},()=>{
+ it('校門到學務處的實際導航與人物行走均避開行政大樓花圃',()=>{
+  const result=evaluate(`(()=>{
+   scene.updateMatrixWorld(true);const beds=['admin-left-flowerbed','admin-right-flowerbed'].map(name=>({name,bounds:new THREE.Box3().setFromObject(scene.getObjectByName(name))}));
+   const start={x:NAV_NODES.gate.x,y:0,z:NAV_NODES.gate.z},path=campusWalkWorld.route(start,ROOMS_DB['student-affairs']);
+   if(!path)return {path:null,crossings:[],blocked:false};const p={...start},crossings=[];let blocked=false;
+   for(let j=1;j<path.length;j++){const a=path[j-1],b=path[j],n=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/.1));
+    for(let i=1;i<=n;i++){const t=i/n,q={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z:a.z+(b.z-a.z)*t};
+     for(const bed of beds)if(q.y<.3&&q.x+.42>bed.bounds.min.x&&q.x-.42<bed.bounds.max.x&&q.z+.42>bed.bounds.min.z&&q.z-.42<bed.bounds.max.z&&!crossings.includes(bed.name))crossings.push(bed.name);
+     blocked=moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y,true)||blocked;
+    }
+   }return {path,crossings,blocked,end:p,target:path.at(-1)};
+  })()`);
+  expect(result.path).not.toBeNull();expect(result.crossings).toEqual([]);expect(result.blocked).toBe(false);
+  expect(result.end.x).toBeCloseTo(result.target.x);expect(result.end.z).toBeCloseTo(result.target.z);
+ });
+ it('低矮花圃與前庭種植帶會阻擋地面人物，而入口鋪面保留通行',()=>{
+  const result=evaluate(`(()=>{scene.updateMatrixWorld(true);return ['admin-left-flowerbed','admin-right-flowerbed','forecourt-tree-bed-soil','south-wing-tree-strip-soil'].map(name=>{
+   const b=new THREE.Box3().setFromObject(scene.getObjectByName(name)),x=(b.min.x+b.max.x)/2,z=b.min.z+.55,p={x,y:0,z:b.min.z-1};
+   const blocked=moveAvatarWithCollision(p,0,1.8,0,true);return {name,hit:checkWallCollision(x,0,z),blocked,p,minZ:b.min.z};
+  })})()`);
+  for(const r of result){expect(r.hit,r.name).toBe(true);expect(r.blocked,r.name).toBe(true);expect(r.p.z,r.name).toBeLessThanOrEqual(r.minZ-.42+1e-6);}
+ });
  it('石柱四向、斜向及高速移動不可穿越，跳躍也不可穿入石柱',()=>{
   const results=evaluate(`(()=>{return [
    [-36,0,32,0,-7],[-36,0,25,0,7],[-40,0,28.5,8,0],[-32,0,28.5,-8,0],[-40,0,32,8,-7],[-36,1,32,0,-7]

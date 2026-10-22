@@ -34,9 +34,9 @@
     for(const side of [-1,1]){const line=box(`forecourt-stall-${id}-side-${side}`,width,.015,.1,cross,.077,27-inward+side*depth/2,0xf0edde);parking.add(line);}
   }
   const bed=plan.planting,bedWidth=bed.x1-bed.x0,bedDepth=bed.z1-bed.z0,bedX=(bed.x0+bed.x1)/2,bedZ=(bed.z0+bed.z1)/2;
-  box('forecourt-tree-bed-soil',bedWidth,.025,bedDepth,bedX,.055,bedZ,0x8b7257);
+  box('forecourt-tree-bed-soil',bedWidth,.025,bedDepth,bedX,.055,bedZ,0x8b7257).userData.campusPlanting=true;
   box('forecourt-tree-bed-grass',bedWidth-.65,.018,bedDepth-.65,bedX,.079,bedZ,0x8a9c66);
-  box('south-wing-tree-strip-soil',44,.025,4,18,.055,70,0x8b7257);
+  box('south-wing-tree-strip-soil',44,.025,4,18,.055,70,0x8b7257).userData.campusPlanting=true;
   box('south-wing-tree-strip-grass',43.4,.018,3.4,18,.079,70,0x8a9c66);
   const trees=[];
   function plant(x,z,zone){

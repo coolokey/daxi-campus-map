@@ -101,11 +101,16 @@
     if(mesh.isMesh&&/^(stone-|front-|bust-|hedge-stone-edge-|trimmed-shrub-)/.test(mesh.name))mesh.userData.campusSolid=true;
   });
   scene.traverse(mesh=>{
-    if(!mesh.isMesh||!mesh.userData.campusSolid)return;
+    if(!mesh.isMesh||(!mesh.userData.campusSolid&&!mesh.userData.campusPlanting))return;
     const bounds=new THREE.Box3().setFromObject(mesh);
-    registerWallCollider(bounds.min.x,bounds.max.x,bounds.min.z,bounds.max.z,bounds.min.y,bounds.max.y);
+    // Planting is not paving: low soil meshes otherwise sit below the motor's
+    // 0.2 foot tolerance. Use their exact footprint with a low ground barrier,
+    // before building all player, people and navigation collision indices.
+    const top=mesh.userData.campusPlanting?Math.max(bounds.max.y,bounds.min.y+.35):bounds.max.y;
+    registerWallCollider(bounds.min.x,bounds.max.x,bounds.min.z,bounds.max.z,bounds.min.y,top);
     const collider=WALL_COLLIDERS[WALL_COLLIDERS.length-1];
     collider.landmark=true;collider.source=mesh.name||mesh.geometry.type;
+    if(mesh.userData.campusPlanting)collider.planting=true;
     if(mesh.userData.lanBank)collider.lanBank=true;
   });
 })();
