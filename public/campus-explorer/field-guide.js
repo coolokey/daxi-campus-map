@@ -3,10 +3,12 @@
  const api=window.campusExplorer;if(!api)return;
  const el=id=>document.getElementById(id);
  document.body.classList.add('field-guide');
+ if(new URLSearchParams(location.search).get('gatePreview')==='1')document.body.classList.add('gate-preview');
  el('welcome-card').classList.add('hidden');
  const panel=document.createElement('aside');panel.id='guide-panel';panel.setAttribute('aria-label','大溪校園手冊');
  panel.innerHTML='<div class="guide-mast"><span class="guide-seal">溪</span><div><small>DAXI FIELD GUIDE</small><h1>校園探索手冊</h1></div></div><p class="guide-intro">沿著一條路，認識一座校園。</p><button id="guide-cover" class="guide-link">← 回到手冊首頁</button><div id="guide-search"></div><section class="guide-section"><h2>探索方式</h2><div id="guide-controls"></div></section><section class="guide-section"><h2>樓層透視</h2><div id="guide-floors"></div></section><div id="guide-route"></div><section class="guide-section" id="guide-stories"><h2>校園散步提案</h2><p>選一站，看看校園裡不同的日常。</p></section><details class="guide-section"><summary>視角與工具</summary><div id="guide-tools"></div></details><footer>桃園市立大溪國中 · 115 學年度<br>位置依校園平面圖校對，模型為導覽示意。</footer>';
  document.body.append(panel);
+ panel.querySelector('.guide-intro').insertAdjacentHTML('afterend','<a class="guide-gate-link" href="gate.html">我在校門口，找處室 →</a>');
  el('guide-search').append(document.querySelector('.search-box'));
  el('guide-controls').append(el('campus-main-controls'));
  el('guide-floors').append(el('floor-selector'));

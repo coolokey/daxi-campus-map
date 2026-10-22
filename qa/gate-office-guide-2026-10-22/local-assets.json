@@ -1,0 +1,83 @@
+{
+  "base": "http://127.0.0.1:5189/",
+  "checkedAt": "2026-10-22T02:33:52.555Z",
+  "pages": [
+    {
+      "url": "http://127.0.0.1:5189/campus-explorer/gate.html",
+      "status": 200,
+      "assets": [
+        {
+          "url": "http://127.0.0.1:5189/campus-explorer/gate-guide.css?build=e8ea8b213e42",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/campus-explorer/campus-data.js?build=bc9232759f19",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/campus-explorer/spatial-plan-data.js?build=ddb44aea2620",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/campus-explorer/room-layout-model.js?build=a54194bf479f",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/campus-explorer/gate-guide-model.js?build=0608f7e8bcd5",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/campus-explorer/gate-guide.js?build=7ba33bd12f6e",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/campus-explorer/reference-aerial.webp",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/campus-explorer/photos/admin-front.jpg",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:5189/proposal/campus/campus-explorer/gate.html",
+      "status": 200,
+      "assets": [
+        {
+          "url": "http://127.0.0.1:5189/proposal/campus/campus-explorer/gate-guide.css?build=e8ea8b213e42",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/proposal/campus/campus-explorer/campus-data.js?build=bc9232759f19",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/proposal/campus/campus-explorer/spatial-plan-data.js?build=ddb44aea2620",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/proposal/campus/campus-explorer/room-layout-model.js?build=a54194bf479f",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/proposal/campus/campus-explorer/gate-guide-model.js?build=0608f7e8bcd5",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/proposal/campus/campus-explorer/gate-guide.js?build=7ba33bd12f6e",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/proposal/campus/campus-explorer/reference-aerial.webp",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5189/proposal/campus/campus-explorer/photos/admin-front.jpg",
+          "status": 200
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

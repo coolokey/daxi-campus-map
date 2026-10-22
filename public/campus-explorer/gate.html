@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <meta name="theme-color" content="#194c40">
+ <meta name="campus-build" content="source">
+ <meta name="description" content="已到大溪國中校門口？搜尋處室，查看建築、樓層與分段地標提示；不需等待 3D 載入。">
+ <title>校門口找處室｜大溪國中校園手冊</title>
+ <link rel="icon" href="data:,">
+ <link rel="stylesheet" href="gate-guide.css">
+ <script defer src="campus-data.js"></script>
+ <script defer src="spatial-plan-data.js"></script>
+ <script defer src="room-layout-model.js"></script>
+ <script defer src="gate-guide-model.js"></script>
+ <script defer src="gate-guide.js"></script>
+</head>
+<body>
+ <header class="gate-header"><a class="gate-brand" href="../index.html"><span class="gate-seal" aria-hidden="true">溪</span><span>大溪國中<small>校園探索手冊</small></span></a><a class="gate-back" href="../index.html">校園首頁 ↗</a></header>
+ <main id="gate-app">
+  <div class="gate-location"><span class="gate-dot" aria-hidden="true"></span> 參考起點：學校正門<span>115 學年度</span></div>
+  <p class="gate-disclaimer">這是從正門出發的參考指引，不會定位手機。請依現場標示行走。</p>
+  <p id="gate-feedback" role="status" aria-live="polite"></p>
+  <section id="gate-select" aria-labelledby="gate-title">
+   <p class="gate-eyebrow">從校門，找到下一站</p>
+   <h1 id="gate-title">您在校門口，<br>想找哪個處室？</h1>
+   <p class="gate-intro">先選目的地，再看建築、樓層與門口提示。</p>
+   <label class="gate-search-label" for="gate-search">搜尋處室或教室</label>
+   <div class="gate-search-wrap"><span aria-hidden="true">⌕</span><input id="gate-search" type="search" placeholder="例如：教務處、健康中心、701" autocomplete="off" enterkeyhint="search"><button id="gate-clear" type="button" aria-label="清除搜尋" hidden>×</button></div>
+   <section class="gate-result-section" aria-labelledby="gate-results-heading"><div class="gate-section-heading"><h2 id="gate-results-heading">常用處室</h2><span id="gate-count" role="status" aria-live="polite"></span></div><div id="gate-results" class="gate-room-grid"></div></section>
+   <aside class="gate-help"><strong>不確定該找誰？</strong><p>辦理註冊、轉學或其他業務，若不確定承辦處室，請先向校門口警衛室詢問。</p></aside>
+  </section>
+  <section id="gate-confirm" aria-labelledby="gate-destination" hidden>
+   <button id="gate-change" class="gate-text-button" type="button">← 重新選處室</button>
+   <p class="gate-eyebrow">確認您的目的地</p><h1 id="gate-destination" tabindex="-1"></h1>
+   <p id="gate-place" class="gate-place"></p><p id="gate-canonical" class="gate-caption" hidden></p>
+   <div class="gate-start-note"><span aria-hidden="true">01</span><div><strong>從正門開始</strong><p>進度由您按「下一步」更新。3D 人物移動不代表您的實際位置。</p></div></div>
+   <p id="gate-confirm-notice" class="gate-evidence"></p>
+   <button id="gate-start" class="gate-primary" type="button">從校門開始帶路 <span aria-hidden="true">→</span></button>
+  </section>
+  <section id="gate-route" aria-labelledby="gate-route-name" hidden>
+   <div class="gate-route-top"><span class="gate-eyebrow">您的目的地</span><button id="gate-reselect" class="gate-text-button" type="button">更換處室</button></div>
+   <h1 id="gate-route-name"></h1><p id="gate-route-place" class="gate-place"></p>
+   <div id="gate-active">
+    <div class="gate-progress-row"><span id="gate-progress" aria-live="polite"></span><span>由您手動確認</span></div><progress id="gate-progress-bar" max="1" value="0" aria-label="參考指引進度"></progress>
+    <article class="gate-step"><span id="gate-step-number" class="gate-step-number" aria-hidden="true"></span><h2 id="gate-step-title" tabindex="-1"></h2><p id="gate-step-body"></p></article>
+    <p id="gate-route-notice" class="gate-evidence"></p>
+    <div class="gate-actions"><button id="gate-prev" class="gate-secondary" type="button">上一步</button><button id="gate-next" class="gate-primary" type="button">下一步 →</button><button id="gate-finish" class="gate-primary" type="button" hidden>我已核對現場門牌</button></div>
+   </div>
+   <section id="gate-done" class="gate-complete" aria-labelledby="gate-done-title" hidden><span class="gate-complete-mark" aria-hidden="true">✓</span><h2 id="gate-done-title" tabindex="-1">目的地已確認</h2><p>謝謝您來到大溪國中。若有業務問題，請洽現場承辦人員。</p><button id="gate-reset" class="gate-primary" type="button">找下一個處室 →</button></section>
+   <details id="gate-overview" class="gate-details"><summary>查看完整參考指引</summary><ol id="gate-all-steps"></ol><p id="gate-source" class="gate-caption"></p></details>
+   <details class="gate-details"><summary>對照校園空拍圖</summary><figure><img src="reference-aerial.webp" loading="lazy" width="1280" height="720" alt="大溪國中校園空拍外觀；非即時定位圖"><figcaption>校園外觀對照，請配合現場建築標示辨識。此圖未標示您的位置。</figcaption></figure></details>
+   <figure id="gate-photo" hidden><img id="gate-photo-image" loading="lazy" alt=""><figcaption id="gate-photo-caption"></figcaption></figure>
+   <details id="gate-preview" class="gate-details"><summary>展開 3D 路線預覽</summary><p class="gate-caption">虛擬預覽，並非手機定位；可操作「自動帶路」先看路線，不會改變上方步驟。</p><p id="gate-preview-status" role="status"></p><div id="gate-preview-host"></div><p><a id="gate-preview-link" href="index.html">另開完整 3D 導覽 ↗</a></p></details>
+  </section>
+  <noscript><p class="gate-help">請啟用 JavaScript 以搜尋處室。若無法使用，請向校門口警衛室詢問。</p></noscript>
+ </main>
+ <footer class="gate-footer"><span>大溪國中 · 校門口找處室</span><span>以現場門牌與學校指示為準</span></footer>
+</body>
+</html>

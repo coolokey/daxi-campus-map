@@ -217,3 +217,12 @@
  .guide-jubilee-number{font-size:145px}
 }
 .guide-play-icon::before{content:'';display:block;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid currentColor}
+.guide-gate-entry{display:block;background:#194c40;color:#fffdf2!important;text-decoration:none;border:1px solid #194c40;padding:13px 17px;margin:0 0 14px;border-radius:5px;min-height:62px;line-height:1.6;text-align:left}
+.guide-gate-entry>span{display:block;font-size:12px;letter-spacing:.05em;opacity:.85}.guide-gate-entry>strong{display:block;font-size:17px;font-family:"Microsoft JhengHei",sans-serif}.guide-gate-entry:focus-visible,.guide-gate-link:focus-visible{outline:3px solid #b98527;outline-offset:3px}
+.guide-gate-link{display:block;padding:12px 8px;margin:10px 0 18px;border-block:1px solid #c7cdbb;min-height:46px;color:#194c40;font-size:14px;text-underline-offset:4px}
+body.gate-preview #guide-landing,body.gate-preview #guide-panel,body.gate-preview #guide-quick-tools,body.gate-preview #guide-toggle,body.gate-preview #guide-tools-toggle,body.gate-preview #anniversary-launch,body.gate-preview #campus-dialogue-log,body.gate-preview .campus-speech,body.gate-preview #dpad-controller,body.gate-preview #look-hint{display:none!important}
+body.gate-preview #guide-route{max-width:calc(100vw - 24px);width:calc(100vw - 24px);left:12px;right:auto;bottom:12px;top:auto;max-height:150px;overflow:auto}
+body.gate-preview #guide-route-steps,body.gate-preview #guide-route-status,body.gate-preview #guide-place-notes{display:none!important}
+body.gate-preview #avatar-quick-choices,body.gate-preview #floor-exhibit-labels,body.gate-preview #modal-speed-ctrl,body.gate-preview #modal-turn-ctrl{display:none!important}
+body.gate-preview #campus-mobile-controls{display:none!important}
+@media(max-height:500px){#guide-landing .guide-gate-entry{padding:7px 12px;margin-bottom:8px;min-height:48px}#guide-landing .guide-gate-entry>strong{font-size:15px}#guide-landing .guide-gate-entry>span{font-size:10px}}

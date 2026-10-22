@@ -51,3 +51,11 @@ const portal=fs.readFileSync(portalFile,'utf8').replace('./campus/campus-explore
 fs.writeFileSync(portalFile,portal);
 fs.writeFileSync(portalEntry,fs.readFileSync(portalEntry,'utf8').replace(/src="\.\/app\.js(?:\?[^"]*)?"/,'src="./app.js?build='+hash(portal)+'"'));
 console.log('Embedded proposal campus bundled with the same anniversary engine.');
+// The lightweight text guide keeps its own entry and never preloads WebGL.
+for(const folder of [dir,embedded]){
+ const gateFile=path.join(folder,'gate.html');let gate=fs.readFileSync(gateFile,'utf8');
+ const gateVersion=hash(gate+fs.readFileSync(path.join(folder,'gate-guide.js'),'utf8')+fs.readFileSync(path.join(folder,'gate-guide-model.js'),'utf8'));
+ gate=gate.replace('name="campus-build" content="source"',`name="campus-build" content="${buildVersion}"`);
+ gate=gate.replace(/(src|href)="([^"?]+\.(?:js|css))"/g,(_,attribute,file)=>`${attribute}="${file}?build=${hash(fs.readFileSync(path.join(folder,file),'utf8'))}"`);
+ fs.writeFileSync(gateFile,gate);console.log(`Gate text guide versioned: ${gateVersion}`);
+}

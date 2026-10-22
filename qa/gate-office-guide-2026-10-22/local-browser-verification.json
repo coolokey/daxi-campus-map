@@ -1,0 +1,46 @@
+{
+  "layout": [
+    {
+      "size": {
+        "width": 320,
+        "height": 568
+      },
+      "frames": 0,
+      "scrollWidth": 305,
+      "smallButtons": [],
+      "width": 305
+    },
+    {
+      "size": {
+        "width": 430,
+        "height": 932
+      },
+      "frames": 0,
+      "scrollWidth": 415,
+      "smallButtons": [],
+      "width": 415
+    },
+    {
+      "size": {
+        "width": 844,
+        "height": 390
+      },
+      "frames": 0,
+      "scrollWidth": 829,
+      "smallButtons": [],
+      "width": 829
+    }
+  ],
+  "checks": [
+    "manual office selection",
+    "manual next and previous",
+    "final door confirmation",
+    "no automatic advance from 3D",
+    "preview unload on collapse",
+    "canonical counseling alias",
+    "unknown business no guessed mapping",
+    "main landing gate link",
+    "embedded page and assets"
+  ],
+  "errors": []
+}
