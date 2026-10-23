@@ -90,3 +90,8 @@ body.field-guide #anniversary-dialog[hidden]{display:none!important}
  .field-guide #avatar-quick-choices fieldset{grid-template-columns:repeat(2,minmax(0,1fr))}
  .field-guide #avatar-quick-choices span{min-height:44px}
 }
+/* The compact drawer retains its single entrance and full control targets. */
+@media(max-width:768px),(max-height:500px),(hover:none) and (pointer:coarse){
+ .field-guide #guide-secondary-tools{gap:6px;margin-top:10px;padding-top:10px}
+ .field-guide #guide-secondary-tools>button{min-width:calc(50% - 6px);min-height:44px;white-space:normal}
+}

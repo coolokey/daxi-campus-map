@@ -1,0 +1,30 @@
+[
+  {
+    "docWidth": 320,
+    "drawer": {
+      "bottom": 296,
+      "client": 227,
+      "left": 12,
+      "right": 308,
+      "scroll": 496,
+      "top": 64
+    },
+    "height": 568,
+    "secondaryVisible": true,
+    "width": 320
+  },
+  {
+    "docWidth": 844,
+    "drawer": {
+      "bottom": 302,
+      "client": 233,
+      "left": 252,
+      "right": 592,
+      "scroll": 496,
+      "top": 64
+    },
+    "height": 390,
+    "secondaryVisible": true,
+    "width": 844
+  }
+]

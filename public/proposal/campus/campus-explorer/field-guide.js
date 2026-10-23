@@ -3,6 +3,9 @@
  const api=window.campusExplorer;if(!api)return;
  const el=id=>document.getElementById(id);
  document.body.classList.add('field-guide');
+ // Projected name tags share the scene-label clip, so offscreen actors cannot
+ // widen the mobile document while the camera is focused on an entrance.
+ if(el('avatar-nametag')&&el('labels-container'))el('labels-container').append(el('avatar-nametag'));
  if(new URLSearchParams(location.search).get('gatePreview')==='1')document.body.classList.add('gate-preview');
  el('welcome-card').classList.add('hidden');
  const panel=document.createElement('aside');panel.id='guide-panel';panel.setAttribute('aria-label','大溪校園手冊');
@@ -13,10 +16,10 @@
  el('guide-controls').append(el('campus-main-controls'));
  el('guide-floors').append(el('floor-selector'));
  const tools=document.createElement('nav');tools.id='guide-quick-tools';tools.setAttribute('aria-label','校園導覽快捷工具');
- tools.innerHTML='<div id="guide-quick-main"></div><div id="guide-quick-floors"></div>';
+ tools.innerHTML='<div id="guide-quick-main"></div><div id="guide-quick-floors"></div><section id="guide-secondary-tools" aria-label="更多視角與工具" hidden></section>';
  document.body.append(tools);
  const toolsToggle=document.createElement('button');toolsToggle.id='guide-tools-toggle';toolsToggle.type='button';toolsToggle.textContent='工具';toolsToggle.setAttribute('aria-label','開啟導覽工具');toolsToggle.setAttribute('aria-controls','guide-quick-tools');document.body.append(toolsToggle);
- function setToolsOpen(open){if(open&&(isCompact()||document.body.classList.contains('guide-navigation-active')))setPanel(false);document.body.classList.toggle('guide-tools-open',open);toolsToggle.setAttribute('aria-expanded',String(open));toolsToggle.setAttribute('aria-label',open?'收合導覽工具':'開啟導覽工具');toolsToggle.textContent=open?'收合':'工具'}
+ function setToolsOpen(open){if(open&&(isCompact()||document.body.classList.contains('guide-navigation-active')))setPanel(false);document.body.classList.toggle('guide-tools-open',open);el('guide-secondary-tools').hidden=!open;toolsToggle.setAttribute('aria-expanded',String(open));toolsToggle.setAttribute('aria-label',open?'收合導覽工具':'開啟導覽工具');toolsToggle.textContent=open?'收合':'工具'}
  toolsToggle.onclick=()=>setToolsOpen(!document.body.classList.contains('guide-tools-open'));
  tools.addEventListener('click',event=>{if(document.body.classList.contains('guide-tools-open')&&event.target.closest('#campus-main-controls button,.floor-btn,#fe-list-toggle'))setToolsOpen(false)});
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.body.classList.contains('guide-tools-open')){setToolsOpen(false);toolsToggle.focus();}});
@@ -39,6 +42,9 @@
  arrival.innerHTML='<div class="guide-arrival-heading"><span>已抵達</span><button id="guide-arrival-close" aria-label="關閉抵達資訊">×</button></div><h2 id="guide-arrival-title"></h2><p id="guide-arrival-meta"></p><p>已到達導覽模型中的目的地。請依現場門牌確認入口。</p><button id="guide-arrival-search">繼續找下一站 ↗</button>';
  notes.before(arrival);
  el('guide-tools').append(el('scene-toolbar'),document.querySelector('.top-actions'));
+ const secondary=el('guide-secondary-tools');
+ for(const id of ['btn-perspective','btn-room-layout']){const button=el(id);if(button)secondary.append(button);}
+ secondary.append(el('guide-tools'));panel.querySelector('details.guide-section').remove();
  const stories=[['woodwork-1','01','木藝與創作','走向木藝教室，認識校園的創作空間。'],['library','02','閱讀的停靠站','到圖書館，為下一段學習找一本書。'],['grandstand','03','操場上的日常','走到司令台，從另一個角度看校園。'],['palm-avenue','04','椰林迎賓大道','沿著校門外的雙排椰林，回望大溪的入口。']];
  for(const [id,num,title,copy]of stories){const b=document.createElement('button');b.className='guide-story';b.innerHTML='<span>'+num+'</span><div><strong>'+title+'</strong><p>'+copy+'</p></div><b>↗</b>';b.onclick=()=>api.navigateToRoom(id);el('guide-stories').append(b)}
  const toggle=document.createElement('button');toggle.id='guide-toggle';toggle.textContent='校園手冊';toggle.setAttribute('aria-controls','guide-panel');document.body.append(toggle);
@@ -46,7 +52,7 @@
  function showSearch(){if(isCompact()||document.body.classList.contains('guide-navigation-active'))setToolsOpen(true);el('search-input').focus({preventScroll:true});}
  function setPanel(open){if(open&&(isCompact()||document.body.classList.contains('guide-navigation-active')))setToolsOpen(false);document.body.classList.toggle('guide-collapsed',!open);toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'收合手冊':'開啟手冊'}
  toggle.onclick=()=>setPanel(document.body.classList.contains('guide-collapsed'));
- setPanel(innerWidth>=1100&&!isCompact());
+ setPanel(false);
  let compactBefore=isCompact(),landscapeBefore=innerWidth>innerHeight;
  window.addEventListener('resize',()=>{
   const compact=isCompact(),landscape=innerWidth>innerHeight;
@@ -127,7 +133,7 @@
  const cover=el('guide-landing');
  let previousFocus=null;
  function openCover(){previousFocus=document.activeElement;api.manualTakeover();if(cover.open)cover.close();cover.showModal();const featured=el('guide-anniversary');(featured&&!featured.disabled?featured:el('guide-start')).focus()}
- function enter(chapter){cover.close();if(chapter==='first')el('btn-walk').click();el('welcome-card').classList.add('hidden');setPanel(chapter==='stories'||chapter==='first'&&innerWidth>=769);if(chapter==='search')showSearch();else if(chapter==='stories'){el('guide-stories').scrollIntoView({block:'nearest'});el('guide-stories').querySelector('button').focus()}else toggle.focus()}
+ function enter(chapter){cover.close();if(chapter==='first')el('btn-walk').click();el('welcome-card').classList.add('hidden');setPanel(chapter==='stories'||chapter==='first'&&isCompact()&&innerWidth>=769);if(chapter==='search')showSearch();else if(chapter==='stories'){el('guide-stories').scrollIntoView({block:'nearest'});el('guide-stories').querySelector('button').focus()}else toggle.focus()}
  el('guide-start').onclick=()=>enter('first');cover.querySelectorAll('[data-chapter]').forEach(b=>b.onclick=()=>enter(b.dataset.chapter));el('guide-cover').onclick=openCover;
  cover.addEventListener('cancel',()=>{if(previousFocus?.isConnected)previousFocus.focus();else toggle.focus()});
  cover.querySelectorAll('button:not(#guide-anniversary)').forEach(button=>button.disabled=false);

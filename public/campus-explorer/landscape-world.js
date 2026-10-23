@@ -8,20 +8,28 @@
   const mat=color=>{if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.86}));return materials.get(color)};
   const decor=new THREE.Group();decor.name='campus-landscape-refinement';scene.add(decor);
   function box(w,h,d,x,y,z,color,solid=false){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;decor.add(m);if(solid)m.userData.campusSolid=true;return m}
-  function tiledTexture(wall=false){
+  function tiledTexture(){
     const cvs=document.createElement('canvas');cvs.width=cvs.height=256;
-    const ctx=cvs.getContext('2d');ctx.fillStyle=wall?'#b88d84':'#a1a79b';ctx.fillRect(0,0,256,256);
-    const size=wall?16:32;
-    for(let y=0;y<256;y+=size)for(let x=0;x<256;x+=size){
-      const brightness=wall?136+(x+y)%24:148+(x*3+y)%13;
-      ctx.fillStyle=wall?`rgb(${brightness+25},${brightness},${brightness-7})`:`rgb(${brightness+8},${brightness+8},${brightness+1})`;
-      ctx.fillRect(x+1,y+1,size-2,size-2);
+    const ctx=cvs.getContext('2d');ctx.fillStyle='#8b9087';ctx.fillRect(0,0,256,256);
+    let seed=731;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+    // Eight half-unit slabs per four-unit tile; restrained joints avoid a grid
+    // dominating the forecourt, and each slab has a slightly different tone.
+    for(let y=0;y<256;y+=32)for(let x=0;x<256;x+=32){
+      const brightness=166+Math.floor(random()*16);
+      ctx.fillStyle=`rgb(${brightness+5},${brightness+5},${brightness-3})`;ctx.fillRect(x+.6,y+.6,30.8,30.8);
+      ctx.fillStyle='rgba(242,241,224,.22)';ctx.fillRect(x+1,y+1,30,1);
     }
-    const texture=new THREE.CanvasTexture(cvs);texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.repeat.set(wall?3:8,wall?2:8);texture.encoding=THREE.sRGBEncoding;
+    for(let i=0;i<13000;i++){const shade=random()>.5?255:65;ctx.fillStyle=`rgba(${shade},${shade},${shade},.055)`;ctx.fillRect(random()*256,random()*256,1,1);}
+    const texture=new THREE.CanvasTexture(cvs);texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.encoding=THREE.sRGBEncoding;
     texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return texture;
   }
-  const paver=new THREE.MeshStandardMaterial({map:tiledTexture(),roughness:.93});
-  function paved(w,d,x,z){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(w,d),paver);mesh.rotation.x=-Math.PI/2;mesh.position.set(x,.035,z);mesh.receiveShadow=true;decor.add(mesh)}
+  const paverTexture=tiledTexture(),paver=new THREE.MeshStandardMaterial({map:paverTexture,bumpMap:paverTexture,bumpScale:.018,roughness:.94});
+  function paved(w,d,x,z){
+    const geometry=new THREE.PlaneGeometry(w,d),p=geometry.attributes.position,uv=geometry.attributes.uv;
+    // World-aligned UVs share both density and seam position across all aprons.
+    for(let i=0;i<p.count;i++)uv.setXY(i,(x+p.getX(i))/4,(z-p.getY(i))/4);
+    const mesh=new THREE.Mesh(geometry,paver);mesh.rotation.x=-Math.PI/2;mesh.position.set(x,.035,z);mesh.receiveShadow=true;decor.add(mesh);
+  }
   // 前庭與銅像廣場，以及校舍之間可通行的硬鋪面。
   paved(56,30,-32,61);paved(28,26,-40,32);paved(22,42,15,28);
   paved(8,118,44,8);paved(42,7,12,51);paved(40,7,12,6);

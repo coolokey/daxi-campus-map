@@ -52,7 +52,7 @@
     }
   });
   const toolbar=document.createElement('nav');toolbar.id='scene-toolbar';toolbar.setAttribute('aria-label','場景視角與美術對照');
-  const views=[['全校鳥瞰',[-160,168,225],[-15,0,6]],['校門廣場',[-62,34,121],[-26,3,54]],['中庭漫遊',[15,64,82],[15,0,28]],['運動園區',[-128,77,56],[-65,0,-25]]];
+  const views=[['全校鳥瞰',[-160,168,225],[-15,0,6]],['校門廣場',[-62,34,121],[-26,3,54]],['校門近景',[-43,11,109],[-23,4,86]],['中庭漫遊',[15,64,82],[15,0,28]],['運動園區',[-128,77,56],[-65,0,-25]]];
   let activeView='全校鳥瞰';
   function fly(position,target){
     focusedBuildingId=null;

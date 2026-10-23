@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 
 function setup(width = 390, query = '', coarse = false) {
- const dom = new JSDOM(`<body><div id="welcome-card"></div><div class="search-box"><input id="search-input"></div><div class="top-actions"><div id="campus-main-controls"><button id="btn-walk"></button></div></div><div id="floor-selector"></div><div id="scene-toolbar"></div><div id="nav-hud"><div id="hud-target-name"></div><span id="hud-dist-val">0</span><button id="btn-auto-walk">自動帶路</button><button id="btn-cancel-nav">取消</button></div></body>`, { runScripts: 'outside-only', url: `https://campus.example/${query}` });
+ const dom = new JSDOM(`<body><div id="welcome-card"></div><div class="search-box"><input id="search-input"></div><div class="top-actions"><div id="campus-main-controls"><button id="btn-walk"></button><button id="btn-bird"></button><button id="btn-perspective"></button><button id="btn-room-layout"></button></div></div><div id="floor-selector"></div><div id="scene-toolbar"></div><div id="nav-hud"><div id="hud-target-name"></div><span id="hud-dist-val">0</span><button id="btn-auto-walk">自動帶路</button><button id="btn-cancel-nav">取消</button></div></body>`, { runScripts: 'outside-only', url: `https://campus.example/${query}` });
  const coverHtml=readFileSync('public/campus-explorer/index.html','utf8').match(/<dialog id="guide-landing"[\s\S]*?<\/dialog>/)![0];
  dom.window.document.body.insertAdjacentHTML('afterbegin',coverHtml);
  const w = dom.window as any;
@@ -104,6 +104,42 @@ describe('探索手冊導覽卡', () => {
 });
 
 describe('固定工具與導航狀態', () => {
+ it('一般桌面探索預設收起手冊與次要工具，展開工具仍保留唯一控制項', () => {
+  const s=setup(1280,'?view=bird'),d=s.w.document;
+  expect(d.body.classList.contains('guide-collapsed')).toBe(true);
+  expect(d.getElementById('guide-toggle').getAttribute('aria-expanded')).toBe('false');
+  const secondary=d.getElementById('guide-secondary-tools');
+  expect(secondary).not.toBeNull();
+  expect(secondary.hidden).toBe(true);
+  expect(d.getElementById('guide-quick-main').contains(d.getElementById('btn-walk'))).toBe(true);
+  expect(d.getElementById('guide-quick-main').contains(d.getElementById('btn-bird'))).toBe(true);
+  for(const id of ['btn-perspective','btn-room-layout','scene-toolbar']){
+   expect(secondary.contains(d.getElementById(id))).toBe(true);
+   expect(d.querySelectorAll('#'+id)).toHaveLength(1);
+  }
+  d.getElementById('guide-tools-toggle').click();
+  expect(secondary.hidden).toBe(false);
+  d.dispatchEvent(new s.w.KeyboardEvent('keydown',{key:'Escape'}));
+  expect(secondary.hidden).toBe(true);
+  s.dom.window.close();
+ });
+ it('從首頁開始桌面步行保持手冊收合，散步提案仍可主動開啟手冊', () => {
+  const s=setup(1280),d=s.w.document;
+  d.getElementById('guide-start').click();
+  expect(s.walks()).toBe(1);
+  expect(d.body.classList.contains('guide-collapsed')).toBe(true);
+  d.querySelector('[data-chapter="stories"]').click();
+  expect(d.body.classList.contains('guide-collapsed')).toBe(false);
+  s.dom.window.close();
+ });
+ it('校門預覽保留隔離狀態與直接進場', () => {
+  const s=setup(1280,'?gatePreview=1&view=bird'),d=s.w.document;
+  expect(d.body.classList.contains('gate-preview')).toBe(true);
+  expect(d.getElementById('guide-landing').open).toBe(false);
+  expect(s.walks()).toBe(0);
+  s.dom.window.close();
+ });
+
  it('導航期間收起次要工具，取消或關閉抵達卡後恢復探索',async()=>{
   const s=setup(1280,'?to=academic'),d=s.w.document;
   s.w.campusExplorer.navigateToRoom('academic');await s.tick();

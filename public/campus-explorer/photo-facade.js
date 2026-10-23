@@ -7,12 +7,24 @@
  const materials=new Map(),mat=c=>{if(!materials.has(c))materials.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.97}));return materials.get(c)};
  function group(f,name){const g=new THREE.Group();g.name=name;g.userData={buildingId:b.id,floorNum:f};g.position.set(actual.x,0,actual.z);g.rotation.y=-Math.PI/2;api.scene.add(g);floorMeshes.push(g);return g}
  function photoCollider(x0,x1,z0,z1,y0,y1){const r=frame.rect(x0,x1,z0,z1);registerWallCollider(r.x0,r.x1,r.z0,r.z1,y0,y1);Object.assign(WALL_COLLIDERS.at(-1),{buildingId:b.id,persistent:true});}
- function box(g,w,h,d,x,y,z,c){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),c?.isMaterial?c:mat(c));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;g.add(m);return m}
+ function box(g,w,h,d,x,y,z,c){
+  const geometry=new THREE.BoxGeometry(w,h,d);
+  // Project the shared two-unit stone tile in physical units on every face.
+  // A tall pier and a thin sill retain the same aggregate size.
+  if(c?.userData?.adminStone){const p=geometry.attributes.position,n=geometry.attributes.normal,uv=geometry.attributes.uv;
+   for(let i=0;i<p.count;i++)uv.setXY(i,(Math.abs(n.getX(i))>.5?p.getZ(i):p.getX(i))/2,(Math.abs(n.getY(i))>.5?p.getZ(i):p.getY(i))/2);
+  }
+  const m=new THREE.Mesh(geometry,c?.isMaterial?c:mat(c));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;g.add(m);return m;
+ }
  const frontZ=b.z+b.depth/2,white=0xb4b8ae,teal=0x447b79;
- const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const ctx=canvas.getContext('2d');ctx.fillStyle='#aaa9a1';ctx.fillRect(0,0,128,128);
- for(let i=0;i<1800;i++){const n=(i*73)%128,m=(i*37+Math.floor(i/128)*11)%128;ctx.fillStyle=i%3?'#b8b7b0':'#818781';ctx.fillRect(n,m,1,1);}
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle='#c4c3b8';ctx.fillRect(0,0,256,256);
+ let stoneSeed=1487;const stoneRandom=()=>{stoneSeed=(Math.imul(stoneSeed,1664525)+1013904223)>>>0;return stoneSeed/4294967296;};
+ // Fine salt-and-pepper mineral grains over a much softer cloudy base.
+ for(let i=0;i<140;i++){const x=stoneRandom()*256,y=stoneRandom()*256,r=8+stoneRandom()*26;ctx.fillStyle=i%2?'rgba(235,231,213,.055)':'rgba(77,83,71,.04)';ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
+ for(let i=0;i<16000;i++){const n=stoneRandom()*256,m=stoneRandom()*256,v=110+Math.floor(stoneRandom()*115);ctx.fillStyle=`rgba(${v+5},${v+4},${v-4},${.12+stoneRandom()*.28})`;ctx.fillRect(n,m,.5+stoneRandom()*1.2,.5+stoneRandom()*1.2);}
  const stoneTexture=new THREE.CanvasTexture(canvas);stoneTexture.wrapS=stoneTexture.wrapT=THREE.RepeatWrapping;stoneTexture.encoding=THREE.sRGBEncoding;
- const stone=new THREE.MeshStandardMaterial({color:0xd1d0c7,map:stoneTexture,roughness:.98});
+ stoneTexture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
+ const stone=new THREE.MeshStandardMaterial({color:0xf7f5ed,map:stoneTexture,bumpMap:stoneTexture,bumpScale:.022,roughness:.88});stone.userData.adminStone=true;
  const windowGlass=new THREE.MeshStandardMaterial({color:0x647e85,transparent:true,opacity:.72,roughness:.26});
  // The upper corridors are inside this closed stone-and-window envelope.
  // Only the existing ground-floor central and end entrances stay open.

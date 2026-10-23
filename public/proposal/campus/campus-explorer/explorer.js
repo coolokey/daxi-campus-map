@@ -625,7 +625,7 @@
     }
 
     // 專屬大門門柱紋理 (藍黃波浪圓弧彩繪＋金色校名)
-    function createGatePylonTexture() {
+    function createGatePylonTexture(face = 'inside') {
       const canvas = document.createElement("canvas");
       canvas.width = 512;
       canvas.height = 1024;
@@ -652,6 +652,7 @@
           ctx.fill();
         }
       }
+      if (face === 'decoration') return new THREE.CanvasTexture(canvas);
       ctx.fillStyle = "#a6aaa8";
       ctx.fillRect(89, 148, 334, 735);
       ctx.fillStyle = "#dddeda";
@@ -664,8 +665,10 @@
       ctx.shadowOffsetX = 3;
       ctx.shadowOffsetY = 5;
       ctx.shadowBlur = 2;
-      // 逐字依校門口.jpg：右列大雁乘風飛萬里，左列溪聲向學步高峰。
-      for (const [text, x] of [["大雁乘風飛萬里", 325], ["溪聲向學步高峰", 190]]) {
+      // 只保留照片可辨認的校名及已核對題字，不補造小字或校徽。
+      const columns = face === 'outside' ? [["大溪國民中學", 310], ["桃園市立", 190]] : [["大雁乘風飛萬里", 325], ["溪聲向學步高峰", 190]];
+      for (const [text, x] of columns) {
+        ctx.font = `bold ${face === 'outside' && x === 190 ? 43 : 64}px 'DFKai-SB', 'BiauKai', 'Noto Serif TC', serif`;
         [...text].forEach((character, i) => ctx.fillText(character, x, 230 + i * 94));
       }
       return new THREE.CanvasTexture(canvas);
@@ -779,28 +782,23 @@
       plazaGroup.add(plaza);
 
       // 1. 大溪國中真實彩繪大門立柱 (白色方柱＋藍黃波浪圓圈彩繪＋金色校名)
-      const gateTex = createGatePylonTexture();
-      const pylonMat = new THREE.MeshStandardMaterial({ map: gateTex });
-      const pylonGeo = new THREE.BoxGeometry(2.4, 6.2, 2.4);
-
-      const pL = new THREE.Mesh(pylonGeo, pylonMat);
-      pL.position.set(-11, 3.1, 10);
-      pL.castShadow = true;
-      plazaGroup.add(pL);
-
-      const pR = new THREE.Mesh(pylonGeo, pylonMat);
-      pR.position.set(11, 3.1, 10);
-      pR.castShadow = true;
-      plazaGroup.add(pR);
+      const whiteTower = new THREE.MeshStandardMaterial({color:0xecece7,roughness:.88});
+      // 左端僅是低矮邊界門柱；照片的金球主塔只有警衛室旁一座。
+      const pL = new THREE.Mesh(new THREE.BoxGeometry(2.4,1.25,2.4),whiteTower);
+      pL.name='main-entrance-low-post';pL.position.set(-11,.625,10);pL.castShadow=true;plazaGroup.add(pL);
+      const tower = new THREE.Group();tower.name='main-entrance-photo-tower';tower.position.set(11,0,10);plazaGroup.add(tower);
+      // 兩腳與過樑形成真正的底部開口，中央 1.5 場景單位空隙保留通行。
+      for(const x of [-.975,.975]){const leg=new THREE.Mesh(new THREE.BoxGeometry(.45,2.85,2.4),whiteTower);leg.position.set(x,1.425,0);leg.castShadow=true;tower.add(leg);}
+      const shaft=new THREE.Mesh(new THREE.BoxGeometry(2.4,4,2.4),whiteTower);shaft.position.y=4.85;shaft.castShadow=true;tower.add(shaft);
+      const cap=new THREE.Mesh(new THREE.BoxGeometry(2.55,1.75,2.55),new THREE.MeshStandardMaterial({map:createGatePylonTexture('decoration'),color:0xffffff,roughness:.86}));cap.position.y=7.775;cap.castShadow=true;tower.add(cap);
+      // 內外銘板分面，避免在塔底開口或側面重複滿版文字。
+      for(const outside of [true,false]){const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.405,3.95),new THREE.MeshStandardMaterial({map:createGatePylonTexture(outside?'outside':'inside'),roughness:.9}));sign.position.set(0,4.85,outside?1.205:-1.205);if(!outside)sign.rotation.y=Math.PI;tower.add(sign);}
 
       // 門柱頂端金黃色金屬裝飾球 (金色球形裝置)
       const goldSphereGeo = new THREE.SphereGeometry(0.75, 24, 24);
       const goldSphereMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.8, roughness: 0.2 });
-      const sphereL = new THREE.Mesh(goldSphereGeo, goldSphereMat);
-      sphereL.position.set(-11, 6.8, 10);
-      plazaGroup.add(sphereL);
       const sphereR = new THREE.Mesh(goldSphereGeo, goldSphereMat);
-      sphereR.position.set(11, 6.8, 10);
+      sphereR.position.set(11, 9.35, 10);
       plazaGroup.add(sphereR);
 
       // 電動伸縮大門 (折疊鋁合金門)
@@ -819,47 +817,64 @@
 
       scene.add(plazaGroup);
 
-      // 2. 警衛室 (正門右側，隨共用入口位置更新)：黃色外牆、紅色斜瓦屋頂、電子LED跑馬燈
+      // 2. 警衛室：照片中的米白上牆、淺藍牆腳與紅色雙坡屋頂。
       const guardGroup = new THREE.Group();
       guardGroup.name='main-entrance-guard';
       const guard=entrance.world(16,0);guardGroup.position.copy(guard);
 
       const guardBody = new THREE.Mesh(
-        new THREE.BoxGeometry(5.6, 3.2, 5.6),
-        new THREE.MeshStandardMaterial({ color: 0xfef08a }) // 照片實況：亮黃色外牆
+        new THREE.BoxGeometry(6.4, 2.2, 5.6),
+        new THREE.MeshStandardMaterial({ color: 0xe7e5d9, roughness:.95 })
       );
-      guardBody.position.y = 1.6;
+      guardBody.name='guard-upper-wall';guardBody.position.y = 2.1;
       guardBody.castShadow = true;
       guardGroup.add(guardBody);
+      const blueBase=new THREE.Mesh(new THREE.BoxGeometry(6.4,1,5.6),new THREE.MeshStandardMaterial({color:0x94c3ce,roughness:.94}));blueBase.name='guard-blue-base';blueBase.position.y=.5;guardGroup.add(blueBase);
 
-      // 警衛室紅色中式四坡斜瓦屋頂
+      // 屋脊沿前後延伸；擠出幾何保持置中，避免旋轉後偏到建物外。
+      const tileCanvas=document.createElement('canvas');tileCanvas.width=tileCanvas.height=256;
+      const tileCtx=tileCanvas.getContext('2d');tileCtx.fillStyle='#aa3934';tileCtx.fillRect(0,0,256,256);
+      // 一張共用的小型程序貼圖，同時提供瓦片色差與淺凹凸。
+      for(let row=0;row<8;row++)for(let col=-1;col<4;col++){
+        const x=col*64+(row%2)*32,y=row*32;
+        tileCtx.fillStyle=['#b74d43','#a83a35','#bc5147'][(row*7+col+4)%3];tileCtx.fillRect(x+1,y+1,62,30);
+        tileCtx.strokeStyle='#7e302e';tileCtx.lineWidth=2;tileCtx.strokeRect(x,y,64,32);
+        tileCtx.strokeStyle='#cf7661';tileCtx.beginPath();tileCtx.moveTo(x+4,y+5);tileCtx.lineTo(x+59,y+5);tileCtx.stroke();
+      }
+      const roofTileTex=new THREE.CanvasTexture(tileCanvas);roofTileTex.wrapS=roofTileTex.wrapT=THREE.RepeatWrapping;roofTileTex.repeat.set(.35,.35);
       const gRoofShape = new THREE.Shape();
-      gRoofShape.moveTo(-3.4, 0);
+      gRoofShape.moveTo(-3.7, 0);
       gRoofShape.lineTo(0, 1.4);
-      gRoofShape.lineTo(3.4, 0);
+      gRoofShape.lineTo(3.7, 0);
       gRoofShape.closePath();
       const gRoof = new THREE.Mesh(
         new THREE.ExtrudeGeometry(gRoofShape, { depth: 6.8, bevelEnabled: false }),
-        new THREE.MeshStandardMaterial({ color: 0xa6262c })
+        [new THREE.MeshStandardMaterial({color:0xe7e5d9,roughness:.95}),new THREE.MeshStandardMaterial({ map:roofTileTex, bumpMap:roofTileTex, bumpScale:.045, color:0xffffff, roughness:.88 })]
       );
       gRoof.position.set(0, 3.2, -3.4);
-      gRoof.rotation.y = Math.PI / 2;
+      gRoof.name='guard-gable-roof';
       gRoof.castShadow = true;
       guardGroup.add(gRoof);
 
       // 警衛室紅色 LED 滾動字幕跑馬燈
       const ledSign = new THREE.Mesh(
-        new THREE.PlaneGeometry(3.6, 0.5),
-        new THREE.MeshBasicMaterial({ map: createLedMarqueeTexture("大溪國中警衛室 ★ 請出示證件換證登記"), side: THREE.DoubleSide })
+        new THREE.PlaneGeometry(4.1, 0.62),
+        new THREE.MeshBasicMaterial({ color:0x172325, side: THREE.DoubleSide })
       );
-      ledSign.position.set(0, 3.0, 2.85);
+      ledSign.name='guard-led';ledSign.position.set(-.55, 2.78, 2.82);
       guardGroup.add(ledSign);
+      const frameMat=new THREE.MeshStandardMaterial({color:0xe9e9df,roughness:.7}),glassMat=new THREE.MeshStandardMaterial({color:0x475f62,roughness:.32,metalness:.15});
+      // 前後兩側皆有值勤窗；門窗貼合牆面，不向走道新增碰撞。
+      for(const side of [-1,1])for(const x of [-1.75,-.25]){const frame=new THREE.Mesh(new THREE.BoxGeometry(1.35,1.22,.06),frameMat);frame.name=`guard-window-${side}-${x}`;frame.position.set(x,1.77,side*2.83);guardGroup.add(frame);const pane=new THREE.Mesh(new THREE.BoxGeometry(1.15,1.02,.075),glassMat);pane.position.copy(frame.position);pane.position.z=side*2.87;guardGroup.add(pane);const mullion=new THREE.Mesh(new THREE.BoxGeometry(.045,1.05,.09),frameMat);mullion.position.copy(pane.position);guardGroup.add(mullion);}
+      const door=new THREE.Mesh(new THREE.BoxGeometry(1.1,2.25,.08),frameMat);door.name='guard-door';door.position.set(2.08,1.125,2.85);guardGroup.add(door);
+      const doorGlass=new THREE.Mesh(new THREE.BoxGeometry(.88,1.35,.09),glassMat);doorGlass.position.set(2.08,1.6,2.9);guardGroup.add(doorGlass);
+      const awning=new THREE.Mesh(new THREE.BoxGeometry(5.35,.14,.75),frameMat);awning.name='guard-entry-awning';awning.position.set(-.45,2.39,3.12);awning.castShadow=true;guardGroup.add(awning);
 
       scene.add(guardGroup);
-      registerWallCollider(guard.x-2.8,guard.x+2.8,guard.z-2.8,guard.z+2.8,0,3.2);
-      // 門柱是實體；中央入口保留通行空間。
-      const pylonExtent=1.2*(Math.abs(entrance.right.x)+Math.abs(entrance.axis.x));
-      for(const cross of [-11,11]){const p=entrance.world(cross,0);registerWallCollider(p.x-pylonExtent,p.x+pylonExtent,p.z-pylonExtent,p.z+pylonExtent,.03,6.23);WALL_COLLIDERS.at(-1).gatePylon=true;}
+      registerWallCollider(guard.x-3.2,guard.x+3.2,guard.z-2.8,guard.z+2.8,0,3.2);
+      // 逐一對應可見實體；主塔底部開口不再放整塊隱形碰撞。
+      const towerCollider=(cross,halfWidth,minY,maxY)=>{const p=entrance.world(cross,0);registerWallCollider(p.x-halfWidth,p.x+halfWidth,p.z-1.2,p.z+1.2,minY,maxY);Object.assign(WALL_COLLIDERS.at(-1),{gatePylon:true,perimeter:true});};
+      towerCollider(-11,1.2,.03,1.28);towerCollider(10.025,.225,.03,2.88);towerCollider(11.975,.225,.03,2.88);towerCollider(11,1.2,2.88,6.88);towerCollider(11,1.275,6.88,8.68);
 
       ROOMS_DB["guard"] = {
         id: "guard",

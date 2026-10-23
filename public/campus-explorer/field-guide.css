@@ -247,3 +247,31 @@ body.gate-preview :is(#guide-current-step,#guide-stages){display:none!important}
 }
 .room-badge[data-walking-selected='true']{border-color:#a57c37;box-shadow:0 0 0 2px #ddc78e;color:#193c32;z-index:3}
 @media(max-height:500px){#guide-landing .guide-gate-entry{padding:7px 12px;margin-bottom:8px;min-height:48px}#guide-landing .guide-gate-entry>strong{font-size:15px}#guide-landing .guide-gate-entry>span{font-size:10px}}
+/* Secondary controls share the existing tool drawer; each control keeps its original DOM identity. */
+#guide-secondary-tools[hidden]{display:none!important}
+#guide-secondary-tools{display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid var(--guide-line);margin-top:12px;padding-top:12px}
+#guide-secondary-tools>button,#guide-secondary-tools .btn-action{min-height:44px;padding:8px 12px;border:1px solid #c7ccb9;border-radius:2px;background:#e7e8dc;color:var(--guide-ink);font:inherit;font-size:12px;cursor:pointer;box-sizing:border-box}
+#guide-secondary-tools>button{flex:1}
+#guide-secondary-tools #guide-tools{width:100%;min-width:0}
+#guide-secondary-tools #scene-toolbar{position:static;inset:auto;transform:none;display:flex;flex-wrap:wrap;gap:6px;width:auto;max-width:none;margin:0;background:none;border:0;padding:0;box-shadow:none}
+#guide-secondary-tools #scene-toolbar button{min-height:44px;padding:8px 10px}
+#guide-secondary-tools .top-actions{position:static;display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+#guide-quick-tools :focus-visible,#guide-tools-toggle:focus-visible{outline:3px solid #b78435;outline-offset:3px}
+@media(min-width:769px) and (min-height:501px) and (hover:hover) and (pointer:fine){
+ body.field-guide:not(.guide-navigation-active) #guide-tools-toggle{display:block;position:fixed;top:18px;right:18px;z-index:41;min-width:68px;min-height:44px;border:1px solid #b9c3ac;border-top:3px solid #193c32;background:var(--guide-paper);color:var(--guide-ink);font:inherit;font-size:12px;cursor:pointer}
+ body.field-guide:not(.guide-navigation-active) #guide-quick-tools{top:18px;right:96px;width:min(540px,calc(100vw - 160px));padding:8px 10px;max-height:calc(100dvh - 36px)}
+ body.field-guide.guide-tools-open:not(.guide-navigation-active) #guide-quick-tools{overflow:auto}
+ body.field-guide:not(.guide-collapsed):not(.guide-navigation-active) #guide-quick-tools{max-width:calc(100vw - 460px)}
+ body.field-guide:not(.guide-navigation-active) #guide-quick-main{display:flex;flex-wrap:wrap;gap:8px}
+ body.field-guide:not(.guide-navigation-active) #guide-quick-tools .search-box{flex:1;min-width:140px;width:auto}
+ body.field-guide:not(.guide-navigation-active) #guide-quick-tools #campus-main-controls{display:flex;width:auto;flex:none;gap:5px}
+ body.field-guide:not(.guide-navigation-active) #guide-quick-tools #campus-main-controls button{padding:0 12px}
+ body.field-guide:not(.guide-navigation-active) #guide-quick-floors{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:8px}
+ body.field-guide:not(.guide-navigation-active) #guide-quick-tools #floor-selector{width:auto;gap:4px;justify-content:flex-end}
+ body.field-guide:not(.guide-navigation-active) #guide-quick-tools .floor-btn{flex:none;min-width:36px;height:36px;padding:0 8px}
+ body.field-guide:not(.guide-tools-open) :is(#avatar-quick-choices,#campus-people-open){display:none!important}
+ body.field-guide.guide-tools-open:not(.guide-navigation-active) #campus-people-open{width:100%;min-height:44px;border-radius:2px}
+ body.field-guide.guide-tools-open:not(.guide-navigation-active) #avatar-quick-choices{order:1;width:100%;padding-top:10px;border-top:1px solid var(--guide-line)}
+ body.field-guide:not(.guide-navigation-active) #guide-panel{max-width:calc(100vw - 90px)}
+ body.field-guide:not(.guide-navigation-active) #mouse-look-hint{top:146px;max-width:calc(100vw - 120px)}
+}

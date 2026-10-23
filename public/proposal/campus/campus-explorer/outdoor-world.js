@@ -22,9 +22,8 @@ const CampusOutdoorWorld=(()=>{
   }
   // Posts close acute corners and prevent diagonal leaks between fence runs.
   for(const [x,z] of p.outline){box(g,.9,2.96,.9,x,1.48,z,stone);box(g,1.02,.12,1.02,x,3,z,cap);registerWallCollider(x-.45,x+.45,z-.45,z+.45,-.2,3.06);WALL_COLLIDERS.at(-1).perimeter=true;}
-  // Existing 2.4-wide gate pylons are visible in explorer.js; make them solid.
-  const extent=1.2*(Math.abs(P.entrance.right.x)+Math.abs(P.entrance.axis.x));
-  for(const cross of [-11,11]){const p=P.entrance.world(cross,0);registerWallCollider(p.x-extent,p.x+extent,p.z-extent,p.z+extent,-.2,6.23);Object.assign(WALL_COLLIDERS.at(-1),{perimeter:true,gatePylon:true});}
+  // Gate posts, tower feet and lintel register their exact perimeter volumes in
+  // explorer.js. A second full-height box here would seal the photographed opening.
   return g;
  }
  function renderVolleyballCourts(parent,courts,id,color){
