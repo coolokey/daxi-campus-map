@@ -47,7 +47,10 @@
  const near=(a,b)=>Math.abs(a.y-b.y)<1.8&&Math.hypot(a.x-b.x,a.z-b.z)<clearance;
  function occupied(p,except){return actors.some(a=>a!==except&&near(a.position,p))||near(api.getPlayerPosition?.()||api.camera.position,p)}
  function outdoors(p){return !(window.campusWalkWorld?.layouts||[]).some(l=>p.x>l.bounds.x0-.8&&p.x<l.bounds.x1+.8&&p.z>l.bounds.z0-.8&&p.z<l.bounds.z1+.8)}
- function safe(p){return outdoors(p)&&!blockedPoint(p)&&Math.abs(p.y)<.25}
+ // Reserve the campus-side guard doorway apron for arriving visitors. Use the
+ // rebuilt graph target so future doorway corrections keep NPC placement aligned.
+ function guardArrival(p){const q=window.campusWalkWorld?.graph?.['gate-guard'];return !!q&&Math.abs(p.y-q.y)<1.8&&Math.abs(p.x-q.x)<4.5&&Math.abs(p.z-q.z)<2.5}
+ function safe(p){return outdoors(p)&&!guardArrival(p)&&!blockedPoint(p)&&Math.abs(p.y)<.25}
  function ground(p){return window.campusWalkWorld?.ground(p)??0}
  // Find the initial position once. Walking never teleports to a new route point.
  function place(x,z,index){for(let ring=0;ring<=6;ring++)for(let n=0;n<(ring?12:1);n++){const angle=(n+index*.37)*Math.PI/6,p={x:x+Math.cos(angle)*ring*1.8,y:0,z:z+Math.sin(angle)*ring*1.8};p.y=ground(p);if(safe(p)&&!actors.some(a=>Math.hypot(a.position.x-p.x,a.position.z-p.z)<clearance))return p}return null}

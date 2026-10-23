@@ -250,3 +250,12 @@ it('keeps shifted office entrance corridors clear when spawning staff',()=>{
  });
  const teacher=s.api.actors.find((a:any)=>a.person);expect(teacher).toBeTruthy();expect(teacher.room?.id).not.toBe('academic');s.dom.window.close();
 });
+
+it('keeps NPC spawning and walking out of the corrected guard-door arrival apron',()=>{
+ const s=setup(390,w=>{w.Math.random=()=>.2;w.campusWalkWorld.graph={'gate-guard':{x:-18.6,y:0,z:78.2}};});
+ const reserved=(p:any)=>Math.abs(p.x+18.6)<4.5&&Math.abs(p.z-78.2)<2.5;
+ expect(s.api.actors.filter((a:any)=>reserved(a.position))).toHaveLength(0);
+ const actor=s.api.actors.find((a:any)=>a.spec.role==='student');
+ expect(s.api.canMove(actor,{x:-18.6,y:0,z:74},{x:-18.6,y:0,z:78.2})).toBe(false);
+ s.dom.window.close();
+});
