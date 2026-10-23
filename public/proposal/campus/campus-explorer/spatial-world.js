@@ -463,7 +463,7 @@
  for(const [i,p] of CampusOutdoorPlan.stairsPath().entries()){const id=node(`stage-outdoor-stair-${i}`,p);link(stagePrevious,id);stagePrevious=id;}
  const podium=node('stand-podium',{...CampusOutdoorPlan.stage.center});link(stagePrevious,podium);roomTargets.grandstand=podium;
  for(const room of Object.values(ROOMS_DB))if(!roomTargets[room.id]&&room.node!=='gate'){
-  const old=oldNodes[room.node];if(!old)continue;let p=room.id==='guard'?CampusOutdoorPlan.entrance.world(16,-4):{x:old.x,y:0,z:old.z};const l=layouts.find(l=>insideFloor(l,p.x,p.z,1));if(l)p=l.entrance;
+  const old=oldNodes[room.node];if(!old)continue;let p={x:old.x,y:0,z:old.z};const l=layouts.find(l=>insideFloor(l,p.x,p.z,1));if(l)p=l.entrance;
   const target=node(room.node,p);attachPath(gate,target,gridPath(graph[gate],p));
  }
  for(const [alias,id] of Object.entries(CampusSpatialData.aliases))ROOMS_DB[alias]={...ROOMS_DB[id],id:alias,aliasFor:id};

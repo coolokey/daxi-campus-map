@@ -23,7 +23,7 @@ it('keeps the low post and retracted gate solid while leaving the driveway and t
 });
 
 it('matches the photographed single tower and permits a real motor crossing below its lintel',()=>{
- const r=evaluate(`(()=>{scene.updateMatrixWorld(true);const g=scene.getObjectByName('main-entrance-plaza'),tower=scene.getObjectByName('main-entrance-photo-tower'),guard=scene.getObjectByName('main-entrance-guard'),balls=[];g.traverse(o=>{if(o.geometry?.type==='SphereGeometry')balls.push(o)});if(!tower)return {found:false};const start=g.localToWorld(new THREE.Vector3(11,0,13)),end=g.localToWorld(new THREE.Vector3(11,0,7)),p={x:start.x,y:0,z:start.z};let blocked=false;for(let i=1;i<=60;i++){const x=start.x+(end.x-start.x)*i/60,z=start.z+(end.z-start.z)*i/60;blocked=moveAvatarWithCollision(p,x-p.x,z-p.z)||blocked;}const hit=x=>{const q=g.localToWorld(new THREE.Vector3(x,0,10));return checkWallCollision(q.x,0,q.z)};const wall=guard.getObjectByName('guard-upper-wall'),base=guard.getObjectByName('guard-blue-base');return {found:true,balls:balls.length,blocked,distance:Math.hypot(p.x-end.x,p.z-end.z),legs:[hit(10.025),hit(11.975)],wall:wall?.material.color.clone().convertLinearToSRGB().getHex(),base:base?.material.color.clone().convertLinearToSRGB().getHex(),windows:guard.children.filter(o=>o.name.startsWith('guard-window')).length,led:!!guard.getObjectByName('guard-led'),door:!!guard.getObjectByName('guard-door')};})()`);
+ const r=evaluate(`(()=>{scene.updateMatrixWorld(true);const g=scene.getObjectByName('main-entrance-plaza'),tower=scene.getObjectByName('main-entrance-photo-tower'),guard=scene.getObjectByName('main-entrance-guard'),balls=[];g.traverse(o=>{if(o.geometry?.type==='SphereGeometry')balls.push(o)});if(!tower)return {found:false};const start=g.localToWorld(new THREE.Vector3(8,0,10)),end=g.localToWorld(new THREE.Vector3(13.5,0,10)),p={x:start.x,y:0,z:start.z};let blocked=false;for(let i=1;i<=60;i++){const x=start.x+(end.x-start.x)*i/60,z=start.z+(end.z-start.z)*i/60;blocked=moveAvatarWithCollision(p,x-p.x,z-p.z)||blocked;}const hit=z=>{const q=g.localToWorld(new THREE.Vector3(11,0,z));return checkWallCollision(q.x,0,q.z)};const wall=guard.getObjectByName('guard-upper-wall'),base=guard.getObjectByName('guard-blue-base');return {found:true,balls:balls.length,blocked,distance:Math.hypot(p.x-end.x,p.z-end.z),legs:[hit(9.025),hit(10.975)],wall:wall?.material.color.clone().convertLinearToSRGB().getHex(),base:base?.material.color.clone().convertLinearToSRGB().getHex(),windows:guard.children.filter(o=>o.name.startsWith('guard-window')).length,led:!!guard.getObjectByName('guard-led'),door:!!guard.getObjectByName('guard-door')};})()`);
  expect(r.found).toBe(true);expect(r.balls).toBe(1);expect(r.blocked).toBe(false);expect(r.distance).toBeLessThan(.01);expect(r.legs).toEqual([true,true]);expect(r.wall).toBe(0xe7e5d9);expect(r.base).toBe(0x94c3ce);expect(r.windows).toBeGreaterThanOrEqual(3);expect(r.led).toBe(true);expect(r.door).toBe(true);
 });
 it('starts the avatar and gate navigation node on the shared entrance axis facing the statue',()=>{
@@ -31,11 +31,21 @@ it('starts the avatar and gate navigation node on the shared entrance axis facin
  expect(r.found).toBe(true);expect(r.position.x).toBeCloseTo(r.spawn.x);expect(r.position.z).toBeCloseTo(r.spawn.z);expect(r.node.x).toBeCloseTo(r.spawn.x);expect(r.node.z).toBeCloseTo(r.spawn.z);expect(r.alignment).toBeCloseTo(1,8);
 });
 it('joins the perimeter to the straight gate while keeping the outside avenue clear',()=>{
- const r=evaluate(`(()=>{const a=CampusOutdoorPlan.entrance,p=CampusOutdoorPlan.perimeter;return {first:p.outline[0],last:p.outline.at(-1),left:a.world(-12.2,0),right:a.world(12.2,0),leftReturn:p.outline[1],rightReturn:p.outline.at(-2)};})()`);
+ const r=evaluate(`(()=>{const a=CampusOutdoorPlan.entrance,p=CampusOutdoorPlan.perimeter;return {first:p.outline[0],last:p.outline.at(-1),left:a.world(-12.2,0),right:a.world(12.2,-1.2),leftReturn:p.outline[1],rightReturn:p.outline.at(-2)};})()`);
  expect(r.first[0]).toBeCloseTo(r.left.x);expect(r.first[1]).toBeCloseTo(r.left.z);expect(r.last[0]).toBeCloseTo(r.right.x);expect(r.last[1]).toBeCloseTo(r.right.z);expect(r.leftReturn).toEqual([-48.2,100]);expect(r.rightReturn).toEqual([-23.8,100]);
 });
 
 it('keeps the gate square to the driveway and the palm avenue straight toward the statue',()=>{
  const r=evaluate(`(()=>{scene.updateMatrixWorld(true);const e=CampusOutdoorPlan.entrance,g=scene.getObjectByName('main-entrance-plaza'),avenue=CampusEntranceAvenue.plan;return {yaw:g.rotation.y,gate:e.gate,statue:e.target,avenueX:avenue.x,node:NAV_NODES['palm-avenue-end'],centerBlocked:Array.from({length:90},(_,i)=>checkWallCollision(e.gate.x,0,85+i)).some(Boolean)};})()`);
  expect(r.yaw).toBe(0);expect(r.gate.x).toBe(r.statue.x);expect(r.avenueX).toBe(r.gate.x);expect(r.node.x).toBe(r.gate.x);expect(r.centerBlocked).toBe(false);
+});
+
+it('places the door on the campus face and a raised small window on the street face',()=>{
+ const r=evaluate(`(()=>{const g=scene.getObjectByName('main-entrance-guard'),door=g.getObjectByName('guard-door'),window=g.getObjectByName('guard-street-small-window'),roof=g.getObjectByName('guard-gable-roof');return {center:g.position,door:door.position,window:window?.position,roofYaw:roof.rotation.y,node:NAV_NODES['gate-guard']};})()`);
+ expect(r.center.z).toBeCloseTo(82.4);expect(r.door.z).toBeLessThan(-2.8);expect(r.window?.z).toBeGreaterThan(2.8);expect(r.window?.y).toBeGreaterThan(1.2);expect(r.roofYaw).toBeCloseTo(Math.PI/2);expect(r.node.z).toBeLessThan(78.8);expect(r.node.x).toBeCloseTo(r.center.x+r.door.x);
+});
+
+it('routes a visitor from the gate to the corrected campus-side guard door',()=>{
+ const r=evaluate(`(()=>{const p={...campusWalkWorld.graph.gate},points=campusWalkWorld.route(p,ROOMS_DB.guard);let blocked=false;for(const q of points.slice(1))blocked=moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y,true)||blocked;return {blocked,end:p,node:NAV_NODES['gate-guard'],points:points.length};})()`);
+ expect(r.points).toBeGreaterThan(1);expect(r.blocked).toBe(false);expect(Math.hypot(r.end.x-r.node.x,r.end.z-r.node.z)).toBeLessThan(.03);
 });

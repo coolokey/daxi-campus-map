@@ -38,7 +38,7 @@ const CampusOutdoorPlan=(()=>{
  // Coordinates, fence height and finishes are illustrative, not surveyed.
  // The open polyline ends at the outside edges of the existing gate pylons.
  const outline=[[-22.2,86],[-22.2,100],[-40,100],[-95,91],[-112,83],[-127,57],[-123,54],[-141,20],[-144,22],[-149,12],[-152,-25],[-151,-52],[-142,-64],[-123,-71],[-121,-79],[111,-79],[114,-75],[111,-65],[109,-12],[111,-3],[103,2],[106,14],[108,24],[107,34],[99,39],[99,64],[98,86],[94,99],[66,94],[2.2,100],[2.2,86]];
- for(const [index,cross] of [[0,-12.2],[outline.length-1,12.2]]){const p=world(cross,0);outline[index]=[p.x,p.z];}
+ for(const [index,cross] of [[0,-12.2],[outline.length-1,12.2]]){const p=world(cross,index===0?0:-1.2);outline[index]=[p.x,p.z];}
  outline[1]=[gate.x-12.2,100];outline[2]=[-65,100];outline[outline.length-2]=[gate.x+12.2,100];
  const perimeter={height:2.9,thickness:.7,outline,segments:outline.slice(1).map(([bx,bz],i)=>({ax:outline[i][0],az:outline[i][1],bx,bz,thickness:.7}))};
  perimeter.contains=(x,z)=>{let inside=false;for(let i=0,j=outline.length-1;i<outline.length;j=i++){const [ax,az]=outline[i],[bx,bz]=outline[j];if((az>z)!==(bz>z)&&x<(bx-ax)*(z-az)/(bz-az)+ax)inside=!inside;}return inside};
