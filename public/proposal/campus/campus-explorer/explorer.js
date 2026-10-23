@@ -820,18 +820,18 @@
       // 2. 警衛室：照片中的米白上牆、淺藍牆腳與紅色雙坡屋頂。
       const guardGroup = new THREE.Group();
       guardGroup.name='main-entrance-guard';
-      const guard=entrance.world(16,3.6);guardGroup.position.copy(guard);
+      const guard=entrance.world(16,1.6);guardGroup.position.copy(guard);
 
       const guardBody = new THREE.Mesh(
-        new THREE.BoxGeometry(7.6, 2.2, 4.4),
+        new THREE.BoxGeometry(7.6, 2.2, 3.8),
         new THREE.MeshStandardMaterial({ color: 0xe7e5d9, roughness:.95 })
       );
-      guardBody.name='guard-upper-wall';guardBody.position.set(0,2.1,-.6);
+      guardBody.name='guard-upper-wall';guardBody.position.set(0,2.1,-.9);
       guardBody.castShadow = true;
       guardGroup.add(guardBody);
-      const blueBase=new THREE.Mesh(new THREE.BoxGeometry(7.6,1,4.4),new THREE.MeshStandardMaterial({color:0x94c3ce,roughness:.94}));blueBase.name='guard-blue-base';blueBase.position.set(0,.5,-.6);guardGroup.add(blueBase);
-      // 校外值勤窗退縮於簷下，右端小窗位於向前的短翼牆。
-      for(const [height,y,material] of [[2.2,2.1,guardBody.material],[1,.5,blueBase.material]]){const wing=new THREE.Mesh(new THREE.BoxGeometry(2.4,height,1.2),material);wing.position.set(2.6,y,2.2);wing.castShadow=true;guardGroup.add(wing);}
+      const blueBase=new THREE.Mesh(new THREE.BoxGeometry(7.6,1,3.8),new THREE.MeshStandardMaterial({color:0x94c3ce,roughness:.94}));blueBase.name='guard-blue-base';blueBase.position.set(0,.5,-.9);guardGroup.add(blueBase);
+      // 俯視照：屋身跨校門線，右端值勤翼伸向校外，窗口退縮於簷下。
+      for(const [height,y,material] of [[2.2,2.1,guardBody.material],[1,.5,blueBase.material]]){const wing=new THREE.Mesh(new THREE.BoxGeometry(2.4,height,2.6),material);if(height===2.2)wing.name='guard-street-wing';wing.position.set(2.6,y,2.3);wing.castShadow=true;guardGroup.add(wing);}
 
       // 屋脊沿屋身長向延伸，校內與校外均為長簷面。
       const tileCanvas=document.createElement('canvas');tileCanvas.width=tileCanvas.height=256;
@@ -845,7 +845,7 @@
       }
       const roofTileTex=new THREE.CanvasTexture(tileCanvas);roofTileTex.wrapS=roofTileTex.wrapT=THREE.RepeatWrapping;roofTileTex.repeat.set(.35,.35);
       const gRoofShape = new THREE.Shape();
-      gRoofShape.moveTo(-3.4, 0);
+      gRoofShape.moveTo(-4.2, 0);
       gRoofShape.lineTo(0, 1.4);
       gRoofShape.lineTo(3.4, 0);
       gRoofShape.closePath();
@@ -871,23 +871,23 @@
         const pane=new THREE.Mesh(new THREE.BoxGeometry(width-.2,height-.2,.075),glassMat);pane.position.set(x,y,z+side*.04);guardGroup.add(pane);
         const mullion=new THREE.Mesh(new THREE.BoxGeometry(.045,height-.17,.09),frameMat);mullion.position.copy(pane.position);guardGroup.add(mullion);
       };
-      for(const x of [-2.2,-.7]){addWindow(`guard-window-campus-${x}`,x,-2.83);addWindow(`guard-window-duty-${x}`,x,1.63);}
-      addWindow('guard-street-small-window',2.65,2.83,.9,1.12,1.72);
+      for(const x of [-2.2,-.7]){addWindow(`guard-window-campus-${x}`,x,-2.83);addWindow(`guard-window-duty-${x}`,x,1.03);}
+      addWindow('guard-street-small-window',2.65,3.63,.9,1.12,1.72);
       // 圖四：從校內看依序為公告欄、白門、窗戶、門塔。校外右端沒有門。
       const door=new THREE.Mesh(new THREE.BoxGeometry(1.1,2.25,.08),frameMat);door.name='guard-door';door.position.set(1.4,1.125,-2.85);guardGroup.add(door);
       const doorGlass=new THREE.Mesh(new THREE.BoxGeometry(.88,1.35,.09),glassMat);doorGlass.position.set(1.4,1.6,-2.9);guardGroup.add(doorGlass);
       const handle=new THREE.Mesh(new THREE.BoxGeometry(.035,.24,.05),new THREE.MeshStandardMaterial({color:0x6b7779,metalness:.6,roughness:.4}));handle.position.set(1.8,1.04,-2.97);guardGroup.add(handle);
       const notice=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.12,.06),new THREE.MeshStandardMaterial({color:0xe1deb2,roughness:.9}));notice.name='guard-campus-noticeboard';notice.position.set(2.8,1.8,-2.84);guardGroup.add(notice);
       const awning=new THREE.Mesh(new THREE.BoxGeometry(5.2,.18,1.9),frameMat);awning.name='guard-entry-awning';awning.position.set(-1.1,2.55,2.6);awning.castShadow=true;guardGroup.add(awning);
-      const counter=new THREE.Mesh(new THREE.BoxGeometry(2.8,.12,.5),frameMat);counter.name='guard-duty-counter';counter.position.set(-1.3,1.02,1.96);guardGroup.add(counter);
+      const counter=new THREE.Mesh(new THREE.BoxGeometry(2.2,.12,.5),frameMat);counter.name='guard-duty-counter';counter.position.set(-.7,1.02,1.96);guardGroup.add(counter);
       const railMat=new THREE.MeshStandardMaterial({color:0x597b7e,roughness:.7});
       for(const x of [-3.4,-3.0,-2.6]){const rail=new THREE.Mesh(new THREE.BoxGeometry(.045,.9,.045),railMat);rail.position.set(x,.45,2.5);guardGroup.add(rail);}
       const railTop=new THREE.Mesh(new THREE.BoxGeometry(.85,.05,.06),railMat);railTop.position.set(-3,.92,2.5);guardGroup.add(railTop);
 
       scene.add(guardGroup);
-      registerWallCollider(guard.x-3.8,guard.x+3.8,guard.z-2.8,guard.z+1.6,0,3.2);
-      registerWallCollider(guard.x+1.4,guard.x+3.8,guard.z+1.6,guard.z+2.8,0,3.2);
-      registerWallCollider(guard.x-2.7,guard.x+.1,guard.z+1.71,guard.z+2.21,.96,1.08);
+      registerWallCollider(guard.x-3.8,guard.x+3.8,guard.z-2.8,guard.z+1,0,3.2);
+      registerWallCollider(guard.x+1.4,guard.x+3.8,guard.z+1,guard.z+3.6,0,3.2);
+      registerWallCollider(guard.x-1.8,guard.x+.4,guard.z+1.71,guard.z+2.21,.96,1.08);
       registerWallCollider(guard.x-3.43,guard.x-2.57,guard.z+2.47,guard.z+2.53,0,.95);
       // 逐一對應可見實體；主塔底部開口不再放整塊隱形碰撞。
       const towerCollider=(cross,inward,halfWidth,halfDepth,minY,maxY)=>{const p=entrance.world(cross,inward);registerWallCollider(p.x-halfWidth,p.x+halfWidth,p.z-halfDepth,p.z+halfDepth,minY,maxY);Object.assign(WALL_COLLIDERS.at(-1),{gatePylon:true,perimeter:true});};
@@ -2100,7 +2100,7 @@
       { name: "籃球場群", x: 12, y: 1.8, z: -38 },
       { name: "蘭亭訓平池", x: -18, y: 2.2, z: -66 },
       { name: "校大門", ...CampusOutdoorPlan.entrance.world(0,0,3.5) },
-      { name: "警衛室", ...CampusOutdoorPlan.entrance.world(16,3.6,3.2) },
+      { name: "警衛室", ...CampusOutdoorPlan.entrance.world(16,1.6,3.2) },
       { name: "學生活動中心", x: -80, y: 6.0, z: 58 },
       { name: "行政大樓", x: -12, y: 6.0, z: 32 },
       { name: "八年級棟 (南棟)", x: 16, y: 6.0, z: 60 },
@@ -2138,7 +2138,7 @@
     const NAV_NODES = {
   // 1. 正門、迎賓廣場、銅像
   "gate": { id: "gate", ...CampusOutdoorPlan.entrance.spawn, neighbors: ["gate-guard", "plaza-center", "driveway-s1"] },
-  "gate-guard": { id: "gate-guard", ...CampusOutdoorPlan.entrance.world(17.4,7.8), neighbors: ["gate", "plaza-center", "driveway-s1"] },
+  "gate-guard": { id: "gate-guard", ...CampusOutdoorPlan.entrance.world(17.4,5.8), neighbors: ["gate", "plaza-center", "driveway-s1"] },
   "plaza-center": { id: "plaza-center", ...CampusOutdoorPlan.entrance.world(0,14), neighbors: ["gate", "gate-guard", "statue-node", "admin-f-porch", "g8f-porch"] },
   "statue-node": { id: "statue-node", x: -36, y: 0, z: 32, neighbors: ["plaza-center", "gym-path-1", "admin-f-porch", "stand-front"] },
 

@@ -31,8 +31,8 @@ it('starts the avatar and gate navigation node on the shared entrance axis facin
  expect(r.found).toBe(true);expect(r.position.x).toBeCloseTo(r.spawn.x);expect(r.position.z).toBeCloseTo(r.spawn.z);expect(r.node.x).toBeCloseTo(r.spawn.x);expect(r.node.z).toBeCloseTo(r.spawn.z);expect(r.alignment).toBeCloseTo(1,8);
 });
 it('joins the perimeter to the straight gate while keeping the outside avenue clear',()=>{
- const r=evaluate(`(()=>{const a=CampusOutdoorPlan.entrance,p=CampusOutdoorPlan.perimeter;return {first:p.outline[0],last:p.outline.at(-1),left:a.world(-12.2,0),right:a.world(12.2,-1.2),leftReturn:p.outline[1],rightReturn:p.outline.at(-2)};})()`);
- expect(r.first[0]).toBeCloseTo(r.left.x);expect(r.first[1]).toBeCloseTo(r.left.z);expect(r.last[0]).toBeCloseTo(r.right.x);expect(r.last[1]).toBeCloseTo(r.right.z);expect(r.leftReturn).toEqual([-48.2,100]);expect(r.rightReturn).toEqual([-23.8,100]);
+ const r=evaluate(`(()=>{const a=CampusOutdoorPlan.entrance,p=CampusOutdoorPlan.perimeter;return {first:p.outline[0],last:p.outline.at(-1),left:a.world(-12.2,0),right:a.world(20.25,-2),leftReturn:p.outline[1],rightReturn:p.outline.at(-2)};})()`);
+ expect(r.first[0]).toBeCloseTo(r.left.x);expect(r.first[1]).toBeCloseTo(r.left.z);expect(r.last[0]).toBeCloseTo(r.right.x);expect(r.last[1]).toBeCloseTo(r.right.z);expect(r.leftReturn).toEqual([-48.2,100]);expect(r.rightReturn).toEqual([-15.75,100]);
 });
 
 it('keeps the gate square to the driveway and the palm avenue straight toward the statue',()=>{
@@ -42,10 +42,15 @@ it('keeps the gate square to the driveway and the palm avenue straight toward th
 
 it('places the door on the campus face and a raised small window on the street face',()=>{
  const r=evaluate(`(()=>{const g=scene.getObjectByName('main-entrance-guard'),door=g.getObjectByName('guard-door'),window=g.getObjectByName('guard-street-small-window'),roof=g.getObjectByName('guard-gable-roof');return {center:g.position,door:door.position,window:window?.position,roofYaw:roof.rotation.y,node:NAV_NODES['gate-guard']};})()`);
- expect(r.center.z).toBeCloseTo(82.4);expect(r.door.z).toBeLessThan(-2.8);expect(r.window?.z).toBeGreaterThan(2.8);expect(r.window?.y).toBeGreaterThan(1.2);expect(r.roofYaw).toBeCloseTo(Math.PI/2);expect(r.node.z).toBeLessThan(78.8);expect(r.node.x).toBeCloseTo(r.center.x+r.door.x);
+ expect(r.center.z).toBeCloseTo(84.4);expect(r.door.z).toBeLessThan(-2.8);expect(r.window?.z).toBeGreaterThan(2.8);expect(r.window?.y).toBeGreaterThan(1.2);expect(r.roofYaw).toBeCloseTo(Math.PI/2);expect(r.node.z).toBeCloseTo(80.2);expect(r.node.x).toBeCloseTo(r.center.x+r.door.x);
 });
 
 it('routes a visitor from the gate to the corrected campus-side guard door',()=>{
  const r=evaluate(`(()=>{const p={...campusWalkWorld.graph.gate},points=campusWalkWorld.route(p,ROOMS_DB.guard);let blocked=false;for(const q of points.slice(1))blocked=moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y,true)||blocked;return {blocked,end:p,node:NAV_NODES['gate-guard'],points:points.length};})()`);
  expect(r.points).toBeGreaterThan(1);expect(r.blocked).toBe(false);expect(Math.hypot(r.end.x-r.node.x,r.end.z-r.node.z)).toBeLessThan(.03);
+});
+
+it('straddles the entrance with an outside booth wing and a campus-side door',()=>{
+ const r=evaluate(`(()=>{scene.updateMatrixWorld(true);const e=CampusOutdoorPlan.entrance,g=scene.getObjectByName('main-entrance-guard'),wing=g.getObjectByName('guard-street-wing'),door=g.getObjectByName('guard-door'),roof=g.getObjectByName('guard-gable-roof'),outside=e.world(11,-1.2).z;const bounds=new THREE.Box3().setFromObject(wing),roofBounds=new THREE.Box3().setFromObject(roof),d=door.getWorldPosition(new THREE.Vector3());return {outside,wing:bounds,roof:roofBounds,door:d,perimeterEnd:CampusOutdoorPlan.perimeter.outline.at(-1)};})()`);
+ expect(r.wing.max.z).toBeGreaterThan(r.outside+.5);expect(r.roof.max.z).toBeGreaterThan(r.outside+1);expect(r.door.z).toBeLessThan(86);expect(r.perimeterEnd[0]).toBeGreaterThan(r.wing.max.x);
 });
