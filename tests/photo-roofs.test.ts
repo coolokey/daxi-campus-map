@@ -6,7 +6,7 @@ import * as THREE from 'three';
 
 function fixture(withFacade=false){
  const dom=new JSDOM('<body/>',{runScripts:'outside-only'}),w=dom.window as any;
- w.THREE=THREE;w.FH=3.6;
+ w.THREE=THREE;w.FH=3.6;w.renderer={capabilities:{getMaxAnisotropy:()=>1}};
  const run=(s:string)=>runInContext(s,dom.getInternalVMContext());
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','walk-world-math.js'])run(readFileSync('public/campus-explorer/'+f,'utf8'));
  const layouts=run('BUILDINGS_CONFIG.map(CampusWalkMath.layout)');layouts.push(...run('CampusSpatialPlan.galleries(BUILDINGS_CONFIG.map(CampusWalkMath.layout))'));
@@ -26,7 +26,7 @@ function fixture(withFacade=false){
  if(existsSync('public/campus-explorer/photo-roofs.js'))run(readFileSync('public/campus-explorer/photo-roofs.js','utf8'));
  return{dom,w,scene,floorMeshes,layouts,legacy,ceilings,before};
 }
-const ids=['grade8-front','grade8-mid','grade9-back','art-building','tech-building'];
+const ids=['grade8-front','grade8-mid','grade9-back','art-building','tech-building','health-bld'];
 it('represents the aerial art building as a compact four-storey block beside the technology wing',()=>{
  const s=fixture(),art=s.layouts.find((l:any)=>l.id==='art-building'),tech=s.layouts.find((l:any)=>l.id==='tech-building');
  expect(art.b.floors).toBe(4);expect(art.b.depth/art.b.width).toBeLessThan(1.5);
@@ -67,4 +67,20 @@ it('keeps every technology roof vertex inside the existing top-floor footprints 
 it('preserves room geometry navigation and collision data and uses matte roofs',()=>{
  const s=fixture();expect(s.scene.getObjectByName('photo-roof-art-building')).toBeTruthy();expect(JSON.stringify({layouts:s.layouts,graph:s.w.campusWalkWorld.graph,colliders:s.w.WALL_COLLIDERS})).toBe(s.before);
  for(const id of ids)s.scene.getObjectByName('photo-roof-'+id)!.traverse((o:any)=>{if(o.isMesh)expect(o.material.roughness).toBeGreaterThanOrEqual(.94)});s.dom.window.close();
+});
+
+it('models the shared health and cooperative building with a red four-hip roof and paired vents',()=>{
+ const s=fixture(),l=s.layouts.find((l:any)=>l.id==='health-bld'),g=s.scene.getObjectByName('photo-roof-health-bld');
+ expect(l.b.roofColor).toBe(0xd84b43);expect(g).toBeTruthy();const roof=g!.getObjectByName('health-red-hip-roof') as THREE.Mesh;expect(roof).toBeTruthy();
+ const normals=roof.geometry.getAttribute('normal'),directions=new Set();for(let i=0;i<normals.count;i++){expect(normals.getY(i)).toBeGreaterThan(0);directions.add(Math.abs(normals.getX(i))>Math.abs(normals.getZ(i))?(normals.getX(i)>0?'east':'west'):(normals.getZ(i)>0?'south':'north'));}
+ expect([...directions].sort()).toEqual(['east','north','south','west']);
+ expect(g!.children.filter(o=>o.name==='health-roof-vent')).toHaveLength(4);
+ const size=new THREE.Box3().setFromObject(g!).getSize(new THREE.Vector3());expect(size.y).toBeLessThan(3);expect(g!.userData.floorNum).toBe(2);
+ expect((roof.material as THREE.MeshStandardMaterial).color.r).toBeGreaterThan((roof.material as THREE.MeshStandardMaterial).color.b*1.5);
+ expect(s.layouts.find((q:any)=>q.id==='health-bld').rooms.filter((r:any)=>r.floor===1).map((r:any)=>r.id)).toEqual(['health','coop']);s.dom.window.close();
+});
+it('places art rooftop equipment on a flat terrace rather than on the yellow sloping roof',()=>{
+ const s=fixture(),l=s.layouts.find((l:any)=>l.id==='art-building'),g=s.scene.getObjectByName('photo-roof-art-building')!;
+ const terrace=g.getObjectByName('art-roof-service-terrace'),tank=g.getObjectByName('art-roof-water-tank');expect(terrace).toBeTruthy();expect(tank).toBeTruthy();
+ g.updateMatrixWorld(true);const t=new THREE.Box3().setFromObject(terrace!),w=new THREE.Box3().setFromObject(tank!);expect(w.min.y-t.max.y).toBeGreaterThanOrEqual(-.01);expect(w.min.y-t.max.y).toBeLessThan(.2);expect(w.min.x).toBeGreaterThan(t.min.x);expect(w.max.x).toBeLessThan(t.max.x);expect(w.min.z).toBeGreaterThan(t.min.z);expect(w.max.z).toBeLessThan(t.max.z);expect(t.max.y).toBeLessThan(l.b.floors*3.6+.4);s.dom.window.close();
 });

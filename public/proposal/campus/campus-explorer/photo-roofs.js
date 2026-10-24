@@ -3,7 +3,7 @@
  * admin-front is handled independently by photo-facade.js.
  */
 const CampusPhotoRoofs=(()=>{
- const ids=new Set(['admin-front','grade8-front','grade8-mid','grade9-back','art-building','tech-building']);
+ const ids=new Set(['admin-front','grade8-front','grade8-mid','grade9-back','art-building','tech-building','health-bld']);
  function build({scene,layouts,floorMeshes,height=3.6}){
   const materials=new Map(),material=color=>{
    if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.97,side:THREE.DoubleSide}));
@@ -51,6 +51,8 @@ const CampusPhotoRoofs=(()=>{
     for(let a=p.u0;a<=p.u1;a+=spacing)for(const sign of [-1,1])localBox(a,v+sign*half/2,.026,slopeLength,.022,y+.16+rise/2,tiles?0xb6aa7f:0xc4ba8e,sign*angle);
     if(tiles)for(let d=.75;d<half;d+=.75)for(const sign of [-1,1])localBox(u,v+sign*d,length,.025,.018,y+.17+rise*(1-d/half),0xb9ad81);
    }
+   function detail(name,u,v,length,depth,h,cy,color,parent=g){const p=l.world(u,v,cy),m=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?length:depth,h,l.horizontal?depth:length),material(color));m.name=name;m.position.set(p.x,p.y,p.z);m.castShadow=m.receiveShadow=true;parent.add(m);return m;}
+   function faces(name,polygons,color,parent=g){const points=[];for(const polygon of polygons){const p=polygon.map(([u,v,h])=>l.world(u,v,h));for(let i=1;i<p.length-1;i++)for(const q of [p[0],p[i],p[i+1]])points.push(q.x,q.y,q.z);}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(points,3));geo.computeVertexNormals();const m=new THREE.Mesh(geo,material(color));m.name=name;m.castShadow=m.receiveShadow=true;parent.add(m);return m;}
    const top=l.footprints.filter(p=>p.floor===l.b.floors);
    if(l.id==='grade9-back'){
     for(const p of top){
@@ -71,10 +73,35 @@ const CampusPhotoRoofs=(()=>{
      for(const a of [p.v0+.07,p.v1-.07])localBox(u,a,L,.14,.36,y+.18,0xc6c9c3);
     }
     const nose=l.facadeFeatures?.roundedNose;if(nose){const p=l.world(nose.u,nose.v);add(new THREE.CylinderGeometry(nose.radius,nose.radius,.14,24,1,false,0,Math.PI),0xe3e3da,p.x,y+.07,p.z);}
+    // The new aerial resolves a small flat-roof stair head and scattered vents.
+    const main=top.find(p=>p.u0<0);if(main){detail('tech-roof-stair-head',-4.3,3.6,3.2,2.5,.68,y+.48,0xd7dad4);for(const [u,v] of [[-13,-8],[-9,8]]){const q=l.world(u,v,y+.29),vent=new THREE.Mesh(new THREE.CylinderGeometry(.12,.16,.3,10),material(0xc4c9c3));vent.position.set(q.x,q.y,q.z);vent.name='tech-flat-roof-vent';g.add(vent);}}
    }else if(l.id==='art-building'){
-    for(const p of top)pitched(p,{rise:.95,tiles:true,overhang:.22});
-    // Only a modest grey equipment box can be identified; no speculative towers.
-    const p=top[0];if(p)localBox(p.u0+2,(p.v0+p.v1)/2,2.4,2.1,.7,y+1.25,0x9d9f98);
+    // Near the technology wing, the yellow roof stops before a flat service terrace.
+    const p=top[0];if(p){
+     const end=p.u0+2.7,v=(p.v0+p.v1)/2;
+     pitched({...p,u0:end},{color:0xd8ce99,rise:.95,tiles:true,overhang:.22,endColor:0xbd6557});
+     const terrace=detail('art-roof-service-terrace',(p.u0+end)/2,v,end-p.u0,p.v1-p.v0,.16,y+.08,0x949a93);
+     for(const side of [p.v0+.07,p.v1-.07])detail('art-service-parapet',(p.u0+end)/2,side,end-p.u0,.14,.38,y+.19,0xb8bcb4);
+     detail('art-service-parapet',p.u0+.07,v,.14,p.v1-p.v0,.38,y+.19,0xb8bcb4);
+     const tank=new THREE.Group();tank.name='art-roof-water-tank';g.add(tank);
+     const q=l.world(p.u0+1.15,v,y+.66),shell=new THREE.Mesh(new THREE.CylinderGeometry(.48,.48,1,18),material(0xb9c1bd));shell.position.set(q.x,q.y,q.z);shell.castShadow=true;tank.add(shell);
+     for(const h of [-.36,-.12,.12,.36]){const band=new THREE.Mesh(new THREE.TorusGeometry(.485,.018,5,18),material(0x808f8c));band.rotation.x=Math.PI/2;band.position.set(q.x,q.y+h,q.z);tank.add(band);}
+    }
+   }else if(l.id==='health-bld'){
+    // Two-storey shared clinic/cooperative block: low red hip roof, not a tall blue gable.
+    const halfL=l.L/2+.65,halfD=l.D/2+.65,rise=1.7,ridge=halfL-halfD,base=y+.15;
+    const a=[-halfL,halfD,base],b=[halfL,halfD,base],c=[halfL,-halfD,base],d=[-halfL,-halfD,base],left=[-ridge,0,base+rise],right=[ridge,0,base+rise];
+    faces('health-red-hip-roof',[[a,b,right,left],[c,d,left,right],[b,c,right],[d,a,left]],0xd84b43);
+    const h=v=>base+rise*(1-Math.abs(v)/halfD);
+    for(let v=.65;v<halfD;v+=.65)for(const side of [-1,1])localBox(0,side*v,2*(ridge+v),.028,.015,h(v)+.012,0xb8443d);
+    localBox(0,0,ridge*2,.11,.12,base+rise+.035,0xbb403b);
+    for(const u of [-6,6])for(const side of [-1,1]){
+     const vent=new THREE.Group();vent.name='health-roof-vent';g.add(vent);
+     const front=side*3.2,back=side*2.2,lo=h(front)+.025,peak=lo+.58,backH=h(back)+.03;
+     faces('health-triangular-vent',[[[u-.6,front,lo],[u+.6,front,lo],[u,front,peak]]],0x625a50,vent);
+     faces('health-vent-roof',[[[u-.64,front,lo+.045],[u,front,peak+.045],[u,back,backH]],[[u,front,peak+.045],[u+.64,front,lo+.045],[u,back,backH]]],0xe66a5b,vent);
+    }
+    for(const v of [-halfD,halfD])localBox(0,v,halfL*2,.16,.16,base-.04,0xdfdcd0);
    }else if(l.id==='admin-gallery'){
     // Gallery layout uses world x/z as u/v; each narrow strip has its own ridge.
     for(const p of top){

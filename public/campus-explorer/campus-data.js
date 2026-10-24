@@ -6,11 +6,12 @@ const CampusSurfacePalette = (()=>{
  const admin={wall:0xb5af9d,band:0x598663,floor:0x878a84,stair:0x737974,edge:0x515a57,handrail:0x8c9692,skirt:0x606963,ceiling:0xbab4a4,exterior:0xa8aaa3,windowSill:0xa0a39b};
  const teaching={wall:0xb4b09e,band:0x568b63,floor:0x858a83,stair:0x7b807b,ceiling:0xb7b3a4,exterior:0x989d97,windowSill:0x92978f};
  const aerial={exterior:0xb0b3aa,windowSill:0xa3a79f};
+ const health={wall:0xbabdb4,exterior:0xb9bcb3,band:0xb0b4ac,windowSill:0xb5b9b1};
  // 767193–767196: grey aggregate, cream columns, green rails and pale doors.
  const new7={wall:0xa5a6a1,exterior:0x949792,band:0xc4b78e,windowSill:0xc4b78e,floor:0x92958e,ceiling:0xc5c4b8,steel:0x969f9b,handrail:0x4b4038,skirt:0x767e75};
  const gym={wall:0xb0b3a0,band:0xb18a7d,floor:0x727672,stair:0xa09b8d,edge:0x76776b,handrail:0x826346,skirt:0x285d88,exterior:0xaf8579};
  const shade=c=>[16,8,0].reduce((n,shift)=>n|(Math.round(((c>>shift)&255)*.92)<<shift),0);
- return {forBuilding:(b={})=>({...base,exterior:shade(b.color||0xb1b2a5),...(['admin-front','admin-back','admin-gallery'].includes(b.id)?admin:['grade8-front','grade8-mid','grade9-back'].includes(b.id)?teaching:['art-building','tech-building'].includes(b.id)?aerial:b.id==='new-grade7'?new7:b.id==='gym-bld'?gym:{})})};
+ return {forBuilding:(b={})=>({...base,exterior:shade(b.color||0xb1b2a5),...(['admin-front','admin-back','admin-gallery'].includes(b.id)?admin:['grade8-front','grade8-mid','grade9-back'].includes(b.id)?teaching:['art-building','tech-building'].includes(b.id)?aerial:b.id==='health-bld'?health:b.id==='new-grade7'?new7:b.id==='gym-bld'?gym:{})})};
 })();
 const FH = 3.6; // Floor Height in meters
 
@@ -79,8 +80,8 @@ const FH = 3.6; // Floor Height in meters
     id: "health-bld",
     name: "健康中心 / 合作社棟",
     category: "admin",
-    color: 0xb9c7c3,
-    roofColor: 0x5f7f89,
+    color: 0xb9bcb3,
+    roofColor: 0xd84b43,
     hasPitchedRoof: true,
     x: 12, z: -4, width: 28, depth: 9, floors: 2,
     stairs: [
@@ -254,7 +255,7 @@ const FH = 3.6; // Floor Height in meters
     name: "藝術館",
     category: "special",
     color: 0xc9bbb6,
-    roofColor: 0x896774,
+    roofColor: 0xd8ce99,
     // 1151015 aerials: compact four-storey tower immediately south of technology.
     x: 84, z: 45.8, width: 11.2, depth: 12.8, floors: 4,
     stairs: [
@@ -279,14 +280,14 @@ const BUILDING_ROOF_COLORS={
  'recycle-bld':0x64716b,   // 石灰綠
  'admin-front':0x873e39,   // 磚紅
  'admin-back':0x80504a,    // 暖陶紅
- 'health-bld':0x59727a,    // 藍灰
+ 'health-bld':0xd84b43,    // 2026-10-24 空拍：紅色四坡屋頂
  'grade8-front':0x90795a,  // 暖砂棕
  'grade9-back':0x7e8062,   // 橄欖棕
  'grade8-mid':0x8b7065,    // 陶土棕
  'new-grade7':0x91968f,    // 照片中的灰色平屋頂
  'multi-building':0x665c70,// 灰紫
- 'tech-building':0x476c63, // 松綠
- 'art-building':0x765c64  // 玫瑰灰
+ 'tech-building':0xe3e3da, // 白色平屋頂
+ 'art-building':0xd8ce99  // 淡黃色瓦狀斜屋頂
 };
 for(const building of BUILDINGS_CONFIG){
  building.color=building.isGymSpecial?0xb88d84:0xd0c9bd;
