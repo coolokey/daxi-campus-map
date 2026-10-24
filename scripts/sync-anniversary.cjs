@@ -7,6 +7,7 @@ for(const file of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','gy
 // The embedded copy used a previously bundled HTML entry. Rebuild from source,
 // otherwise copying the modules would leave the old hashed bundle running.
 fs.copyFileSync(path.join(source,'index.html'),path.join(target,'index.html'));
+fs.copyFileSync(path.join(source,'creator-avatar.png'),path.join(target,'creator-avatar.png'));
 const html=fs.readFileSync(path.join(target,'index.html'),'utf8');
 for(const file of ['gate.html','gate-guide.css','gate-guide.js','gate-guide-model.js'])fs.copyFileSync(path.join(source,file),path.join(target,file));
 for(const file of ['staff-data.js','campus-people.js','campus-people.css'])fs.copyFileSync(path.join(source,file),path.join(target,file));

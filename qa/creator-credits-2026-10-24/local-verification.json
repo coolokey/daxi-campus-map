@@ -1,0 +1,39 @@
+{
+  "componentTests": 2,
+  "cover": "single footer interactive in dialog and body",
+  "avatarOriginalPreserved": true,
+  "avatarSha256": "4de74a263f87486bd1d0c2e10bed11a9020f1faeefcaa8720474105df485309f",
+  "viewports": {
+    "390x844": {
+      "footerHeight": 46,
+      "sticksClear": true,
+      "autoWalk": "arrived at trail"
+    },
+    "320x568": {
+      "footerHeight": 69.25,
+      "sticksClear": true,
+      "horizontalOverflow": false
+    },
+    "844x390": {
+      "footerHeight": 46,
+      "sticksClear": true,
+      "horizontalOverflow": false
+    }
+  },
+  "gatePreview": {
+    "routeBottom": 336,
+    "creditTop": 348.75,
+    "clear": true,
+    "imageLoaded": true,
+    "bothLinksInteractive": true
+  },
+  "review": "P2 preview overlap fixed; no blocking findings",
+  "consoleErrors": [],
+  "desktopControls": {
+    "minimap": true,
+    "minimapCaption": true,
+    "directionPad": true,
+    "consoleErrors": []
+  },
+  "build": "passed; 46 scripts + 14 styles, no unrelated navigation-arrow changes"
+}

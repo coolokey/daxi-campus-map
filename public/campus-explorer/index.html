@@ -49,6 +49,13 @@
     </main>
     <nav class="guide-chapters" aria-label="探索入口"><button disabled data-chapter="first"><span>01</span><h2>第一次來大溪</h2><p>從正門開始，認識校園與常用處室。</p><b>開始走訪 ↗</b></button><button disabled data-chapter="search"><span>02</span><h2>找教室與處室</h2><p>輸入教室或地點，讓路線帶你前往。</p><b>尋找目的地 ↗</b></button><button disabled data-chapter="stories"><span>03</span><h2>認識校園故事</h2><p>木藝、閱讀與操場，探索校園的日常。</p><b>選一段散步 ↗</b></button></nav>
     <footer>大溪校園探索手冊<span>依 115 學年度平面圖建置</span></footer>
+    <footer id="campus-credits" aria-label="製作與參考資訊">
+      <div class="creator-credit-row">
+        <span class="creator-identity"><img src="creator-avatar.png" width="28" height="28" alt="大貿險家頭像"><a href="https://coolokey.github.io/AI-registration-team-leader/#" target="_blank" rel="noopener noreferrer"><strong>製作者：游貿仁老師</strong>（大貿險家）</a></span>
+        <span class="creator-reference">參考連結：<a href="https://3dtypsmap.vercel.app/" target="_blank" rel="noopener noreferrer">大勇國小 3D</a></span>
+      </div>
+      <small>使用請保留原始創作者資訊</small>
+    </footer>
   </dialog>
   <script>
     if(new URLSearchParams(location.search).has("to")||new URLSearchParams(location.search).has("view"))document.getElementById("guide-landing").removeAttribute("open");
@@ -335,5 +342,7 @@
 <script defer src="staff-data.js"></script>
 <script defer src="campus-people.js"></script>
 <link rel="stylesheet" href="mobile-layout.css">
+<link rel="stylesheet" href="creator-credits.css">
+<script defer src="creator-credits.js"></script>
 </body>
 </html>
