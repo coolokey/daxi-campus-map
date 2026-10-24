@@ -68,3 +68,17 @@ it('returns to the outside walking gate without first detouring into campus',()=
  const r=evaluate(`(()=>{const e=CampusOutdoorPlan.entrance,start=e.world(13.2,-2),points=campusWalkWorld.route(start,ROOMS_DB.gate);return {points,minZ:Math.min(...points.map(p=>p.z)),last:points.at(-1)};})()`);
  expect(r.minZ).toBeGreaterThanOrEqual(88);expect(r.last.z).toBeCloseTo(90);
 });
+
+it('places the confirmed Jiekou Creek sign outside the left gate boundary',()=>{
+ const r=evaluate(`(()=>{const t=CampusEntranceAvenue.trail,g=scene.getObjectByName('jiekou-trail-entrance'),sign=scene.getObjectByName('jiekou-trail-sign');if(!t||!g||!sign)return {found:false};scene.updateMatrixWorld(true);return {found:true,name:sign.userData.text,position:sign.getWorldPosition(new THREE.Vector3()),inside:CampusOutdoorPlan.perimeter.contains(t.sign.x,t.sign.z),room:ROOMS_DB['jiekou-trail']};})()`);
+ expect(r.found).toBe(true);expect(r.name).toBe('街口溪生態步道');expect(r.position.x).toBeLessThan(-48.2);expect(r.inside).toBe(false);expect(r.room.node).toBe('jiekou-trail-entry');
+});
+it('walks between the student gate, trail entrance and campus without crossing planters',()=>{
+ const r=evaluate(`(()=>{const room=ROOMS_DB['jiekou-trail'];if(!room)return {found:false};const starts=[{...CampusOutdoorPlan.entrance.spawn},{...CampusEntranceAvenue.trail.entry}],destinations=[room,ROOMS_DB.academic],rows=[];for(let i=0;i<starts.length;i++){const p={...starts[i]},points=campusWalkWorld.route(p,destinations[i]);let blocked=false;for(const q of points?.slice(1)||[])blocked=moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y,true)||blocked;rows.push({blocked,points:points?.length||0,distance:points?Math.hypot(p.x-points.at(-1).x,p.z-points.at(-1).z):999});}return {found:true,rows};})()`);
+ expect(r.found).toBe(true);for(const row of r.rows){expect(row.points).toBeGreaterThan(1);expect(row.blocked).toBe(false);expect(row.distance).toBeLessThan(.03);}
+});
+
+it('keeps the sign and stone planter solid and the trail entry open',()=>{
+ const r=evaluate(`(()=>{const t=CampusEntranceAvenue.trail;return {sign:checkWallCollision(t.sign.x,0,t.sign.z),curb:checkWallCollision(-58,0,101.5),entry:checkWallCollision(t.entry.x,0,t.entry.z),path:checkWallCollision(-70,0,108.4),wall:checkWallCollision(-75,0,110.4)};})()`);
+ expect(r).toEqual({sign:true,curb:true,entry:false,path:false,wall:true});
+});

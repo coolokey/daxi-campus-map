@@ -311,8 +311,10 @@ it('walks directly across all three administrative bridges into the matching nin
 it('detours past a person when the nearest rounded start cell overlaps their clearance',()=>{
  const r=run(`(()=>{const previous=window.campusPeople,person={x:-22.2,y:0,z:71},start={x:-21,y:0,z:71+2/3};
  window.campusPeople={blocksPlayer:(a,b)=>{const dx=b.x-a.x,dz=b.z-a.z,d=dx*dx+dz*dz,t=d?Math.max(0,Math.min(1,((person.x-a.x)*dx+(person.z-a.z)*dz)/d)):0;return Math.abs(a.y-person.y)<1.8&&Math.hypot(a.x+t*dx-person.x,a.z+t*dz-person.z)<1.36;}};
- try{const points=Array.from({length:8},(_,i)=>({x:-21,y:0,z:71-i})),path=campusWalkWorld.bypassPeople(start,points);if(!path)return {route:false};const p={...start},bad=[];for(const q of path)if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y))bad.push(q);return {route:true,bad,end:p};}finally{window.campusPeople=previous;}})()`);
- expect(r).toMatchObject({route:true,bad:[]});expect(r.end.x).toBeCloseTo(-21);expect(r.end.y).toBe(0);expect(r.end.z).toBeCloseTo(64);
+ // End before the existing forecourt planting bed (z <= 68.42), so this
+ // fixture isolates rounded-start NPC clearance rather than crossing soil.
+ try{const points=Array.from({length:3},(_,i)=>({x:-21,y:0,z:71-i})),path=campusWalkWorld.bypassPeople(start,points);if(!path)return {route:false};const p={...start},bad=[];for(const q of path)if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y))bad.push(q);return {route:true,bad,end:p};}finally{window.campusPeople=previous;}})()`);
+ expect(r).toMatchObject({route:true,bad:[]});expect(r.end.x).toBeCloseTo(-21);expect(r.end.y).toBe(0);expect(r.end.z).toBeCloseTo(69);
 });
 
 it('blocks sideways stair movement before the avatar body overlaps either rail or safety mesh',()=>{

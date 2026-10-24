@@ -466,7 +466,7 @@
  const podium=node('stand-podium',{...CampusOutdoorPlan.stage.center});link(stagePrevious,podium);roomTargets.grandstand=podium;
  for(const room of Object.values(ROOMS_DB))if(!roomTargets[room.id]&&room.node!=='gate'){
   const old=oldNodes[room.node];if(!old)continue;let p={x:old.x,y:0,z:old.z};const l=layouts.find(l=>insideFloor(l,p.x,p.z,1));if(l)p=l.entrance;
-  const target=node(room.node,p),entry=room.id==='palm-avenue'?gate:pedestrianEntry;attachPath(entry,target,gridPath(graph[entry],p));
+  const target=node(room.node,p),entry=['palm-avenue-end','jiekou-trail-entry'].includes(room.node)?gate:pedestrianEntry;attachPath(entry,target,gridPath(graph[entry],p));
  }
  for(const [alias,id] of Object.entries(CampusSpatialData.aliases))ROOMS_DB[alias]={...ROOMS_DB[id],id:alias,aliasFor:id};
  Object.keys(NAV_NODES).forEach(k=>delete NAV_NODES[k]);Object.assign(NAV_NODES,graph);
@@ -552,10 +552,11 @@
   const cross=(position.x-entrance.gate.x)*entrance.right.x+(position.z-entrance.gate.z)*entrance.right.z,inward=(position.x-entrance.gate.x)*entrance.axis.x+(position.z-entrance.gate.z)*entrance.axis.z;
   // Keep the first walking leg through the real wicket. The generic nearest-
   // anchor shortcut must not replace it with the wider vehicle driveway.
-  if(room.node!==gate&&room.node!=='palm-avenue-end'&&Math.abs(position.y)<.15&&Math.abs(cross-pedestrian.cross)<.8&&inward>=-8&&inward<5.75){
+  if(![gate,'palm-avenue-end','jiekou-trail-entry'].includes(room.node)&&Math.abs(position.y)<.15&&Math.abs(cross-pedestrian.cross)<.8&&inward>=-8&&inward<5.75){
    const entry=pedestrian.inside,approach=supportedSegment(position,entry)?[{...position},{...entry}]:gridPath(position,entry);
    const tail=approach&&route(entry,room);return tail?[...approach,...tail.slice(1)]:null;
   }
+  if(![gate,'palm-avenue-end','jiekou-trail-entry'].includes(room.node)&&Math.abs(position.y)<.15&&CampusEntranceAvenue.trailContains(position.x,position.z)){const approach=gridPath(position,pedestrian.outside),tail=approach&&route(pedestrian.outside,room);return tail?[...approach,...tail.slice(1)]:null;}
   const bankExit=CampusOutdoorPlan.lanBankExit(position);
   if(bankExit){const tail=route(bankExit.at(-1),room);return tail?[...bankExit,...tail.slice(1)]:null;}
   const gymExit=gymSurfaceExit(position);

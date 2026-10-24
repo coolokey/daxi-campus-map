@@ -915,6 +915,7 @@
 
       // 照片中的椰林大道位於校門外，保留中央入校動線。
       CampusEntranceAvenue.render(scene, registerWallCollider);
+      ROOMS_DB['jiekou-trail']={id:'jiekou-trail',code:'OUT-JIEKOU',name:'街口溪生態步道',buildingId:'entrance-trail',buildingName:'校門左側・校外步道入口',floor:1,cat:'special',node:'jiekou-trail-entry',entryHint:'位於警衛室對面的校外步道入口；本模型僅呈現入口附近。'};
       ROOMS_DB['palm-avenue'] = {id:'palm-avenue',code:'OUT-PALM',name:'校門椰林大道',buildingId:'entrance-avenue',buildingName:'校門外通道',floor:1,cat:'special',node:'palm-avenue-end'};
 
       // 機車與腳踏車停車棚
@@ -2109,6 +2110,7 @@
       { name: "汽機車大門", ...CampusOutdoorPlan.entrance.world(0,0,3.5) },
       { name: "警衛室", ...CampusOutdoorPlan.entrance.world(16,1.6,3.2) },
       { name: "學生步行小門", ...CampusOutdoorPlan.entrance.world(13.2,-.9,2) },
+      { name: "街口溪生態步道", x:CampusEntranceAvenue.trail.sign.x,y:3.4,z:CampusEntranceAvenue.trail.sign.z },
       { name: "學生活動中心", x: -80, y: 6.0, z: 58 },
       { name: "行政大樓", x: -12, y: 6.0, z: 32 },
       { name: "八年級棟 (南棟)", x: 16, y: 6.0, z: 60 },
@@ -2349,6 +2351,7 @@
   "art-4f-art": { id: "art-4f-art", x: 74, y: 10.8, z: 46, neighbors: ["art-stair-mid3"] }
 };
 
+    NAV_NODES['jiekou-trail-entry']={...CampusEntranceAvenue.trail.entry,neighbors:['gate']};
     NAV_NODES['palm-avenue-end']={x:CampusEntranceAvenue.plan.x,y:0,z:158,neighbors:['gate']};
     Object.keys(NAV_NODES).forEach(nid => {
       const node = NAV_NODES[nid];
