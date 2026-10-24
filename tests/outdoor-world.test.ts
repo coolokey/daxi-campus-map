@@ -43,8 +43,8 @@ it('keeps every real room inside the plan perimeter while excluding the surround
  const result=run(`(()=>{const p=CampusOutdoorPlan.perimeter;if(!p)return {missing:true};return {missing:false,outside:campusWalkWorld.layouts.flatMap(l=>l.rooms.filter(r=>!p.contains(r.center.x,r.center.z)).map(r=>r.id)),west:p.contains(-180,0),north:p.contains(0,-100),east:p.contains(130,0),river:p.contains(40,115)}})()`);
  expect(result).toEqual({missing:false,outside:[],west:false,north:false,east:false,river:false});
 });
-it('keeps driveway ends and both parking canopies within the perimeter',()=>{
- const bad=run(`(()=>{const p=CampusOutdoorPlan.perimeter,bad=[],road=scene.children.find(m=>m.isMesh&&m.geometry.type==='PlaneGeometry'&&m.position.z===86&&m.position.y===.02),canopies=scene.children.filter(m=>m.isMesh&&m.geometry.type==='BoxGeometry'&&m.position.y===3&&m.position.z===90);for(const m of [road,...canopies]){const width=m.geometry.parameters.width,depth=m.geometry.parameters.depth||m.geometry.parameters.height;for(const dx of [-width/2,width/2])for(const dz of [-depth/2,depth/2])if(!p.contains(m.position.x+dx,m.position.z+dz))bad.push({x:m.position.x+dx,z:m.position.z+dz})}return bad})()`);
+it('keeps driveway ends and parking canopies inside the perimeter or the open vehicle approach',()=>{
+ const bad=run(`(()=>{const p=CampusOutdoorPlan.perimeter,bad=[],road=scene.children.find(m=>m.isMesh&&m.geometry.type==='PlaneGeometry'&&m.position.z===86&&m.position.y===.02),canopies=scene.children.filter(m=>m.isMesh&&m.geometry.type==='BoxGeometry'&&m.position.y===3&&m.position.z===90);for(const m of [road,...canopies]){const width=m.geometry.parameters.width,depth=m.geometry.parameters.depth||m.geometry.parameters.height;for(const dx of [-width/2,width/2])for(const dz of [-depth/2,depth/2]){const x=m.position.x+dx,z=m.position.z+dz,e=CampusOutdoorPlan.entrance,vehicleApproach=m===road&&x>=e.gate.x-9.6&&x<=e.gate.x+9.6&&z>=e.gate.z&&z<=e.gate.z+5;if(!p.contains(x,z)&&!vehicleApproach)bad.push({x,z})}}return bad})()`);
  expect(bad).toEqual([]);
 });
 it('uses a larger, taller collision envelope for the rendered staff and student models',()=>{

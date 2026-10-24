@@ -3,9 +3,13 @@ const CampusEntranceAvenue = (() => {
   const plan = {x:CampusOutdoorPlan.entrance.gate.x,z0:89,z1:171,width:9,gateZ:86};
   const palms = Array.from({length:20},(_,i)=>({x:plan.x+(i%2?6.5:-6.5),z:96+Math.floor(i/2)*7.7,height:13.6+(i*7%9)*.35,rotation:i*2.399}));
   // Photo-confirmed entrance landmark; only the visible first stretch is modeled.
-  const trail={name:'街口溪生態步道',entry:{x:-49.5,y:0,z:109},width:4.2,sign:{x:-57,z:103.5,yaw:-.12},path:[{x:-49.5,z:109},{x:-61,z:109},{x:-77,z:108},{x:-94,z:104}]};
+  const signAnchor={x:-61,z:83.5,yaw:-.12};
+  const trailPoint=(dx,dz)=>({x:signAnchor.x+dx,z:signAnchor.z+dz});
+  // Anchor the entire entrance to the gym corner identified in the photos.
+  // The photographed shelter is a location reference only, not a new model.
+  const trail={name:'街口溪生態步道',entry:{...trailPoint(7.5,5.5),y:0},width:4.2,sign:signAnchor,path:[[7.5,5.5],[-4,5.5],[-20,4.5],[-37,.5]].map(([x,z])=>trailPoint(x,z))};
   const distanceToSegment=(x,z,a,b)=>{const dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz)));return Math.hypot(x-a.x-t*dx,z-a.z-t*dz)};
-  const trailContains=(x,z)=>(x>=-51&&x<=plan.x+3&&z>=103&&z<=112)||trail.path.slice(1).some((b,i)=>distanceToSegment(x,z,trail.path[i],b)<=trail.width/2+.2);
+  const trailContains=(x,z)=>!CampusOutdoorPlan.perimeter.contains(x,z)&&((x>=signAnchor.x+6&&x<=plan.x+3&&z>=signAnchor.z-.5&&z<=signAnchor.z+8.5)||trail.path.slice(1).some((b,i)=>distanceToSegment(x,z,trail.path[i],b)<=trail.width/2+.2));
   const contains = (x,z) => (x>=plan.x-9&&x<=plan.x+9&&z>=89&&z<=174)||trailContains(x,z);
   function renderTrail(scene,registerCollider,asphalt){
     const pathAsphalt=asphalt.clone();pathAsphalt.color.setHex(0x777b74);
@@ -15,11 +19,11 @@ const CampusEntranceAvenue = (() => {
     function box(name,w,h,d,x,y,z,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.name=name;m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;group.add(m);return m}
     function segment(name,a,b,width,height,y,mat,solid=false){const dx=b.x-a.x,dz=b.z-a.z,length=Math.hypot(dx,dz),m=box(name,length,height,width,(a.x+b.x)/2,y,(a.z+b.z)/2,mat);m.rotation.y=-Math.atan2(dz,dx);if(solid){registerCollider(Math.min(a.x,b.x)-width/2,Math.max(a.x,b.x)+width/2,Math.min(a.z,b.z)-width/2,Math.max(a.z,b.z)+width/2,y-height/2,y+height/2);if(typeof WALL_COLLIDERS!=='undefined')WALL_COLLIDERS.at(-1).segment={ax:a.x,az:a.z,bx:b.x,bz:b.z,thickness:width};}return m}
     // A level entrance surface: the photographs do not establish a surveyed grade.
-    box('jiekou-trail-approach',15,.045,8,-43.5,.045,108,pathAsphalt);
+    box('jiekou-trail-approach',15,.045,8,signAnchor.x+13.5,.045,signAnchor.z+4.5,pathAsphalt);
     for(let i=1;i<trail.path.length;i++){const a=trail.path[i-1],b=trail.path[i];segment('jiekou-trail-asphalt',a,b,trail.width,.055,.05,pathAsphalt);}
     for(const p of trail.path.slice(1,-1)){const m=new THREE.Mesh(new THREE.CylinderGeometry(trail.width/2,trail.width/2,.055,20),pathAsphalt);m.position.set(p.x,.05,p.z);group.add(m);}
     // An irregular stone-edged planted island, with collision only on its edges.
-    const polygon=[[-63,101.5],[-53.5,101.5],[-52.6,104],[-54.2,105.3],[-61.5,104.2]],shape=new THREE.Shape();
+    const polygon=[[-6,-2],[3.5,-2],[4.4,.5],[2.8,1.8],[-4.5,.7]].map(([x,z])=>[signAnchor.x+x,signAnchor.z+z]),shape=new THREE.Shape();
     polygon.forEach(([x,z],i)=>i?shape.lineTo(x,z):shape.moveTo(x,z));shape.closePath();
     const bed=new THREE.Mesh(new THREE.ShapeGeometry(shape),soil);bed.name='jiekou-trail-planter';bed.rotation.x=Math.PI/2;bed.position.y=.16;bed.material.side=THREE.DoubleSide;group.add(bed);
     for(let i=0;i<polygon.length;i++){const a=polygon[i],b=polygon[(i+1)%polygon.length];segment('jiekou-trail-stone-curb',{x:a[0],z:a[1]},{x:b[0],z:b[1]},.22,.32,.16,stone,true);}
@@ -34,15 +38,15 @@ const CampusEntranceAvenue = (() => {
     if(typeof WALL_COLLIDERS!=='undefined')WALL_COLLIDERS.at(-1).segment={ax:trail.sign.x-dx,az:trail.sign.z-dz,bx:trail.sign.x+dx,bz:trail.sign.z+dz,thickness:.3};
     const shrubGeometry=new THREE.IcosahedronGeometry(1,1);
     function shrub(x,z,sx,sy,sz,index,baseY=.2){const m=new THREE.Mesh(shrubGeometry,greens[index%3]);m.position.set(x,baseY+sy*.6,z);m.scale.set(sx,sy,sz);m.castShadow=true;group.add(m)}
-    shrub(-61.6,102.5,1.1,.85,.9,0);shrub(-53.8,102.6,.75,.65,.7,1);
-    for(let i=0;i<16;i++)shrub(-61+i*.43,104.2+Math.sin(i*.9)*.2,.38,.32,.34,i);
+    shrub(signAnchor.x-4.6,signAnchor.z-1,1.1,.85,.9,0);shrub(signAnchor.x+3.2,signAnchor.z-.9,.75,.65,.7,1);
+    for(let i=0;i<16;i++)shrub(signAnchor.x-4+i*.43,signAnchor.z+.7+Math.sin(i*.9)*.2,.38,.32,.34,i);
     // Tall grasses behind the sign keep the foreground lettering unobstructed.
     const reeds=new THREE.BufferGeometry(),positions=[];
-    for(let i=0;i<60;i++){const x=-60+(i%20)*.31,z=101.9+Math.floor(i/20)*.18;positions.push(x,.2,z,x+.1*Math.sin(i),1.1+(i%4)*.16,z+.08);}
+    for(let i=0;i<60;i++){const x=signAnchor.x-3+(i%20)*.31,z=signAnchor.z-1.6+Math.floor(i/20)*.18;positions.push(x,.2,z,x+.1*Math.sin(i),1.1+(i%4)*.16,z+.08);}
     reeds.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));group.add(new THREE.LineSegments(reeds,new THREE.LineBasicMaterial({color:0x71824e})));
-    const outerA={x:-58,z:112.4},outerB={x:-92,z:108.4};segment('jiekou-trail-low-wall',outerA,outerB,.3,.68,.34,stone,true);
+    const outerA=trailPoint(-1,8.9),outerB=trailPoint(-35,4.9);segment('jiekou-trail-low-wall',outerA,outerB,.3,.68,.34,stone,true);
     for(let i=0;i<11;i++){const t=i/10,x=outerA.x+(outerB.x-outerA.x)*t,z=outerA.z+(outerB.z-outerA.z)*t;const pot=box('jiekou-trail-wall-pot',.42,.23,.42,x,.8,z,stone);shrub(x,z,.46,.38,.4,i,.9);}
-    for(let i=0;i<7;i++){const x=-62-i*4.7,z=116-i*.22;box('jiekou-trail-tree-trunk',.32,3,.32,x,1.5,z,wood);shrub(x,z,2.4,3.2,2.1,i);}
+    for(let i=0;i<7;i++){const x=signAnchor.x-5-i*4.7,z=signAnchor.z+12.5-i*.22;box('jiekou-trail-tree-trunk',.32,3,.32,x,1.5,z,wood);shrub(x,z,2.4,3.2,2.1,i);}
   }
   function crownGeometry() {
     const positions=[],colors=[],green=new THREE.Color();
@@ -123,10 +127,10 @@ const CampusEntranceAvenue = (() => {
     box(.14,1.45,77,-.9,.725,132.5,0x494f45);
     collider(-1.05,-.75,94,171,0,1.45);
     const fencePoints=[];
-    for(let z=113;z<=171;z+=3.5){box(.065,1.1,.065,-19.1,.55,z,0x657566);fencePoints.push(new THREE.Vector3(-19.1,0,z),new THREE.Vector3(-19.1,1.1,z));}
-    for(let y=.15;y<1.1;y+=.2)fencePoints.push(new THREE.Vector3(-19.1,y,113),new THREE.Vector3(-19.1,y,171));
+    for(let z=94;z<=171;z+=3.5){box(.065,1.1,.065,-19.1,.55,z,0x657566);fencePoints.push(new THREE.Vector3(-19.1,0,z),new THREE.Vector3(-19.1,1.1,z));}
+    for(let y=.15;y<1.1;y+=.2)fencePoints.push(new THREE.Vector3(-19.1,y,94),new THREE.Vector3(-19.1,y,171));
     group.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(fencePoints),new THREE.LineBasicMaterial({color:0x819589})));
-    collider(-19.2,-19,113,171,0,1.1);
+    collider(-19.2,-19,94,171,0,1.1);
     // Generic landscape only: no undocumented houses, shops or street names.
     // These layers begin outside the existing fences and never enter the
     // eighteen-unit avenue footprint or register a new walking collider.

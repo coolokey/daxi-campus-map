@@ -745,11 +745,11 @@
 
     // 南側主幹道 (東西向車道, z=86)
     const southRoad = new THREE.Mesh(
-      new THREE.PlaneGeometry(158, 9),
+      new THREE.PlaneGeometry(137, 9),
       new THREE.MeshStandardMaterial({ color: 0x8c4c3a })
     );
     southRoad.rotation.x = -Math.PI / 2;
-    southRoad.position.set(14, 0.02, 86);
+    southRoad.position.set(24.5, 0.02, 86);
     southRoad.receiveShadow = true;
     scene.add(southRoad);
 

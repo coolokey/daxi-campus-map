@@ -1,0 +1,35 @@
+{
+  "requirements": {
+    "anchor": "活動中心旁、照片棚架靠校門轉角",
+    "canopyAdded": false,
+    "name": "街口溪生態步道"
+  },
+  "tests": {
+    "initialRed": "2 location/perimeter assertions failed on old scene",
+    "gateAxis": {
+      "passed": 16
+    },
+    "outdoorWorld": {
+      "passed": 60
+    },
+    "navigationAudit": {
+      "cases": 585,
+      "failures": 0
+    }
+  },
+  "build": "passed; existing legacy bundle size warning",
+  "review": {
+    "blockingIssues": 0,
+    "extraRouteProbes": 21,
+    "stairClearance": "independent aggregate run timed out once; isolated rerun passed"
+  },
+  "localBrowser": {
+    "desktopCornerAndGate": "visually inspected",
+    "mobileProposal": {
+      "viewport": "390x844",
+      "autoWalk": "arrived at 街口溪生態步道",
+      "consoleErrors": []
+    }
+  },
+  "limits": "Photo-derived guide dimensions, not a survey; visible entrance stretch only."
+}
