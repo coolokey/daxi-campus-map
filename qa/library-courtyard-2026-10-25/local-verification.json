@@ -1,0 +1,31 @@
+{
+  "tests": {
+    "files": 8,
+    "passed": 157,
+    "failed": 0
+  },
+  "navigation": {
+    "cases": 587,
+    "origins": 479,
+    "failed": 0
+  },
+  "review": {
+    "findings": [
+      {
+        "severity": "P2",
+        "issue": "obsolete rectangular roof trims above single-storey north wing",
+        "resolution": "multi-building excluded from generic art-direction roof trim creation"
+      },
+      {
+        "severity": "P2",
+        "issue": "stair tower caps remain visible in 2F cutaway",
+        "resolution": "dedicated campusCeiling roof groups; actual floor switching regression passed"
+      }
+    ]
+  },
+  "notes": [
+    "Dimensions are schematic photo proportions.",
+    "Original user photos not copied to public assets.",
+    "Existing Vite large-chunk warning remains."
+  ]
+}

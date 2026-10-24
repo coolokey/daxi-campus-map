@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),source=path.join(root,'public/campus-explorer'),target=path.join(root,'public/proposal/campus/campus-explorer');
 fs.copyFileSync(path.join(source,'mobile-layout.css'),path.join(target,'mobile-layout.css'));
 for(const file of ['anniversary-model.js','firework-text-targets.js','firework-audio.js','firework-scene.js','anniversary-fireworks.js','anniversary-fireworks.css','explorer.js','proposal-bridge.js','field-guide.js','field-guide.css','navigation-guide-model.js','floor-exhibit.js','floor-exhibit.css'])fs.copyFileSync(path.join(source,file),path.join(target,file));
-for(const file of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','gym-world.js','spatial-world.js','photo-facade.js','photo-reference.js','photo-teaching.js','photo-roofs.js','art-direction.js','landscape-world.js','outdoor-world.js','grid-search.js','room-layout-model.js','room-layout.js','static-batching.js','spatial-ui-tools.js'])fs.copyFileSync(path.join(source,file),path.join(target,file));
+for(const file of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','gym-world.js','multi-world.js','spatial-world.js','photo-facade.js','photo-reference.js','photo-teaching.js','photo-roofs.js','art-direction.js','landscape-world.js','outdoor-world.js','grid-search.js','room-layout-model.js','room-layout.js','static-batching.js','spatial-ui-tools.js'])fs.copyFileSync(path.join(source,file),path.join(target,file));
 // The embedded copy used a previously bundled HTML entry. Rebuild from source,
 // otherwise copying the modules would leave the old hashed bundle running.
 fs.copyFileSync(path.join(source,'index.html'),path.join(target,'index.html'));

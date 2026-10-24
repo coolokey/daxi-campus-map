@@ -257,8 +257,9 @@ const CampusSpatialPlan = (() => {
     const left=d,right=B,east=B-6,inner=east-2.8,north=a+9,south=A-9;
     displayRows.push({id:'north',label:'北翼・圖面左 → 右',axis:'v',start:left,end:right},{id:'east',label:'東翼・圖面上 → 下',axis:'u',start:a,end:A},{id:'south',label:'南翼・圖面左 → 右',axis:'v',start:left,end:right},{id:'history',label:'校史室獨立區',axis:'v',start:left,end:right});
     for(let f=1;f<=b.floors;f++){
-     fp(f,a,north,left,east);fp(f,south,A,left,right);fp(f,a,A,inner,right);
-     co(f,north-2.8,north,left,right);co(f,south,south+2.8,left,east);co(f,a,A,inner,east);
+     if(f===1)fp(f,a,north,left,east);fp(f,south,A,left,right);fp(f,a,A,inner,right);
+     for(const u0 of [a,south])fp(f,u0,u0+8,east+4,right+3);
+     if(f===1)co(f,north-2.8,north,left,right);co(f,south,south+2.8,left,east);co(f,a,A,inner,east);
      // Keep a body-width passage between the library wall and south stair shaft.
      co(f,south,south+8,east,east+1.4);
      const byId=id=>({...b.rooms.find(r=>r.id===id),kind:'room'});
@@ -267,21 +268,20 @@ const CampusSpatialPlan = (() => {
       addCell(byId('library'),f,south+2.8,A,left,east,'south','u0',south+1.4);
       for(const [id,u0,u1] of [['sped-614',north,north+(south-north)/3],['sped-office',north+(south-north)/3,north+2*(south-north)/3],['sped-612',north+2*(south-north)/3,south]])addCell(byId(id),f,u0,u1,east,right,'east','v0',east-1.4);
       // Separate history room stays detached from the parking courtyard.
-      const h=addCell(byId('history-room'),f,a-6,a-1,right-7,right,'history','u1',a-.2);
+      const h=addCell(byId('history-room'),f,a-6,a-1,right-7,right,'history','u1',a-.6);
       fp(f,a-6,a,right-7,right);co(f,a-1,a,right-7,right);
-      entrances.push({floor:1,inside:h.corridor,outside:world(a+.7,(h.v0+h.v1)/2)});
+      entrances.push({floor:1,inside:h.corridor,outside:world(a+.7,inner+1)});
      }else{
       const w=(east-left)/3;
       for(const [i,id] of ['large-computer','multi-622','it-server'].entries())addCell(byId(id),f,south+2.8,A,left+i*w,left+(i+1)*w,'south','u0',south+1.4);
       addCell(byId('collab-conf'),f,(north+south)/2,south,east,right,'east','v0',east-1.4);
-      addCell({kind:'void',label:'上方未標示教室'},f,a,north,left,east,'north');
      }
-     for(const u0 of [a,south])addCell({kind:'stair',label:'停車場側樓梯'},f,u0,u0+8,east+1,right,'east');
+     for(const u0 of [a,south])addCell({kind:'stair',label:'停車場側樓梯'},f,u0,u0+8,east+4,right+3,'east');
      addCell({kind:'wc',label:'廁所'},f,south+8,A,east,right,'east','v0',east-1.4);
      addCell({kind:'void',label:'停車場・留空'},f,north,south,left,inner,'parking');
     }
     // Stairwells sit at the ends of the courtyard's east circulation strip.
-    addStair('north','停車場東北側梯',a,a+8,east+1,right,-1);addStair('south','停車場東南側梯',south,south+8,east+1.6,right,-1);
+    addStair('north','停車場東北側梯',a,a+8,east+4,right+3,-1);addStair('south','停車場東南側梯',south,south+8,east+4,right+3,-1);
     entrances.push({floor:1,inside:world(south+1.4,left+1),outside:world(south+1.4,left-1.2)});
    }
    if(p.shape==='tech'){

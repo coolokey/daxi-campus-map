@@ -1,0 +1,10 @@
+const fs=require('node:fs');
+const folder='qa/library-courtyard-2026-10-25/';
+const parts=['gate','room','stair','landing','corridor','outdoor'];
+const reports=parts.map(p=>JSON.parse(fs.readFileSync(folder+'navigation-'+p+'.json','utf8')));
+const rows=reports.flatMap(r=>r.rows),failures=rows.filter(r=>r.error);
+const expected=reports[0].origins+reports[0].cases;
+const report={cases:rows.length,expected,origins:reports[0].origins,targets:reports[0].targets,parts:parts.map((p,i)=>({part:p,cases:reports[i].cases,failures:reports[i].failures.length})),failures,rows};
+fs.writeFileSync(folder+'navigation-audit.json',JSON.stringify(report,null,2));
+console.log(JSON.stringify({...report,rows:undefined},null,2));
+if(failures.length||rows.length!==expected)process.exitCode=1;

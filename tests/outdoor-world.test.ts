@@ -11,7 +11,7 @@ beforeAll(()=>{
  const file=(f:string)=>{if(existsSync(root+f))run(readFileSync(root+f,'utf8'))};file('vendor/three.min.js');
  w.THREE.WebGLRenderer=class{domElement:any;shadowMap={};capabilities={getMaxAnisotropy:()=>1};constructor({canvas}:any){this.domElement=canvas}setSize(){}setPixelRatio(){}render(){}};
  file('vendor/OrbitControls.js');
- for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','navigation-arrows.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','photo-facade.js','campus-forecourt.js','landscape-world.js','spatial-world.js','photo-teaching.js','photo-roofs.js','photo-special-buildings.js','art-direction.js','photo-reference.js'])file(f);
+ for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','navigation-arrows.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','multi-world.js','photo-facade.js','campus-forecourt.js','landscape-world.js','spatial-world.js','photo-teaching.js','photo-roofs.js','photo-special-buildings.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
 it('opens the technology main entrance beside the rounded front facing the campus driveway',()=>{
@@ -367,4 +367,15 @@ it('keeps actual overhead geometry clear along every upper-floor corridor, inclu
 },30000);
 it('walks around the administrative exterior corner with accumulated route rounding error',()=>{
  expect(run(`(()=>{const p={x:-26.499999999999996,y:0,z:15.000000000000004},blocked=moveAvatarWithCollision(p,.5,0);return {blocked,x:p.x,y:p.y}})()`)).toMatchObject({blocked:false,y:0});
+});
+
+it('models the photographed library courtyard with two rounded towers, waved fascia and accessible paving',()=>{
+ const result=run(`(()=>{const names=['multi-rounded-north','multi-rounded-south','multi-wave-fascia-1','multi-wave-fascia-2','multi-courtyard-paving','multi-accessible-bay','multi-court-flowerbed'];return names.filter(n=>!scene.getObjectByName(n))})()`);expect(result).toEqual([]);
+});
+it('keeps the library courtyard entrance and both floor destinations physically reachable',()=>{
+ const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='multi-building'),bad=[];for(const r of l.rooms)if(!findShortestPath('gate',ROOMS_DB[r.id].node))bad.push(r.id);const e=l.entrances.at(-1),p={...e.outside},a={...p},n=40;for(let i=1;i<=n;i++){const x=a.x+(e.inside.x-a.x)*i/n,z=a.z+(e.inside.z-a.z)*i/n;if(moveAvatarWithCollision(p,x-p.x,z-p.z))bad.push('entrance');}return bad})()`);expect(result).toEqual([]);
+});
+
+it('removes obsolete rectangular library roof trims and reveals both stairwells in 2F cutaway',()=>{
+ const result=run(`(()=>{setControlMode('bird');setFloorFilter('2');const roofs=['multi-tower-roof-north','multi-tower-roof-south'].map(n=>scene.getObjectByName(n));const trims=floorMeshes.filter(g=>g.userData.buildingId==='multi-building'&&g.userData.roof);const result={missing:roofs.some(g=>!g),visible:roofs.some(g=>g?.visible),oldTrims:trims.length};setFloorFilter('all');return result})()`);expect(result).toEqual({missing:false,visible:false,oldTrims:0});
 });

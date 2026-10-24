@@ -113,3 +113,13 @@ it('uses one administrative identity and a broad technology body with one narrow
  expect(art.b.width*art.b.depth).toBeLessThan(front.width*front.depth*.6);expect(art.b.floors).toBe(4);
  for(const l of [tech,art])for(const r of l.rooms){expect(l.footprints.some((p:any)=>p.floor===r.floor&&r.center.x>=p.rect.x0&&r.center.x<=p.rect.x1&&r.center.z>=p.rect.z0&&r.center.z<=p.rect.z1)).toBe(true);}
 });
+
+it('matches the library courtyard photos with a single-storey north wing and connected two-storey south wing',()=>{
+ const {buildings,math,plan}=load(),l=math.layout(buildings.find((b:any)=>b.id==='multi-building'));
+ expect(l.footprints.some((p:any)=>p.floor===1&&plan.contains(p,-13,-5))).toBe(true);
+ expect(l.footprints.some((p:any)=>p.floor===2&&plan.contains(p,-13,-5))).toBe(false);
+ expect(l.footprints.some((p:any)=>p.floor===2&&plan.contains(p,13,-5))).toBe(true);
+ for(const s of l.stairs)expect(l.footprints.some((p:any)=>p.floor===2&&plan.contains(p,s.innerU,s.centerV))).toBe(true);
+ expect(l.rooms.find((r:any)=>r.id==='library').floor).toBe(1);
+ expect(l.rooms.find((r:any)=>r.id==='collab-conf').floor).toBe(2);
+});

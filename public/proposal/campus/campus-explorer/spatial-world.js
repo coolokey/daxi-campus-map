@@ -81,7 +81,7 @@
   const wall=(a,b,y0,y1,mat,solid=true)=>alongU?box(g,l,a,b,fixed-.09,fixed+.09,y0,y1,mat,solid):box(g,l,fixed-.09,fixed+.09,a,b,y0,y1,mat,solid);
   if(c.doorSide===side){
    const half=Math.min(.95,(end-start)/2-.16);
-   const photoCorridor=['grade8-front','grade8-mid','grade9-back','admin-front','admin-back','new-grade7'].includes(l.id);
+   const photoCorridor=['grade8-front','grade8-mid','grade9-back','admin-front','admin-back','new-grade7','multi-building'].includes(l.id);
    const wing=(a,b)=>{
     if(!photoCorridor||b-a<1.3){wall(a,b,y,y+FH,paint);return;}
     const collider=wall(a,b,y,y+FH,paint);if(collider)collider.visible=false;
@@ -121,7 +121,16 @@
   }
 
   // Thin side walls leave the full 1.8m exit landing open to the corridor.
-  for(const v of [s.v0,s.v1])box(g,l,s.u0,stop,v-.09,v+.09,y,y+FH,colors.wall,true);
+  for(const v of [s.v0,s.v1]){
+   if(l.id==='multi-building'&&v===s.v0){
+    const proxy=box(g,l,s.u0,stop,v-.09,v+.09,y,y+FH,colors.wall,true);proxy.visible=false;
+    const band=CampusMultiWorld.windowBand(s,Math.round(y/FH)+1);
+    if(!band){box(g,l,s.u0,stop,v-.09,v+.09,y,y+FH,colors.wall);continue;}
+    box(g,l,s.u0,stop,v-.09,v+.09,y,y+band[0],colors.wall);
+    box(g,l,s.u0,stop,v-.09,v+.09,y+band[1],y+FH,colors.wall);
+    box(g,l,s.u0,stop,v-.04,v+.04,y+band[0],y+band[1],colors.glass);
+   }else box(g,l,s.u0,stop,v-.09,v+.09,y,y+FH,colors.wall,true);
+  }
   // The detached history room has a ground-floor entrance through the north
   // stair boundary. Preserve actual entrance crossings when closing the shaft.
   const doors=y===0?l.entrances.flatMap(e=>{const a=l.local(e.inside.x,e.inside.z),b=l.local(e.outside.x,e.outside.z);if((a.u-s.u0)*(b.u-s.u0)>0||Math.abs(b.u-a.u)<1e-6)return [];const t=(s.u0-a.u)/(b.u-a.u),v=a.v+(b.v-a.v)*t;return v>s.v0&&v<s.v1?[{v0:v-1,v1:v+1}]:[]}):[];
@@ -171,7 +180,7 @@
   for(let f=1;f<=l.b.floors;f++){
    const y=(f-1)*FH,g=new THREE.Group();g.name=`floor-${f}`;g.userData={buildingId:l.id,floorNum:f};scene.add(g);floorMeshes.push(g);
    for(const p of l.footprints.filter(p=>p.floor===f)){slab(g,l,p,y);
-    if(f===l.b.floors&&l.id!=='gym-bld'){const roof=box(g,l,p.u0,p.u1,p.v0,p.v1,y+FH-.18,y+FH,roofMaterial);if(roof)roof.userData.roof=true;}
+    if(f===l.b.floors&&!['gym-bld','multi-building'].includes(l.id)){const roof=box(g,l,p.u0,p.u1,p.v0,p.v1,y+FH-.18,y+FH,roofMaterial);if(roof)roof.userData.roof=true;}
    }
    if(l.id==='gym-bld'){
     for(const r of l.rooms.filter(r=>r.floor===f))details(g,l,r,y);
@@ -329,6 +338,7 @@
    entryBox('tech-entry-right-handrail',railU-.035,railU+.035,-3,-.15,1.1,1.17,steel,true);
    for(const t of [-2.9,-2.1,-1.1,-.2])entryBox('tech-entry-rail-post',railU-.035,railU+.035,t-.035,t+.035,.02,1.14,steel,true);
   }
+  if(l.id==='multi-building')CampusMultiWorld.build({l,scene,floorMeshes,box,slab,surfaceMaterials,cameraVolume,details});
   if(l.id==='gym-bld')CampusGymWorld.build({l,scene,floorMeshes,box,slab,surfaceMaterials,cameraVolume,details});
   for(const s of l.stairs)for(let f=s.fromFloor||1;f<Math.min(l.b.floors,s.toFloor||l.b.floors);f++){
    const g=new THREE.Group();g.name=`floor-stairs-${f+1}`;g.userData={buildingId:l.id,floorNum:f+1};scene.add(g);floorMeshes.push(g);
