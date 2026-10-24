@@ -2441,6 +2441,9 @@
        6. 3D ROUTE & MULTI-FLOOR AUTO-WALK
        ========================================================================== */
     let navPathMesh = null;
+    const navigationArrows = CampusNavigationArrows.create(THREE);
+    const navigationReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)') || {matches:false};
+    scene.add(navigationArrows.group);
     let navTargetPoint = null;
     let currentNavPoints = [];
     let isAutoWalking = false;
@@ -2462,6 +2465,7 @@
     }
     function publishNavigation(status=navigationStatus){
       navigationStatus=status;
+      navigationArrows.update(clock.elapsedTime,{status:navigationStatus,index:autoWalkIndex},navigationReducedMotion.matches);
       window.dispatchEvent(new CustomEvent('campus:navigation',{detail:getNavigationState()}));
     }
 
@@ -2473,14 +2477,15 @@
         navPathMesh = null;
       }
       currentNavPoints = points || [];
+      navigationArrows.setPath(currentNavPoints);
       if (!points || points.length < 2) return;
 
       const tubeGeo = new THREE.BufferGeometry();
       tubeGeo.setAttribute('position',new THREE.Float32BufferAttribute(CampusSpatialPlan.ribbon(points),3));
       const tubeMat = new THREE.MeshBasicMaterial({
-        color: 0xfbbf24,
+        color: 0x405b91,
         transparent: true,
-        opacity: 0.95,
+        opacity: 0.65,
         side: THREE.DoubleSide
       });
       navPathMesh = new THREE.Mesh(tubeGeo, tubeMat);
@@ -2501,6 +2506,7 @@
 
     function clearNavigation() {
       activeNavigationId = null;
+      navigationArrows.clear();
       if (navPathMesh) {
         scene.remove(navPathMesh);
         navPathMesh.geometry.dispose();
@@ -3694,6 +3700,7 @@
       }
 
       renderMinimap();
+      navigationArrows.update(clock.elapsedTime,{status:navigationStatus,index:autoWalkIndex},navigationReducedMotion.matches);
       window.campusFloorExhibit?.update();
       window.campusAnniversary?.update(performance.now());
       window.campusPeople?.update(delta,clock.elapsedTime);
