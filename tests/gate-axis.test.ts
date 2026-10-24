@@ -79,11 +79,16 @@ it('walks between the student gate, trail entrance and campus without crossing p
 });
 
 it('keeps the sign and stone planter solid and the trail entry open',()=>{
- const r=evaluate(`(()=>{const t=CampusEntranceAvenue.trail;return {sign:checkWallCollision(t.sign.x,0,t.sign.z),curb:checkWallCollision(t.sign.x-1,0,t.sign.z-2),entry:checkWallCollision(t.entry.x,0,t.entry.z),path:checkWallCollision(t.sign.x-13,0,t.sign.z+4.9),wall:checkWallCollision(t.sign.x-18,0,t.sign.z+6.9)};})()`);
+ const r=evaluate(`(()=>{const t=CampusEntranceAvenue.trail;return {sign:checkWallCollision(t.sign.x,0,t.sign.z),curb:checkWallCollision(t.sign.x+.75,0,t.sign.z),entry:checkWallCollision(t.entry.x,0,t.entry.z),path:checkWallCollision(t.sign.x-13,0,t.sign.z+4.9),wall:checkWallCollision(t.sign.x-18,0,t.sign.z+7.9)};})()`);
  expect(r).toEqual({sign:true,curb:true,entry:false,path:false,wall:true});
 });
 
 it('keeps the relocated trail outside campus without classifying the gym approach as a trail return',()=>{
  const r=evaluate(`(()=>{const t=CampusEntranceAvenue.trail,p=CampusOutdoorPlan.perimeter,bad=[];for(let i=1;i<t.path.length;i++)for(let j=0;j<=20;j++){const a=t.path[i-1],b=t.path[i],x=a.x+(b.x-a.x)*j/20,z=a.z+(b.z-a.z)*j/20;if(p.contains(x,z)||!CampusEntranceAvenue.trailContains(x,z)||checkWallCollision(x,0,z))bad.push({x,z});}const l=campusWalkWorld.layouts.find(l=>l.id==='gym-bld'),gymApproach={x:l.bounds.x1+1.5,z:l.bounds.z1+1};return {bad,gymInside:p.contains(gymApproach.x,gymApproach.z),gymIsTrail:CampusEntranceAvenue.trailContains(gymApproach.x,gymApproach.z)};})()`);
  expect(r).toEqual({bad:[],gymInside:true,gymIsTrail:false});
+});
+
+it('faces the sign lettering toward the guardhouse across the gate forecourt',()=>{
+ const r=evaluate(`(()=>{scene.updateMatrixWorld(true);const sign=scene.getObjectByName('jiekou-trail-sign'),letters=sign.children.find(m=>m.geometry?.type==='PlaneGeometry'),guard=scene.getObjectByName('main-entrance-guard'),normal=new THREE.Vector3(0,0,1).applyQuaternion(letters.getWorldQuaternion(new THREE.Quaternion())),toward=guard.getWorldPosition(new THREE.Vector3()).sub(sign.getWorldPosition(new THREE.Vector3()));toward.y=0;toward.normalize();const bounds=new THREE.Box3().setFromObject(sign),p=CampusOutdoorPlan.perimeter;const face=letters.getWorldPosition(new THREE.Vector3());return {letterSurfaceSolid:WALL_COLLIDERS.some(c=>c.segment&&CampusCollisionGrid.overlaps(c,face.x,face.z,0)),alignment:normal.dot(toward),streetFacing:normal.z,endsOutside:[bounds.min.z,bounds.max.z].every(z=>!p.contains(sign.position.x,z)),endsClear:[bounds.min.z,bounds.max.z].every(z=>p.segments.every(s=>{const dx=s.bx-s.ax,dz=s.bz-s.az,t=Math.max(0,Math.min(1,((sign.position.x-s.ax)*dx+(z-s.az)*dz)/(dx*dx+dz*dz)));return Math.hypot(sign.position.x-s.ax-t*dx,z-s.az-t*dz)>p.thickness/2+.15}))};})()`);
+ expect(r.letterSurfaceSolid).toBe(true);expect(r.alignment).toBeGreaterThan(.99);expect(Math.abs(r.streetFacing)).toBeLessThan(.05);expect(r.endsOutside).toBe(true);expect(r.endsClear).toBe(true);
 });

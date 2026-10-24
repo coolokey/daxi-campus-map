@@ -1,0 +1,33 @@
+{
+  "reference": "User gate aerial: lettering toward guardhouse, no new shelter",
+  "changes": {
+    "signPosition": [
+      -61,
+      84
+    ],
+    "letteringNormal": [
+      1,
+      0,
+      0
+    ],
+    "planter": "long edge follows sign; planting behind",
+    "canopyAdded": false
+  },
+  "tests": {
+    "gateAxis": 17,
+    "outdoorWorld": 60,
+    "navigationCases": 585,
+    "navigationFailures": 0,
+    "directionRegression": "old alignment -0.098 failed; new >0.99 passed",
+    "letterSurfaceCollision": "old point not enclosed; new enclosed"
+  },
+  "build": "passed; existing legacy chunk size warning",
+  "review": "no blocking or important findings; collider forward extent corrected",
+  "desktop": "lettering and full gate overhead visually checked",
+  "limits": "Photo-derived guide units; visible trail entrance only",
+  "mobile": {
+    "viewport": "390x844",
+    "proposalAutoWalk": "已抵達街口溪生態步道",
+    "consoleErrors": []
+  }
+}

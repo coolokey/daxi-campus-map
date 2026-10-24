@@ -3,27 +3,31 @@ const CampusEntranceAvenue = (() => {
   const plan = {x:CampusOutdoorPlan.entrance.gate.x,z0:89,z1:171,width:9,gateZ:86};
   const palms = Array.from({length:20},(_,i)=>({x:plan.x+(i%2?6.5:-6.5),z:96+Math.floor(i/2)*7.7,height:13.6+(i*7%9)*.35,rotation:i*2.399}));
   // Photo-confirmed entrance landmark; only the visible first stretch is modeled.
-  const signAnchor={x:-61,z:83.5,yaw:-.12};
+  // Latest gate aerial: the lettering faces the guardhouse across the forecourt.
+  const signAnchor={x:-61,z:84,yaw:Math.PI/2};
   const trailPoint=(dx,dz)=>({x:signAnchor.x+dx,z:signAnchor.z+dz});
+  const signPoint=(along,front)=>({x:signAnchor.x+Math.cos(signAnchor.yaw)*along+Math.sin(signAnchor.yaw)*front,z:signAnchor.z-Math.sin(signAnchor.yaw)*along+Math.cos(signAnchor.yaw)*front});
   // Anchor the entire entrance to the gym corner identified in the photos.
   // The photographed shelter is a location reference only, not a new model.
-  const trail={name:'街口溪生態步道',entry:{...trailPoint(7.5,5.5),y:0},width:4.2,sign:signAnchor,path:[[7.5,5.5],[-4,5.5],[-20,4.5],[-37,.5]].map(([x,z])=>trailPoint(x,z))};
+  const trail={name:'街口溪生態步道',entry:{...trailPoint(7.5,6.5),y:0},width:4.2,sign:signAnchor,approach:[[.5,-2.8],[9,-2.8],[12,2],[21,2],[21,10],[1.2,10],[1.2,4.2],[.5,4.2]].map(([x,z])=>trailPoint(x,z)),path:[[7.5,6.5],[-4,6.5],[-20,5.5],[-37,1.5]].map(([x,z])=>trailPoint(x,z))};
   const distanceToSegment=(x,z,a,b)=>{const dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz)));return Math.hypot(x-a.x-t*dx,z-a.z-t*dz)};
-  const trailContains=(x,z)=>!CampusOutdoorPlan.perimeter.contains(x,z)&&((x>=signAnchor.x+6&&x<=plan.x+3&&z>=signAnchor.z-.5&&z<=signAnchor.z+8.5)||trail.path.slice(1).some((b,i)=>distanceToSegment(x,z,trail.path[i],b)<=trail.width/2+.2));
+  const inPolygon=(x,z,polygon)=>{let inside=false;for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){const a=polygon[i],b=polygon[j];if((a.z>z)!==(b.z>z)&&x<(b.x-a.x)*(z-a.z)/(b.z-a.z)+a.x)inside=!inside;}return inside;};
+  const trailContains=(x,z)=>!CampusOutdoorPlan.perimeter.contains(x,z)&&(inPolygon(x,z,trail.approach)||trail.path.slice(1).some((b,i)=>distanceToSegment(x,z,trail.path[i],b)<=trail.width/2+.2));
   const contains = (x,z) => (x>=plan.x-9&&x<=plan.x+9&&z>=89&&z<=174)||trailContains(x,z);
   function renderTrail(scene,registerCollider,asphalt){
-    const pathAsphalt=asphalt.clone();pathAsphalt.color.setHex(0x777b74);
+    const pathAsphalt=asphalt.clone();pathAsphalt.color.setHex(0x777b74);pathAsphalt.side=THREE.DoubleSide;
     const group=new THREE.Group();group.name='jiekou-trail-entrance';group.userData.source='User-confirmed name and four entrance photos; illustrative dimensions';scene.add(group);
     const stone=new THREE.MeshStandardMaterial({color:0xc1c2b8,roughness:1}),soil=new THREE.MeshStandardMaterial({color:0x64704a,roughness:1}),wood=new THREE.MeshStandardMaterial({color:0x755a4b,roughness:.95});
     const greens=[0x52743e,0x6d864c,0x7c9656].map(color=>new THREE.MeshStandardMaterial({color,roughness:1}));
     function box(name,w,h,d,x,y,z,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.name=name;m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;group.add(m);return m}
     function segment(name,a,b,width,height,y,mat,solid=false){const dx=b.x-a.x,dz=b.z-a.z,length=Math.hypot(dx,dz),m=box(name,length,height,width,(a.x+b.x)/2,y,(a.z+b.z)/2,mat);m.rotation.y=-Math.atan2(dz,dx);if(solid){registerCollider(Math.min(a.x,b.x)-width/2,Math.max(a.x,b.x)+width/2,Math.min(a.z,b.z)-width/2,Math.max(a.z,b.z)+width/2,y-height/2,y+height/2);if(typeof WALL_COLLIDERS!=='undefined')WALL_COLLIDERS.at(-1).segment={ax:a.x,az:a.z,bx:b.x,bz:b.z,thickness:width};}return m}
     // A level entrance surface: the photographs do not establish a surveyed grade.
-    box('jiekou-trail-approach',15,.045,8,signAnchor.x+13.5,.045,signAnchor.z+4.5,pathAsphalt);
+    const approachShape=new THREE.Shape();trail.approach.forEach((p,i)=>i?approachShape.lineTo(p.x,p.z):approachShape.moveTo(p.x,p.z));approachShape.closePath();
+    const approach=new THREE.Mesh(new THREE.ShapeGeometry(approachShape),pathAsphalt);approach.name='jiekou-trail-approach';approach.rotation.x=Math.PI/2;approach.position.y=.0675;approach.receiveShadow=true;group.add(approach);
     for(let i=1;i<trail.path.length;i++){const a=trail.path[i-1],b=trail.path[i];segment('jiekou-trail-asphalt',a,b,trail.width,.055,.05,pathAsphalt);}
     for(const p of trail.path.slice(1,-1)){const m=new THREE.Mesh(new THREE.CylinderGeometry(trail.width/2,trail.width/2,.055,20),pathAsphalt);m.position.set(p.x,.05,p.z);group.add(m);}
     // An irregular stone-edged planted island, with collision only on its edges.
-    const polygon=[[-6,-2],[3.5,-2],[4.4,.5],[2.8,1.8],[-4.5,.7]].map(([x,z])=>[signAnchor.x+x,signAnchor.z+z]),shape=new THREE.Shape();
+    const polygon=[[-3.9,-4],[2.9,-4],[3.4,-2.4],[3.4,.75],[-3.4,.75],[-3.9,-.2]].map(([along,front])=>{const p=signPoint(along,front);return [p.x,p.z]}),shape=new THREE.Shape();
     polygon.forEach(([x,z],i)=>i?shape.lineTo(x,z):shape.moveTo(x,z));shape.closePath();
     const bed=new THREE.Mesh(new THREE.ShapeGeometry(shape),soil);bed.name='jiekou-trail-planter';bed.rotation.x=Math.PI/2;bed.position.y=.16;bed.material.side=THREE.DoubleSide;group.add(bed);
     for(let i=0;i<polygon.length;i++){const a=polygon[i],b=polygon[(i+1)%polygon.length];segment('jiekou-trail-stone-curb',{x:a[0],z:a[1]},{x:b[0],z:b[1]},.22,.32,.16,stone,true);}
@@ -32,21 +36,22 @@ const CampusEntranceAvenue = (() => {
     for(let i=0;i<29;i++){dummy.position.set(-3.08+i*.22,1.375,0);dummy.updateMatrix();slats.setMatrixAt(i,dummy.matrix);}slats.castShadow=true;sign.add(slats);
     const titleCanvas=document.createElement('canvas');titleCanvas.width=1536;titleCanvas.height=192;const title=titleCanvas.getContext('2d');title.fillStyle='#49382e';title.fillRect(0,0,1536,192);title.fillStyle='#f4f0e4';title.font='110px KaiTi, DFKai-SB, serif';title.textAlign='center';title.textBaseline='middle';title.fillText(trail.name,768,100,1450);
     const titleTexture=new THREE.CanvasTexture(titleCanvas),titleBoard=new THREE.Mesh(new THREE.BoxGeometry(6.5,.78,.14),wood);titleBoard.position.set(0,1.64,.09);titleBoard.rotation.z=.20;sign.add(titleBoard);
-    const letters=new THREE.Mesh(new THREE.PlaneGeometry(6.5,.78),new THREE.MeshStandardMaterial({map:titleTexture,roughness:.95}));letters.position.set(0,1.64,.166);letters.rotation.z=.20;sign.add(letters);
-    const dx=Math.cos(trail.sign.yaw)*3.25,dz=-Math.sin(trail.sign.yaw)*3.25;
-    registerCollider(trail.sign.x-Math.abs(dx)-.08,trail.sign.x+Math.abs(dx)+.08,trail.sign.z-Math.abs(dz)-.08,trail.sign.z+Math.abs(dz)+.08,0,3);
-    if(typeof WALL_COLLIDERS!=='undefined')WALL_COLLIDERS.at(-1).segment={ax:trail.sign.x-dx,az:trail.sign.z-dz,bx:trail.sign.x+dx,bz:trail.sign.z+dz,thickness:.3};
+    const letters=new THREE.Mesh(new THREE.PlaneGeometry(6.5,.78),new THREE.MeshStandardMaterial({map:titleTexture,roughness:.95}));letters.name='jiekou-trail-lettering';letters.position.set(0,1.64,.166);letters.rotation.z=.20;sign.add(letters);
+    // Include the slats, angled title board and its forward lettering plane.
+    const solidCenter=signPoint(0,.055),dx=Math.cos(trail.sign.yaw)*3.3,dz=-Math.sin(trail.sign.yaw)*3.3,padX=Math.abs(Math.sin(trail.sign.yaw))*.12,padZ=Math.abs(Math.cos(trail.sign.yaw))*.12;
+    registerCollider(solidCenter.x-Math.abs(dx)-padX,solidCenter.x+Math.abs(dx)+padX,solidCenter.z-Math.abs(dz)-padZ,solidCenter.z+Math.abs(dz)+padZ,0,3);
+    if(typeof WALL_COLLIDERS!=='undefined')WALL_COLLIDERS.at(-1).segment={ax:solidCenter.x-dx,az:solidCenter.z-dz,bx:solidCenter.x+dx,bz:solidCenter.z+dz,thickness:.24};
     const shrubGeometry=new THREE.IcosahedronGeometry(1,1);
     function shrub(x,z,sx,sy,sz,index,baseY=.2){const m=new THREE.Mesh(shrubGeometry,greens[index%3]);m.position.set(x,baseY+sy*.6,z);m.scale.set(sx,sy,sz);m.castShadow=true;group.add(m)}
-    shrub(signAnchor.x-4.6,signAnchor.z-1,1.1,.85,.9,0);shrub(signAnchor.x+3.2,signAnchor.z-.9,.75,.65,.7,1);
-    for(let i=0;i<16;i++)shrub(signAnchor.x-4+i*.43,signAnchor.z+.7+Math.sin(i*.9)*.2,.38,.32,.34,i);
+    for(const [along,index] of [[-2.8,0],[2.6,1]]){const p=signPoint(along,-2.5);shrub(p.x,p.z,index ? .75 : 1.1,index ? .65 : .85,index ? .7 : .9,index);}
+    for(let i=0;i<16;i++){const p=signPoint(-2.8+i*.36,.4+Math.sin(i*.9)*.1);shrub(p.x,p.z,.34,.3,.34,i);}
     // Tall grasses behind the sign keep the foreground lettering unobstructed.
     const reeds=new THREE.BufferGeometry(),positions=[];
-    for(let i=0;i<60;i++){const x=signAnchor.x-3+(i%20)*.31,z=signAnchor.z-1.6+Math.floor(i/20)*.18;positions.push(x,.2,z,x+.1*Math.sin(i),1.1+(i%4)*.16,z+.08);}
+    for(let i=0;i<60;i++){const {x,z}=signPoint(-2.7+(i%20)*.28,-1.3-Math.floor(i/20)*.18);positions.push(x,.2,z,x+.1*Math.sin(i),1.1+(i%4)*.16,z+.08);}
     reeds.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));group.add(new THREE.LineSegments(reeds,new THREE.LineBasicMaterial({color:0x71824e})));
-    const outerA=trailPoint(-1,8.9),outerB=trailPoint(-35,4.9);segment('jiekou-trail-low-wall',outerA,outerB,.3,.68,.34,stone,true);
+    const outerA=trailPoint(-1,9.9),outerB=trailPoint(-35,5.9);segment('jiekou-trail-low-wall',outerA,outerB,.3,.68,.34,stone,true);
     for(let i=0;i<11;i++){const t=i/10,x=outerA.x+(outerB.x-outerA.x)*t,z=outerA.z+(outerB.z-outerA.z)*t;const pot=box('jiekou-trail-wall-pot',.42,.23,.42,x,.8,z,stone);shrub(x,z,.46,.38,.4,i,.9);}
-    for(let i=0;i<7;i++){const x=signAnchor.x-5-i*4.7,z=signAnchor.z+12.5-i*.22;box('jiekou-trail-tree-trunk',.32,3,.32,x,1.5,z,wood);shrub(x,z,2.4,3.2,2.1,i);}
+    for(let i=0;i<7;i++){const x=signAnchor.x-5-i*4.7,z=signAnchor.z+13.5-i*.22;box('jiekou-trail-tree-trunk',.32,3,.32,x,1.5,z,wood);shrub(x,z,2.4,3.2,2.1,i);}
   }
   function crownGeometry() {
     const positions=[],colors=[],green=new THREE.Color();
