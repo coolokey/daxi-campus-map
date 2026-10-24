@@ -299,7 +299,14 @@ const CampusSpatialPlan = (() => {
      const span=(A-join)/wing.length;wing.forEach((id,i)=>addCell(byId(id),f,join+i*span,join+(i+1)*span,c1,B,'wing','v0',cv));
     }
     addStair('main','科技館主體樓梯',a,stairEnd,c1,B,1);
-    entrances.push({floor:1,inside:world(a+.6,cv),outside:world(a-1.2,cv)},{floor:1,inside:world(A-.6,cv),outside:world(A+1.2,cv)});
+    // Photo entrance faces the internal driveway in the recessed L corner.
+    // Keep rooms and the upper stair unchanged; entry dimensions are illustrative.
+    const entryU=3,front=c0-2.9,landingV=c0-1.7,level=.24;
+    for(let i=0;i<3;i++)platforms.push({...rect(entryU-2.4,entryU+2.4,front+i*.4,front+(i+1)*.4),u0:entryU-2.4,u1:entryU+2.4,v0:front+i*.4,v1:front+(i+1)*.4,y:(i+1)*.08,floor:1,entranceStep:true});
+    platforms.push({...rect(entryU-2.4,entryU+2.4,landingV,c0+.2),u0:entryU-2.4,u1:entryU+2.4,v0:landingV,v1:c0+.2,y:level,floor:1,entranceLanding:true});
+    const start=world(entryU,c0+.2,level),end=world(entryU,c0+1,0);
+    ramps.push({...rect(entryU-1,entryU+1,c0+.2,c0+1),start,end,h0:level,h1:0,axis:'x',floor:1,entranceTransition:true});
+    entrances.push({floor:1,kind:'main',u:entryU,wallV:c0,width:4.8,inside:world(entryU,cv),outside:world(entryU,front-1.3),path:[world(entryU,front-1.3),world(entryU,front-.05),world(entryU,front+.2,.08),world(entryU,front+.6,.16),world(entryU,front+1,.24),world(entryU,c0+.2,level),world(entryU,c0+1),world(entryU,cv)].reverse()});
    }
   }
   const bounds={x0:Math.min(...footprints.map(p=>p.rect.x0)),x1:Math.max(...footprints.map(p=>p.rect.x1)),z0:Math.min(...footprints.map(p=>p.rect.z0)),z1:Math.max(...footprints.map(p=>p.rect.z1))};

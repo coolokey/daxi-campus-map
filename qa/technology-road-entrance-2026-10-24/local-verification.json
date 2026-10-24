@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-24",
+  "baseCommit": "c0474995d7d801c97f2a9eb0386451c60da67435",
+  "validation": {
+    "diffCheck": "passed",
+    "sourceEmbeddedCopies": "SHA256 match",
+    "technologyCases": 16,
+    "navigationCases": 588,
+    "tests": 118,
+    "files": 7,
+    "navigationFailures": 0,
+    "passed": true,
+    "build": "passed"
+  },
+  "browser": {
+    "desktopView": "科技館門口",
+    "mobileViewport": "390x844",
+    "consoleErrors": [],
+    "mobileArrival": "科技館 2F 電腦教室二"
+  },
+  "review": {
+    "issuesFound": [
+      "entrance polyline order",
+      "transom wall occlusion",
+      "missing visible transition slope"
+    ],
+    "final": "no blockers",
+    "resolution": "fixed; graph walk and opaque ray regression checks pass"
+  },
+  "photoInterpretation": "Road-facing entrance confirmed by user; recessed L-corner placement and dimensions are illustrative, inferred from aerial and close photos",
+  "privacy": "reference photos not copied into public assets"
+}

@@ -212,6 +212,18 @@
     // corridor ends need visible parapets instead of an invisible support limit.
     const point=l.world(u,v),galleryJoin=galleryLayouts.some(q=>q.footprints.some(p=>p.floor===f&&M.inside(p.rect,point.x,point.z)));
     const teachingJoin=neighborCorridors.some(p=>CampusSpatialPlan.contains(p,u,v));
+    if(l.id==='tech-building'&&f===1){
+     const entry=l.entrances.find(e=>e.kind==='main'),main=alongU&&Math.abs(fixed-entry.wallV)<.01;
+     const cuts=[a,b,...(main?[entry.u-entry.width/2,entry.u-1,entry.u+1,entry.u+entry.width/2].filter(t=>t>a&&t<b):[])].sort((a,b)=>a-b);
+     const panel=(s,t,y0,y1,paint,solid=true)=>alongU?box(g,l,s,t,fixed-.09,fixed+.09,y0,y1,paint,solid):box(g,l,fixed-.09,fixed+.09,s,t,y0,y1,paint,solid);
+     for(let i=1;i<cuts.length;i++){
+      const s=cuts[i-1],t=cuts[i],door=main&&(s+t)/2>entry.u-1&&(s+t)/2<entry.u+1;
+      if(door){panel(s,t,3.32,FH,colors.exterior);continue;}
+      if(main&&Math.abs((s+t)/2-entry.u)<entry.width/2){panel(s,t,0,.24,colors.exterior);panel(s,t,.24,2.65,colors.glass);panel(s,t,3.32,FH,colors.exterior);continue;}
+      panel(s,t,0,1.05,colors.exterior);panel(s,t,2.65,FH,colors.exterior);panel(s,t,1.05,2.65,colors.glass);
+     }
+     return;
+    }
     const open=f===1||galleryJoin||teachingJoin;
     const connector=l.b.spatialProfile.shape==='admin'&&l.footprints.some(p=>p.floor===f&&p.part==='connector'&&CampusSpatialPlan.contains(p,u,v));
     if(connector&&!open){
@@ -291,6 +303,30 @@
      box(g,l,u,u+.055,nose.v+.09,nose.v+.18,y+1.15,y+2.7,techWindowFrame);
     }
    }
+   const e=l.entrances.find(e=>e.kind==='main'),g=new THREE.Group();g.name='floor-tech-road-entrance-1';g.userData={buildingId:l.id,floorNum:1};scene.add(g);floorMeshes.push(g);
+   const stone=material(0xa49a92),frame=material(0xd8d4c3),steel=material(0x9da6a4),glass=new THREE.MeshStandardMaterial({color:0x687f7b,transparent:true,opacity:.34});
+   const named=(name,u0,u1,v0,v1,y0,y1,paint,solid=false)=>{const m=box(g,l,u0,u1,v0,v1,y0,y1,paint,solid);if(m){m.name=name;if(['tech-entry-glass-transom','tech-entry-right-handrail'].includes(name)){const part=new THREE.Group();part.name=name;m.name=name+'-mesh';g.remove(m);part.add(m);g.add(part);}}return m;};
+   for(const p of l.platforms.filter(p=>p.entranceStep||p.entranceLanding)){
+    named(p.entranceStep?'tech-entry-step':'tech-entry-tiled-landing',p.u0,p.u1,p.v0,p.v1,0,p.y,stone);
+    for(let u=p.u0+.32;u<p.u1;u+=.32)named('tech-entry-tile-joint',u-.006,u+.006,p.v0,p.v1,p.y+.001,p.y+.004,colors.grout);
+    for(let v=p.v0+.32;v<p.v1;v+=.32)named('tech-entry-tile-joint',p.u0,p.u1,v-.006,v+.006,p.y+.001,p.y+.004,colors.grout);
+   }
+   const transition=l.ramps.find(r=>r.entranceTransition),r0=l.local(transition.start.x,transition.start.z),r1=l.local(transition.end.x,transition.end.z),u0=e.u-1,u1=e.u+1;
+   const vertices=[l.world(u0,r0.v,transition.h0),l.world(u1,r0.v,transition.h0),l.world(u1,r1.v,transition.h1),l.world(u0,r1.v,transition.h1),l.world(u0,r0.v,-.02),l.world(u1,r0.v,-.02),l.world(u1,r1.v,-.02),l.world(u0,r1.v,-.02)],positions=[];
+   for(const i of [0,1,2,0,2,3,0,4,5,0,5,1,1,5,6,1,6,2,3,7,4,3,4,0]){const p=vertices[i];positions.push(p.x,p.y,p.z)}
+   const slopeGeometry=new THREE.BufferGeometry();slopeGeometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));slopeGeometry.computeVertexNormals();const slope=new THREE.Mesh(slopeGeometry,stone);slope.name='tech-entry-interior-transition';slope.castShadow=slope.receiveShadow=true;g.add(slope);
+   const v=e.wallV-.12,lo=e.u-e.width/2,hi=e.u+e.width/2;
+   named('tech-entry-glass-transom',lo,hi,v-.03,v+.03,2.65,3.28,glass);
+   // Fixed side glazing leaves a 2-unit open central doorway for actual walking.
+   for(const [a,b] of [[lo,e.u-1],[e.u+1,hi]])named('tech-entry-fixed-glass',a,b,v-.04,v+.04,.24,2.65,glass);
+   for(const u of [lo,e.u-1,e.u+1,hi])named('tech-entry-aluminium-jamb',u-.04,u+.04,v-.07,v+.07,.24,3.32,frame);
+   for(const y of [2.65,3.3])named('tech-entry-aluminium-crossbar',lo,hi,v-.07,v+.07,y-.025,y+.025,frame);
+   for(const [a,b] of [[lo,e.u-1],[e.u+1,hi]])for(const y of [.28,1.12])named('tech-entry-fixed-panel-frame',a,b,v-.07,v+.07,y-.025,y+.025,frame);
+   // Glass leaves are held open inward, clear of the passage and its headroom.
+   for(const side of [-1,1]){const u=e.u+side*1.08;named('tech-entry-open-glass-leaf',u-.025,u+.025,v+.08,v+.9,.28,2.61,glass);for(const h of [.29,1.12,2.6])named('tech-entry-open-leaf-frame',u-.045,u+.045,v+.05,v+.93,h-.025,h+.025,frame);}
+   const railU=hi+.12,front=l.platforms.find(p=>p.entranceStep).v0;
+   named('tech-entry-right-handrail',railU-.035,railU+.035,front-.1,e.wallV-.15,1.1,1.17,steel,true);
+   for(const v of [front,front+.8,e.wallV-1.1,e.wallV-.2])named('tech-entry-rail-post',railU-.035,railU+.035,v-.035,v+.035,.02,1.14,steel,true);
   }
   if(l.id==='gym-bld')CampusGymWorld.build({l,scene,floorMeshes,box,slab,surfaceMaterials,cameraVolume,details});
   for(const s of l.stairs)for(let f=s.fromFloor||1;f<Math.min(l.b.floors,s.toFloor||l.b.floors);f++){
@@ -368,7 +404,7 @@
  // includes the whole animated body instead of letting shoulders enter walls.
  window.campusPeopleCollisionIndex=CampusCollisionGrid.create(WALL_COLLIDERS,.64,2.15);
  function floorAt(position){
-  const y=position.y,l=layouts.find(l=>M.inside(l.bounds,position.x,position.z)&&(insideFloor(l,position.x,position.z,Math.max(1,Math.round(y/FH)+1))||l.platforms.some(p=>M.inside(p,position.x,position.z)&&p.y<=y+.35)));
+  const y=position.y,l=layouts.find(l=>insideFloor(l,position.x,position.z,Math.max(1,Math.round(y/FH)+1))||l.platforms.some(p=>M.inside(p,position.x,position.z)&&p.y<=y+.35));
   if(l)return M.groundAt(l,position.x,position.z,y);
   return CampusOutdoorPlan.ground(position);
  }
