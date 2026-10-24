@@ -14,8 +14,8 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','navigation-arrows.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','photo-facade.js','campus-forecourt.js','landscape-world.js','spatial-world.js','photo-teaching.js','photo-roofs.js','photo-special-buildings.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
-it('opens the technology main entrance toward the campus driveway at the recessed L corner',()=>{
- const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building'),e=l.entrances.find(e=>e.kind==='main');return e?{count:l.entrances.length,west:e.outside.x<e.inside.x,alongRoad:Math.abs(e.outside.z-e.inside.z)<.01,corner:l.local(e.inside.x,e.inside.z).u>0,steps:l.platforms.filter(p=>p.entranceStep).length}:null})()`);
+it('opens the technology main entrance beside the rounded front facing the campus driveway',()=>{
+ const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building'),e=l.entrances.find(e=>e.kind==='main');return e?{count:l.entrances.length,west:e.outside.x<l.bounds.x0,alongRoad:Math.abs(e.outside.z-e.inside.z)<.01,corner:l.local(e.inside.x,e.inside.z).u<0,steps:l.platforms.filter(p=>p.entranceStep).length}:null})()`);
  expect(result).toEqual({count:1,west:true,alongRoad:true,corner:true,steps:3});
 });
 it('walks the photographed technology threshold and reaches every technology room from the gate',()=>{
@@ -27,7 +27,7 @@ it('orders technology entrance graph nodes from driveway to hallway without doub
  expect(result).toEqual([]);
 });
 it('keeps the technology transom transparent through the actual wall opening',()=>{
- const hits=run(`(()=>{scene.updateMatrixWorld(true);const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building'),e=l.entrances.find(e=>e.kind==='main'),p=l.world(e.u,e.wallV-.5,3),meshes=[];scene.traverse(o=>{if(o.isMesh&&o.visible&&!o.material.transparent)meshes.push(o)});return new THREE.Raycaster(new THREE.Vector3(p.x,p.y,p.z),new THREE.Vector3(1,0,0),0,.8).intersectObjects(meshes,false).length})()`);
+ const hits=run(`(()=>{scene.updateMatrixWorld(true);const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building'),e=l.entrances.find(e=>e.kind==='main'),p=l.world(e.u,e.wallV,3),meshes=[];scene.traverse(o=>{if(o.isMesh&&o.visible&&!o.material.transparent)meshes.push(o)});return new THREE.Raycaster(new THREE.Vector3(p.x-.5,p.y,p.z),new THREE.Vector3(1,0,0),0,.8).intersectObjects(meshes,false).length})()`);
  expect(hits).toBe(0);
 });
 it('gives technology a framed glass entrance and keeps its end walls solid instead of false doorways',()=>{
@@ -252,7 +252,7 @@ it('walks across each teaching L junction at its own floor without a guard, wall
 
 it('keeps the technology rounded extension solid and all room doors clear after the two-part rebuild',()=>{
  expect(run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building'),n=l.facadeFeatures.roundedNose,p=l.world(n.u,n.v+n.radius*.5,0);return checkWallCollision(p.x,0,p.z)})()`)).toBe(true);
- expect(run(`(()=>{scene.updateMatrixWorld(true);const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building'),n=l.facadeFeatures.roundedNose,p=l.world(n.u,n.v+n.radius+.3,1.5),ray=new THREE.Raycaster(new THREE.Vector3(p.x,p.y,p.z),new THREE.Vector3(-1,0,0),0,.5);return ray.intersectObjects(scene.children.filter(g=>g.name==='floor-tech-facade-1'),true).length>0})()`)).toBe(true);
+ expect(run(`(()=>{scene.updateMatrixWorld(true);const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building'),n=l.facadeFeatures.roundedNose,p=l.world(n.u,n.v+n.radius+.3,1.5),ray=new THREE.Raycaster(new THREE.Vector3(p.x,p.y,p.z),new THREE.Vector3(1,0,0),0,.5);return ray.intersectObjects(scene.children.filter(g=>g.name==='floor-tech-facade-1'),true).length>0})()`)).toBe(true);
  const failures=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building');return l.rooms.filter(r=>{const p={...r.corridor};return moveAvatarWithCollision(p,r.center.x-p.x,r.center.z-p.z)}).map(r=>r.id)})()`);expect(failures).toEqual([]);
 });
 

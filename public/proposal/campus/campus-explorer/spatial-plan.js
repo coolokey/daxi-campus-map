@@ -5,11 +5,12 @@ const CampusSpatialPlan = (() => {
  const contains=(r,u,v)=>u>=r.u0-eps&&u<=r.u1+eps&&v>=r.v0-eps&&v<=r.v1+eps&&(r.kind!=='tower'||(u-r.centerU)**2+(v-r.centerV)**2<=r.radius**2+eps);
  function layout(b){
   const p=b.spatialProfile;if(!p)return null;
-  const statueFacing=p.orientation==='statue';
-  const horizontal=statueFacing?false:p.shape==='admin'?true:p.shape==='tech'||b.id==='art-building'?false:b.width>=b.depth,L=horizontal?b.width:b.depth,D=horizontal?b.depth:b.width,sign=p.sign||1;
-  const world=(u,v,y=0)=>statueFacing?{x:b.x-v,z:b.z+u,y}:horizontal?{x:b.x+u,z:b.z+v,y}:{x:b.x+v,z:b.z+u,y};
+  // Technology's positive facade axis faces the internal road (west), as in the aerials.
+  const reverseV=p.orientation==='statue'||p.shape==='tech';
+  const horizontal=reverseV?false:p.shape==='admin'?true:b.id==='art-building'?false:b.width>=b.depth,L=horizontal?b.width:b.depth,D=horizontal?b.depth:b.width,sign=p.sign||1;
+  const world=(u,v,y=0)=>reverseV?{x:b.x-v,z:b.z+u,y}:horizontal?{x:b.x+u,z:b.z+v,y}:{x:b.x+v,z:b.z+u,y};
   const rect=(u0,u1,v0,v1)=>{const a=world(u0,v0),c=world(u1,v1);return{x0:Math.min(a.x,c.x),x1:Math.max(a.x,c.x),z0:Math.min(a.z,c.z),z1:Math.max(a.z,c.z)}};
-  const local=(x,z)=>statueFacing?{u:z-b.z,v:b.x-x}:horizontal?{u:x-b.x,v:z-b.z}:{u:z-b.z,v:x-b.x};
+  const local=(x,z)=>reverseV?{u:z-b.z,v:b.x-x}:horizontal?{u:x-b.x,v:z-b.z}:{u:z-b.z,v:x-b.x};
   const cells=[],corridors=[],footprints=[],stairs=[],ramps=[],platforms=[],holes=[],entrances=[],displayRows=[],externalLinks=[];
   const addRect=(target,r)=>{const a={...r,rect:rect(r.u0,r.u1,r.v0,r.v1)};target.push(a);return a};
   function addCell(item,floor,u0,u1,v0,v1,row='main',doorSide='v1',corridorValue){
@@ -286,7 +287,7 @@ const CampusSpatialPlan = (() => {
    if(p.shape==='tech'){
     // A broad main body and one projecting narrow wing, as in the aerials.
     // Room IDs survive; the previous north/east/south courtyard is removed.
-    const join=0,c0=B-8,c1=c0+2.8,cv=(c0+c1)/2,stairEnd=a+8;
+    const join=0,c0=B-8,c1=c0+2.8,cv=(c0+c1)/2,stairEnd=a+8,entryU=-4.5,hallHalf=2.5;
     displayRows.push({id:'main',label:'寬主體',axis:'u',start:a,end:join},{id:'wing',label:'綠窗帶長翼',axis:'u',start:join,end:A});
     for(let f=1;f<=b.floors;f++){
      fp(f,a,join,d,B);fp(f,join,A,c0,B);co(f,a,A,c0,c1);
@@ -294,19 +295,24 @@ const CampusSpatialPlan = (() => {
      const unit=(join-a)/3;
      ids.forEach((id,i)=>addCell(byId(id),f,a+i*unit,a+(i+1)*unit,d,c0,'main','v1',cv));
      addCell({kind:'stair',label:'科技館樓梯'},f,a,stairEnd,c1,B,'main');
-     addCell({kind:'wc',label:'廁所'},f,stairEnd,join,c1,B,'main','v0',cv);
+     if(f===1){
+      // A short entrance hall uses only the schematic service strip, not a classroom.
+      addCell({kind:'wc',label:'廁所'},f,stairEnd,entryU-hallHalf,c1,B,'main','v0',cv);
+      co(f,entryU-hallHalf,entryU+hallHalf,c1,B);
+      addCell({kind:'wc',label:'廁所'},f,entryU+hallHalf,join,c1,B,'main','v0',cv);
+     }else addCell({kind:'wc',label:'廁所'},f,stairEnd,join,c1,B,'main','v0',cv);
      const wing=f===1?['life-tech-2','computer-lab-1']:['tech-smart','computer-lab-2'];
      const span=(A-join)/wing.length;wing.forEach((id,i)=>addCell(byId(id),f,join+i*span,join+(i+1)*span,c1,B,'wing','v0',cv));
     }
     addStair('main','科技館主體樓梯',a,stairEnd,c1,B,1);
-    // Photo entrance faces the internal driveway in the recessed L corner.
-    // Keep rooms and the upper stair unchanged; entry dimensions are illustrative.
-    const entryU=3,front=c0-2.9,landingV=c0-1.7,level=.24;
-    for(let i=0;i<3;i++)platforms.push({...rect(entryU-2.4,entryU+2.4,front+i*.4,front+(i+1)*.4),u0:entryU-2.4,u1:entryU+2.4,v0:front+i*.4,v1:front+(i+1)*.4,y:(i+1)*.08,floor:1,entranceStep:true});
-    platforms.push({...rect(entryU-2.4,entryU+2.4,landingV,c0+.2),u0:entryU-2.4,u1:entryU+2.4,v0:landingV,v1:c0+.2,y:level,floor:1,entranceLanding:true});
-    const start=world(entryU,c0+.2,level),end=world(entryU,c0+1,0);
-    ramps.push({...rect(entryU-1,entryU+1,c0+.2,c0+1),start,end,h0:level,h1:0,axis:'x',floor:1,entranceTransition:true});
-    entrances.push({floor:1,kind:'main',u:entryU,wallV:c0,width:4.8,inside:world(entryU,cv),outside:world(entryU,front-1.3),path:[world(entryU,front-1.3),world(entryU,front-.05),world(entryU,front+.2,.08),world(entryU,front+.6,.16),world(entryU,front+1,.24),world(entryU,c0+.2,level),world(entryU,c0+1),world(entryU,cv)].reverse()});
+    // Entry is on the same road-facing facade as the round nose and green awning.
+    // t increases inward; all shared entrance polylines are stored inside → outside.
+    const front=-2.9,landing=-1.7,level=.24,V=t=>B-t;
+    for(let i=0;i<3;i++){const v0=V(front+(i+1)*.4),v1=V(front+i*.4);platforms.push({...rect(entryU-2.4,entryU+2.4,v0,v1),u0:entryU-2.4,u1:entryU+2.4,v0,v1,y:(i+1)*.08,floor:1,entranceStep:true});}
+    platforms.push({...rect(entryU-2.4,entryU+2.4,V(.2),V(landing)),u0:entryU-2.4,u1:entryU+2.4,v0:V(.2),v1:V(landing),y:level,floor:1,entranceLanding:true});
+    const start=world(entryU,V(.2),level),end=world(entryU,V(1),0);
+    ramps.push({...rect(entryU-1,entryU+1,V(1),V(.2)),start,end,h0:level,h1:0,axis:'x',floor:1,entranceTransition:true});
+    entrances.push({floor:1,kind:'main',u:entryU,wallV:B,inwardV:-1,width:4.8,inside:world(entryU,cv),outside:world(entryU,V(front-1.3)),path:[world(entryU,V(front-1.3)),world(entryU,V(front-.05)),world(entryU,V(front+.2),.08),world(entryU,V(front+.6),.16),world(entryU,V(front+1),.24),world(entryU,V(.2),level),world(entryU,V(1)),world(entryU,cv)].reverse()});
    }
   }
   const bounds={x0:Math.min(...footprints.map(p=>p.rect.x0)),x1:Math.max(...footprints.map(p=>p.rect.x1)),z0:Math.min(...footprints.map(p=>p.rect.z0)),z1:Math.max(...footprints.map(p=>p.rect.z1))};

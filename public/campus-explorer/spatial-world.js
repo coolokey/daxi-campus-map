@@ -290,7 +290,7 @@
    const nose=l.facadeFeatures.roundedNose;
    for(let f=1;f<=l.b.floors;f++){
     const y=(f-1)*FH,g=new THREE.Group();g.name=`floor-tech-facade-${f}`;g.userData={buildingId:l.id,floorNum:f};scene.add(g);floorMeshes.push(g);
-    const p=l.world(nose.u,nose.v,y+FH/2),body=new THREE.Mesh(new THREE.CylinderGeometry(nose.radius,nose.radius,FH,24,1,false,0,Math.PI),colors.exterior);body.position.set(p.x,p.y,p.z);body.castShadow=body.receiveShadow=true;body.name='tech-rounded-junction';g.add(body);
+    const p=l.world(nose.u,nose.v,y+FH/2),body=new THREE.Mesh(new THREE.CylinderGeometry(nose.radius,nose.radius,FH,24,1,false,0,Math.PI),colors.exterior);body.position.set(p.x,p.y,p.z);body.rotation.y=Math.PI;body.castShadow=body.receiveShadow=true;body.name='tech-rounded-junction';g.add(body);
     // Closed semicircular outboard volume; use the same curve for visible shell and physics.
     for(let u=nose.u-nose.radius;u<nose.u+nose.radius-.001;u+=.2){
      const end=Math.min(nose.u+nose.radius,u+.2),v=nose.v+Math.sqrt(Math.max(0,nose.radius**2-((u+end)/2-nose.u)**2));
@@ -315,18 +315,19 @@
    const vertices=[l.world(u0,r0.v,transition.h0),l.world(u1,r0.v,transition.h0),l.world(u1,r1.v,transition.h1),l.world(u0,r1.v,transition.h1),l.world(u0,r0.v,-.02),l.world(u1,r0.v,-.02),l.world(u1,r1.v,-.02),l.world(u0,r1.v,-.02)],positions=[];
    for(const i of [0,1,2,0,2,3,0,4,5,0,5,1,1,5,6,1,6,2,3,7,4,3,4,0]){const p=vertices[i];positions.push(p.x,p.y,p.z)}
    const slopeGeometry=new THREE.BufferGeometry();slopeGeometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));slopeGeometry.computeVertexNormals();const slope=new THREE.Mesh(slopeGeometry,stone);slope.name='tech-entry-interior-transition';slope.castShadow=slope.receiveShadow=true;g.add(slope);
-   const v=e.wallV-.12,lo=e.u-e.width/2,hi=e.u+e.width/2;
-   named('tech-entry-glass-transom',lo,hi,v-.03,v+.03,2.65,3.28,glass);
+   const entryBox=(name,u0,u1,t0,t1,y0,y1,paint,solid=false)=>named(name,u0,u1,e.wallV-t1,e.wallV-t0,y0,y1,paint,solid);
+   const t=-.12,lo=e.u-e.width/2,hi=e.u+e.width/2;
+   entryBox('tech-entry-glass-transom',lo,hi,t-.03,t+.03,2.65,3.28,glass);
    // Fixed side glazing leaves a 2-unit open central doorway for actual walking.
-   for(const [a,b] of [[lo,e.u-1],[e.u+1,hi]])named('tech-entry-fixed-glass',a,b,v-.04,v+.04,.24,2.65,glass);
-   for(const u of [lo,e.u-1,e.u+1,hi])named('tech-entry-aluminium-jamb',u-.04,u+.04,v-.07,v+.07,.24,3.32,frame);
-   for(const y of [2.65,3.3])named('tech-entry-aluminium-crossbar',lo,hi,v-.07,v+.07,y-.025,y+.025,frame);
-   for(const [a,b] of [[lo,e.u-1],[e.u+1,hi]])for(const y of [.28,1.12])named('tech-entry-fixed-panel-frame',a,b,v-.07,v+.07,y-.025,y+.025,frame);
+   for(const [a,b] of [[lo,e.u-1],[e.u+1,hi]])entryBox('tech-entry-fixed-glass',a,b,t-.04,t+.04,.24,2.65,glass);
+   for(const u of [lo,e.u-1,e.u+1,hi])entryBox('tech-entry-aluminium-jamb',u-.04,u+.04,t-.07,t+.07,.24,3.32,frame);
+   for(const y of [2.65,3.3])entryBox('tech-entry-aluminium-crossbar',lo,hi,t-.07,t+.07,y-.025,y+.025,frame);
+   for(const [a,b] of [[lo,e.u-1],[e.u+1,hi]])for(const y of [.28,1.12])entryBox('tech-entry-fixed-panel-frame',a,b,t-.07,t+.07,y-.025,y+.025,frame);
    // Glass leaves are held open inward, clear of the passage and its headroom.
-   for(const side of [-1,1]){const u=e.u+side*1.08;named('tech-entry-open-glass-leaf',u-.025,u+.025,v+.08,v+.9,.28,2.61,glass);for(const h of [.29,1.12,2.6])named('tech-entry-open-leaf-frame',u-.045,u+.045,v+.05,v+.93,h-.025,h+.025,frame);}
-   const railU=hi+.12,front=l.platforms.find(p=>p.entranceStep).v0;
-   named('tech-entry-right-handrail',railU-.035,railU+.035,front-.1,e.wallV-.15,1.1,1.17,steel,true);
-   for(const v of [front,front+.8,e.wallV-1.1,e.wallV-.2])named('tech-entry-rail-post',railU-.035,railU+.035,v-.035,v+.035,.02,1.14,steel,true);
+   for(const side of [-1,1]){const u=e.u+side*1.08;entryBox('tech-entry-open-glass-leaf',u-.025,u+.025,t+.08,t+.9,.28,2.61,glass);for(const h of [.29,1.12,2.6])entryBox('tech-entry-open-leaf-frame',u-.045,u+.045,t+.05,t+.93,h-.025,h+.025,frame);}
+   const railU=hi+.12;
+   entryBox('tech-entry-right-handrail',railU-.035,railU+.035,-3,-.15,1.1,1.17,steel,true);
+   for(const t of [-2.9,-2.1,-1.1,-.2])entryBox('tech-entry-rail-post',railU-.035,railU+.035,t-.035,t+.035,.02,1.14,steel,true);
   }
   if(l.id==='gym-bld')CampusGymWorld.build({l,scene,floorMeshes,box,slab,surfaceMaterials,cameraVolume,details});
   for(const s of l.stairs)for(let f=s.fromFloor||1;f<Math.min(l.b.floors,s.toFloor||l.b.floors);f++){

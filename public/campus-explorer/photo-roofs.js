@@ -72,7 +72,7 @@ const CampusPhotoRoofs=(()=>{
      for(const a of [p.u0+.07,p.u1-.07])localBox(a,v,.14,D,.36,y+.18,0xc6c9c3);
      for(const a of [p.v0+.07,p.v1-.07])localBox(u,a,L,.14,.36,y+.18,0xc6c9c3);
     }
-    const nose=l.facadeFeatures?.roundedNose;if(nose){const p=l.world(nose.u,nose.v);add(new THREE.CylinderGeometry(nose.radius,nose.radius,.14,24,1,false,0,Math.PI),0xe3e3da,p.x,y+.07,p.z);}
+    const nose=l.facadeFeatures?.roundedNose;if(nose){const p=l.world(nose.u,nose.v);add(new THREE.CylinderGeometry(nose.radius,nose.radius,.14,24,1,false,0,Math.PI).rotateY(Math.PI),0xe3e3da,p.x,y+.07,p.z);}
     // The new aerial resolves a small flat-roof stair head and scattered vents.
     const main=top.find(p=>p.u0<0);if(main){detail('tech-roof-stair-head',-4.3,3.6,3.2,2.5,.68,y+.48,0xd7dad4);for(const [u,v] of [[-13,-8],[-9,8]]){const q=l.world(u,v,y+.29),vent=new THREE.Mesh(new THREE.CylinderGeometry(.12,.16,.3,10),material(0xc4c9c3));vent.position.set(q.x,q.y,q.z);vent.name='tech-flat-roof-vent';g.add(vent);}}
    }else if(l.id==='art-building'){

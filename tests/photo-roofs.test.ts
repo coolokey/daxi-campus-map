@@ -30,7 +30,8 @@ const ids=['grade8-front','grade8-mid','grade9-back','art-building','tech-buildi
 it('represents the aerial art building as a compact four-storey block beside the technology wing',()=>{
  const s=fixture(),art=s.layouts.find((l:any)=>l.id==='art-building'),tech=s.layouts.find((l:any)=>l.id==='tech-building');
  expect(art.b.floors).toBe(4);expect(art.b.depth/art.b.width).toBeLessThan(1.5);
- expect(art.bounds.z0-tech.bounds.z1).toBeGreaterThanOrEqual(1);expect(art.bounds.z0-tech.bounds.z1).toBeLessThanOrEqual(4);s.dom.window.close();
+ expect(art.bounds.z0-tech.bounds.z1).toBeGreaterThanOrEqual(1);expect(art.bounds.z0-tech.bounds.z1).toBeLessThanOrEqual(4);
+ const wing=tech.footprints.find((p:any)=>p.floor===1&&p.u0===0);expect(art.bounds.x0).toBeLessThan(wing.rect.x1);expect(art.bounds.x1).toBeGreaterThan(wing.rect.x0);s.dom.window.close();
 });
 it('replaces inherited roof markers but preserves every ceiling and unrelated roof',()=>{
  const s=fixture();expect(s.scene.getObjectByName('photo-roof-admin-front')).toBeUndefined();

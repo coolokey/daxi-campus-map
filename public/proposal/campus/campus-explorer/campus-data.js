@@ -256,10 +256,10 @@ const FH = 3.6; // Floor Height in meters
     category: "special",
     color: 0xc9bbb6,
     roofColor: 0xd8ce99,
-    // 1151015 aerials: compact four-storey tower immediately south of technology.
-    x: 84, z: 45.8, width: 11.2, depth: 12.8, floors: 4,
+    // Aerials: the tower follows the corrected road-side technology wing.
+    x: 64, z: 45.8, width: 11.2, depth: 12.8, floors: 4,
     stairs: [
-      { x: 80, z: 45.8, name: "藝術館主樓梯間", floors: 4 }
+      { x: 60, z: 45.8, name: "藝術館主樓梯間", floors: 4 }
     ],
     rooms: [
       { id: "broadwood", code: "ART1-BW", name: "樂活體能教室 (1F)", floor: 1, node: "art-1f-bw", cat: "sports" },

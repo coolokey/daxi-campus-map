@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-25",
+  "baseCommit": "cac3b4d35d2b55a70fbf808da544033cbe74be77",
+  "validation": {
+    "build": "passed",
+    "sourceEmbeddedCopies": "SHA256 match",
+    "files": 7,
+    "passed": true,
+    "navigationOrigins": 483,
+    "tests": 118,
+    "diffCheck": "passed",
+    "navigationCases": 591,
+    "navigationFailures": 0
+  },
+  "browser": {
+    "desktopViews": [
+      "科技館與藝術館",
+      "科技館門口"
+    ],
+    "mobileViewport": "390x844",
+    "consoleErrors": [],
+    "mobileArrival": "科技館 2F 電腦教室二"
+  },
+  "review": "No P1/P2 issues; half-cylinder orientation, shared collision, entrance hall and art adjacency checked against aerials",
+  "photoInterpretation": "Road-facing canopy and rounded nose confirmed; main body behind long road-side wing; dimensions and entrance position remain illustrative",
+  "scope": "Technology world/local axis corrected; art block translated to stay adjacent to wing; all classroom IDs and floors retained"
+}

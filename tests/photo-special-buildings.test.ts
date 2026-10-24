@@ -13,7 +13,7 @@ function fixture(){
 }
 it('adds a continuous green curved shade over the technology wing without closing the walkway',()=>{
  const s=fixture(),l=s.layouts.find((l:any)=>l.id==='tech-building'),g=s.scene.getObjectByName('photo-tech-green-awning');expect(g).toBeTruthy();s.scene.updateMatrixWorld(true);
- const bounds=new THREE.Box3().setFromObject(g!);expect(bounds.min.y).toBeGreaterThan(6);expect(bounds.max.z-bounds.min.z).toBeGreaterThan(12);expect(bounds.min.x).toBeGreaterThan(l.bounds.x1);expect(g!.userData).toMatchObject({buildingId:'tech-building',floorNum:2});s.dom.window.close();
+ const bounds=new THREE.Box3().setFromObject(g!);expect(bounds.min.y).toBeGreaterThan(6);expect(bounds.max.z-bounds.min.z).toBeGreaterThan(12);expect(bounds.max.x).toBeLessThan(l.bounds.x0);expect(g!.userData).toMatchObject({buildingId:'tech-building',floorNum:2});s.dom.window.close();
 });
 it('adds photo-backed floor details to art and the shared health/cooperative block with correct cutaway ownership',()=>{
  const s=fixture();for(const id of ['art-building','health-bld']){const l=s.layouts.find((q:any)=>q.id===id);for(let f=1;f<=l.b.floors;f++){const g=s.scene.getObjectByName(`photo-special-${id}-${f}`);expect(g).toBeTruthy();expect(g!.userData).toMatchObject({buildingId:id,floorNum:f});expect(s.floors).toContain(g);}}
