@@ -326,11 +326,14 @@ it('registers the actual inclined rail boundary as solid at its own flight heigh
  expect(bad).toEqual([]);
 });
 it('keeps all rendered overhead slabs clear of the full body on every stair flight and turn landing',()=>{
- const result=run(`(()=>{scene.updateMatrixWorld(true);const meshes=[],bad=[];let samples=0;scene.traverse(o=>{if(o.isMesh&&!o.material.transparent)meshes.push(o)});
+ // Conservative world bounds only skip meshes that a vertical ray cannot reach.
+ // Keep the same body samples and precise triangle intersections for candidates.
+ // Three r128 omits instance transforms from Box3; retain all dynamic/instance meshes.
+ const result=run(`(()=>{scene.updateMatrixWorld(true);const meshes=[],bad=[];let samples=0;scene.traverse(o=>{if(o.isMesh&&!o.material.transparent)meshes.push({mesh:o,bounds:new THREE.Box3().setFromObject(o)})});
  for(const l of campusWalkWorld.layouts)for(const r of l.ramps.filter(r=>l.stairs.some(s=>s.id===r.stairId))){
   const points=[];for(let i=4;i<=36;i++)for(const offset of [-.2,0,.2]){const p=CampusWalkMath.rampPoint(r,i/40);p[r.axis==='x'?'z':'x']+=offset;points.push(p)}
   const s=l.stairs.find(s=>s.id===r.stairId),p=l.platforms.find(p=>p.stairId===s.id&&p.floor===r.floor);for(const v of [s.centerV-1.25,s.centerV,s.centerV+1.25])points.push(l.world(s.turnU,v,p.y));
-  for(const p of points){if(checkWallCollision(p.x,p.y,p.z))continue;samples++;const ray=new THREE.Raycaster(new THREE.Vector3(p.x,p.y+.3,p.z),new THREE.Vector3(0,1,0),0,AVATAR_HEIGHT-.3);const hit=ray.intersectObjects(meshes,false).find(h=>Math.abs(h.face.normal.clone().transformDirection(h.object.matrixWorld).y)>.9);if(hit)bad.push({building:l.id,stair:r.stairId,floor:r.floor,p,hit:hit.point.toArray()});}
+  for(const p of points){if(checkWallCollision(p.x,p.y,p.z))continue;samples++;const candidates=meshes.filter(({mesh,bounds:b})=>mesh.isInstancedMesh||mesh.isSkinnedMesh||(b.min.x<=p.x&&b.max.x>=p.x&&b.min.z<=p.z&&b.max.z>=p.z&&b.max.y>=p.y+.3&&b.min.y<=p.y+AVATAR_HEIGHT)).map(o=>o.mesh);const ray=new THREE.Raycaster(new THREE.Vector3(p.x,p.y+.3,p.z),new THREE.Vector3(0,1,0),0,AVATAR_HEIGHT-.3);const hit=ray.intersectObjects(candidates,false).find(h=>Math.abs(h.face.normal.clone().transformDirection(h.object.matrixWorld).y)>.9);if(hit)bad.push({building:l.id,stair:r.stairId,floor:r.floor,p,hit:hit.point.toArray()});}
  }return {samples,bad}})()`);expect(result.samples).toBeGreaterThan(4000);expect(result.bad).toEqual([]);
 },30000);
 it('keeps legacy canopy support columns outside every stair enclosure',()=>{

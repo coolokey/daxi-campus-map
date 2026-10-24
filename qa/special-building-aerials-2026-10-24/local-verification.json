@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-24",
+  "modelCommit": "9b179f9",
+  "validation": {
+    "bundleScripts": 48,
+    "passed": true,
+    "navigationFailures": 0,
+    "bundleStyles": 14,
+    "files": 7,
+    "tests": 113,
+    "build": "passed",
+    "navigationCases": 585,
+    "finalStairClearanceRerun": "passed; conservative bounds, instances retained"
+  },
+  "browser": {
+    "mobileViewport": "390x844",
+    "desktopViews": [
+      "科技館與藝術館",
+      "健康中心與合作社"
+    ],
+    "mobileArrivals": [
+      "員生合作社",
+      "健康中心"
+    ],
+    "floors": [
+      "全部",
+      "1F",
+      "2F"
+    ],
+    "consoleErrors": []
+  },
+  "review": "Photo geometry, integration, and conservative clearance filtering reviewed; no blockers"
+}
