@@ -7,7 +7,10 @@ const CampusOutdoorPlan=(()=>{
  const gate={x:-36,z:86},target={x:-36,z:28.5},distance=Math.hypot(target.x-gate.x,target.z-gate.z);
  const axis={x:(target.x-gate.x)/distance,z:(target.z-gate.z)/distance},right={x:-axis.z,z:axis.x};
  const world=(cross,inward,y=0)=>({x:gate.x+right.x*cross+axis.x*inward,y,z:gate.z+right.z*cross+axis.z*inward});
- const entrance={gate,target,axis,right,yaw:axis.x===0?0:Math.atan2(-axis.x,-axis.z),world,spawn:world(0,-4)};
+ // User-confirmed: the broad gate is for vehicles; the booth-side wicket is
+ // the main student walking entrance. Dimensions remain illustrative.
+ const pedestrian={cross:13.2,outside:world(13.2,-4),threshold:world(13.2,-.9),inside:world(13.2,5.8)};
+ const entrance={gate,target,axis,right,yaw:axis.x===0?0:Math.atan2(-axis.x,-axis.z),world,pedestrian,spawn:{...pedestrian.outside}};
  const palette={track:0xc93434,lawn:0x7b9555,court:0xb91c1c,line:0xf2f0e4,stage:0x83b0bf,step:0xd9bf6f,roof:0x9e5148};
  const track={x:-84,z:-25,halfStraight:25,outerRadius:27,innerRadius:18};
  const stage={id:'grandstand',x0:-70,x1:-54,z0:8.1,z1:15.8,height:1.4,center:{x:-62,y:1.4,z:11},foot:{x:-62,y:0,z:4.3},stairs:{x0:-69,x1:-55,z0:4.5,z1:8.1}};

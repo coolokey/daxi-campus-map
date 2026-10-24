@@ -823,13 +823,13 @@
       const guard=entrance.world(16,1.6);guardGroup.position.copy(guard);
 
       const guardBody = new THREE.Mesh(
-        new THREE.BoxGeometry(7.6, 2.2, 3.8),
+        new THREE.BoxGeometry(5.6, 2.2, 3.8),
         new THREE.MeshStandardMaterial({ color: 0xe7e5d9, roughness:.95 })
       );
-      guardBody.name='guard-upper-wall';guardBody.position.set(0,2.1,-.9);
+      guardBody.name='guard-upper-wall';guardBody.position.set(1,2.1,-.9);
       guardBody.castShadow = true;
       guardGroup.add(guardBody);
-      const blueBase=new THREE.Mesh(new THREE.BoxGeometry(7.6,1,3.8),new THREE.MeshStandardMaterial({color:0x94c3ce,roughness:.94}));blueBase.name='guard-blue-base';blueBase.position.set(0,.5,-.9);guardGroup.add(blueBase);
+      const blueBase=new THREE.Mesh(new THREE.BoxGeometry(5.6,1,3.8),new THREE.MeshStandardMaterial({color:0x94c3ce,roughness:.94}));blueBase.name='guard-blue-base';blueBase.position.set(1,.5,-.9);guardGroup.add(blueBase);
       // 俯視照：屋身跨校門線，右端值勤翼伸向校外，窗口退縮於簷下。
       for(const [height,y,material] of [[2.2,2.1,guardBody.material],[1,.5,blueBase.material]]){const wing=new THREE.Mesh(new THREE.BoxGeometry(2.4,height,2.6),material);if(height===2.2)wing.name='guard-street-wing';wing.position.set(2.6,y,2.3);wing.castShadow=true;guardGroup.add(wing);}
 
@@ -871,7 +871,8 @@
         const pane=new THREE.Mesh(new THREE.BoxGeometry(width-.2,height-.2,.075),glassMat);pane.position.set(x,y,z+side*.04);guardGroup.add(pane);
         const mullion=new THREE.Mesh(new THREE.BoxGeometry(.045,height-.17,.09),frameMat);mullion.position.copy(pane.position);guardGroup.add(mullion);
       };
-      for(const x of [-2.2,-.7]){addWindow(`guard-window-campus-${x}`,x,-2.83);addWindow(`guard-window-duty-${x}`,x,1.03);}
+      for(const x of [-.9,.3])addWindow(`guard-window-campus-${x}`,x,-2.83,1);
+      for(const x of [-.9,.5])addWindow(`guard-window-duty-${x}`,x,1.03,1.2);
       addWindow('guard-street-small-window',2.65,3.63,.9,1.12,1.72);
       // 圖四：從校內看依序為公告欄、白門、窗戶、門塔。校外右端沒有門。
       const door=new THREE.Mesh(new THREE.BoxGeometry(1.1,2.25,.08),frameMat);door.name='guard-door';door.position.set(1.4,1.125,-2.85);guardGroup.add(door);
@@ -880,15 +881,21 @@
       const notice=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.12,.06),new THREE.MeshStandardMaterial({color:0xe1deb2,roughness:.9}));notice.name='guard-campus-noticeboard';notice.position.set(2.8,1.8,-2.84);guardGroup.add(notice);
       const awning=new THREE.Mesh(new THREE.BoxGeometry(5.2,.18,1.9),frameMat);awning.name='guard-entry-awning';awning.position.set(-1.1,2.55,2.6);awning.castShadow=true;guardGroup.add(awning);
       const counter=new THREE.Mesh(new THREE.BoxGeometry(2.2,.12,.5),frameMat);counter.name='guard-duty-counter';counter.position.set(-.7,1.02,1.96);guardGroup.add(counter);
+      // The wicket is separate from the guard-room door. Its leaf is folded
+      // toward the booth so the student passage remains visibly open.
       const railMat=new THREE.MeshStandardMaterial({color:0x597b7e,roughness:.7});
-      for(const x of [-3.4,-3.0,-2.6]){const rail=new THREE.Mesh(new THREE.BoxGeometry(.045,.9,.045),railMat);rail.position.set(x,.45,2.5);guardGroup.add(rail);}
-      const railTop=new THREE.Mesh(new THREE.BoxGeometry(.85,.05,.06),railMat);railTop.position.set(-3,.92,2.5);guardGroup.add(railTop);
+      const wicket=new THREE.Group();wicket.name='main-entrance-pedestrian-gate';wicket.position.copy(entrance.pedestrian.threshold);wicket.rotation.y=entrance.yaw;wicket.userData.open=true;
+      for(const x of [-.92,.92]){const post=new THREE.Mesh(new THREE.BoxGeometry(.1,1.12,.1),railMat);post.position.set(x,.56,0);wicket.add(post);const p=entrance.world(entrance.pedestrian.cross+x,-.9);registerWallCollider(p.x-.05,p.x+.05,p.z-.05,p.z+.05,0,1.12);}
+      const leaf=new THREE.Group();leaf.name='pedestrian-wicket-open-leaf';leaf.position.x=.88;leaf.rotation.y=Math.PI/2;
+      for(const y of [.12,1.02]){const rail=new THREE.Mesh(new THREE.BoxGeometry(1.7,.055,.065),railMat);rail.position.set(-.85,y,0);leaf.add(rail);}
+      for(let i=0;i<9;i++){const bar=new THREE.Mesh(new THREE.BoxGeometry(.035,.9,.045),railMat);bar.position.set(-.05-i*.2,.57,0);leaf.add(bar);}
+      wicket.add(leaf);scene.add(wicket);
+      const hinge=entrance.world(14.08,-.9);registerWallCollider(hinge.x-.045,hinge.x+.045,hinge.z,hinge.z+1.7,0,1.06);
 
       scene.add(guardGroup);
-      registerWallCollider(guard.x-3.8,guard.x+3.8,guard.z-2.8,guard.z+1,0,3.2);
+      registerWallCollider(guard.x-1.8,guard.x+3.8,guard.z-2.8,guard.z+1,0,3.2);
       registerWallCollider(guard.x+1.4,guard.x+3.8,guard.z+1,guard.z+3.6,0,3.2);
       registerWallCollider(guard.x-1.8,guard.x+.4,guard.z+1.71,guard.z+2.21,.96,1.08);
-      registerWallCollider(guard.x-3.43,guard.x-2.57,guard.z+2.47,guard.z+2.53,0,.95);
       // 逐一對應可見實體；主塔底部開口不再放整塊隱形碰撞。
       const towerCollider=(cross,inward,halfWidth,halfDepth,minY,maxY)=>{const p=entrance.world(cross,inward);registerWallCollider(p.x-halfWidth,p.x+halfWidth,p.z-halfDepth,p.z+halfDepth,minY,maxY);Object.assign(WALL_COLLIDERS.at(-1),{gatePylon:true,perimeter:true});};
       towerCollider(-11,0,1.2,1.2,.03,1.28);
@@ -2099,8 +2106,9 @@
       { name: "戶外排球場", ...CampusOutdoorPlan.volleyball.outerCenter, y: 1.8 },
       { name: "籃球場群", x: 12, y: 1.8, z: -38 },
       { name: "蘭亭訓平池", x: -18, y: 2.2, z: -66 },
-      { name: "校大門", ...CampusOutdoorPlan.entrance.world(0,0,3.5) },
+      { name: "汽機車大門", ...CampusOutdoorPlan.entrance.world(0,0,3.5) },
       { name: "警衛室", ...CampusOutdoorPlan.entrance.world(16,1.6,3.2) },
+      { name: "學生步行小門", ...CampusOutdoorPlan.entrance.world(13.2,-.9,2) },
       { name: "學生活動中心", x: -80, y: 6.0, z: 58 },
       { name: "行政大樓", x: -12, y: 6.0, z: 32 },
       { name: "八年級棟 (南棟)", x: 16, y: 6.0, z: 60 },
@@ -3697,7 +3705,7 @@
 
 
     Object.assign(ROOMS_DB,{
-      gate:{id:'gate',name:'校大門',buildingName:'正門廣場',floor:1,cat:'admin',node:'gate'},
+      gate:{id:'gate',name:'校門行人入口',buildingName:'警衛室旁行人小門',floor:1,cat:'admin',node:'gate'},
       track:{id:'track',name:'操場及綜合球場',buildingName:'操場',floor:1,cat:'sports',node:'track-center'},
       breezeway:{id:'breezeway',name:'中央通廊',buildingName:'教學區',floor:1,cat:'special',node:'breezeway-mid'}
     });

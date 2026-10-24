@@ -33,7 +33,7 @@ window.CampusGateGuide = (() => {
   if(!admin)return {status:'incomplete',source,notice:'詳細步行指引尚未確認，請向警衛室詢問。',steps:[{title:'請向警衛室確認路線',body:`${known?room.name+'：':''}${location}。詳細步行指引尚未確認，請向警衛室詢問入口與前往方式，抵達後請確認現場門牌。`}]};
   const upstairs=room.floor>1;
   return {status:'plan-reference',source,notice,photo:{src:'photos/admin-front.jpg',caption:'行政大樓外觀參考，非處室入口照片。'},steps:[
-   {title:'在正門辨認行政大樓',body:'請對照校園空照圖與行政大樓外觀，先確認行政大樓的位置。若無法辨認，請向警衛室詢問。'},
+   {title:'從警衛室旁小門步行入校',body:'請由門塔與警衛室之間的行人小門進入；寬門供汽機車通行。入校後對照空照圖與行政大樓外觀，確認行政大樓的位置；若無法辨認，請向警衛室詢問。'},
    {title:upstairs?'確認穿堂與樓梯':'確認一樓穿堂',body:upstairs?`平面圖標示行政大樓一樓穿堂及連通一至三樓的連續樓梯；請先依現場標示確認入口，再前往 ${room.floor} 樓。入口或樓梯不明時，請向警衛室詢問。`:'平面圖標示行政大樓一樓穿堂；學務處位於一樓，請依現場門牌確認前往方式。入口不明時，請向警衛室詢問。'},
    {title:'請確認現場門牌',body:`${room.name}：${location}。${room.entryHint?room.entryHint+' ':''}請確認現場門牌與目的地相符，再按確認完成。`}
   ]};

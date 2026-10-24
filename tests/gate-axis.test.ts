@@ -54,3 +54,17 @@ it('straddles the entrance with an outside booth wing and a campus-side door',()
  const r=evaluate(`(()=>{scene.updateMatrixWorld(true);const e=CampusOutdoorPlan.entrance,g=scene.getObjectByName('main-entrance-guard'),wing=g.getObjectByName('guard-street-wing'),door=g.getObjectByName('guard-door'),roof=g.getObjectByName('guard-gable-roof'),outside=e.world(11,-1.2).z;const bounds=new THREE.Box3().setFromObject(wing),roofBounds=new THREE.Box3().setFromObject(roof),d=door.getWorldPosition(new THREE.Vector3());return {outside,wing:bounds,roof:roofBounds,door:d,perimeterEnd:CampusOutdoorPlan.perimeter.outline.at(-1)};})()`);
  expect(r.wing.max.z).toBeGreaterThan(r.outside+.5);expect(r.roof.max.z).toBeGreaterThan(r.outside+1);expect(r.door.z).toBeLessThan(86);expect(r.perimeterEnd[0]).toBeGreaterThan(r.wing.max.x);
 });
+
+it('uses the separate pedestrian gate beside the booth as the walking start',()=>{
+ const r=evaluate(`(()=>{const e=CampusOutdoorPlan.entrance,g=scene.getObjectByName('main-entrance-pedestrian-gate');return {found:!!g,pedestrian:e.pedestrian,spawn:e.spawn,gate:NAV_NODES.gate};})()`);
+ expect(r.found).toBe(true);expect(r.spawn.x).toBeCloseTo(-22.8);expect(r.spawn.z).toBeCloseTo(90);expect(r.pedestrian.inside.z).toBeCloseTo(80.2);expect(r.gate.x).toBeCloseTo(r.spawn.x);
+});
+it('walks through the small gate and keeps every administrative route on this entrance',()=>{
+ const r=evaluate(`(()=>{const e=CampusOutdoorPlan.entrance,start=e.world(13.2,-4),end=e.world(13.2,5.8),p={...start};let blocked=false;for(let i=1;i<=100;i++){const z=start.z+(end.z-start.z)*i/100;blocked=moveAvatarWithCollision(p,0,z-p.z,0,true)||blocked;}const rows=['academic','student-affairs','guard'].map(id=>{const path=campusWalkWorld.route(start,ROOMS_DB[id]);let crossing=null;for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i];if(a.z>=86.9&&b.z<=86.9){const t=(86.9-a.z)/(b.z-a.z);crossing=a.x+(b.x-a.x)*t;break;}}return {id,crossing}});return {blocked,distance:Math.hypot(p.x-end.x,p.z-end.z),rows};})()`);
+ expect(r.blocked).toBe(false);expect(r.distance).toBeLessThan(.01);for(const row of r.rows)expect(row.crossing).toBeCloseTo(-22.8,1);
+});
+
+it('returns to the outside walking gate without first detouring into campus',()=>{
+ const r=evaluate(`(()=>{const e=CampusOutdoorPlan.entrance,start=e.world(13.2,-2),points=campusWalkWorld.route(start,ROOMS_DB.gate);return {points,minZ:Math.min(...points.map(p=>p.z)),last:points.at(-1)};})()`);
+ expect(r.minZ).toBeGreaterThanOrEqual(88);expect(r.last.z).toBeCloseTo(90);
+});

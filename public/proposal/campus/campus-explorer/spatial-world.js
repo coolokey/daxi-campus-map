@@ -448,6 +448,8 @@
   attachPath(nb,hb,gridPath(j.end,graph[hb],j.end.y,b),j.b);
  }
  const gate=node('gate',{...CampusOutdoorPlan.entrance.spawn});
+ const pedestrianEntry=node('pedestrian-entry',{...CampusOutdoorPlan.entrance.pedestrian.inside});
+ attachPath(gate,pedestrianEntry,gridPath(graph[gate],graph[pedestrianEntry]));
  for(const l of layouts)for(const [i,e] of l.entrances.entries()){
   const steps=Math.ceil(Math.hypot(e.outside.x-e.inside.x,e.outside.z-e.inside.z)/.12);
   if(Array.from({length:steps+1},(_,j)=>j/steps).some(t=>checkWallCollision(e.inside.x+(e.outside.x-e.inside.x)*t,0,e.inside.z+(e.outside.z-e.inside.z)*t)))continue;
@@ -455,16 +457,16 @@
   const hub=hubs[`${l.id}-1`];attachPath(inside,hub,gridPath(e.inside,graph[hub],0,l),l.id);
   // Detached rooms get their own entrance; no route crosses the parking void.
   for(const r of l.rooms.filter(r=>r.floor===1))attachPath(inside,`walk-${r.id}-corridor`,gridPath(e.inside,r.corridor,0,l),l.id);
-  attachPath(gate,exterior,gridPath(graph[gate],e.outside));
+  attachPath(pedestrianEntry,exterior,gridPath(graph[pedestrianEntry],e.outside));
  }
  const stageFoot=node('stage-outdoor-foot',{...CampusOutdoorPlan.stage.foot});
- attachPath(gate,stageFoot,gridPath(graph[gate],graph[stageFoot]));
+ attachPath(pedestrianEntry,stageFoot,gridPath(graph[pedestrianEntry],graph[stageFoot]));
  let stagePrevious=stageFoot;
  for(const [i,p] of CampusOutdoorPlan.stairsPath().entries()){const id=node(`stage-outdoor-stair-${i}`,p);link(stagePrevious,id);stagePrevious=id;}
  const podium=node('stand-podium',{...CampusOutdoorPlan.stage.center});link(stagePrevious,podium);roomTargets.grandstand=podium;
  for(const room of Object.values(ROOMS_DB))if(!roomTargets[room.id]&&room.node!=='gate'){
   const old=oldNodes[room.node];if(!old)continue;let p={x:old.x,y:0,z:old.z};const l=layouts.find(l=>insideFloor(l,p.x,p.z,1));if(l)p=l.entrance;
-  const target=node(room.node,p);attachPath(gate,target,gridPath(graph[gate],p));
+  const target=node(room.node,p),entry=room.id==='palm-avenue'?gate:pedestrianEntry;attachPath(entry,target,gridPath(graph[entry],p));
  }
  for(const [alias,id] of Object.entries(CampusSpatialData.aliases))ROOMS_DB[alias]={...ROOMS_DB[id],id:alias,aliasFor:id};
  Object.keys(NAV_NODES).forEach(k=>delete NAV_NODES[k]);Object.assign(NAV_NODES,graph);
@@ -546,6 +548,14 @@
  }
  function route(position,room){
   const target=graph[room.node];if(!target)return null;
+  const entrance=CampusOutdoorPlan.entrance,pedestrian=entrance.pedestrian;
+  const cross=(position.x-entrance.gate.x)*entrance.right.x+(position.z-entrance.gate.z)*entrance.right.z,inward=(position.x-entrance.gate.x)*entrance.axis.x+(position.z-entrance.gate.z)*entrance.axis.z;
+  // Keep the first walking leg through the real wicket. The generic nearest-
+  // anchor shortcut must not replace it with the wider vehicle driveway.
+  if(room.node!==gate&&room.node!=='palm-avenue-end'&&Math.abs(position.y)<.15&&Math.abs(cross-pedestrian.cross)<.8&&inward>=-8&&inward<5.75){
+   const entry=pedestrian.inside,approach=supportedSegment(position,entry)?[{...position},{...entry}]:gridPath(position,entry);
+   const tail=approach&&route(entry,room);return tail?[...approach,...tail.slice(1)]:null;
+  }
   const bankExit=CampusOutdoorPlan.lanBankExit(position);
   if(bankExit){const tail=route(bankExit.at(-1),room);return tail?[...bankExit,...tail.slice(1)]:null;}
   const gymExit=gymSurfaceExit(position);
