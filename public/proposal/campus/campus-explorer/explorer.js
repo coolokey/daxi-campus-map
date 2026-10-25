@@ -1309,18 +1309,29 @@
         courtGroup.add(halfLine);
       });
 
-      // 3. 專業標準籃球架 (White Backboards with Red Rims & Steel Posts)
+      // Photo: silver steel supports with blue padding around the lower post.
       function createHoop(x, z, rot) {
         const hoop = new THREE.Group();
+        hoop.name = 'photo-basketball-hoop';
         hoop.position.set(x, 0, z);
         hoop.rotation.y = rot;
 
-        const post = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 4.4, 12), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+        const steel = new THREE.MeshStandardMaterial({ color: 0xb8c4cc, metalness: .7, roughness: .32 });
+        const post = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 4.4, 12), steel);
+        post.name = 'basketball-silver-post';
         post.position.y = 2.2;
         post.userData.campusSolid=true;
         hoop.add(post);
 
-        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.4, 8), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+        const pad = new THREE.Mesh(new THREE.CylinderGeometry(.22, .22, 1.9, 12), new THREE.MeshStandardMaterial({color:0x1764b5,roughness:.88}));
+        pad.name = 'basketball-blue-safety-pad';
+        pad.position.y = .95;
+        pad.userData.campusSolid = true;
+        pad.castShadow = pad.receiveShadow = true;
+        hoop.add(pad);
+
+        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.4, 8), steel);
+        arm.name = 'basketball-silver-arm';
         arm.position.set(0, 3.8, 0.5);
         arm.rotation.x = Math.PI / 4;
         hoop.add(arm);
