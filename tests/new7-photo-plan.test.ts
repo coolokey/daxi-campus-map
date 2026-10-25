@@ -17,21 +17,24 @@ it('keeps every confirmed destination and floor while opening the three-storey c
  expect(l.rooms.map((r:any)=>[r.id,r.floor,r.name])).toEqual(b.rooms.map((r:any)=>[r.id,r.floor,r.name]));
  for(const floor of [1,2,3]){
   expect(l.footprints.some((p:any)=>p.floor===floor&&plan.contains(p,0,6))).toBe(false);
-  expect(l.footprints.some((p:any)=>p.floor===floor&&plan.contains(p,l.L/2-3,12))).toBe(true);
+  expect(l.footprints.some((p:any)=>p.floor===floor&&plan.contains(p,l.L/2-3,l.photoMassing.returnEnd-2))).toBe(true);
  }
- expect(l.footprints.filter((p:any)=>p.kind==='photo-hall').map((p:any)=>p.floor)).toEqual([1]);
- const hall=l.footprints.find((p:any)=>p.kind==='photo-hall');
+ const hall=l.rooms.find((p:any)=>p.id==='new7-meeting');
+ expect(hall).toBeTruthy();
+ expect(hall.name).toContain('會議室');expect(hall.floor).toBe(1);
  expect(hall.u0).toBe(-l.L/2);
- expect((hall.v1-hall.v0)/(hall.u1-hall.u0)).toBeGreaterThan(1.7);
+ expect((hall.u1-hall.u0)/(hall.v1-hall.v0)).toBeGreaterThan(1.5);
+ expect(hall.u1).toBe(l.stairs[0].u0);
+ for(const floor of [2,3])expect(l.footprints.some((p:any)=>p.floor===floor&&plan.contains(p,(hall.u0+hall.u1)/2,(hall.v0+hall.v1)/2))).toBe(false);
  const main=l.footprints.find((p:any)=>p.part==='new7-main'),wing=l.footprints.find((p:any)=>p.part==='new7-east');
  expect((main.u1-main.u0)/(wing.v1-wing.v0)).toBeLessThan(1.45);
- expect(l.stairs[0]).toMatchObject({u0:-l.L/2+8,u1:-l.L/2+16,v0:-7,v1:-1.8});
+ expect(l.stairs[0]).toMatchObject({u0:-l.L/2+14,u1:-l.L/2+22,v0:-7,v1:-1.8});
  for(const floor of [1,2,3]){
   const extension=l.footprints.find((p:any)=>p.floor===floor&&p.part==='glass-tower-extension');
   expect(extension).toMatchObject({u0:l.stairs[0].u0,v0:1,v1:2});
   expect(extension.u1).toBeCloseTo(l.stairs[0].nearU-.14);
  }
- expect(l.rooms.some((r:any)=>r.row==='photo-hall')).toBe(false);
+ expect(l.displayRows.find((r:any)=>r.id==='meeting')).toMatchObject({start:hall.u0,end:hall.u1,floor:1});
  expect(Math.max(...l.footprints.map((p:any)=>p.rect.z1))).toBeLessThanOrEqual(-43);
 });
 it('keeps the west switchback clear of rooms and the corridor, and enters through the court',()=>{
@@ -76,13 +79,14 @@ it('builds the low hall, stair glazing, columns and tree trunks before indexing,
  expect(towerSolids).toHaveLength(9);
  expect(towerSolids.every(p=>p.v0>=1)).toBe(true);
  expect(towerSolids.some(p=>p.v0===1.96&&p.v1===2.04)).toBe(true);
- expect(solids.filter(p=>p.group==='new7-low-high-window-hall').every(p=>p.u1<=s.u0+1)).toBe(true);
+ expect(solids.filter(p=>p.group==='new7-low-high-window-hall').every(p=>p.u1<=s.u0+.3)).toBe(true);
  const glazing=solids.find(p=>p.group==='new7-low-high-window-hall'&&p.y0===.6&&p.y1===4.7);
- expect(glazing.v1-glazing.v0).toBeGreaterThan(10);
- expect(glazing.u1-glazing.u0).toBeLessThan(.3);
+ expect(glazing.u1-glazing.u0).toBeGreaterThan(10);
+ expect(glazing.v1-glazing.v0).toBeLessThan(.3);
  const terrace=scene.getObjectByName('new7-low-hall-terrace-roof');
  const levels=new Set(terrace.children.filter((m:any)=>m.name==='new7-terrace-tread').map((m:any)=>m.position.y.toFixed(2)));
- expect(levels.size).toBeGreaterThanOrEqual(6);
+ expect(levels.size).toBe(0);
+ expect(terrace.getObjectByName('new7-meeting-continuous-terrace')).toBeTruthy();
  expect(terrace.getObjectByName('new7-terrace-green-end')).toBeTruthy();
  // The main court axis must have no new blocking walls/trunks or ramp rails.
  expect(solids.some(p=>p.u0<.4&&p.u1>-.4&&p.v0<15&&p.v1>1&&p.y1>.35)).toBe(false);

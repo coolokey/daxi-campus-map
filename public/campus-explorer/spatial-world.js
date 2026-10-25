@@ -198,7 +198,7 @@
    }
    // Rooms and WC use identical rectangles for visible walls and blocking volumes.
    for(const r of l.cells.filter(c=>c.floor===f&&(c.kind==='room'||c.kind==='wc'))){
-    if(!r.openOffice)for(const side of ['u0','u1','v0','v1'])roomWall(g,l,r,side,y);
+    if(!r.openOffice&&!r.photoShell)for(const side of ['u0','u1','v0','v1'])roomWall(g,l,r,side,y);
     if(r.kind==='room')details(g,l,r,y);
     else if(l.id==='admin-front'&&f<=2)details(g,l,{...r,name:r.label,cat:'admin'},y);
    }

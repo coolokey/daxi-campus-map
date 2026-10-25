@@ -1,0 +1,24 @@
+{
+  "cases": 1,
+  "origins": 503,
+  "targets": 8,
+  "medianMs": 1333.6533000000018,
+  "p95Ms": 1333.6533000000018,
+  "maxMs": 1333.6533000000018,
+  "failures": [],
+  "rows": [
+    {
+      "origin": "room/new7-meeting",
+      "start": {
+        "x": 64,
+        "z": -61,
+        "y": 0
+      },
+      "target": "gym",
+      "points": 6,
+      "ms": 1333.6533000000018,
+      "length": 300.7400226457908,
+      "error": null
+    }
+  ]
+}

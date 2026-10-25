@@ -1,5 +1,5 @@
 /* DSC05982/05983, DSC06075–06123 and the aerial: photo-proportional massing.
- * Call before collision indexes. The low hall adds no guessed room identity.
+ * Call before collision indexes. The user identified the meeting room.
  * Shared-plan steps/ramp supply ground support; all blocking shells have solids.
  */
 const CampusNew7World={
@@ -9,54 +9,58 @@ const CampusNew7World={
   const glass=new THREE.MeshStandardMaterial({color:0x8eaaa5,transparent:true,opacity:.48,roughness:.24});
   const group=(name,floor=1,ceiling=false)=>{const g=new THREE.Group();g.name=name;g.userData={buildingId:l.id,floorNum:floor,...(ceiling?{campusCeiling:true}:{})};scene.add(g);floorMeshes.push(g);return g;};
   const B=(g,u0,u1,v0,v1,y0,y1,m,solid=false)=>box(g,l,u0,u1,v0,v1,y0,y1,m,solid);
-  const a=-l.L/2,A=l.L/2,wing=A-8,front=1,end=15,H=3.6,s=l.stairs[0];
+  const a=-l.L/2,A=l.L/2,wing=A-8,front=1,end=l.photoMassing.returnEnd,H=3.6,s=l.stairs[0],mainStart=l.photoMassing.mainStart,capStart=end-4.5;
   // Generic roof meshes are replaced with independent ceiling groups, so floor
   // cutaways hide the canopy without removing the visible upper-floor facade.
   for(const g of floorMeshes.filter(g=>g.userData.buildingId===l.id))for(const child of [...g.children])if(child.userData.roof){g.remove(child);child.geometry?.dispose();}
   const top=group('new7-main-segmented-roof',l.b.floors,true),topY=l.b.floors*H;
-  B(top,a-.25,wing+.25,-7.25,1.35,topY,topY+.2,roof);
-  B(top,wing-.25,A+.25,-7.25,10.5,topY+.18,topY+.38,roof);
+  B(top,mainStart-.25,wing+.25,-7.25,1.35,topY,topY+.2,roof);
+  B(top,wing-.25,A+.25,-7.25,capStart,topY+.18,topY+.38,roof);
   // End canopy rises in short planes, echoing the visibly independent pitched cap.
   const cap=group('new7-east-raised-end-canopy',l.b.floors,true);
   const lo=wing-.25,hi=A+.25,mid=(lo+hi)/2,eave=topY+.45,peak=eave+.75,polygons=[
-   [[lo,10.5,eave],[mid,10.5,peak],[mid,15,peak],[lo,15,eave]],
-   [[mid,10.5,peak],[hi,10.5,eave],[hi,15,eave],[mid,15,peak]],
-   [[lo,10.5,eave-.14],[hi,10.5,eave-.14],[mid,10.5,peak]],
-   [[hi,15,eave-.14],[lo,15,eave-.14],[mid,15,peak]]
+   [[lo,capStart,eave],[mid,capStart,peak],[mid,end,peak],[lo,end,eave]],
+   [[mid,capStart,peak],[hi,capStart,eave],[hi,end,eave],[mid,end,peak]],
+   [[lo,capStart,eave-.14],[hi,capStart,eave-.14],[mid,capStart,peak]],
+   [[hi,end,eave-.14],[lo,end,eave-.14],[mid,end,peak]]
   ],vertices=[];
   for(const polygon of polygons)for(let i=1;i<polygon.length-1;i++)for(const q of [polygon[0],polygon[i],polygon[i+1]]){const p=l.world(...q);vertices.push(p.x,p.y,p.z);}
   const capGeometry=new THREE.BufferGeometry();capGeometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));capGeometry.computeVertexNormals();const capPaint=cream.clone();capPaint.side=THREE.DoubleSide;const capMesh=new THREE.Mesh(capGeometry,capPaint);capMesh.name='new7-east-continuous-pitched-cap';capMesh.castShadow=capMesh.receiveShadow=true;cap.add(capMesh);
-  const cameraEnvelope=B(cap,lo,hi,10.5,15,eave-.14,peak,cream);cameraEnvelope.visible=false;
+  const cameraEnvelope=B(cap,lo,hi,capStart,end,eave-.14,peak,cream);cameraEnvelope.visible=false;
   const posts=group('new7-main-round-columns');
-  for(const [u,v] of [...[a+.5,s.u0-1,s.u1+2.2,2.5,wing-.5].map(u=>[u,front-.05]),...[4,10,14.4].map(v=>[wing+.15,v])]){
+  for(const [u,v] of [...[s.u1+.3,4.3,wing+.15].map(u=>[u,front-.05]),...[4,end-.6].map(v=>[wing+.15,v])]){
    const post=B(posts,u-.15,u+.15,v-.15,v+.15,0,H,cream,true);post.geometry.dispose();post.geometry=new THREE.CylinderGeometry(.15,.15,H,12);
   }
-  const low=group('new7-low-high-window-hall'),lowRoof=group('new7-low-hall-terrace-roof',1,true),hallLeft=a,hallEnd=s.u0,face=14.5,height=5.5;
-  // Three real opaque boundaries; front windows have the same full-height
-  // collision surface as the walls, while their visual material stays glass.
-  B(low,hallLeft,hallLeft+.2,front,face,0,height,stone,true);B(low,hallLeft,hallEnd,face-.2,face,0,height,stone,true);
-  B(low,hallLeft,hallEnd,front,front+.2,0,height,stone,true);
-  B(low,hallEnd-.12,hallEnd+.12,front,face,0,.6,stone,true);B(low,hallEnd-.12,hallEnd+.12,front,face,.6,4.7,glass,true);B(low,hallEnd-.12,hallEnd+.12,front,face,4.7,height,stone,true);
-  for(let v=front+.3;v<face;v+=1.05)B(low,hallEnd-.15,hallEnd+.15,v-.035,v+.035,.6,4.7,silver);
-  for(let h=.65;h<4.7;h+=.48)B(low,hallEnd-.16,hallEnd+.16,front,face,h,h+.04,silver);
-  // A narrow hall running from the main block toward the courts. Its long
-  // glazed face and columns face the courtyard, not the court-facing short end.
-  B(lowRoof,hallLeft-.25,hallEnd+.85,front,15.3,height,height+.2,cream);
-  B(lowRoof,hallLeft,hallEnd,front,4.2,height+.2,6.6,stone);
-  for(let i=0;i<8;i++){
-   const v0=4.2+i*1.05,v1=v0+1.05,y=6.6-(i+1)*.11;
-   const tread=B(lowRoof,hallLeft+.25,hallEnd-.25,v0,v1,height+.2,y,cream);tread.name='new7-terrace-tread';
+  const low=group('new7-low-high-window-hall'),lowRoof=group('new7-low-hall-terrace-roof',1,true),hall=l.photoMassing.meeting,hallLeft=hall.u0,hallEnd=hall.u1,height=hall.height,hallStone=mat(0xb1b4ad),windowStart=hallLeft+2.2;
+  const doorV=(hall.v0+hall.v1)/2;
+  // Meeting room replaces the left part of the main bar. The long glazing and
+  // eave are parallel to the tower face; its court-side short end owns the door.
+  B(low,hallLeft,hallEnd,hall.v0,hall.v0+.2,0,height,hallStone,true);
+  B(low,hallEnd-.2,hallEnd,hall.v0,front,0,height,hallStone,true);
+  for(const [v0,v1] of [[hall.v0,doorV-.96],[doorV+.96,front]])B(low,hallLeft-.09,hallLeft+.09,v0,v1,0,height,hallStone,true);
+  B(low,hallLeft-.09,hallLeft+.09,doorV-.96,doorV+.96,2.4,height,hallStone,true);
+  B(low,hallLeft,windowStart,front-.12,front+.12,0,height,hallStone,true);
+  B(low,windowStart,hallEnd,front-.12,front+.12,0,.6,hallStone,true);
+  B(low,windowStart,hallEnd,front-.12,front+.12,.6,4.7,glass,true);
+  B(low,windowStart,hallEnd,front-.12,front+.12,4.7,height,hallStone,true);
+  for(let u=windowStart;u<hallEnd;u+=.85)B(low,u-.035,u+.035,front-.15,front+.15,.6,4.7,silver);
+  for(let h=.65;h<4.7;h+=.48)B(low,windowStart,hallEnd,front-.16,front+.16,h,h+.04,silver);
+  for(const v of [doorV-.98,doorV+.98])B(low,hallLeft-.13,hallLeft+.13,v-.045,v+.045,0,2.5,silver);
+  // One continuous roof terrace. Parallel aerial lines are shallow roof bands,
+  // not invented stairs. The higher set-back masonry and rail rise toward tower.
+  const terrace=B(lowRoof,hallLeft-.25,hallEnd+.15,hall.v0-.2,front+1.15,height,height+.2,cream);terrace.name='new7-meeting-continuous-terrace';
+  for(let u=hallLeft+2.6;u<hallEnd-.6;u+=1.65){const rib=B(lowRoof,u-.04,u+.04,hall.v0+.25,front-.9,height+.2,height+.25,cream);rib.name='new7-terrace-roof-band';}
+  const greenEnd=B(lowRoof,hallLeft+.3,hallLeft+2.1,hall.v0+.3,front-.9,height+.2,height+.24,green);greenEnd.name='new7-terrace-green-end';
+  B(lowRoof,hallLeft,hallEnd,hall.v0+.1,hall.v0+.24,height+.2,6.8,hallStone);
+  B(lowRoof,hallLeft+.1,hallLeft+.25,hall.v0,front-.8,height+.2,6.4,hallStone);
+  for(let i=0;i<28;i++){
+   const u0=hallLeft+i*(hallEnd-hallLeft)/28,u1=hallLeft+(i+1)*(hallEnd-hallLeft)/28,top=6.4+.8*(i+.5)/28;
+   B(lowRoof,u0,u1,front-.9,front-.75,height+.2,top,hallStone);
+   B(lowRoof,u0,u0+.025,front-.86,front-.81,top,top+.55,silver);
+   B(lowRoof,u0,u1,front-.88,front-.79,top+.52,top+.55,silver);
   }
-  const greenEnd=B(lowRoof,hallLeft+.3,hallEnd-.3,12.65,15.05,height+.2,height+.24,green);greenEnd.name='new7-terrace-green-end';
-  for(const u of [hallLeft+.1,hallEnd-.1]){
-   B(lowRoof,u-.07,u+.07,front,15.15,height+.2,height+.85,stone);
-   for(let v=front;v<15.2;v+=.7)B(lowRoof,u-.025,u+.025,v-.025,v+.025,height+.85,height+1.3,green);
-   B(lowRoof,u-.035,u+.035,front,15.15,height+1.28,height+1.33,green);
-  }
-  B(lowRoof,hallLeft,hallEnd,15.08,15.16,height+.2,height+.85,stone);
-  for(let v=front+.8;v<face-.5;v+=3.7){
-   // Cylinder mesh plus a conservative square solid keep body/corner clearance.
-   const proxy=B(low,hallEnd+.34,hallEnd+.82,v-.24,v+.24,0,height,cream,true);proxy.geometry.dispose();proxy.geometry=new THREE.CylinderGeometry(.24,.24,height,16);
+  for(let u=windowStart;u<hallEnd-.2;u+=3.6){
+   const proxy=B(low,u-.22,u+.22,front+.35,front+.79,0,height,cream,true);proxy.geometry.dispose();proxy.geometry=new THREE.CylinderGeometry(.22,.22,height,16);
   }
   // Glaze the actual west stair wall, preserving the registered wall collision
   // and its existing open landing mouth instead of inventing another stair.

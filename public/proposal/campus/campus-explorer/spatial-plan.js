@@ -12,6 +12,7 @@ const CampusSpatialPlan = (() => {
   const rect=(u0,u1,v0,v1)=>{const a=world(u0,v0),c=world(u1,v1);return{x0:Math.min(a.x,c.x),x1:Math.max(a.x,c.x),z0:Math.min(a.z,c.z),z1:Math.max(a.z,c.z)}};
   const local=(x,z)=>reverseV?{u:z-b.z,v:b.x-x}:horizontal?{u:x-b.x,v:z-b.z}:{u:z-b.z,v:x-b.x};
   const cells=[],corridors=[],footprints=[],stairs=[],ramps=[],platforms=[],holes=[],entrances=[],displayRows=[],externalLinks=[];
+  let photoMassing=null;
   const addRect=(target,r)=>{const a={...r,rect:rect(r.u0,r.u1,r.v0,r.v1)};target.push(a);return a};
   function addCell(item,floor,u0,u1,v0,v1,row='main',doorSide='v1',corridorValue){
    const r=item.kind==='room'?b.rooms.find(r=>r.id===item.id):null;
@@ -236,34 +237,41 @@ const CampusSpatialPlan = (() => {
    // The non-linear wings preserve the central outdoor space. Rectangles are proportional.
    const a=-L/2,A=L/2,d=-D/2,B=D/2;
    if(p.shape==='new7'){
-    // DSC06094/06096 and aerial: rear main wing, east return and a low west hall.
-    // These are photo proportions, not surveyed dimensions; all room identities survive.
-    const stairStart=a+8,stairEnd=a+16,wing=A-8,mainEnd=wing,vSplit=-1.8,front=1,wingEnd=15,cv=-.4;
-    displayRows.push({id:'main',label:'主翼・圖面左 → 右',axis:'u',start:a,end:mainEnd},{id:'east',label:'右翼・圖面上 → 下',axis:'v',start:d,end:wingEnd});
+    // DSC06092/06093/06123: meeting room, stair tower and main classrooms
+    // share one long facade. There is no three-storey block behind the meeting room.
+    const stairStart=a+14,stairEnd=stairStart+8,wing=A-8,mainEnd=wing,vSplit=-1.8,front=1,wingEnd=10,cv=-.4,unit=(mainEnd-stairEnd)/3;
+    photoMassing={mainStart:stairStart,returnEnd:wingEnd,meeting:{u0:a,u1:stairStart,v0:d,v1:front,height:5.5}};
+    displayRows.push({id:'main',label:'主翼・圖面左 → 右',axis:'u',start:stairStart,end:mainEnd},{id:'east',label:'右翼・圖面上 → 下',axis:'v',start:d,end:wingEnd},{id:'meeting',label:'新大樓會議室',axis:'u',start:a,end:stairStart,floor:1});
     for(let f=1;f<=b.floors;f++){
-     Object.assign(fp(f,a,wing,d,front),{part:'new7-main'});
+     Object.assign(fp(f,stairStart,wing,d,front),{part:'new7-main'});
      Object.assign(fp(f,wing,A,d,wingEnd),{part:'new7-east'});
      Object.assign(fp(f,stairStart,stairEnd-1.8-.14,front,2),{part:'glass-tower-extension'});
-     co(f,a,A,vSplit,front);co(f,wing,wing+2.8,d,wingEnd);
+     co(f,stairStart,A,vSplit,front);co(f,wing,wing+2.8,d,wingEnd);
      const list=b.rooms.filter(r=>r.floor===f),byCode=code=>list.find(r=>r.spaceCode===code);
      const prefix=f===1?'A1':f===2?'A2':'A3';
      addCell({kind:'stair',id:'west',label:'西側樓梯（示意）'},f,stairStart,stairEnd,d,vSplit,'main');
-     if(f===1)addCell({kind:'passage',label:'廣場'},f,a,stairStart,d,vSplit,'main');
-     else addCell({...byCode(prefix+'1'),kind:'room'},f,a,stairStart,d,vSplit,'main','v1',cv);
-     for(const [i,u0,u1] of [[2,stairEnd,4],[3,4,mainEnd]])addCell({...byCode(prefix+i),kind:'room'},f,u0,u1,d,vSplit,'main','v1',cv);
+     if(f===1)addCell({kind:'passage',label:'廣場'},f,stairEnd,stairEnd+unit,d,vSplit,'main');
+     else addCell({...byCode(prefix+'1'),kind:'room'},f,stairEnd,stairEnd+unit,d,vSplit,'main','v1',cv);
+     for(const i of [2,3])addCell({...byCode(prefix+i),kind:'room'},f,stairEnd+(i-1)*unit,stairEnd+i*unit,d,vSplit,'main','v1',cv);
      const mid=4;
      for(const [last,v0,v1] of [['4',d,mid],['5',mid,wingEnd]])addCell({...byCode(prefix+last),kind:'room'},f,wing+2.8,A,v0,v1,'east','u0',wing+1.4);
+     if(f===1){
+      const h=addCell({...byCode('MEET-1'),kind:'room'},1,a,stairStart,d,front,'meeting','u0',a-1.4);
+      h.photoShell=true;h.entryHint='會議室位於玻璃梯塔旁；模型入口設於球場側短邊，請依現場門牌確認。';
+      Object.assign(fp(1,a,stairStart,d,front),{part:'new7-meeting'});
+      Object.assign(fp(1,a-1.6,a,(d+front)/2-1.3,(d+front)/2+1.3),{kind:'porch'});
+      co(1,a-1.6,a,(d+front)/2-1.3,(d+front)/2+1.3);
+      entrances.push({floor:1,kind:'meeting',inside:h.corridor,outside:world(a-2.8,(d+front)/2)});
+     }
     }
-    // A tall single-storey exterior shell, not a newly invented room/destination.
-    Object.assign(fp(1,a,stairStart,front,wingEnd),{part:'new7-low-hall',kind:'photo-hall'});
     addStair('west','西側示意樓梯',stairStart,stairEnd,d,vSplit,1,p.confidence);
     // Shallow wide court steps flank the level central entrance. Every tread has
     // shared ground support; the east access ramp uses the same physical model.
-    for(const [v0,v1,y] of [[1,1.8,.18],[1.8,2.6,.12],[2.6,3.4,.06]])for(const [u0,u1] of [[-6.5,-2],[2,wing-4.5]])platforms.push({...rect(u0,u1,v0,v1),u0,u1,v0,v1,y,floor:1,kind:'new7-court-step'});
+    for(const [v0,v1,y] of [[1,1.8,.18],[1.8,2.6,.12],[2.6,3.4,.06]])for(const [u0,u1] of [[-2.4,-1.2],[2,wing-4.5]])platforms.push({...rect(u0,u1,v0,v1),u0,u1,v0,v1,y,floor:1,kind:'new7-court-step'});
     const rampU=wing-2.2,start=world(rampU,1,.18),end=world(rampU,7.4,0);
     Object.assign(fp(1,rampU-1.3,rampU+1.3,1,7.4),{part:'new7-court-access',kind:'porch'});
     ramps.push({...rect(rampU-1.3,rampU+1.3,1,7.4),u0:rampU-1.3,u1:rampU+1.3,v0:1,v1:7.4,start,end,h0:.18,h1:0,axis:horizontal?'z':'x',floor:1,stairId:'new7-court-access'});
-    entrances.push({floor:1,kind:'main',inside:world(0,cv),outside:world(0,16.2)});
+    entrances.unshift({floor:1,kind:'main',inside:world(0,cv),outside:world(0,16.2)});
    }
 
    if(p.shape==='multi'){
@@ -341,7 +349,7 @@ const CampusSpatialPlan = (() => {
    }
   }
   const bounds={x0:Math.min(...footprints.map(p=>p.rect.x0)),x1:Math.max(...footprints.map(p=>p.rect.x1)),z0:Math.min(...footprints.map(p=>p.rect.z0)),z1:Math.max(...footprints.map(p=>p.rect.z1))};
-  return{id:b.id,b,facadeFeatures:p.shape==='tech'?{roundedNose:{u:0,v:D/2,radius:1.4}}:null,horizontal,L,D,sign,cV,wallV,outerV,world,local,rect,bounds,cells,corridors,footprints,displayRows,stairs,ramps,platforms,holes,externalLinks,rooms:cells.filter(c=>c.kind==='room'),entrances,entrance:entrances[0]?.outside,confidence:p.confidence||'依平面圖房間順序；未測量尺度'};
+  return{id:b.id,b,photoMassing,facadeFeatures:p.shape==='tech'?{roundedNose:{u:0,v:D/2,radius:1.4}}:null,horizontal,L,D,sign,cV,wallV,outerV,world,local,rect,bounds,cells,corridors,footprints,displayRows,stairs,ramps,platforms,holes,externalLinks,rooms:cells.filter(c=>c.kind==='room'),entrances,entrance:entrances[0]?.outside,confidence:p.confidence||'依平面圖房間順序；未測量尺度'};
  }
  function groundAt(l,x,z,currentY){
   const {u,v}=l.local(x,z);let best=0;

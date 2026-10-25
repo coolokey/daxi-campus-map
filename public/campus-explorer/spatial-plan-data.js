@@ -51,7 +51,7 @@ const CampusSpatialData = (() => {
  const custom={
   gym:[[1,room('gym','GYM-1'),room('fire-room','GYM-F'),room('weight-room','GYM-2',1,'活動中心入口大廳／桌球區')],[2,room('gym-balcony','GYM-3',1,'活動中心階梯看台')]],
   new7:[
-   [1,room('709','A12'),room('701','A13'),room('resource-room','A14',1,'資源班 3／4 教室'),room('sped-leader','A15',1,'特教教室')],
+   [1,room('709','A12'),room('701','A13'),room('resource-room','A14',1,'資源班 3／4 教室'),room('sped-leader','A15',1,'特教教室'),room('new7-meeting','MEET-1',1,'新大樓會議室')],
    [2,room('math-lab','A21',1,'空間 A21（名稱待確認）'),room('702','A22'),room('703','A23'),room('704','A24'),room('705','A25')],
    [3,room('sped-classroom','A31',1,'空間 A31（名稱待確認）'),room('706','A32'),room('707','A33'),room('708','A34'),room('new7-staff','A35')]
   ],
@@ -93,7 +93,7 @@ const CampusSpatialData = (() => {
   const rows=p.shape?custom[p.shape]:Object.entries(p.floors).map(([f,cells])=>[Number(f),...cells.filter(c=>c.kind==='room')]);
   b.rooms=rows.flatMap(([f,...cells])=>cells.map(c=>{
    const previous=old.get(c.id)||extras[c.id]||{name:c.name,cat:'special'};
-   return{...previous,id:c.id,spaceCode:c.spaceCode,code:c.spaceCode,codeSource:/^(ADM|GYM|ART|REC|TC|HST)/.test(c.spaceCode)?'assigned':'plan',legacyCode:previous.code,floor:f,name:(c.name||previous.name||c.id).replace(/\s*\(\d+F\)/,'')+` (${f}F)`,node:previous.node||`space-${c.id}`};
+   return{...previous,id:c.id,spaceCode:c.spaceCode,code:c.spaceCode,codeSource:/^(ADM|GYM|ART|REC|TC|HST|MEET)/.test(c.spaceCode)?'assigned':'plan',legacyCode:previous.code,floor:f,name:(c.name||previous.name||c.id).replace(/\s*\(\d+F\)/,'')+` (${f}F)`,node:previous.node||`space-${c.id}`};
   }));
   b.spatialProfile=p;
  }

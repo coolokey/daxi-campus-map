@@ -53,7 +53,7 @@
  // Update only this building's shared stone finishes, before colour calibration.
  api.scene.traverse(o=>{const m=o.material;if(m?.userData?.campusBuildingId===l.id&&['wall','exterior'].includes(m.userData.campusSurface)){m.map=aggregate;m.needsUpdate=true;}});
  function box(g,u,v,y,w,h,d,c){const p=l.world(u,v,y),m=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?w:d,h,l.horizontal?d:w),mat(c));m.position.set(p.x,p.y,p.z);m.castShadow=m.receiveShadow=true;g.add(m);return m;}
- const B=1,a=-l.L/2,A=l.L/2,wing=A-8,end=15,stone=0x949792,green=0x24805e,brown=0x4b4038,cream=0xc9c8b9;
+ const B=1,a=l.photoMassing.mainStart,A=l.L/2,wing=A-8,end=l.photoMassing.returnEnd,stone=0x949792,green=0x24805e,brown=0x4b4038,cream=0xc9c8b9;
  for(let f=1;f<=l.b.floors;f++){
   const y=(f-1)*FH,g=new THREE.Group();g.name=`photo-new7-${f}`;g.userData={buildingId:l.id,floorNum:f};api.scene.add(g);floorMeshes.push(g);
   // Deep fascia and projecting flat eaves; all pieces stay at the slab line.

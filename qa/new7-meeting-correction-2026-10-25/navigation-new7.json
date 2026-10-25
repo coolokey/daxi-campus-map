@@ -1,0 +1,492 @@
+{
+  "cases": 37,
+  "origins": 503,
+  "targets": 8,
+  "medianMs": 371.9707999999955,
+  "p95Ms": 1667.1347999999998,
+  "maxMs": 1983.4128999999994,
+  "failures": [],
+  "rows": [
+    {
+      "origin": "stair/new-grade7/new-grade7-west/1/0/0.23",
+      "start": {
+        "x": 76.349,
+        "z": -61.15,
+        "y": 0.41400000000000003
+      },
+      "target": "academic",
+      "points": 20,
+      "ms": 1667.1347999999998,
+      "length": 335.05611112685057,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new-grade7-west/1/0/0.5",
+      "start": {
+        "x": 75.35,
+        "z": -61.15,
+        "y": 0.9
+      },
+      "target": "library",
+      "points": 11,
+      "ms": 1483.0129000000015,
+      "length": 290.39595729828363,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new-grade7-west/1/0/0.77",
+      "start": {
+        "x": 74.351,
+        "z": -61.15,
+        "y": 1.3860000000000001
+      },
+      "target": "901",
+      "points": 28,
+      "ms": 463.66949999999997,
+      "length": 380.70560044009625,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new-grade7-west/1/1.8/0.23",
+      "start": {
+        "x": 74.351,
+        "z": -63.65,
+        "y": 2.214
+      },
+      "target": "704",
+      "points": 7,
+      "ms": 147.88520000000062,
+      "length": 32.56483386413487,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new-grade7-west/1/1.8/0.5",
+      "start": {
+        "x": 75.35,
+        "z": -63.65,
+        "y": 2.7
+      },
+      "target": "art-4f",
+      "points": 40,
+      "ms": 230.58410000000003,
+      "length": 283.0952374569787,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new-grade7-west/1/1.8/0.77",
+      "start": {
+        "x": 76.349,
+        "z": -63.65,
+        "y": 3.186
+      },
+      "target": "gym",
+      "points": 15,
+      "ms": 405.4487999999983,
+      "length": 341.0385415563925,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new-grade7-west/2/3.6/0.23",
+      "start": {
+        "x": 76.349,
+        "z": -61.15,
+        "y": 4.014
+      },
+      "target": "grandstand",
+      "points": 17,
+      "ms": 92.00400000000081,
+      "length": 209.842205462958,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new-grade7-west/2/3.6/0.5",
+      "start": {
+        "x": 75.35,
+        "z": -61.15,
+        "y": 4.5
+      },
+      "target": "palm-avenue",
+      "points": 19,
+      "ms": 231.4148000000023,
+      "length": 359.8044223314535,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new-grade7-west/2/3.6/0.77",
+      "start": {
+        "x": 74.351,
+        "z": -61.15,
+        "y": 4.986000000000001
+      },
+      "target": "academic",
+      "points": 28,
+      "ms": 313.5724999999984,
+      "length": 355.185972344599,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new-grade7-west/2/5.4/0.23",
+      "start": {
+        "x": 74.351,
+        "z": -63.65,
+        "y": 5.814
+      },
+      "target": "library",
+      "points": 23,
+      "ms": 113.74729999999909,
+      "length": 316.1075940592666,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new-grade7-west/2/5.4/0.5",
+      "start": {
+        "x": 75.35,
+        "z": -63.65,
+        "y": 6.300000000000001
+      },
+      "target": "901",
+      "points": 40,
+      "ms": 1983.4128999999994,
+      "length": 406.4172372010792,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new-grade7-west/2/5.4/0.77",
+      "start": {
+        "x": 76.349,
+        "z": -63.65,
+        "y": 6.7860000000000005
+      },
+      "target": "704",
+      "points": 11,
+      "ms": 42.105499999997846,
+      "length": 39.00988933787683,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new7-court-access/1/0.18/0.23",
+      "start": {
+        "x": 92.8,
+        "z": -55.528,
+        "y": 0.1386
+      },
+      "target": "art-4f",
+      "points": 87,
+      "ms": 371.9707999999955,
+      "length": 264.74758437312346,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new7-court-access/1/0.18/0.5",
+      "start": {
+        "x": 92.8,
+        "z": -53.8,
+        "y": 0.09
+      },
+      "target": "gym",
+      "points": 44,
+      "ms": 692.3852000000043,
+      "length": 333.4349905211908,
+      "error": null
+    },
+    {
+      "origin": "stair/new-grade7/new7-court-access/1/0.18/0.77",
+      "start": {
+        "x": 92.8,
+        "z": -52.072,
+        "y": 0.04139999999999999
+      },
+      "target": "grandstand",
+      "points": 30,
+      "ms": 678.0097999999998,
+      "length": 368.1017128307069,
+      "error": null
+    },
+    {
+      "origin": "landing/new-grade7/new-grade7-west/1.8",
+      "start": {
+        "x": 72.39,
+        "y": 1.8,
+        "z": -62.400000000000006
+      },
+      "target": "palm-avenue",
+      "points": 13,
+      "ms": 460.7974000000031,
+      "length": 346.3543933971289,
+      "error": null
+    },
+    {
+      "origin": "landing/new-grade7/new-grade7-west/5.4",
+      "start": {
+        "x": 72.39,
+        "y": 5.4,
+        "z": -62.400000000000006
+      },
+      "target": "academic",
+      "points": 30,
+      "ms": 915.9172000000035,
+      "length": 358.532972048969,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/1/0.2",
+      "start": {
+        "x": 77.4,
+        "z": -58.4,
+        "y": 0
+      },
+      "target": "library",
+      "points": 9,
+      "ms": 295.2121000000043,
+      "length": 274.51534511959545,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/1/0.5",
+      "start": {
+        "x": 87,
+        "z": -58.4,
+        "y": 0
+      },
+      "target": "901",
+      "points": 26,
+      "ms": 655.5563000000038,
+      "length": 368.11404406838994,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/1/0.8",
+      "start": {
+        "x": 96.6,
+        "z": -58.4,
+        "y": 0
+      },
+      "target": "704",
+      "points": 14,
+      "ms": 91.4007999999958,
+      "length": 64.57782743799287,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/1/0.5",
+      "start": {
+        "x": 96.4,
+        "z": -56.5,
+        "y": 0
+      },
+      "target": "art-4f",
+      "points": 35,
+      "ms": 318.09560000000056,
+      "length": 273.3316564156938,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/1/0.8",
+      "start": {
+        "x": 97.24000000000001,
+        "z": -56.5,
+        "y": 0
+      },
+      "target": "gym",
+      "points": 10,
+      "ms": 907.5950000000012,
+      "length": 330.4063144009344,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/1/0.2",
+      "start": {
+        "x": 55.72,
+        "z": -61,
+        "y": 0
+      },
+      "target": "grandstand",
+      "points": 4,
+      "ms": 128.10770000000048,
+      "length": 141.47807648206526,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/1/0.5",
+      "start": {
+        "x": 56.2,
+        "z": -61,
+        "y": 0
+      },
+      "target": "palm-avenue",
+      "points": 6,
+      "ms": 428.1617999999944,
+      "length": 301.94482587916514,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/1/0.8",
+      "start": {
+        "x": 56.68,
+        "z": -61,
+        "y": 0
+      },
+      "target": "academic",
+      "points": 15,
+      "ms": 731.3073999999979,
+      "length": 296.76135748944216,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/2/0.2",
+      "start": {
+        "x": 77.4,
+        "z": -58.4,
+        "y": 3.6
+      },
+      "target": "library",
+      "points": 18,
+      "ms": 232.42780000000494,
+      "length": 307.6520314248866,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/2/0.5",
+      "start": {
+        "x": 87,
+        "z": -58.4,
+        "y": 3.6
+      },
+      "target": "901",
+      "points": 35,
+      "ms": 604.3757999999943,
+      "length": 405.6180710918111,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/2/0.8",
+      "start": {
+        "x": 96.6,
+        "z": -58.4,
+        "y": 3.6
+      },
+      "target": "704",
+      "points": 3,
+      "ms": 26.364800000003015,
+      "length": 5.11803398874988,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/2/0.2",
+      "start": {
+        "x": 95.56,
+        "z": -56.5,
+        "y": 3.6
+      },
+      "target": "art-4f",
+      "points": 44,
+      "ms": 306.1750000000029,
+      "length": 311.1189786291851,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/2/0.5",
+      "start": {
+        "x": 96.4,
+        "z": -56.5,
+        "y": 3.6
+      },
+      "target": "gym",
+      "points": 19,
+      "ms": 726.0392999999967,
+      "length": 367.31618677254073,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/2/0.8",
+      "start": {
+        "x": 97.24000000000001,
+        "z": -56.5,
+        "y": 3.6
+      },
+      "target": "grandstand",
+      "points": 17,
+      "ms": 189.58160000000498,
+      "length": 229.8152832868526,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/3/0.2",
+      "start": {
+        "x": 77.4,
+        "z": -58.4,
+        "y": 7.2
+      },
+      "target": "palm-avenue",
+      "points": 26,
+      "ms": 313.55280000000494,
+      "length": 377.0604964580564,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/3/0.5",
+      "start": {
+        "x": 87,
+        "z": -58.4,
+        "y": 7.2
+      },
+      "target": "academic",
+      "points": 35,
+      "ms": 679.2384999999995,
+      "length": 380.0984429963144,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/3/0.8",
+      "start": {
+        "x": 96.6,
+        "z": -58.4,
+        "y": 7.2
+      },
+      "target": "library",
+      "points": 26,
+      "ms": 316.57210000000487,
+      "length": 343.927048548376,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/3/0.2",
+      "start": {
+        "x": 95.56,
+        "z": -56.5,
+        "y": 7.2
+      },
+      "target": "901",
+      "points": 44,
+      "ms": 808.0149999999994,
+      "length": 434.44097837328593,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/3/0.5",
+      "start": {
+        "x": 96.4,
+        "z": -56.5,
+        "y": 7.2
+      },
+      "target": "704",
+      "points": 15,
+      "ms": 77.2494000000006,
+      "length": 65.28753455402494,
+      "error": null
+    },
+    {
+      "origin": "corridor/new-grade7/3/0.8",
+      "start": {
+        "x": 97.24000000000001,
+        "z": -56.5,
+        "y": 7.2
+      },
+      "target": "art-4f",
+      "points": 52,
+      "ms": 1137.9083000000028,
+      "length": 328.8587086289925,
+      "error": null
+    }
+  ]
+}

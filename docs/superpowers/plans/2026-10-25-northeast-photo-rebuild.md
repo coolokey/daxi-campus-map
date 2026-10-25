@@ -27,3 +27,21 @@ centres as anchors. Dimensions remain photo-proportioned, not surveyed.
 4. Verify rendered silhouettes and 2F/3F cutaways, regression tests and physical
    gate/changed-building routes; then publish through the existing Pages workflow
    and compare released bundles with the local build.
+
+## Meeting room correction — supersedes the perpendicular hall interpretation
+
+The user identified the disputed low volume as the new building's meeting room.
+DSC06092, DSC06093 and DSC06123 show a continuous meeting-room glazed facade,
+round columns and eave joining the stair-tower front. The previous perpendicular
+wing and complete three-storey block behind it are incorrect.
+
+1. Use the meeting room as the left section of the main bar, long axis u and
+   glazing facing +v. Remove that section's upper floors, corridors and roof.
+2. Place the tower at the meeting room's end, then the three existing main room
+   cells. Preserve their IDs/floors and all right-wing destinations.
+3. Register the user-confirmed meeting room as a real 1F destination, with the
+   photographed court-side short-end doorway represented by shared geometry.
+4. Use a continuous roof terrace with shallow transverse bands and set-back
+   masonry/rails. Remove the unsupported eight-step interpretation.
+5. Review both the aerial silhouette and courtyard-facing long elevation, test
+   actual movement into the new room and upstairs, then release on the same URL.

@@ -182,7 +182,7 @@ const FH = 3.6; // Floor Height in meters
     category: "grade7",
     color: 0xbcc6cb,
     roofColor: 0x526c7e,
-    x: 76, z: -58, width: 38, depth: 14, floors: 3,
+    x: 80, z: -58, width: 46, depth: 14, floors: 3,
     stairs: [
       { x: 60, z: -58, name: "七年級西側樓梯", floors: 3 },
       { x: 100, z: -58, name: "特教學習園地樓梯", floors: 3 }
