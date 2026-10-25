@@ -6,4 +6,5 @@
 .score-station-close{position:absolute;right:9px;top:9px;border:0;background:transparent;color:#214138;width:32px;height:32px;font-size:24px!important}
 .score-station-open{display:block;width:100%;padding:12px 8px;border:0;background:#1d574c;color:#fffaf0;font-weight:bold}
 .score-station-link{display:block;color:#1d574c;margin-top:12px;font-size:14px;text-underline-offset:3px}
-@media(max-width:600px){#score-station-card{right:16px;bottom:170px;width:calc(100vw - 32px);padding:17px}}
+@media(max-width:600px){#score-station-card{right:16px;bottom:calc(230px + env(safe-area-inset-bottom,0px));width:calc(100vw - 32px);padding:17px}.field-guide:has(#score-station-card:not([hidden])) #guide-route{display:none}}
+@media(max-height:560px){#score-station-card{bottom:calc(140px + env(safe-area-inset-bottom,0px));max-height:calc(100dvh - 205px);overflow:auto}.field-guide:has(#score-station-card:not([hidden])) #guide-route{display:none}}
