@@ -236,53 +236,78 @@ const CampusSpatialPlan = (() => {
    // The non-linear wings preserve the central outdoor space. Rectangles are proportional.
    const a=-L/2,A=L/2,d=-D/2,B=D/2;
    if(p.shape==='new7'){
-    const vSplit=B-6,west=a+8,wing=A-8,mainEnd=wing;
-    displayRows.push({id:'main',label:'主翼・圖面左 → 右',axis:'u',start:a,end:mainEnd},{id:'east',label:'右翼・圖面上 → 下',axis:'v',start:d,end:B});
+    // DSC06094/06096 and aerial: rear main wing, east return and a low west hall.
+    // These are photo proportions, not surveyed dimensions; all room identities survive.
+    const stairStart=a+8,stairEnd=a+16,wing=A-8,mainEnd=wing,vSplit=-1.8,front=1,wingEnd=15,cv=-.4;
+    displayRows.push({id:'main',label:'主翼・圖面左 → 右',axis:'u',start:a,end:mainEnd},{id:'east',label:'右翼・圖面上 → 下',axis:'v',start:d,end:wingEnd});
     for(let f=1;f<=b.floors;f++){
-     fp(f,a,A,d,B);co(f,a,A,vSplit,B);co(f,wing,A,d,B);
+     Object.assign(fp(f,a,wing,d,front),{part:'new7-main'});
+     Object.assign(fp(f,wing,A,d,wingEnd),{part:'new7-east'});
+     Object.assign(fp(f,stairStart,stairEnd-1.8-.14,front,2),{part:'glass-tower-extension'});
+     co(f,a,A,vSplit,front);co(f,wing,wing+2.8,d,wingEnd);
      const list=b.rooms.filter(r=>r.floor===f),byCode=code=>list.find(r=>r.spaceCode===code);
-     const prefix=f===1?'A1':f===2?'A2':'A3',w=(mainEnd-west)/3;
-     addCell({kind:'stair',id:'west',label:'西側樓梯（示意）'},f,a,west,d,vSplit,'main');
-     if(f===1){addCell({kind:'passage',label:'廣場'},f,west,west+w,d,vSplit,'main');}
-     else addCell({...byCode(prefix+'1'),kind:'room'},f,west,west+w,d,vSplit,'main','v1',(B+vSplit)/2);
-     for(let i=2;i<=3;i++)addCell({...byCode(prefix+i),kind:'room'},f,west+(i-1)*w,west+i*w,d,vSplit,'main','v1',(B+vSplit)/2);
-     const mid=(d+B)/2;
-     for(const [last,v0,v1] of [['4',d,mid],['5',mid,B]])addCell({...byCode(prefix+last),kind:'room'},f,wing+2.8,A,v0,v1,'east','u0',wing+1.4);
-     // 圖面廁所在獨立外側區塊；未量定座標前不在教室範圍內生成重疊空間。
+     const prefix=f===1?'A1':f===2?'A2':'A3';
+     addCell({kind:'stair',id:'west',label:'西側樓梯（示意）'},f,stairStart,stairEnd,d,vSplit,'main');
+     if(f===1)addCell({kind:'passage',label:'廣場'},f,a,stairStart,d,vSplit,'main');
+     else addCell({...byCode(prefix+'1'),kind:'room'},f,a,stairStart,d,vSplit,'main','v1',cv);
+     for(const [i,u0,u1] of [[2,stairEnd,4],[3,4,mainEnd]])addCell({...byCode(prefix+i),kind:'room'},f,u0,u1,d,vSplit,'main','v1',cv);
+     const mid=4;
+     for(const [last,v0,v1] of [['4',d,mid],['5',mid,wingEnd]])addCell({...byCode(prefix+last),kind:'room'},f,wing+2.8,A,v0,v1,'east','u0',wing+1.4);
     }
-    addStair('west','西側示意樓梯',a,west,vSplit-5.2,vSplit,1,p.confidence);
-    entrances.push({floor:1,inside:world(0,(B+vSplit)/2),outside:world(0,B+1.2)});
+    // A tall single-storey exterior shell, not a newly invented room/destination.
+    Object.assign(fp(1,a-8,stairStart,front,wingEnd),{part:'new7-low-hall',kind:'photo-hall'});
+    addStair('west','西側示意樓梯',stairStart,stairEnd,d,vSplit,1,p.confidence);
+    // Shallow wide court steps flank the level central entrance. Every tread has
+    // shared ground support; the east access ramp uses the same physical model.
+    for(const [v0,v1,y] of [[1,1.8,.18],[1.8,2.6,.12],[2.6,3.4,.06]])for(const [u0,u1] of [[-6.5,-2],[2,10.5]])platforms.push({...rect(u0,u1,v0,v1),u0,u1,v0,v1,y,floor:1,kind:'new7-court-step'});
+    const start=world(12.8,1,.18),end=world(12.8,7.4,0);
+    Object.assign(fp(1,11.5,14.1,1,7.4),{part:'new7-court-access',kind:'porch'});
+    ramps.push({...rect(11.5,14.1,1,7.4),u0:11.5,u1:14.1,v0:1,v1:7.4,start,end,h0:.18,h1:0,axis:horizontal?'z':'x',floor:1,stairId:'new7-court-access'});
+    entrances.push({floor:1,kind:'main',inside:world(0,cv),outside:world(0,16.2)});
    }
+
    if(p.shape==='multi'){
-    const left=d,right=B,east=B-6,inner=east-2.8,north=a+9,south=A-9;
-    displayRows.push({id:'north',label:'北翼・圖面左 → 右',axis:'v',start:left,end:right},{id:'east',label:'東翼・圖面上 → 下',axis:'u',start:a,end:A},{id:'south',label:'南翼・圖面左 → 右',axis:'v',start:left,end:right},{id:'history',label:'校史室獨立區',axis:'v',start:left,end:right});
+    // Photo/aerial: low north wing, two-storey south wing and a low connector.
+    // The rounded stair noses project between the wing ends into the court.
+    const left=d,wingEnd=6,rear=9,right=18,north=-8,south=8,towerV=9,towerBack=14.2;
+    const towerRanges=[[-11,-3], [3,11]],connector0=-3,connector1=3;
+    displayRows.push({id:'north',label:'北翼・圖面左 → 右',axis:'v',start:left,end:wingEnd},{id:'east',label:'後方連接區',axis:'u',start:connector0,end:connector1},{id:'south',label:'南翼・圖面左 → 右',axis:'v',start:left,end:wingEnd},{id:'history',label:'校史室獨立區',axis:'v',start:9,end:16});
     for(let f=1;f<=b.floors;f++){
-     if(f===1)fp(f,a,north,left,east);fp(f,south,A,left,right);fp(f,a,A,inner,right);
-     for(const u0 of [a,south])fp(f,u0,u0+8,east+4,right+3);
-     if(f===1)co(f,north-2.8,north,left,right);co(f,south,south+2.8,left,east);co(f,a,A,inner,east);
-     // Keep a body-width passage between the library wall and south stair shaft.
-     co(f,south,south+8,east,east+1.4);
+     if(f===1)Object.assign(fp(f,a,north,left,wingEnd),{part:'north-wing'});
+     Object.assign(fp(f,south,A,left,wingEnd),{part:'south-wing'});
+     if(f===1){fp(f,connector0,connector1,wingEnd,towerBack);Object.assign(fp(f,north,south,left,rear),{kind:'courtyard'});}
+     else {Object.assign(fp(f,connector0,connector1,wingEnd,rear),{kind:'terrace'});Object.assign(fp(f,0,connector1,rear,towerBack),{part:'rear-upper-room'});}
+     if(f===1)co(f,north-2.8,north,left,wingEnd);
+     co(f,south,south+2.8,left,wingEnd);co(f,connector0,connector1,wingEnd,rear);
+     Object.assign(fp(f,-4.8,11,towerBack,17),{kind:'terrace'});co(f,-4.8,11,towerBack,17);
+     Object.assign(fp(f,-4.8,-3,wingEnd,towerBack),{kind:'terrace'});co(f,-4.8,-3,wingEnd,17);
+     for(const [u0,u1] of towerRanges){
+      Object.assign(fp(f,u0,u1,towerV,towerBack),{part:'stair-core'});
+      // The open mouth is outside the curved wall, at the last 1.8 m of shaft.
+      Object.assign(fp(f,u1-1.8,u1,wingEnd,towerV),{kind:'terrace'});
+      co(f,u1-1.8,u1,wingEnd,towerBack);
+      addCell({kind:'stair',label:'停車場側樓梯'},f,u0,u1,towerV,towerBack,'east');
+     }
      const byId=id=>({...b.rooms.find(r=>r.id===id),kind:'room'});
      if(f===1){
-      addCell(byId('food-classroom'),f,a,north-2.8,left,east,'north','u1',north-1.4);
-      addCell(byId('library'),f,south+2.8,A,left,east,'south','u0',south+1.4);
-      for(const [id,u0,u1] of [['sped-614',north,north+(south-north)/3],['sped-office',north+(south-north)/3,north+2*(south-north)/3],['sped-612',north+2*(south-north)/3,south]])addCell(byId(id),f,u0,u1,east,right,'east','v0',east-1.4);
-      // Separate history room stays detached from the parking courtyard.
-      const h=addCell(byId('history-room'),f,a-6,a-1,right-7,right,'history','u1',a-.6);
-      fp(f,a-6,a,right-7,right);co(f,a-1,a,right-7,right);
-      entrances.push({floor:1,inside:h.corridor,outside:world(a+.7,inner+1)});
+      addCell(byId('food-classroom'),f,a,north-2.8,left,wingEnd,'north','u1',north-1.4);
+      addCell(byId('library'),f,south+2.8,A,left,wingEnd,'south','u0',south+1.4);
+      for(const [i,id] of ['sped-614','sped-office','sped-612'].entries())addCell(byId(id),f,connector0+i*2,connector0+(i+1)*2,rear,towerBack,'east','v0',7.5);
+      const h=addCell(byId('history-room'),f,a-6,a-1,9,16,'history','u1',a-.6);
+      fp(f,a-6,a,9,16);co(f,a-1,a,9,16);
+      entrances.push({floor:1,inside:h.corridor,outside:world(a+.7,8.2)});
      }else{
-      const w=(east-left)/3;
+      const w=(wingEnd-left)/3;
       for(const [i,id] of ['large-computer','multi-622','it-server'].entries())addCell(byId(id),f,south+2.8,A,left+i*w,left+(i+1)*w,'south','u0',south+1.4);
-      addCell(byId('collab-conf'),f,(north+south)/2,south,east,right,'east','v0',east-1.4);
+      addCell(byId('collab-conf'),f,0,connector1,rear,towerBack,'east','v0',7.5);
      }
-     for(const u0 of [a,south])addCell({kind:'stair',label:'停車場側樓梯'},f,u0,u0+8,east+4,right+3,'east');
-     addCell({kind:'wc',label:'廁所'},f,south+8,A,east,right,'east','v0',east-1.4);
-     addCell({kind:'void',label:'停車場・留空'},f,north,south,left,inner,'parking');
+     addCell({kind:'wc',label:'廁所'},f,11.8,A,wingEnd,8.8,'east','v0',wingEnd-1.4);
+     fp(f,11.8,A,wingEnd,8.8);
+     addCell({kind:'void',label:'停車場・留空'},f,north,south,left,wingEnd,'parking');
     }
-    // Stairwells sit at the ends of the courtyard's east circulation strip.
-    addStair('north','停車場東北側梯',a,a+8,east+4,right+3,-1);addStair('south','停車場東南側梯',south,south+8,east+4,right+3,-1);
-    entrances.push({floor:1,inside:world(south+1.4,left+1),outside:world(south+1.4,left-1.2)});
+    const ns=addStair('north','停車場東北側梯',-11,-3,towerV,towerBack,-1),ss=addStair('south','停車場東南側梯',3,11,towerV,towerBack,-1);
+    ns.photoTower={height:6.3,depth:3};ss.photoTower={height:8.25,depth:3};
+    entrances.push({floor:1,kind:'main',inside:world(south+1.4,left+1),outside:world(south+1.4,left-1.2)});
    }
    if(p.shape==='tech'){
     // A broad main body and one projecting narrow wing, as in the aerials.

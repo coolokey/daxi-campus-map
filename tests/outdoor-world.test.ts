@@ -11,7 +11,7 @@ beforeAll(()=>{
  const file=(f:string)=>{if(existsSync(root+f))run(readFileSync(root+f,'utf8'))};file('vendor/three.min.js');
  w.THREE.WebGLRenderer=class{domElement:any;shadowMap={};capabilities={getMaxAnisotropy:()=>1};constructor({canvas}:any){this.domElement=canvas}setSize(){}setPixelRatio(){}render(){}};
  file('vendor/OrbitControls.js');
- for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','navigation-arrows.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','multi-world.js','photo-facade.js','campus-forecourt.js','landscape-world.js','spatial-world.js','photo-teaching.js','photo-roofs.js','photo-special-buildings.js','art-direction.js','photo-reference.js'])file(f);
+ for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','navigation-arrows.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','multi-world.js','new7-world.js','photo-facade.js','campus-forecourt.js','landscape-world.js','spatial-world.js','photo-teaching.js','photo-roofs.js','photo-special-buildings.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
 it('opens the technology main entrance beside the rounded front facing the campus driveway',()=>{
@@ -378,4 +378,19 @@ it('keeps the library courtyard entrance and both floor destinations physically 
 
 it('removes obsolete rectangular library roof trims and reveals both stairwells in 2F cutaway',()=>{
  const result=run(`(()=>{setControlMode('bird');setFloorFilter('2');const roofs=['multi-tower-roof-north','multi-tower-roof-south'].map(n=>scene.getObjectByName(n));const trims=floorMeshes.filter(g=>g.userData.buildingId==='multi-building'&&g.userData.roof);const result={missing:roofs.some(g=>!g),visible:roofs.some(g=>g?.visible),oldTrims:trims.length};setFloorFilter('all');return result})()`);expect(result).toEqual({missing:false,visible:false,oldTrims:0});
+});
+
+it('projects both library towers into the court with distinctly lower north cap and an open upper connector terrace',()=>{
+ const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='multi-building');scene.updateMatrixWorld(true);const boxes=['multi-rounded-north','multi-rounded-south','multi-tower-roof-north','multi-tower-roof-south'].map(n=>{const b=new THREE.Box3().setFromObject(scene.getObjectByName(n));return {minX:b.min.x,minZ:b.min.z,maxZ:b.max.z,minY:b.min.y,maxY:b.max.y}});return {boxes,terrace:l.footprints.some(p=>p.floor===2&&p.kind==='terrace'),north:l.stairs[0].photoTower?.height,south:l.stairs[1].photoTower?.height}})()`);
+ expect(result.terrace).toBe(true);expect(result.north).toBeLessThan(result.south-1.5);
+ expect(result.boxes[0].maxZ).toBeGreaterThan(-31);expect(result.boxes[1].minZ).toBeLessThan(-15);
+ expect(result.boxes[0].minX).toBeLessThan(81);expect(result.boxes[1].minX).toBeLessThan(81);
+});
+
+it('uses the real new7 exterior ramp support and removes obsolete rectangular roof trims',()=>{
+ const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='new-grade7'),p=l.world(12.8,4.2,.09);return {height:campusWalkWorld.ground(p),trims:floorMeshes.filter(g=>g.userData.buildingId===l.id&&g.userData.roof).length}})()`);expect(result.height).toBeCloseTo(.09);expect(result.trims).toBe(0);
+});
+
+it('can leave every new7 exterior tread and ramp midpoint with a physical navigation route',()=>{
+ const failures=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='new-grade7'),origins=l.platforms.filter(p=>p.kind==='new7-court-step').map(p=>l.world((p.u0+p.u1)/2+1,(p.v0+p.v1)/2,p.y));origins.push(CampusWalkMath.rampPoint(l.ramps.find(r=>r.stairId==='new7-court-access'),.43));const bad=[];for(const start of origins){if(checkWallCollision(start.x,start.y,start.z)){bad.push({invalidStart:start});continue;}const p={...start},path=campusWalkWorld.route(p,ROOMS_DB.academic);if(!path){bad.push(start);continue;}for(const q of path.slice(1))if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y)||Math.abs(p.y-q.y)>.14||Math.hypot(p.x-q.x,p.z-q.z)>.1){bad.push({start,p,q});break;}}return bad})()`);expect(failures).toEqual([]);
 });

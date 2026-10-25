@@ -1,0 +1,26 @@
+{
+  "base": "b5b5d28612b094487e72610a12aec32a7ce34595",
+  "tests": {
+    "files": 9,
+    "passed": 164,
+    "failed": 0
+  },
+  "navigation": {
+    "cases": 606,
+    "origins": 498,
+    "failures": 0
+  },
+  "review": {
+    "resolved": [
+      "glass stair tower obscured by low hall and corridor",
+      "legacy rectangular roof trims"
+    ],
+    "finalNewP1P2": 0
+  },
+  "photos": {
+    "new7": 30,
+    "multi": 14,
+    "aerialScreenshots": 6
+  },
+  "scope": "photo-proportional geometry; confirmed room IDs/floors/names retained; no source photos published"
+}
