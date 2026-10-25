@@ -14,6 +14,14 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','navigation-arrows.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','multi-world.js','new7-world.js','photo-facade.js','campus-forecourt.js','landscape-world.js','spatial-world.js','photo-teaching.js','photo-roofs.js','photo-special-buildings.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('matches the stepped grey annex silhouette without overlapping the new grade seven return',()=>{
+ const r=run(`(()=>{scene.updateMatrixWorld(true);const g=scene.getObjectByName('multi-ancillary-upper-shell'),side=scene.getObjectByName('multi-ancillary-side-roof'),m=campusWalkWorld.layouts.find(l=>l.id==='multi-building'),n=campusWalkWorld.layouts.find(l=>l.id==='new-grade7'),h=m.rooms.find(r=>r.id==='history-room'),nr=n.footprints.find(p=>p.part==='new7-east');return {upper:g&&new THREE.Box3().setFromObject(g).max.y,side:!!side,overlap:h.rect.x0<nr.rect.x1&&h.rect.x1>nr.rect.x0&&h.rect.z0<nr.rect.z1&&h.rect.z1>nr.rect.z0}})()`);
+ expect(r.side).toBe(true);expect(r.upper).toBeGreaterThan(6);expect(r.overlap).toBe(false);
+});
+it('continues the library low roof over its scalloped courtyard edge',()=>{
+ const r=run(`(()=>{const g=scene.getObjectByName('multi-north-single-storey-roof'),l=campusWalkWorld.layouts.find(l=>l.id==='multi-building'),edges=new Set();for(const m of g.children){const p=m.geometry?.getAttribute('position');if(p)for(let i=0;i<p.count;i++){const u=l.local(p.getX(i),p.getZ(i)).u;if(u>-7.75&&u<-7.3)edges.add(u.toFixed(3));}}return edges.size})()`);
+ expect(r).toBeGreaterThanOrEqual(6);
+});
 it('opens the technology main entrance beside the rounded front facing the campus driveway',()=>{
  const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='tech-building'),e=l.entrances.find(e=>e.kind==='main');return e?{count:l.entrances.length,west:e.outside.x<l.bounds.x0,alongRoad:Math.abs(e.outside.z-e.inside.z)<.01,corner:l.local(e.inside.x,e.inside.z).u<0,steps:l.platforms.filter(p=>p.entranceStep).length}:null})()`);
  expect(result).toEqual({count:1,west:true,alongRoad:true,corner:true,steps:3});
@@ -388,7 +396,7 @@ it('projects both library towers into the court with distinctly lower north cap 
 });
 
 it('uses the real new7 exterior ramp support and removes obsolete rectangular roof trims',()=>{
- const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='new-grade7'),p=l.world(12.8,4.2,.09);return {height:campusWalkWorld.ground(p),trims:floorMeshes.filter(g=>g.userData.buildingId===l.id&&g.userData.roof).length}})()`);expect(result.height).toBeCloseTo(.09);expect(result.trims).toBe(0);
+ const result=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='new-grade7'),p=CampusWalkMath.rampPoint(l.ramps.find(r=>r.stairId==='new7-court-access'),.5);return {height:campusWalkWorld.ground(p),trims:floorMeshes.filter(g=>g.userData.buildingId===l.id&&g.userData.roof).length}})()`);expect(result.height).toBeCloseTo(.09);expect(result.trims).toBe(0);
 });
 
 it('can leave every new7 exterior tread and ramp midpoint with a physical navigation route',()=>{

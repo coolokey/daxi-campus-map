@@ -17,13 +17,30 @@ const CampusMultiWorld={
   const left=-l.D/2,east=6,north=-l.L/2+9,south=l.L/2-9;
   // The north classroom has no second storey. Its roof belongs to 1F filtering.
   const northRoof=group('multi-north-single-storey-roof',1,true);
-  B(northRoof,-l.L/2,north,left,east,3.45,3.65,mat(0xbdcdd0));
+  const northPaint=mat(0xbdcdd0);
+  for(let i=0;i<72;i++){
+   const v0=left+i*(east-left)/72,v1=v0+(east-left)/72+.004,depth=.27+.35*Math.sin(Math.PI*((i%12)+.5)/12);
+   const piece=B(northRoof,-l.L/2,north+depth,v0,v1,3.45,3.65,northPaint);piece.name='multi-north-scalloped-roof';
+  }
   const top=group('multi-south-and-east-roof',2,true);
   for(const p of l.footprints.filter(p=>p.floor===2&&(p.part==='south-wing'||p.part==='rear-upper-room'||p.u0===11.8)))B(top,p.u0,p.u1,p.v0,p.v1,7.04,7.2,white);
   const low=group('multi-low-connector-roof',1,true);B(low,-3,3,6,14.2,3.45,3.6,white);
-  const historyRoof=group('multi-history-flat-roof',1,true);B(historyRoof,-23,-18,9,16,3.45,3.65,mat(0xb0b6af));
-  for(const u of [-22.9,-18.1])B(historyRoof,u-.06,u+.06,9,16,3.65,3.95,white);
-  for(const v of [9.1,15.9])B(historyRoof,-23,-18,v-.06,v+.06,3.65,3.95,white);
+  // The aerial shows a taller rear block and a lower side extension. Only the
+  // existing confirmed ground room remains navigable; no upper room is inferred.
+  const ancillary=group('multi-ancillary-upper-shell',2),grey=mat(0xb5bcb5),upperGlass=c.glass;
+  for(const u of [-23,-18]){
+   B(ancillary,u-.09,u+.09,22,29,3.6,4.65,grey,true);
+   B(ancillary,u-.09,u+.09,22,29,6.1,6.8,grey,true);
+   B(ancillary,u-.09,u+.09,22.3,28.7,4.65,6.1,upperGlass,true);
+   for(let v=22.3;v<29;v+=1.2)B(ancillary,u-.1,u+.1,v-.035,v+.035,4.65,6.1,white);
+  }
+  for(const v of [22,29])B(ancillary,-23,-18,v-.09,v+.09,3.6,6.8,grey,true);
+  const historyRoof=group('multi-history-flat-roof',2,true);B(historyRoof,-23.15,-17.85,21.85,29.15,6.8,7,grey);
+  for(const u of [-22.9,-18.1])B(historyRoof,u-.06,u+.06,22,29,7,7.35,white);
+  const side=group('multi-ancillary-side-shell');
+  for(const u of [-18,-14])B(side,u-.09,u+.09,26.8,29,0,3.4,grey,true);
+  for(const v of [26.8,29])B(side,-18,-14,v-.09,v+.09,0,3.4,grey,true);
+  const sideRoof=group('multi-ancillary-side-roof',1,true);B(sideRoof,-18.1,-13.9,26.7,29.1,3.4,3.65,grey);
   for(let v=-14;v<5;v+=3)B(top,15.8,16.05,v-.13,v+.13,7.2,7.8,mat(0x626b64));
   // Waved fascia are short curved bays, following the courtyard photographs.
   for(const f of [1,2]){

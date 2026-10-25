@@ -255,14 +255,14 @@ const CampusSpatialPlan = (() => {
      for(const [last,v0,v1] of [['4',d,mid],['5',mid,wingEnd]])addCell({...byCode(prefix+last),kind:'room'},f,wing+2.8,A,v0,v1,'east','u0',wing+1.4);
     }
     // A tall single-storey exterior shell, not a newly invented room/destination.
-    Object.assign(fp(1,a-8,stairStart,front,wingEnd),{part:'new7-low-hall',kind:'photo-hall'});
+    Object.assign(fp(1,a,stairStart,front,wingEnd),{part:'new7-low-hall',kind:'photo-hall'});
     addStair('west','西側示意樓梯',stairStart,stairEnd,d,vSplit,1,p.confidence);
     // Shallow wide court steps flank the level central entrance. Every tread has
     // shared ground support; the east access ramp uses the same physical model.
-    for(const [v0,v1,y] of [[1,1.8,.18],[1.8,2.6,.12],[2.6,3.4,.06]])for(const [u0,u1] of [[-6.5,-2],[2,10.5]])platforms.push({...rect(u0,u1,v0,v1),u0,u1,v0,v1,y,floor:1,kind:'new7-court-step'});
-    const start=world(12.8,1,.18),end=world(12.8,7.4,0);
-    Object.assign(fp(1,11.5,14.1,1,7.4),{part:'new7-court-access',kind:'porch'});
-    ramps.push({...rect(11.5,14.1,1,7.4),u0:11.5,u1:14.1,v0:1,v1:7.4,start,end,h0:.18,h1:0,axis:horizontal?'z':'x',floor:1,stairId:'new7-court-access'});
+    for(const [v0,v1,y] of [[1,1.8,.18],[1.8,2.6,.12],[2.6,3.4,.06]])for(const [u0,u1] of [[-6.5,-2],[2,wing-4.5]])platforms.push({...rect(u0,u1,v0,v1),u0,u1,v0,v1,y,floor:1,kind:'new7-court-step'});
+    const rampU=wing-2.2,start=world(rampU,1,.18),end=world(rampU,7.4,0);
+    Object.assign(fp(1,rampU-1.3,rampU+1.3,1,7.4),{part:'new7-court-access',kind:'porch'});
+    ramps.push({...rect(rampU-1.3,rampU+1.3,1,7.4),u0:rampU-1.3,u1:rampU+1.3,v0:1,v1:7.4,start,end,h0:.18,h1:0,axis:horizontal?'z':'x',floor:1,stairId:'new7-court-access'});
     entrances.push({floor:1,kind:'main',inside:world(0,cv),outside:world(0,16.2)});
    }
 
@@ -271,7 +271,7 @@ const CampusSpatialPlan = (() => {
     // The rounded stair noses project between the wing ends into the court.
     const left=d,wingEnd=6,rear=9,right=18,north=-8,south=8,towerV=9,towerBack=14.2;
     const towerRanges=[[-11,-3], [3,11]],connector0=-3,connector1=3;
-    displayRows.push({id:'north',label:'北翼・圖面左 → 右',axis:'v',start:left,end:wingEnd},{id:'east',label:'後方連接區',axis:'u',start:connector0,end:connector1},{id:'south',label:'南翼・圖面左 → 右',axis:'v',start:left,end:wingEnd},{id:'history',label:'校史室獨立區',axis:'v',start:9,end:16});
+    displayRows.push({id:'north',label:'北翼・圖面左 → 右',axis:'v',start:left,end:wingEnd},{id:'east',label:'後方連接區',axis:'u',start:connector0,end:connector1},{id:'south',label:'南翼・圖面左 → 右',axis:'v',start:left,end:wingEnd},{id:'history',label:'校史室獨立區',axis:'v',start:22,end:29});
     for(let f=1;f<=b.floors;f++){
      if(f===1)Object.assign(fp(f,a,north,left,wingEnd),{part:'north-wing'});
      Object.assign(fp(f,south,A,left,wingEnd),{part:'south-wing'});
@@ -293,9 +293,9 @@ const CampusSpatialPlan = (() => {
       addCell(byId('food-classroom'),f,a,north-2.8,left,wingEnd,'north','u1',north-1.4);
       addCell(byId('library'),f,south+2.8,A,left,wingEnd,'south','u0',south+1.4);
       for(const [i,id] of ['sped-614','sped-office','sped-612'].entries())addCell(byId(id),f,connector0+i*2,connector0+(i+1)*2,rear,towerBack,'east','v0',7.5);
-      const h=addCell(byId('history-room'),f,a-6,a-1,9,16,'history','u1',a-.6);
-      fp(f,a-6,a,9,16);co(f,a-1,a,9,16);
-      entrances.push({floor:1,inside:h.corridor,outside:world(a+.7,8.2)});
+      const h=addCell(byId('history-room'),f,a-6,a-1,22,29,'history','u1',a-.6);
+      fp(f,a-6,a,22,29);co(f,a-1,a,22,29);
+      entrances.push({floor:1,inside:h.corridor,outside:world(a+.7,21.2)});
      }else{
       const w=(wingEnd-left)/3;
       for(const [i,id] of ['large-computer','multi-622','it-server'].entries())addCell(byId(id),f,south+2.8,A,left+i*w,left+(i+1)*w,'south','u0',south+1.4);

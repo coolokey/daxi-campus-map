@@ -1,0 +1,2063 @@
+{
+  "cases": 108,
+  "origins": 498,
+  "targets": 8,
+  "medianMs": 157.81169999999838,
+  "p95Ms": 1413.4324999999953,
+  "maxMs": 2666.8058999999994,
+  "failures": [],
+  "rows": [
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "701",
+      "points": 9,
+      "ms": 300.85229999999865,
+      "length": 256.30159146767556,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "702",
+      "points": 19,
+      "ms": 309.0007999999998,
+      "length": 280.5299303983045,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "703",
+      "points": 19,
+      "ms": 262.3641000000007,
+      "length": 287.52923276942585,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "704",
+      "points": 18,
+      "ms": 244.1866000000009,
+      "length": 292.46423123101454,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "705",
+      "points": 20,
+      "ms": 234.39220000000023,
+      "length": 302.37994207332747,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "706",
+      "points": 27,
+      "ms": 221.95139999999992,
+      "length": 297.8591466428809,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "707",
+      "points": 27,
+      "ms": 199.02750000000015,
+      "length": 304.8584490140022,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "708",
+      "points": 26,
+      "ms": 200.07359999999971,
+      "length": 309.7934474755908,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "709",
+      "points": 7,
+      "ms": 187.8122999999996,
+      "length": 249.2041364207155,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "801",
+      "points": 15,
+      "ms": 135.27700000000004,
+      "length": 85.38831275301905,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "802",
+      "points": 15,
+      "ms": 105.95529999999962,
+      "length": 92.38827133378709,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "803",
+      "points": 15,
+      "ms": 89.76369999999952,
+      "length": 99.38825269909955,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "804",
+      "points": 16,
+      "ms": 89.8202999999994,
+      "length": 112.52858372469065,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "805",
+      "points": 16,
+      "ms": 95.35239999999976,
+      "length": 119.50106078891083,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "806",
+      "points": 23,
+      "ms": 95.90879999999925,
+      "length": 102.41948492492801,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "807",
+      "points": 15,
+      "ms": 96.97090000000026,
+      "length": 78.38848447324501,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "808",
+      "points": 23,
+      "ms": 97.47370000000046,
+      "length": 109.41944350569605,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "809",
+      "points": 24,
+      "ms": 100.76690000000053,
+      "length": 129.5597558965996,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "901",
+      "points": 22,
+      "ms": 112.33599999999933,
+      "length": 145.53814652986026,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "902",
+      "points": 20,
+      "ms": 121.13609999999971,
+      "length": 136.46840378913663,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "903",
+      "points": 22,
+      "ms": 110.03030000000035,
+      "length": 144.83815819800625,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "904",
+      "points": 14,
+      "ms": 112.85399999999936,
+      "length": 114.69281278257174,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "905",
+      "points": 16,
+      "ms": 114.42090000000098,
+      "length": 123.06617825741358,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "906",
+      "points": 6,
+      "ms": 95.59339999999975,
+      "length": 93.17332097151125,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "907",
+      "points": 6,
+      "ms": 95.46780000000035,
+      "length": 84.95560729221546,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "908",
+      "points": 6,
+      "ms": 90.73159999999916,
+      "length": 77.12999105334856,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "909",
+      "points": 10,
+      "ms": 124.59960000000137,
+      "length": 114.5081285132805,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "guard",
+      "points": 3,
+      "ms": 41.45919999999933,
+      "length": 13.999999999999996,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "jiekou-trail",
+      "points": 2,
+      "ms": 40.44549999999981,
+      "length": 30.704071391266663,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "palm-avenue",
+      "points": 3,
+      "ms": 60.98809999999867,
+      "length": 78.53661700721463,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "bike-shed",
+      "points": 3,
+      "ms": 51.53780000000006,
+      "length": 112.76348867438398,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "statue",
+      "points": 3,
+      "ms": 46.06029999999919,
+      "length": 59.77479364639769,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "grandstand",
+      "points": 9,
+      "ms": 146.51130000000012,
+      "length": 128.03264213823417,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "volleyball-out",
+      "points": 6,
+      "ms": 139.437899999999,
+      "length": 138.80932982544738,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "court-bb",
+      "points": 6,
+      "ms": 123.8096999999998,
+      "length": 154.82053862805725,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "lan-pavilion",
+      "points": 7,
+      "ms": 111.63650000000052,
+      "length": 181.05281364024046,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "parking-lot",
+      "points": 4,
+      "ms": 93.13529999999992,
+      "length": 246.90033742363647,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "gym",
+      "points": 5,
+      "ms": 117.15840000000026,
+      "length": 84.30502254457829,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "fire-room",
+      "points": 7,
+      "ms": 125.83759999999893,
+      "length": 93.00565092940437,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "weight-room",
+      "points": 5,
+      "ms": 96.22960000000057,
+      "length": 68.7050225445783,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "gym-balcony",
+      "points": 12,
+      "ms": 146.1221000000005,
+      "length": 101.35860093531991,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "recycling",
+      "points": 5,
+      "ms": 113.74590000000171,
+      "length": 113.0705028401061,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "admin-g89-staff",
+      "points": 5,
+      "ms": 104.18099999999868,
+      "length": 64.1818498640636,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "admin-g89-staff-east",
+      "points": 5,
+      "ms": 103.4911000000011,
+      "length": 63.932063915120494,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "student-affairs",
+      "points": 5,
+      "ms": 98.47010000000046,
+      "length": 81.77866317665197,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "admin-reception-1f",
+      "points": 5,
+      "ms": 92.55839999999989,
+      "length": 82.82860118687145,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "coach-room",
+      "points": 5,
+      "ms": 107.86679999999978,
+      "length": 78.62915810869278,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "principal",
+      "points": 14,
+      "ms": 107.21920000000136,
+      "length": 101.40626797185075,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "reception",
+      "points": 12,
+      "ms": 132.08379999999852,
+      "length": 92.62388313512159,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "academic",
+      "points": 14,
+      "ms": 131.89799999999923,
+      "length": 102.1105456026503,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "general",
+      "points": 14,
+      "ms": 117.72249999999985,
+      "length": 110.25366158306161,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "personnel-accounting",
+      "points": 14,
+      "ms": 152.13460000000123,
+      "length": 110.80366158306168,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "accounting",
+      "points": 14,
+      "ms": 156.64830000000075,
+      "length": 106.60399147189591,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "lang-lab",
+      "points": 22,
+      "ms": 176.97130000000107,
+      "length": 131.7185239807498,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "spec-staff-3",
+      "points": 22,
+      "ms": 230.81489999999758,
+      "length": 129.03731573075783,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "spec-staff-back",
+      "points": 22,
+      "ms": 178.7931000000026,
+      "length": 127.91162628979086,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "teacher-study",
+      "points": 22,
+      "ms": 116.17669999999998,
+      "length": 127.63097218248232,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "health",
+      "points": 7,
+      "ms": 179.02040000000125,
+      "length": 129.51446144933604,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "coop",
+      "points": 8,
+      "ms": 155.1115000000027,
+      "length": 135.71203663365904,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "pe-office",
+      "points": 18,
+      "ms": 162.012999999999,
+      "length": 182.63373612987687,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "pe-storage",
+      "points": 18,
+      "ms": 768.1580999999987,
+      "length": 172.63416223556516,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "kindergarten",
+      "points": 5,
+      "ms": 342.3736000000026,
+      "length": 66.45698508275328,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "woodwork-front",
+      "points": 23,
+      "ms": 113.07760000000053,
+      "length": 95.41965664515398,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "boardgame",
+      "points": 23,
+      "ms": 110.36609999999928,
+      "length": 116.41942487100852,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "g9-clubs",
+      "points": 16,
+      "ms": 133.11149999999907,
+      "length": 123.7661665892675,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "mid-315",
+      "points": 10,
+      "ms": 157.81169999999838,
+      "length": 128.4529145409682,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "wood-craft-206",
+      "points": 10,
+      "ms": 132.1248999999989,
+      "length": 121.48047404180329,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "woodwork-1",
+      "points": 9,
+      "ms": 472.21919999999955,
+      "length": 109.32893948312375,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "mid-311",
+      "points": 7,
+      "ms": 547.7039000000004,
+      "length": 97.57950379731079,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "mid-325",
+      "points": 16,
+      "ms": 447.78499999999985,
+      "length": 140.41849198157138,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "mid-324",
+      "points": 16,
+      "ms": 295.14990000000034,
+      "length": 133.4460149173512,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "math-research",
+      "points": 16,
+      "ms": 138.65380000000005,
+      "length": 126.47353785313102,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "native-lang",
+      "points": 24,
+      "ms": 123.50770000000193,
+      "length": 157.44966415348034,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "drama-room",
+      "points": 24,
+      "ms": 121.76390000000174,
+      "length": 146.9909485571501,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "inter-disc",
+      "points": 24,
+      "ms": 472.7952000000005,
+      "length": 136.53223296081978,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "resource-room",
+      "points": 8,
+      "ms": 385.02260000000024,
+      "length": 261.2455556161299,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "sped-leader",
+      "points": 10,
+      "ms": 380.90290000000095,
+      "length": 271.1520449486745,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "math-lab",
+      "points": 19,
+      "ms": 260.5482000000011,
+      "length": 287.2292446226824,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "sped-classroom",
+      "points": 27,
+      "ms": 284.5601000000024,
+      "length": 304.55846086725865,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "new7-staff",
+      "points": 28,
+      "ms": 346.83410000000003,
+      "length": 319.70915831790387,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "food-classroom",
+      "points": 9,
+      "ms": 409.6818999999996,
+      "length": 217.22992743094005,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "library",
+      "points": 7,
+      "ms": 311.7714999999989,
+      "length": 198.91106264400992,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "history-room",
+      "points": 4,
+      "ms": 190.35589999999866,
+      "length": 251.18212639095748,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "sped-614",
+      "points": 9,
+      "ms": 2666.8058999999994,
+      "length": 220.18010801879794,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "sped-office",
+      "points": 9,
+      "ms": 1600.2557000000015,
+      "length": 218.34096478790346,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "sped-612",
+      "points": 9,
+      "ms": 1017.536500000002,
+      "length": 216.72322198867292,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "large-computer",
+      "points": 15,
+      "ms": 902.3453999999983,
+      "length": 254.2922304871502,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "multi-622",
+      "points": 15,
+      "ms": 2437.5731000000014,
+      "length": 246.96289059297172,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "it-server",
+      "points": 16,
+      "ms": 825.6630000000005,
+      "length": 254.29622392630503,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "collab-conf",
+      "points": 18,
+      "ms": 1089.0680000000066,
+      "length": 256.9047874877401,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "audiovisual-1f",
+      "points": 12,
+      "ms": 745.0604000000021,
+      "length": 186.4865026752193,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "life-tech-1",
+      "points": 12,
+      "ms": 564.1296000000002,
+      "length": 180.48725249246704,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "tech-sw-1",
+      "points": 11,
+      "ms": 622.2627999999968,
+      "length": 176.5615281036047,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "life-tech-2",
+      "points": 12,
+      "ms": 618.4171999999962,
+      "length": 177.86819074346695,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "computer-lab-1",
+      "points": 12,
+      "ms": 517.3271999999997,
+      "length": 186.86790347665067,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "tech-nw-2",
+      "points": 22,
+      "ms": 617.5426999999981,
+      "length": 209.1370376685466,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "physics-lab",
+      "points": 22,
+      "ms": 783.6039999999994,
+      "length": 206.40511775537522,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "maker-lab",
+      "points": 22,
+      "ms": 725.3943999999974,
+      "length": 212.31996442732998,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "tech-smart",
+      "points": 22,
+      "ms": 1941.1483999999982,
+      "length": 212.40823283455757,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "computer-lab-2",
+      "points": 22,
+      "ms": 1413.4324999999953,
+      "length": 221.403784728991,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "broadwood",
+      "points": 5,
+      "ms": 1049.9603999999963,
+      "length": 134.80022779013817,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "music-2f",
+      "points": 16,
+      "ms": 1196.2039000000004,
+      "length": 162.1408482255702,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "music-3f",
+      "points": 24,
+      "ms": 1552.1264999999985,
+      "length": 179.47006447014672,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "art-4f",
+      "points": 32,
+      "ms": 1065.8070000000007,
+      "length": 196.79928071472324,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "gate",
+      "points": 2,
+      "ms": 587.8052000000025,
+      "length": 0,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "track",
+      "points": 5,
+      "ms": 756.7960999999996,
+      "length": 153.64414280486181,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "breezeway",
+      "points": 6,
+      "ms": 285.7702999999965,
+      "length": 104.60572970196469,
+      "error": null
+    },
+    {
+      "origin": "gate",
+      "start": {
+        "id": "gate",
+        "x": -22.8,
+        "y": 0,
+        "z": 90,
+        "neighbors": [
+          "gate-pedestrian-entry-p0",
+          "gate-jiekou-trail-entry-p0",
+          "gate-palm-avenue-end-p0"
+        ]
+      },
+      "target": "forecourt-parking",
+      "points": 3,
+      "ms": 140.6264999999985,
+      "length": 34.77358604606101,
+      "error": null
+    }
+  ]
+}

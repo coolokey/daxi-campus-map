@@ -9,3 +9,21 @@ User approved the correction order in qa/northeast-photo-review-2026-10-25/photo
 
 Ruling: use photo-proportioned dimensions while retaining verified room identities; do not apply unmeasured coordinate shifts to unrelated buildings.
 Ruling: user already authorized modification and publication; no additional approval checkpoint required.
+
+## Aerial silhouette correction after user rejection
+
+The previous release passed circulation checks but did not match the aerial silhouette.
+Use the court-side left edge, glass stair junction, courtyard opening and red tower
+centres as anchors. Dimensions remain photo-proportioned, not surveyed.
+
+1. Remove the unsupported westward enlargement of the low hall. Use a narrow
+   perpendicular wing, courtyard-facing long glazing/columns, stepped pale terrace
+   and green court-end strip. Shorten the overlong main bar while preserving its
+   court-side left edge and every confirmed room ID/floor.
+2. Retain the library U opening and two tower positions. Continue its low roof
+   through the scalloped inner edge. Model the grey rear ancillary block with a
+   taller shell and lower side extension; do not invent upper room identities.
+3. Keep ramp, steps, collision shells, room panel ranges and embedded copy in sync.
+4. Verify rendered silhouettes and 2F/3F cutaways, regression tests and physical
+   gate/changed-building routes; then publish through the existing Pages workflow
+   and compare released bundles with the local build.
