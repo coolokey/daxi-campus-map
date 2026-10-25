@@ -14,6 +14,10 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','navigation-arrows.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','multi-world.js','new7-world.js','photo-facade.js','campus-forecourt.js','landscape-world.js','spatial-world.js','photo-teaching.js','photo-roofs.js','photo-special-buildings.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('uses photo masonry away from the unchanged gate fence and a detailed accessible Lan pavilion',()=>{
+ const r=run(`(()=>{const g=scene.getObjectByName('campus-perimeter'),lan=scene.getObjectByName('lan-photo-pavilion');return {masonry:g.children.filter(o=>o.userData.wallStyle==='photo-masonry').length,metal:g.children.filter(o=>o.userData.wallStyle==='gate-metal').length,lan:!!lan,details:['lan-curved-tile-roof','lan-cream-lattice','lan-name-plaque','lan-stone-plinth','lan-front-steps'].every(n=>!!scene.getObjectByName(n)),post:checkWallCollision(-18+3.2,0,-66),center:!checkWallCollision(-18,0,-66)}})()`);
+ expect(r.masonry).toBeGreaterThan(10);expect(r.metal).toBeGreaterThan(0);expect(r.lan).toBe(true);expect(r.details).toBe(true);expect(r.post).toBe(true);expect(r.center).toBe(true);
+});
 it('walks from the gate into both two-wheel shelter destinations',()=>{
  const bad=run(`(()=>{const bad=[];for(const id of ['bike-shed','staff-moto-parking']){const p={...campusWalkWorld.graph.gate},path=campusWalkWorld.route(p,ROOMS_DB[id]);if(!path){bad.push(id+' missing');continue;}for(const q of path.slice(1))if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y,true)||Math.hypot(p.x-q.x,p.z-q.z)>.03){bad.push(id+' blocked');break;}}return bad})()`);expect(bad).toEqual([]);
 });

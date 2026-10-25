@@ -1396,17 +1396,7 @@
       const gardenGroup = new THREE.Group();
       gardenGroup.position.set(-18, 0, -66);
 
-      // 六角紅柱涼亭 (蘭亭)
-      const pavilion = new THREE.Group();
-      for (let i = 0; i < 6; i++) {
-        const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 4.0, 8), new THREE.MeshStandardMaterial({ color: 0x991b1b }));
-        pillar.position.set(Math.cos(i * Math.PI / 3) * 3.2, 2.0, Math.sin(i * Math.PI / 3) * 3.2);
-        pavilion.add(pillar);
-      }
-      const pRoof = new THREE.Mesh(new THREE.ConeGeometry(5.2, 2.8, 6), new THREE.MeshStandardMaterial({ color: 0x8e2d2a }));
-      pRoof.position.y = 5.2;
-      pavilion.add(pRoof);
-      gardenGroup.add(pavilion);
+      CampusOutdoorWorld.renderLanPavilion(gardenGroup);
 
       // 訓平池 (荷花睡蓮池 x=16 相對亭位即 x=-2)
       const pond=CampusOutdoorPlan.pond;

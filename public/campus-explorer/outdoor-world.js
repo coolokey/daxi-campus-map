@@ -6,24 +6,89 @@ const CampusOutdoorWorld=(()=>{
  function floor(g,w,d,x,z,color,y=.035){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),mat(color));m.rotation.x=-Math.PI/2;m.position.set(x,y,z);m.receiveShadow=true;g.add(m);return m}
  function loop(g,points,y,color){const geo=new THREE.BufferGeometry().setFromPoints(points.map(([x,z])=>new THREE.Vector3(x,y,z)));const m=new THREE.LineLoop(geo,new THREE.LineBasicMaterial({color}));g.add(m)}
  function stadium(radius){const s=new THREE.Shape(),t=P.track,a=t.halfStraight;s.moveTo(-a,-radius);s.lineTo(a,-radius);s.absarc(a,0,radius,-Math.PI/2,Math.PI/2,false);s.lineTo(-a,radius);s.absarc(-a,0,radius,Math.PI/2,Math.PI*1.5,false);s.closePath();return s}
+ // A repeating masonry bay drawn from the user's wall photograph. Texture
+ // repetition avoids adding thousands of individual decorative brick meshes.
+ function masonryMaterial(repeats=1,pier=false){
+  const cv=document.createElement('canvas');cv.width=512;cv.height=256;const c=cv.getContext('2d');c.fillStyle='#77766b';c.fillRect(0,0,512,256);
+  const brickWidth=pier?256:32;
+  for(let row=0;row<12;row++)for(let col=-1;col<(pier?3:17);col++){
+   const bx=col*brickWidth+(row%2)*brickWidth/2,by=row*22;
+   const distance=Math.abs((bx+16)-256)/32+Math.abs(row-6),diamond=distance>=1.4&&distance<3;
+   c.fillStyle=pier||diamond?['#82574b','#916355','#a06b58'][(row+col+18)%3]:['#a6a395','#b3ad9e','#aaa697'][(row+col+18)%3];c.fillRect(bx+1,by+1,brickWidth-2,20);
+  }
+  const tex=new THREE.CanvasTexture(cv);tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(repeats,1);return new THREE.MeshStandardMaterial({map:tex,color:0xffffff,roughness:.98});
+ }
  function renderPerimeter(parent){
   const g=new THREE.Group();g.name='campus-perimeter';g.userData.source='115 campus plan IPAD v.3 — illustrative dimensions';parent.add(g);
-  const stone=0x888f82,cap=0xb0b3a4,steel=0x465b50,p=P.perimeter;
+  const stone=0x888f82,cap=0xb0b3a4,steel=0x465b50,p=P.perimeter,pierMaterial=masonryMaterial(1,true);
   for(const s of p.segments){
    const dx=s.bx-s.ax,dz=s.bz-s.az,length=Math.hypot(dx,dz),angle=Math.atan2(dz,dx),x=(s.ax+s.bx)/2,z=(s.az+s.bz)/2;
    const beam=(w,h,d,y,color)=>{const m=box(g,w,h,d,x,y,z,color);m.rotation.y=-angle;return m};
-   beam(length,1.5,p.thickness,.75,stone);beam(length,.14,p.thickness+.16,1.55,cap);
-   beam(length,.09,.09,1.72,steel);beam(length,.09,.09,2.84,steel);
-   const bars=Math.ceil(length/.65);for(let i=0;i<=bars;i++){const t=i/bars;box(g,.065,1.2,.065,s.ax+dx*t,2.24,s.az+dz*t,steel)}
+   // All front/gate runs retain their existing metal bars and dimensions.
+   const gateMetal=s.az>=78&&s.bz>=78;
+   if(gateMetal){
+    const wall=beam(length,1.5,p.thickness,.75,stone);wall.userData.wallStyle='gate-metal';beam(length,.14,p.thickness+.16,1.55,cap);
+    beam(length,.09,.09,1.72,steel);beam(length,.09,.09,2.84,steel);
+    const bars=Math.ceil(length/.65);for(let i=0;i<=bars;i++){const t=i/bars;box(g,.065,1.2,.065,s.ax+dx*t,2.24,s.az+dz*t,steel)}
+   }else{
+    const bays=Math.max(1,Math.round(length/5.8)),wall=beam(length,2.65,p.thickness,1.325,0xaaa697);wall.material=masonryMaterial(bays);wall.userData.wallStyle='photo-masonry';
+    beam(length,.16,p.thickness+.16,2.73,0x794d42);
+    for(let i=1;i<bays;i++){const t=i/bays,m=box(g,.9,2.96,.9,s.ax+dx*t,1.48,s.az+dz*t,0x916355);m.material=pierMaterial;m.rotation.y=-angle;g.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(m);registerWallCollider(bounds.min.x,bounds.max.x,bounds.min.z,bounds.max.z,-.2,2.96);WALL_COLLIDERS.at(-1).perimeter=true;const top=box(g,1.02,.12,1.02,s.ax+dx*t,3,s.az+dz*t,0x794d42);top.rotation.y=-angle;}
+   }
    // One rotated collider per wall, independent of decorative railing density.
    const px=Math.abs(dz/length)*p.thickness/2,pz=Math.abs(dx/length)*p.thickness/2;
    registerWallCollider(Math.min(s.ax,s.bx)-px,Math.max(s.ax,s.bx)+px,Math.min(s.az,s.bz)-pz,Math.max(s.az,s.bz)+pz,-.2,p.height);
    Object.assign(WALL_COLLIDERS.at(-1),{perimeter:true,segment:s});
   }
   // Posts close acute corners and prevent diagonal leaks between fence runs.
-  for(const [x,z] of p.outline){box(g,.9,2.96,.9,x,1.48,z,stone);box(g,1.02,.12,1.02,x,3,z,cap);registerWallCollider(x-.45,x+.45,z-.45,z+.45,-.2,3.06);WALL_COLLIDERS.at(-1).perimeter=true;}
+  for(const [x,z] of p.outline){const post=box(g,.9,2.96,.9,x,1.48,z,z>=78?stone:0x916355);if(z<78)post.material=pierMaterial;box(g,1.02,.12,1.02,x,3,z,z>=78?cap:0x794d42);registerWallCollider(x-.45,x+.45,z-.45,z+.45,-.2,3.06);WALL_COLLIDERS.at(-1).perimeter=true;}
   // Gate posts, tower feet and lintel register their exact perimeter volumes in
   // explorer.js. A second full-height box here would seal the photographed opening.
+  return g;
+ }
+ function renderLanPavilion(parent){
+  const g=new THREE.Group();g.name='lan-photo-pavilion';parent.add(g);
+  const cream=0xe7dfc2,red=0xa42f29,stone=0x969d91,tile=0x804638;
+  const mesh=(geometry,color,name)=>{const m=new THREE.Mesh(geometry,mat(color));m.name=name;m.castShadow=m.receiveShadow=true;g.add(m);return m};
+  const block=(name,w,h,d,x,y,z,color)=>{const m=box(g,w,h,d,x,y,z,color);m.name=name;return m};
+  const solid=m=>{parent.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(m);registerWallCollider(b.min.x,b.max.x,b.min.z,b.max.z,b.min.y,b.max.y);Object.assign(WALL_COLLIDERS.at(-1),{landmark:true,source:m.name});};
+  // A shallow raised plinth is within the existing ground motor's step tolerance.
+  const base=mesh(new THREE.CylinderGeometry(4.25,4.25,.3,6),stone,'lan-stone-plinth');base.rotation.y=Math.PI/6;base.position.y=-.03;
+  for(let i=0;i<2;i++)block(i?'lan-front-upper-step':'lan-front-steps',2.6,.06*(i+1),.52,0,.03*(i+1),4.12-i*.5,stone);
+  const edge=(name,r,y,h,d,color,skipFront=false)=>{
+   for(let i=0;i<6;i++){const a=i*Math.PI/3,b=(i+1)*Math.PI/3,x=r*(Math.cos(a)+Math.cos(b))/2,z=r*(Math.sin(a)+Math.sin(b))/2;
+    if(skipFront&&i===1)continue;const m=block(name,r,h,d,x,y,z,color);m.rotation.y=-Math.atan2(Math.sin(b)-Math.sin(a),Math.cos(b)-Math.cos(a));if(name==='lan-stone-seat')solid(m);
+   }
+  };
+  for(let i=0;i<6;i++){
+   const a=i*Math.PI/3,x=Math.cos(a)*3.2,z=Math.sin(a)*3.2;
+   const foot=block('lan-column-foot',.58,.2,.58,x,.2,z,0x5b625b);solid(foot);
+   const p=mesh(new THREE.CylinderGeometry(.22,.24,3.82,12),red,'lan-red-column');p.position.set(x,2.12,z);solid(p);
+   block('lan-column-cap',.6,.25,.6,x,4.06,z,cream);
+  }
+  edge('lan-cream-ring-beam',3.45,4.12,.4,.28,cream);edge('lan-stone-seat',2.7,.56,.14,.45,stone,true);
+  // Cream upper lattice: three horizontal bars with evenly spaced uprights.
+  for(let i=0;i<6;i++){
+   const a=i*Math.PI/3,b=(i+1)*Math.PI/3,dx=Math.cos(b)-Math.cos(a),dz=Math.sin(b)-Math.sin(a),angle=-Math.atan2(dz,dx);
+   for(const y of [3.25,3.48,3.7]){const m=block('lan-cream-lattice',2.85,.07,.09,3.2*(Math.cos(a)+Math.cos(b))/2,y,3.2*(Math.sin(a)+Math.sin(b))/2,cream);m.rotation.y=angle;}
+   for(let j=1;j<8;j++){const t=j/8,x=3.2*(Math.cos(a)+dx*t),z=3.2*(Math.sin(a)+dz*t),m=block('lan-lattice-upright',.065,.52,.09,x,3.48,z,cream);m.rotation.y=angle;}
+  }
+  // Hexagonal curved roof profile, including a rising outer lip at the eaves.
+  const profile=[[.1,6.95],[.7,6.2],[1.8,5.25],[3.35,4.6],[4.3,4.42],[4.75,4.58]],verts=[],segments=48;
+  const point=(r,y,k)=>{const a=(Math.floor(k/8)%6)*Math.PI/3,t=(k%8)/8,b=a+Math.PI/3;return new THREE.Vector3(r*((1-t)*Math.cos(a)+t*Math.cos(b)),y,r*((1-t)*Math.sin(a)+t*Math.sin(b)));};
+  for(let j=0;j<profile.length-1;j++)for(let k=0;k<segments;k++){
+   const [r,y]=profile[j],[r2,y2]=profile[j+1],a=point(r,y,k),b=point(r,y,(k+1)%segments),c=point(r2,y2,k),d=point(r2,y2,(k+1)%segments);
+   for(const p of [a,c,b,b,c,d])verts.push(p.x,p.y,p.z);
+  }
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));geo.computeVertexNormals();const roof=mesh(geo,tile,'lan-curved-tile-roof');roof.material=new THREE.MeshStandardMaterial({color:tile,roughness:.86,side:THREE.DoubleSide});
+  for(let k=0;k<segments;k++){
+   const curve=new THREE.CatmullRomCurve3(profile.map(([r,y])=>point(r,y+.035,k)));mesh(new THREE.TubeGeometry(curve,14,k%8===0?.095:.045,5,false),k%8===0?0xa5684c:0x9a5a43,'lan-tile-rib');
+  }
+  // Upturned corner ornaments and the rounded ridge finial.
+  for(let i=0;i<6;i++){const a=i*Math.PI/3,curve=new THREE.CatmullRomCurve3([[4.1,4.5],[4.8,4.58],[5,4.98]].map(([r,y])=>new THREE.Vector3(r*Math.cos(a),y,r*Math.sin(a))));mesh(new THREE.TubeGeometry(curve,8,.11,6,false),tile,'lan-upturned-eave');}
+  const finial=mesh(new THREE.SphereGeometry(.22,10,8),tile,'lan-roof-finial');finial.scale.y=1.65;finial.position.y=7.13;
+  const cv=document.createElement('canvas');cv.width=256;cv.height=128;const c=cv.getContext('2d');c.fillStyle='#30372c';c.fillRect(0,0,256,128);c.fillStyle='#d4aa50';c.font='bold 76px serif';c.textAlign='center';c.fillText('蘭亭',128,91);
+  const plaque=mesh(new THREE.PlaneGeometry(1.18,.58),cream,'lan-name-plaque');plaque.material=new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),side:THREE.DoubleSide});plaque.position.set(0,3.96,3.02);
   return g;
  }
  function renderVolleyballCourts(parent,courts,id,color){
@@ -109,5 +174,5 @@ const CampusOutdoorWorld=(()=>{
   ROOMS_DB.grandstand={id:'grandstand',code:'OUT-STAND',name:'操場司令台（升旗台）',buildingId:'track',buildingName:'操場及綜合球場',floor:1,cat:'sports',node:'stand-podium'};
   return g;
  }
- return{render,renderVolleyballCourts};
+ return{render,renderVolleyballCourts,renderLanPavilion};
 })();
