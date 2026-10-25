@@ -3494,7 +3494,7 @@
     function animate() {
       requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.1);
-      if(document.hidden || window.proposalHidden)return;
+      if(document.hidden || window.proposalHidden){window.campusScoreStation?.pause();return;}
       if(motionBlocked()){resetManualInput();stopAutoWalk();}
       window.campusMouse?.update(delta);
 
@@ -3705,6 +3705,7 @@
       window.campusFloorExhibit?.update();
       window.campusAnniversary?.update(performance.now());
       window.campusPeople?.update(delta,clock.elapsedTime);
+      window.campusScoreStation?.update(performance.now(),{position:avatarGroup.position,walking:currentMode==='avatar'||currentMode==='firstperson',moving:isMoving||isAutoWalking||isJumping||moveInput.forward||moveInput.backward||moveInput.left||moveInput.right||!!window.campusMobileControls?.move.x||!!window.campusMobileControls?.move.y,suspended:motionBlocked()||!document.hasFocus()});
       renderer.render(scene, camera);
     }
 

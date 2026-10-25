@@ -167,7 +167,18 @@
   for(const side of [-1,1]){const face=new THREE.Mesh(new THREE.PlaneGeometry(.84,.42),signMaterial);face.position.set(center.x+tx*side*.034,y+2.65,center.z+tz*side*.034);face.rotation.y=Math.atan2(tx*side,tz*side);face.userData={roomId:r.id,nameplateKey:signLabel.key,nameplateStyle:'projecting'};g.add(face);}
   if(l.id==='gym-bld'||r.kind==='wc'||r.kind==='office-suite')return; // Shells and toilets own signs; open desk zones own furniture.
   const plan=CampusRoomLayout.furnishings(r);
-  for(const item of plan.parts){const mesh=box(g,l,item.u0,item.u1,item.v0,item.v1,y+item.y0,y+item.y1,colors[item.paint],item.solid);if(mesh)mesh.userData={roomId:r.id,furnitureRole:item.role};}
+  for(const item of plan.parts){
+   const mesh=box(g,l,item.u0,item.u1,item.v0,item.v1,y+item.y0,y+item.y1,colors[item.paint],item.solid);if(!mesh)continue;
+   mesh.userData={roomId:r.id,furnitureRole:item.role};
+   if(item.role==='score-sign'||item.role==='score-monitor'){
+    // Annual room-name editing owns roomId textures; station content has its
+    // own identity so editing a room never overwrites the computer screen.
+    delete mesh.userData.roomId;mesh.userData.scoreStationRoomId=r.id;
+    const cv=document.createElement('canvas');cv.width=1024;cv.height=384;const c=cv.getContext('2d');
+    c.fillStyle=item.role==='score-sign'?'#19584e':'#183944';c.fillRect(0,0,1024,384);c.textAlign='center';c.fillStyle='#fff8e5';c.font='bold 80px sans-serif';c.fillText('歷屆段考成績查詢',512,152);c.fillStyle='#b9ded0';c.font='46px sans-serif';c.fillText('停留 3 秒 · 另開新視窗',512,265);
+    mesh.material=new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv)});mesh.name=item.role;
+   }
+  }
   box(g,l,r.u-.7,r.u+.7,r.v-.12,r.v+.12,y+FH-.22,y+FH-.2,colors.light);
  }
  // Retain existing outer ornament; replace old floors, stair meshes and roofs for shaped wings.

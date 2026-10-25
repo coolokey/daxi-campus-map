@@ -72,7 +72,7 @@ const CampusRoomLayout = (() => {
    for(const [min,max,start,delta] of bounds){if(Math.abs(delta)<1e-8){if(start<min||start>max)return false;continue;}const a=(min-start)/delta,b=(max-start)/delta;lo=Math.max(lo,Math.min(a,b));hi=Math.min(hi,Math.max(a,b));if(lo>hi)return false;}
    return true;
   };
-  const rows=(role,spacing,work)=>{if(!hasSides)return;const columns=Math.max(1,Math.min(3,Math.floor((w/2-.85)/1.05)));for(let row=0,z=1.25;z<(d>4.5?d-2:d-.9);row++,z+=spacing)for(const sign of [-1,1])for(let col=0;col<columns;col++){const x=sign*(1.04+col*1.05);if(Math.abs(x)+.4>w/2-.13||blocksEntry(x,z))continue;desk(role,x,z);chair(role==='student-desk'?'student-chair':'office-chair',x,z-.58);if(work)monitor(x,z+.08);}};
+  const rows=(role,spacing,work)=>{if(!hasSides)return;const columns=Math.max(1,Math.min(3,Math.floor((w/2-.85)/1.05)));for(let row=0,z=1.25;z<(d>4.5?d-2:d-.9);row++,z+=spacing)for(const sign of [-1,1])for(let col=0;col<columns;col++){const x=sign*(1.04+col*1.05);if(Math.abs(x)+.4>w/2-.13||blocksEntry(x,z)||(r.id==='academic'&&x<0))continue;desk(role,x,z);chair(role==='student-desk'?'student-chair':'office-chair',x,z-.58);if(work)monitor(x,z+.08);}};
   if(['classroom','computer','lab','workshop','music','kitchen'].includes(kind)){
    board();
    // The teaching platform is beyond the navigation destination, leaving the
@@ -87,6 +87,15 @@ const CampusRoomLayout = (() => {
    else if(hasSides)for(const s of [-1,1])for(let z=1.4;z<d-1.5;z+=1.4){desk('meeting-table',s*sideX,z,.8,.7);chair('meeting-chair',s*sideX,z-.65);}
    if(hasSides){for(const s of [-1,1])shelf('file-cabinet',s*sideX,d-.5);desk('printer-stand',sideX,Math.max(.9,d-1.6),.75,.5);add('printer',sideX,Math.max(.9,d-1.6),.56,.38,.8,1.08,'paper');add('paper-tray',sideX,Math.max(.9,d-1.6)-.05,.36,.24,1.08,1.1,'paper');}
    add('notice-board',0,d-.2,Math.min(2.5,w-.5),.06,1.1,2.1,'wood');
+   if(r.id==='academic'){
+    const x=-1.35,z=d/2;
+    add('score-desk',x,z,.65,1.4,.72,.8,'wood',true);
+    for(const a of [-.22,.22])for(const b of [-.56,.56])add('score-desk-leg',x+a,z+b,.06,.06,0,.73,'steel');
+    add('score-monitor',x-.08,z,.07,.9,.96,1.55,'screen');
+    add('score-monitor-stand',x-.08,z,.22,.22,.8,.97,'steel');
+    add('score-keyboard',x+.18,z,.14,.65,.8,.83,'steel');
+    add('score-sign',x-.29,z,.07,1.9,1.8,2.48,'green');
+   }
   }else if(hasSides){
    if(kind==='health'){for(const s of [-1,1]){add('bed',s*sideX,d/2,.75,1.8,.32,.55,'paper',true);add('pillow',s*sideX,d/2+.6,.56,.3,.55,.65,'blue');}shelf('medical-cabinet',-sideX,d-.5);desk('nurse-desk',sideX,1,.75,.5);monitor(sideX,1);}
    else if(kind==='sports'){for(const s of [-1,1]){add('bench',s*sideX,d/2,.65,Math.min(3,d-1),.35,.45,'wood',true);shelf('equipment-cabinet',s*sideX,d-.5);}}
