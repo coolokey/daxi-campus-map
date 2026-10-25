@@ -81,7 +81,7 @@
   const wall=(a,b,y0,y1,mat,solid=true)=>alongU?box(g,l,a,b,fixed-.09,fixed+.09,y0,y1,mat,solid):box(g,l,fixed-.09,fixed+.09,a,b,y0,y1,mat,solid);
   if(c.doorSide===side){
    const half=Math.min(.95,(end-start)/2-.16);
-   const photoCorridor=['grade8-front','grade8-mid','grade9-back','admin-front','admin-back','new-grade7','multi-building'].includes(l.id);
+   const photoCorridor=['grade8-front','grade8-mid','grade9-back','admin-front','admin-back','new-grade7','multi-building','health-bld'].includes(l.id);
    const wing=(a,b)=>{
     if(!photoCorridor||b-a<1.3){wall(a,b,y,y+FH,paint);return;}
     const collider=wall(a,b,y,y+FH,paint);if(collider)collider.visible=false;

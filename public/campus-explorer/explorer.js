@@ -485,7 +485,7 @@
       for (let i = 0; i < WALL_COLLIDERS.length; i++) {
         const c = WALL_COLLIDERS[i];
         if (avatarMaxY >= c.minY && avatarMinY <= c.maxY) {
-          if ((!c.segment||CampusCollisionGrid.overlaps(c,x,z,r))&&avatarMaxX > c.minX && avatarMinX < c.maxX &&
+          if (((!c.segment&&!c.circle)||CampusCollisionGrid.overlaps(c,x,z,r))&&avatarMaxX > c.minX && avatarMinX < c.maxX &&
               avatarMaxZ > c.minZ && avatarMinZ < c.maxZ) {
             return true;
           }
@@ -1417,12 +1417,20 @@
       gardenGroup.add(pavilion);
 
       // 訓平池 (荷花睡蓮池 x=16 相對亭位即 x=-2)
+      const pond=CampusOutdoorPlan.pond;
       const pool = new THREE.Mesh(
-        new THREE.CylinderGeometry(8.5, 8.5, 0.6, 32),
+        new THREE.CylinderGeometry(pond.radius, pond.radius, 0.6, 48),
         new THREE.MeshStandardMaterial({ color: 0x0284c7, transparent: true, opacity: 0.88, roughness: 0.1 })
       );
-      pool.position.set(16, 0.25, 0);
+      pool.position.set(pond.x-gardenGroup.position.x, 0.25, pond.z-gardenGroup.position.z);
+      pool.name='xunping-pond-water';
       gardenGroup.add(pool);
+      const rim=new THREE.Mesh(new THREE.TorusGeometry(pond.radius,.12,6,64),new THREE.MeshStandardMaterial({color:0xa8afa1,roughness:.95}));
+      rim.name='xunping-pond-bank';rim.rotation.x=-Math.PI/2;rim.position.copy(pool.position);rim.position.y=.55;gardenGroup.add(rim);
+      // Register the whole circular water body before player, adult and route
+      // indices. A bounding square would incorrectly close the dry corners.
+      registerWallCollider(pond.x-pond.radius,pond.x+pond.radius,pond.z-pond.radius,pond.z+pond.radius,-.1,pond.barrierHeight);
+      Object.assign(WALL_COLLIDERS.at(-1),{buildingId:null,persistent:true,landmark:true,source:'xunping-pond-water',circle:{x:pond.x,z:pond.z,radius:pond.radius}});
 
       for (let i = 0; i < 7; i++) {
         const pad = new THREE.Mesh(new THREE.CircleGeometry(0.7 + Math.random() * 0.4, 12), new THREE.MeshStandardMaterial({ color: 0x15803d }));

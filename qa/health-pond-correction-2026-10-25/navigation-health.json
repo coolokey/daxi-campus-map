@@ -1,0 +1,180 @@
+{
+  "cases": 13,
+  "origins": 502,
+  "targets": 8,
+  "medianMs": 189.98999999999978,
+  "p95Ms": 300.83370000000014,
+  "maxMs": 300.83370000000014,
+  "failures": [],
+  "rows": [
+    {
+      "origin": "stair/health-bld/health-bld-east/1/0/0.23",
+      "start": {
+        "x": 23.349,
+        "z": -4.35,
+        "y": 0.41400000000000003
+      },
+      "target": "library",
+      "points": 5,
+      "ms": 121.04799999999977,
+      "length": 51.4793483421624,
+      "error": null
+    },
+    {
+      "origin": "stair/health-bld/health-bld-east/1/0/0.5",
+      "start": {
+        "x": 22.35,
+        "z": -4.35,
+        "y": 0.9
+      },
+      "target": "901",
+      "points": 28,
+      "ms": 300.83370000000014,
+      "length": 285.61213690440087,
+      "error": null
+    },
+    {
+      "origin": "stair/health-bld/health-bld-east/1/0/0.77",
+      "start": {
+        "x": 21.351,
+        "z": -4.35,
+        "y": 1.3860000000000001
+      },
+      "target": "704",
+      "points": 18,
+      "ms": 208.0005000000001,
+      "length": 139.70122161159767,
+      "error": null
+    },
+    {
+      "origin": "stair/health-bld/health-bld-east/1/1.8/0.23",
+      "start": {
+        "x": 21.351,
+        "z": -1.85,
+        "y": 2.214
+      },
+      "target": "art-4f",
+      "points": 42,
+      "ms": 281.4299999999994,
+      "length": 341.09884871704935,
+      "error": null
+    },
+    {
+      "origin": "stair/health-bld/health-bld-east/1/1.8/0.5",
+      "start": {
+        "x": 22.35,
+        "z": -1.85,
+        "y": 2.7
+      },
+      "target": "gym",
+      "points": 15,
+      "ms": 226.42469999999958,
+      "length": 197.45135635387953,
+      "error": null
+    },
+    {
+      "origin": "stair/health-bld/health-bld-east/1/1.8/0.77",
+      "start": {
+        "x": 23.349,
+        "z": -1.85,
+        "y": 3.186
+      },
+      "target": "grandstand",
+      "points": 12,
+      "ms": 71.92859999999928,
+      "length": 110.2669912716208,
+      "error": null
+    },
+    {
+      "origin": "landing/health-bld/health-bld-east/1.8",
+      "start": {
+        "x": 19.39,
+        "y": 1.8,
+        "z": -3.1000000000000005
+      },
+      "target": "palm-avenue",
+      "points": 10,
+      "ms": 130.77829999999994,
+      "length": 218.60742229079347,
+      "error": null
+    },
+    {
+      "origin": "corridor/health-bld/1/0.2",
+      "start": {
+        "x": 3.6000000000000014,
+        "z": -7.1,
+        "y": 0
+      },
+      "target": "academic",
+      "points": 17,
+      "ms": 207.3812999999991,
+      "length": 215.43903485912838,
+      "error": null
+    },
+    {
+      "origin": "corridor/health-bld/1/0.5",
+      "start": {
+        "x": 12,
+        "z": -7.1,
+        "y": 0
+      },
+      "target": "library",
+      "points": 4,
+      "ms": 42.72779999999875,
+      "length": 61.964902485182634,
+      "error": null
+    },
+    {
+      "origin": "corridor/health-bld/1/0.8",
+      "start": {
+        "x": 20.400000000000002,
+        "z": -7.1,
+        "y": 0
+      },
+      "target": "901",
+      "points": 27,
+      "ms": 103.51980000000003,
+      "length": 201.3502119109082,
+      "error": null
+    },
+    {
+      "origin": "corridor/health-bld/2/0.2",
+      "start": {
+        "x": 3.6000000000000014,
+        "z": -7.1,
+        "y": 3.6
+      },
+      "target": "704",
+      "points": 25,
+      "ms": 137.45290000000023,
+      "length": 177.06320946272558,
+      "error": null
+    },
+    {
+      "origin": "corridor/health-bld/2/0.5",
+      "start": {
+        "x": 12,
+        "z": -7.1,
+        "y": 3.6
+      },
+      "target": "art-4f",
+      "points": 45,
+      "ms": 271.97299999999996,
+      "length": 363.36815457427997,
+      "error": null
+    },
+    {
+      "origin": "corridor/health-bld/2/0.8",
+      "start": {
+        "x": 20.400000000000002,
+        "z": -7.1,
+        "y": 3.6
+      },
+      "target": "gym",
+      "points": 18,
+      "ms": 189.98999999999978,
+      "length": 210.20989359570652,
+      "error": null
+    }
+  ]
+}

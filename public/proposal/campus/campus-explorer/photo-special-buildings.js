@@ -29,7 +29,7 @@
   }else{
    // Long white floor edges and a shaded upper gallery match the court-facing aerial.
    for(const side of [-1,1])box(g,l,'health-floor-edge',0,side*(B+.13),y+FH-.13,l.L+.2,.24,.18,0xd0d1c7);
-   if(f===2){box(g,l,'health-upper-corridor-fascia',0,l.outerV+.13,y+.53,l.L,.96,.16,0xc9ccc2);box(g,l,'health-upper-shade-line',0,l.outerV+.14,y+2.92,l.L,.34,.18,0x596760);}
+   if(f===2){box(g,l,'health-upper-corridor-fascia',0,l.outerV+l.sign*.13,y+.53,l.L,.96,.16,0xc9ccc2);box(g,l,'health-upper-shade-line',0,l.outerV+l.sign*.14,y+2.92,l.L,.34,.18,0x596760);}
    // End-face horizontal lines; no speculative exterior staircase is added.
    for(const u of [a-.12,A+.12])box(g,l,'health-end-floor-band',u,0,y+FH-.13,.16,.24,l.D,0xc9ccc2);
   }

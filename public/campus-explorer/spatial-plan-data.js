@@ -33,7 +33,7 @@ const CampusSpatialData = (() => {
    2:[room('principal','ADM-F-2W',.9),room('reception','ADM-F-2C',.3,'校長室旁空間（名稱待確認）'),passage(.7),room('academic','ADM-F-2E',1.3)],
    3:[room('lang-lab','ADM-F-3W',1.2),passage(.7),room('spec-staff-3','ADM-F-3E',1.3)]
   }},
-  'health-bld':{sign:1,floors:{1:[room('health','511'),room('coop','512'),stair('east','東側樓梯')],2:[room('pe-office','521',1,'空間 521（名稱待確認）'),room('pe-storage','522',1,'空間 522（名稱待確認）'),stair('east','東側樓梯')]}},
+  'health-bld':{sign:-1,confidence:'DSC05961／DSC05966 與使用者確認：健康中心及合作社入口、走廊均朝籃球場',floors:{1:[room('health','511'),room('coop','512'),stair('east','東側樓梯')],2:[room('pe-office','521',1,'空間 521（名稱待確認）'),room('pe-storage','522',1,'空間 522（名稱待確認）'),stair('east','東側樓梯')]}},
   'art-building':{sign:-1,floors:Object.fromEntries(['broadwood','music-2f','music-3f','art-4f'].map((id,i)=>[i+1,[stair('main','藝術館樓梯'),room(id,`ART-${i+1}`,1,['樂活教室','音樂教室','音樂教室','美術教室'][i])]]))},
   'gym-bld':{shape:'gym',sign:1,confidence:'照片與使用者確認：一樓球場、舞台及入口附屬空間；二樓看台。尺度按照片比例示意'},
   'recycle-bld':{sign:1,floors:{1:[room('recycling','REC-1')]}},

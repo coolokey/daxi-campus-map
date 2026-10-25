@@ -7,6 +7,7 @@ const CampusCollisionGrid={
   // Ignore only numerical noise; real penetration still blocks the full body.
   const r=radius+padding,epsilon=1e-8;
   if(!(x+r>c.minX+epsilon&&x-r<c.maxX-epsilon&&z+r>c.minZ+epsilon&&z-r<c.maxZ-epsilon))return false;
+  if(c.circle){const q=c.circle,dx=Math.max(Math.abs(x-q.x)-r,0),dz=Math.max(Math.abs(z-q.z)-r,0);return dx*dx+dz*dz<q.radius*q.radius-epsilon;}
   if(!c.segment)return true;
   const s=c.segment,dx=s.bx-s.ax,dz=s.bz-s.az,length=Math.hypot(dx,dz),ux=dx/length,uz=dz/length;
   const px=x-(s.ax+s.bx)/2,pz=z-(s.az+s.bz)/2,foot=radius*(Math.abs(ux)+Math.abs(uz))+padding;

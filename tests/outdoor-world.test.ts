@@ -14,6 +14,18 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','navigation-arrows.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','multi-world.js','new7-world.js','photo-facade.js','campus-forecourt.js','landscape-world.js','spatial-world.js','photo-teaching.js','photo-roofs.js','photo-special-buildings.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('faces both health and cooperative doors and the upper gallery toward the basketball courts',()=>{
+ const r=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='health-bld'),e=l.entrances[0];return {doors:l.rooms.filter(r=>['health','coop'].includes(r.id)).map(r=>({id:r.id,north:r.door.z<r.center.z,corridor:r.corridor.z<r.door.z})),entrance:e.outside.z<l.bounds.z0,fascia:scene.getObjectByName('health-upper-corridor-fascia').position.z<l.b.z-l.D/2}})()`);
+ expect(r.doors).toEqual([{id:'health',north:true,corridor:true},{id:'coop',north:true,corridor:true}]);expect(r.entrance).toBe(true);expect(r.fascia).toBe(true);
+});
+it('blocks walking and jumping through the pond while retaining dry corners and a route around it',()=>{
+ const r=run(`(()=>{const pond={x:-2,z:-66,radius:8.5},p={x:-14,y:0,z:-66},blocked=moveAvatarWithCollision(p,24,0),path=campusWalkWorld.gridPath({x:-14,y:0,z:-66},{x:10,y:0,z:-66});return {center:checkWallCollision(-2,0,-66),jump:checkWallCollision(-2,1.3,-66),adult:campusPeopleCollisionIndex.hit(-2,0,-66),corner:checkWallCollision(6,0,-58),blocked,end:p.x,path:!!path,safe:path?.every(q=>!checkWallCollision(q.x,q.y,q.z))}})()`);
+ expect(r).toMatchObject({center:true,jump:true,adult:true,corner:false,blocked:true,path:true,safe:true});expect(r.end).toBeLessThan(-10);
+});
+it('renders the photographed court-facing clinic windows rather than blank corridor walls',()=>{
+ const glass=run(`(()=>{scene.updateMatrixWorld(true);const l=campusWalkWorld.layouts.find(l=>l.id==='health-bld'),r=l.rooms.find(r=>r.id==='health'),p=l.world(r.u0+.9,l.outerV-.6,1.7),meshes=[];scene.traverse(m=>{if(m.isMesh&&m.visible)meshes.push(m)});return new THREE.Raycaster(new THREE.Vector3(p.x,p.y,p.z),new THREE.Vector3(0,0,1),0,4).intersectObjects(meshes,false)[0]?.object.material.transparent===true})()`);
+ expect(glass).toBe(true);
+});
 it('matches the stepped grey annex silhouette without overlapping the new grade seven return',()=>{
  const r=run(`(()=>{scene.updateMatrixWorld(true);const g=scene.getObjectByName('multi-ancillary-upper-shell'),side=scene.getObjectByName('multi-ancillary-side-roof'),m=campusWalkWorld.layouts.find(l=>l.id==='multi-building'),n=campusWalkWorld.layouts.find(l=>l.id==='new-grade7'),h=m.rooms.find(r=>r.id==='history-room'),nr=n.footprints.find(p=>p.part==='new7-east');return {upper:g&&new THREE.Box3().setFromObject(g).max.y,side:!!side,overlap:h.rect.x0<nr.rect.x1&&h.rect.x1>nr.rect.x0&&h.rect.z0<nr.rect.z1&&h.rect.z1>nr.rect.z0}})()`);
  expect(r.side).toBe(true);expect(r.upper).toBeGreaterThan(6);expect(r.overlap).toBe(false);

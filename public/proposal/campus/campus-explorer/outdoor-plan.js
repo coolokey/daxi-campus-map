@@ -17,6 +17,7 @@ const CampusOutdoorPlan=(()=>{
  // Photo-confirmed silhouettes beside Lan pavilion: a long west wall and
  // ascending east terraces behind the courts. Dimensions are illustrative.
  const lanBanks={wall:{x0:-120,x1:-26,z0:-76.1,z1:-74.9,height:2.6},steps:{x0:9,x1:38,z0:-76.2,z1:-69.6,count:12,rise:.18}};
+ const pond={x:-2,z:-66,radius:8.5,barrierHeight:3};
  const inside=(r,p)=>p.x>=r.x0&&p.x<=r.x1&&p.z>=r.z0&&p.z<=r.z1;
  function lanBankGround(p){const s=lanBanks.steps;if(!inside(s,p))return null;const i=Math.min(s.count-1,Math.floor((s.z1-p.z)/(s.z1-s.z0)*s.count));return (i+1)*s.rise}
  const onLanBank=p=>{const y=lanBankGround(p);return y!==null&&Math.abs(p.y-y)<.25};
@@ -47,5 +48,5 @@ const CampusOutdoorPlan=(()=>{
  outline[1]=[-51.5,80];outline[2]=[-65,80];outline[3]=[-98,78.5];outline[outline.length-2]=[gate.x+20.25,100];
  const perimeter={height:2.9,thickness:.7,outline,segments:outline.slice(1).map(([bx,bz],i)=>({ax:outline[i][0],az:outline[i][1],bx,bz,thickness:.7}))};
  perimeter.contains=(x,z)=>{let inside=false;for(let i=0,j=outline.length-1;i<outline.length;j=i++){const [ax,az]=outline[i],[bx,bz]=outline[j];if((az>z)!==(bz>z)&&x<(bx-ax)*(z-az)/(bz-az)+ax)inside=!inside;}return inside};
- return{entrance,palette,track,stage,lanBanks,lanBankGround,onLanBank,lanBankExit,courts,outerCourts,volleyball,perimeter,inside,ground,onStage,onStairs,stairWidth,reserved,stairsPath,exitPath};
+ return{entrance,palette,track,stage,pond,lanBanks,lanBankGround,onLanBank,lanBankExit,courts,outerCourts,volleyball,perimeter,inside,ground,onStage,onStairs,stairWidth,reserved,stairsPath,exitPath};
 })();
