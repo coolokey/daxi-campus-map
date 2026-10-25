@@ -33,6 +33,78 @@
   // 前庭與銅像廣場，以及校舍之間可通行的硬鋪面。
   paved(56,30,-32,61);paved(28,26,-40,32);paved(22,42,15,28);
   paved(8,118,44,8);paved(42,7,12,51);paved(40,7,12,6);
+  // User-approved parking concept. Shared footprints keep roofs and vehicles
+  // inside campus, with the main driveway and shelter aisle left unobstructed.
+  (()=>{
+    const P=CampusOutdoorPlan.parking,T=P.twoWheel,C=P.cars;
+    const group=(name,parent=decor)=>{const g=new THREE.Group();g.name=name;parent.add(g);return g;};
+    const two=group('gate-two-wheel-parking'),cars=group('art-car-parking');
+    const B=(g,name,x,z,w,d,y,h,color,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.name=name;m.position.set(x,y+h/2,z);m.castShadow=m.receiveShadow=true;m.userData.parkingPhysical=solid||name.includes('roof');if(solid)m.userData.campusSolid=true;g.add(m);return m;};
+    const beam=(g,a,b,r,color)=>{const start=new THREE.Vector3(...a),end=new THREE.Vector3(...b),m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,start.distanceTo(end),6),mat(color));m.position.copy(start.add(end).multiplyScalar(.5));m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(...b).sub(new THREE.Vector3(...a)).normalize());g.add(m);return m;};
+    const sign=(g,text,x,y,z,width)=>{const cv=document.createElement('canvas');cv.width=768;cv.height=128;const ctx=cv.getContext('2d');ctx.fillStyle='#234454';ctx.fillRect(0,0,768,128);ctx.fillStyle='#fff9e8';ctx.font='bold 66px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,384,67);const m=new THREE.Mesh(new THREE.PlaneGeometry(width,.46),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.y=Math.PI;g.add(m);return m;};
+    function shelter(g,name,x0,x1,z,depth,label,backSide=null){
+      B(g,name+'-roof',(x0+x1)/2,z,x1-x0,depth,3.05,.16,0x536d83);
+      // Cantilever supports stay behind the two-wheel rows, leaving a continuous aisle.
+      for(let x=x0+.3;x<x1;x+=5.8)for(const side of backSide===null?[-1,1]:[backSide])B(g,name+'-post',x,z+side*(depth/2-.12),.09,.09,0,3.05,0xaebbb8,true);
+      B(g,name+'-fascia',(x0+x1)/2,z-depth/2,x1-x0,.08,2.87,.18,0x718b9b);
+      sign(g,label,(x0+x1)/2,2.62,z-depth/2-.06,Math.min(8,x1-x0-1));
+    }
+    B(two,'two-wheel-paving',19.5,93.5,33,6,.033,.018,0xaaa99e);
+    B(two,'two-wheel-aisle',19.5,T.aisleZ,32,1.65,.055,.012,0xc2beb0);
+    shelter(two,'student-bicycle',T.x0,T.x1,T.bikeZ,T.roofDepth,'學生自行車棚',-1);
+    shelter(two,'staff-scooter',T.x0,T.x1,T.motoZ,T.roofDepth,'教職員機車棚',1);
+    const bikeRow=group('student-bicycle-row',two),motoRow=group('staff-scooter-row',two);
+    function wheel(g,x,y,z,r=.3){const m=new THREE.Mesh(new THREE.TorusGeometry(r,.045,5,12),mat(0x283632));m.position.set(x,y,z);m.rotation.y=Math.PI/2;g.add(m);}
+    for(let i=0,x=5.6;x<34.2;x+=1.35,i++){
+      const g=group('bicycle-'+i,bikeRow);g.position.set(x,0,T.bikeZ);
+      for(const z of [-.6,.6])wheel(g,0,.34,z);
+      const paint=[0x4c7395,0x8f624d,0x6c895b,0xadb5ac][i%4];
+      for(const [a,b] of [[ [0,.34,-.6],[0,.8,-.2] ],[[0,.8,-.2],[0,.34,.25]],[[0,.34,.25],[0,.34,-.6]],[[0,.8,-.2],[0,.85,.4]],[[0,.85,.4],[0,.34,.25]],[[0,.85,.4],[0,.34,.6]]])beam(g,a,b,.028,paint);
+      B(g,'bicycle-seat',0,-.2,.24,.35,.85,.07,0x303a34);beam(g,[0,.85,.4],[0,1.04,.52],.026,0xb6c1bd);beam(g,[-.22,1.04,.52],[.22,1.04,.52],.027,0xb6c1bd);
+      const proxy=B(g,'bicycle-body',0,0,.54,1.65,0,1.1,0x333333,true);proxy.visible=false;
+      B(two,'bicycle-bay-line',x-.6,T.bikeZ,.025,1.65,.057,.01,0xe0dfcf);
+    }
+    for(let i=0,x=5.7;x<34.2;x+=1.8,i++){
+      const g=group('scooter-'+i,motoRow);g.position.set(x,0,T.motoZ);
+      for(const z of [-.61,.61])wheel(g,0,.3,z,.25);
+      B(g,'scooter-body',0,.1,.53,1.05,.35,.4,[0x647d91,0x9c6d63,0xb6bcb2,0x3b4b48][i%4]);B(g,'scooter-seat',0,.2,.5,.72,.78,.11,0x303a34);B(g,'scooter-front',0,-.57,.5,.17,.4,.63,0xa8b6b6);beam(g,[-.3,1.02,-.6],[.3,1.02,-.6],.035,0x536363);
+      const proxy=B(g,'scooter-body-clearance',0,0,.7,1.8,0,1.2,0x333333,true);proxy.visible=false;
+      B(two,'scooter-bay-line',x-.83,T.motoZ,.028,1.8,.057,.01,0xe0dfcf);
+    }
+    // Preserve bike-shed links, but move their destination to the actual bicycle
+    // aisle. Add separate staff and car destinations at clear pedestrian points.
+    NAV_NODES['bike-shed']={...NAV_NODES['bike-shed'],x:19,y:0,z:T.aisleZ};
+    for(const [id,name,x,z] of [['staff-moto-parking','教職員機車停車棚',28,T.aisleZ],['art-car-parking','藝術館旁汽車停車區',C.aisleX,76]]){
+      NAV_NODES[id]={id,x,y:0,z,neighbors:[]};ROOMS_DB[id]={id,name,code:id==='staff-moto-parking'?'PARK-MOTO':'PARK-CAR',floor:1,buildingId:'park',buildingName:'校園停車設施',cat:'admin',node:id};
+    }
+    B(cars,'car-park-paving',(C.x0+C.x1)/2,(C.z0+C.z1)/2,C.x1-C.x0,C.z1-C.z0,.034,.02,0x858e88);
+    B(cars,'pedestrian-sidewalk',60.4,66.9,1.9,27.4,.056,.014,0xcec9b9);
+    B(cars,'art-connecting-walk',71.2,54.1,29,1.5,.056,.014,0xcec9b9);
+    function bay(x,z,w=6,d=3.5){for(const side of [-1,1]){B(cars,'parking-line',x+side*w/2,z,.045,d,.059,.013,0xe8e6d6);B(cars,'parking-line',x,z+side*d/2,w,.045,.059,.013,0xe8e6d6);}}
+    B(cars,'art-accessible-bay',C.westX,57.5,6,4.4,.059,.015,0x4f85a8);bay(C.westX,57.5,6,4.4);
+    for(let z=59.9;z<61.4;z+=.32){const line=B(cars,'accessible-hatch',C.westX,z,6,.04,.059,.016,0xe8e6d6);line.rotation.y=.07;}
+    const cv=document.createElement('canvas');cv.width=cv.height=128;const ctx=cv.getContext('2d');ctx.fillStyle='#fff8e3';ctx.font='100px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('♿',64,66);const icon=new THREE.Mesh(new THREE.PlaneGeometry(1.7,1.7),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),transparent:true}));icon.rotation.x=-Math.PI/2;icon.position.set(C.westX,.09,57.5);cars.add(icon);
+    function car(x,z,color,heading=Math.PI/2){
+      const g=group('parked-car',cars);g.position.set(x,0,z);g.rotation.y=heading;
+      B(g,'car-body',0,0,1.65,3.8,.3,.62,color);B(g,'car-cabin',0,-.1,1.45,1.9,.92,.6,0x52656d);B(g,'car-roof',0,-.12,1.48,1.5,1.52,.1,color);
+      for(const xx of [-.86,.86])for(const zz of [-1.18,1.18]){const tire=new THREE.Mesh(new THREE.CylinderGeometry(.29,.29,.16,8),mat(0x2e3734));tire.rotation.z=Math.PI/2;tire.position.set(xx,.33,zz);g.add(tire);}
+      for(const zz of [-1.92,1.92])B(g,'car-light',0,zz,1.3,.045,.55,.17,zz<0?0xe9e4c6:0x9f5e52);
+      const proxy=B(g,'car-clearance',0,0,1.8,4.1,0,1.65,0x333333,true);proxy.visible=false;
+    }
+    for(const [i,z] of [63.5,67.2,70.9,74.6,78.3].entries()){bay(C.westX,z);car(C.westX,z,[0xb8c6ca,0x477797,0x9a685b,0xc3bda8,0x485851][i],Math.PI/2);}
+    for(const [i,z] of [57.3,61,64.7,68.4,72.1,75.8].entries()){bay(C.eastX,z);if(i!==4)car(C.eastX,z,[0xb2b9b0,0x535f64,0x99605a,0xd0ccba,0x78927a,0x54768f][i%6],-Math.PI/2);}
+    // The narrow strip south of the driveway accommodates a parallel covered
+    // row, keeping cars/posts out of the existing red vehicle lane.
+    B(cars,'covered-row-paving',(C.coveredX0+C.coveredX1)/2,C.coveredZ,C.coveredX1-C.coveredX0,2.8,.033,.02,0x929a91);
+    shelter(cars,'existing-blue-car-canopy',C.coveredX0,C.coveredX1,C.coveredZ,2.65,'汽車停車棚');
+    for(let i=0,x=70.6;x<92;x+=4.8,i++){bay(x,C.coveredZ,4.7,2.35);car(x,C.coveredZ,[0xb8c2bc,0x4c667a,0xb6afa0,0x895e55,0x425e51][i%5]);}
+    // Flat arrows, not posts in the manoeuvring aisle.
+    for(const [x,z,dir] of [[71.6,69,-1],[74.9,66,1]]){
+      B(cars,'aisle-arrow-stem',x,z,.12,1.3,.06,.01,0xe8e6d6);
+      const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute([x-.45,.075,z+dir*.45,x+.45,.075,z+dir*.45,x,.075,z+dir*1.2],3));geometry.computeVertexNormals();cars.add(new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({color:0xe8e6d6,side:THREE.DoubleSide})));
+    }
+    sign(cars,'藝術館旁汽車停車區',84.8,1.5,80.4,6);
+  })();
   function planter(x,z,w,d){
     box(w,.32,d,x,.17,z,0xbfc7af,true);box(w-.35,.08,d-.35,x,.37,z,palette.soil);
     const count=Math.max(2,Math.floor(w/1.5));

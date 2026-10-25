@@ -918,16 +918,8 @@
       ROOMS_DB['jiekou-trail']={id:'jiekou-trail',code:'OUT-JIEKOU',name:'街口溪生態步道',buildingId:'entrance-trail',buildingName:'校門左側・校外步道入口',floor:1,cat:'special',node:'jiekou-trail-entry',entryHint:'位於警衛室對面的校外步道入口；本模型僅呈現入口附近。'};
       ROOMS_DB['palm-avenue'] = {id:'palm-avenue',code:'OUT-PALM',name:'校門椰林大道',buildingId:'entrance-avenue',buildingName:'校門外通道',floor:1,cat:'special',node:'palm-avenue-end'};
 
-      // 機車與腳踏車停車棚
-      const motoCanopy = new THREE.Mesh(new THREE.BoxGeometry(20, 0.3, 6), new THREE.MeshStandardMaterial({ color: 0x64748b }));
-      motoCanopy.position.set(26, 3.0, 90);
-      motoCanopy.castShadow = true;
-      scene.add(motoCanopy);
-
-      const bikeCanopy = new THREE.Mesh(new THREE.BoxGeometry(26, 0.3, 6), new THREE.MeshStandardMaterial({ color: 0x475569 }));
-      bikeCanopy.position.set(80, 3.0, 90);
-      bikeCanopy.castShadow = true;
-      scene.add(bikeCanopy);
+      // The approved two-row shelters and art-side car park are compiled in
+      // landscape-world before collision/navigation indices are constructed.
 
       ROOMS_DB["bike-shed"] = {
         id: "bike-shed",

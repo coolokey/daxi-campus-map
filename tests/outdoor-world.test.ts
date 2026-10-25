@@ -14,6 +14,17 @@ beforeAll(()=>{
  for(const f of ['campus-data.js','spatial-plan-data.js','spatial-plan.js','collision-grid.js','grid-search.js','outdoor-plan.js','outdoor-world.js','floor-exhibit-model.js','mouse-controls-model.js','entrance-avenue.js','navigation-arrows.js','explorer.js','walk-world-math.js','room-layout-model.js','gym-world.js','multi-world.js','new7-world.js','photo-facade.js','campus-forecourt.js','landscape-world.js','spatial-world.js','photo-teaching.js','photo-roofs.js','photo-special-buildings.js','art-direction.js','photo-reference.js'])file(f);
 },180000);
 afterAll(()=>dom.window.close());
+it('walks from the gate into both two-wheel shelter destinations',()=>{
+ const bad=run(`(()=>{const bad=[];for(const id of ['bike-shed','staff-moto-parking']){const p={...campusWalkWorld.graph.gate},path=campusWalkWorld.route(p,ROOMS_DB[id]);if(!path){bad.push(id+' missing');continue;}for(const q of path.slice(1))if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y,true)||Math.hypot(p.x-q.x,p.z-q.z)>.03){bad.push(id+' blocked');break;}}return bad})()`);expect(bad).toEqual([]);
+});
+it('builds separate long bicycle and staff scooter rows with an unobstructed central aisle',()=>{
+ const r=run(`(()=>{const p=CampusOutdoorPlan.parking,g=scene.getObjectByName('gate-two-wheel-parking');return {group:!!g,bikes:g?.getObjectByName('student-bicycle-row')?.children.length||0,motos:g?.getObjectByName('staff-scooter-row')?.children.length||0,clear:p&&[6,15,25,33].every(x=>!checkWallCollision(x,0,p.twoWheel.aisleZ)),blocked:p&&[[5.6,p.twoWheel.bikeZ],[5.7,p.twoWheel.motoZ],[p.cars.westX,63.5]].every(([x,z])=>checkWallCollision(x,0,z)&&campusPeopleCollisionIndex.hit(x,0,z)),dest:ROOMS_DB['staff-moto-parking']?.name}})()`);
+ expect(r.group).toBe(true);expect(r.bikes).toBeGreaterThan(15);expect(r.motos).toBeGreaterThan(10);expect(r.clear).toBe(true);expect(r.blocked).toBe(true);expect(r.dest).toContain('教職員');
+});
+it('keeps parking roofs vehicles and bay corners within campus and preserves the south driveway',()=>{
+ const r=run(`(()=>{scene.updateMatrixWorld(true);const groups=['gate-two-wheel-parking','art-car-parking'],bad=[];for(const name of groups){const g=scene.getObjectByName(name);if(!g){bad.push(name+' missing');continue;}g.traverse(m=>{if(!m.isMesh||!m.userData.parkingPhysical)return;const b=new THREE.Box3().setFromObject(m);for(const x of [b.min.x,b.max.x])for(const z of [b.min.z,b.max.z])if(!CampusOutdoorPlan.perimeter.contains(x,z))bad.push(m.name);});}return {bad,road:[5,15,26,35,65,75,85,91].every(x=>!checkWallCollision(x,0,86)),car:!!scene.getObjectByName('art-car-parking'),accessible:!!scene.getObjectByName('art-accessible-bay')}})()`);
+ expect(r).toEqual({bad:[],road:true,car:true,accessible:true});
+});
 it('faces both health and cooperative doors and the upper gallery toward the basketball courts',()=>{
  const r=run(`(()=>{const l=campusWalkWorld.layouts.find(l=>l.id==='health-bld'),e=l.entrances[0];return {doors:l.rooms.filter(r=>['health','coop'].includes(r.id)).map(r=>({id:r.id,north:r.door.z<r.center.z,corridor:r.corridor.z<r.door.z})),entrance:e.outside.z<l.bounds.z0,fascia:scene.getObjectByName('health-upper-corridor-fascia').position.z<l.b.z-l.D/2}})()`);
  expect(r.doors).toEqual([{id:'health',north:true,corridor:true},{id:'coop',north:true,corridor:true}]);expect(r.entrance).toBe(true);expect(r.fascia).toBe(true);
