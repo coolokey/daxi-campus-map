@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "latest-model-isometric-rpg",
+  "stage": "sunny-campus-three-centers",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -39,10 +39,10 @@
     "pilotCollisionBlockedSegments": 0
   },
   "notes": [
-    "The public RPG URL is retained. The guide source and original plan/map assets are not changed.",
-    "The latest guide compiler supplies schematic geometry, entrances, rooms and stairs; this is not surveyed geometry.",
-    "Canvas isometric projection and upright eight-direction characters share world collision and navigation. Indoor maps use cutaway walls.",
-    "NPCs are game characters, not online players. Multiplayer and creature training are not included in this release."
+    "The public RPG URL and guide website remain unchanged. Original plan and illustration assets are retained.",
+    "Natural sunny art uses the existing isometric geometry, collisions and character system.",
+    "Three-center exploration requires discovering real room stations and completing them in order; correct answers show explanations before continuing.",
+    "NPCs are game characters. Progress is local, anonymous, and not uploaded. The legacy five-question energy quest remains available."
   ],
   "pilotMode": "original-campus-technology-floors",
   "pilotRuntime": {
@@ -137,5 +137,29 @@
     "buildings": 11,
     "floors": 28,
     "spaces": 95
+  },
+  "visualTheme": {
+    "name": "Sunny meadow smart campus",
+    "sky": "blue sky and white clouds",
+    "ground": "green meadow and warm paving",
+    "buildings": "cream facade, terracotta roofs, individual windows",
+    "geometryChanged": false
+  },
+  "threeCenters": {
+    "topics": [
+      "incenter",
+      "centroid",
+      "circumcenter"
+    ],
+    "stations": 3,
+    "questions": 6,
+    "hintLayers": 2,
+    "sourceRooms": [
+      "tech-building:1:TC-N-1:life-tech-1",
+      "tech-building:2:TC-N-2:physics-lab",
+      "tech-building:2:TC-NE-2:tech-smart"
+    ],
+    "progress": "browser-only anonymous local progress; page-memory fallback",
+    "legacyEnergyQuestRetained": true
   }
 }

@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "status": "local-qa-passed-awaiting-deploy",
+  "status": "published-and-live-verified",
   "publicUrl": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/",
   "sourceModelCommit": "9a58247185be9738270010afecd19d28309d9f83",
   "model": {
@@ -102,5 +102,7 @@
     "phone-390x844.png",
     "quest-complete.png",
     "teacher-dialogue.png"
-  ]
+  ],
+  "commit": "51d0b5bd77ac4b72e9b35e80ce8df09e6faf8e42",
+  "actionsRun": 40531979404
 }

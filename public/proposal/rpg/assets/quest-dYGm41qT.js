@@ -1,0 +1,1 @@
+import{n as e,t}from"./jsx-runtime-BDvt8KgW.js";import{t as n}from"./DemoQuest-35_4SCFQ.js";var r=e(),i=t();function a(e,t){(0,r.createRoot)(e).render((0,i.jsx)(n,{onClose:t}))}export{a as mountQuest};

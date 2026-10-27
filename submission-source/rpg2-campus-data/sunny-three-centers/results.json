@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-28",
+  "status": "local-qa-passed",
+  "url": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/",
+  "theme": "晴日草原・智慧校園",
+  "agents": [
+    "art_director_three_centers",
+    "quest_master_three_centers",
+    "review_model_release"
+  ],
+  "tests": {
+    "files": 41,
+    "passed": 132,
+    "failed": 0,
+    "command": "npx vitest run --maxWorkers=1 --testTimeout=180000",
+    "typecheck": "passed",
+    "productionBuild": "passed"
+  },
+  "quest": {
+    "stations": 3,
+    "questions": 6,
+    "hintsPerStation": 2,
+    "topics": [
+      "內心",
+      "重心",
+      "外心"
+    ],
+    "completedBrowserFlow": [
+      "校門",
+      "科技館入口",
+      "1F 生科教室一",
+      "內心兩題",
+      "樓梯",
+      "2F 理化實驗室",
+      "重心兩題",
+      "同層科技創作教室",
+      "外心兩題",
+      "三心觀測員徽章"
+    ],
+    "validated": [
+      "wrong answer retry",
+      "two hint layers",
+      "correct answer explanation and explicit next",
+      "ordered unlock",
+      "anonymous local progress",
+      "storage quota fallback regression",
+      "restart preserves player choice",
+      "legacy energy quest opens from overview"
+    ]
+  },
+  "responsive": {
+    "type": "browser viewport emulation, not physical-device certification",
+    "sizes": [
+      [
+        1280,
+        720
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        1024,
+        768
+      ]
+    ],
+    "screenshots": [
+      "completed-three-stations.png",
+      "ipad-quest.png",
+      "phone-quest.png",
+      "phone-world.png"
+    ]
+  },
+  "preservation": [
+    "same RPG URL",
+    "guide website unchanged",
+    "original plan and illustration retained",
+    "model geometry and collision unchanged",
+    "original five-question quest retained"
+  ],
+  "reviewFixes": [
+    "Read-only/full storage now keeps newer page-memory progress instead of reverting to stale localStorage."
+  ],
+  "backup": "backups/rpg-before-sunny-three-centers-20261027-234410.zip"
+}
