@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "plan-115-checked-floor-expansion",
+  "stage": "latest-model-isometric-rpg",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -39,10 +39,10 @@
     "pilotCollisionBlockedSegments": 0
   },
   "notes": [
-    "The original illustrated campus and public URL are retained. Annual plan checks gate enabled floors.",
-    "Indoor floor geometry and outdoor game entrance anchors are schematic, not measured campus geometry.",
-    "Grade 7 side-wing labels were checked horizontally: 704 is 2F and 708 is 3F. Activity centre upper floors remain unverified.",
-    "All 1F-3F classroom and office names are verified against the 115 academic year relative floor plans (zero pending placeholders). NPCs are game characters, not live people or online players."
+    "The public RPG URL is retained. The guide source and original plan/map assets are not changed.",
+    "The latest guide compiler supplies schematic geometry, entrances, rooms and stairs; this is not surveyed geometry.",
+    "Canvas isometric projection and upright eight-direction characters share world collision and navigation. Indoor maps use cutaway walls.",
+    "NPCs are game characters, not online players. Multiplayer and creature training are not included in this release."
   ],
   "pilotMode": "original-campus-technology-floors",
   "pilotRuntime": {
@@ -77,16 +77,14 @@
     }
   },
   "collisionAudit": {
-    "footprints": 67,
-    "sourcePixels": [
-      1525,
-      1031
+    "geometry": "latest-model-v2 footprints, source perimeter, pond and forecourt tree trunks",
+    "playerFootRadius": 11,
+    "scales": [
+      1,
+      1.5,
+      2
     ],
-    "baseWorld": [
-      2400,
-      1624
-    ],
-    "geometry": "ground footprints on retained illustration; not survey measurements"
+    "navigation": "cached components and collision-checked routes"
   },
   "plan115": {
     "file": "campus-plan-115.json",
@@ -101,5 +99,43 @@
     "geometry": "source-derived schematic floors; outdoor anchors on retained illustration, not surveyed entrance positions",
     "navigation": "collision-aware manual routes and scene doorway guidance",
     "floorPlans": "floor-plans/各大樓一至三樓相對位置圖.html"
+  },
+  "modelV2": {
+    "file": "campus-model-v2.json",
+    "sha256": "2f06a84af88ade274532ffa489593cf1c3509dd9296c30cd4545a992264b5a1e",
+    "source": {
+      "referenceUrl": "https://coolokey.github.io/daxi-campus-map/proposal/campus/campus-explorer/index.html?build=8bd36601b4d9",
+      "commit": "9a58247185be9738270010afecd19d28309d9f83",
+      "files": [
+        {
+          "file": "campus-data.js",
+          "sha256": "c4e5af0a4ecafd191e560acf787b0937708a006522545d02cb895d8435f9fa3d"
+        },
+        {
+          "file": "spatial-plan-data.js",
+          "sha256": "64855561a0f6447be8d67d004a49de00b8851ede685990a690da4df25e79d27c"
+        },
+        {
+          "file": "spatial-plan.js",
+          "sha256": "07b3f5153b78f9256dddfe5283768717fd0093679d5082ff00742012d5a5c730"
+        },
+        {
+          "file": "walk-world-math.js",
+          "sha256": "1e7fcea1b4fb88da65e10aa8418cab2ed73c9dc5570c501c155c43abbb3af3de"
+        },
+        {
+          "file": "outdoor-plan.js",
+          "sha256": "45a597ce280089ba9dcfbd9ea2ff75e6e74b4202387aa7b963ee1af98c061310"
+        },
+        {
+          "file": "campus-forecourt.js",
+          "sha256": "16f8d1b0890be0a62ce84d6e8f731268d9387366d8a32e079d93356142c317f9"
+        }
+      ],
+      "geometry": "latest guide compiler, illustrative dimensions, not surveyed"
+    },
+    "buildings": 11,
+    "floors": 28,
+    "spaces": 95
   }
 }

@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-27",
+  "status": "local-qa-passed-awaiting-deploy",
+  "publicUrl": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/",
+  "sourceModelCommit": "9a58247185be9738270010afecd19d28309d9f83",
+  "model": {
+    "buildings": 11,
+    "floors": 28,
+    "spaces": 95,
+    "scales": [
+      1,
+      1.5,
+      2
+    ]
+  },
+  "tests": {
+    "totalDistinctPassed": 123,
+    "legacySuite": {
+      "files": 36,
+      "tests": 117,
+      "firstRun": {
+        "passed": 116,
+        "timeout": 1
+      },
+      "retry": {
+        "file": "floor-expansion.test.ts",
+        "passed": 5,
+        "timeoutMs": 180000
+      }
+    },
+    "newSuite": {
+      "files": 2,
+      "passed": 6
+    },
+    "commands": [
+      "npx tsc -b",
+      "node node_modules/vite/bin/vite.js build --base ./",
+      "npx vitest run --maxWorkers=1 --exclude **/model-world.test.ts",
+      "npx vitest run src/presentation/floor-expansion.test.ts --maxWorkers=1 --testTimeout=180000",
+      "npx vitest run src/presentation/model-world.test.ts src/presentation/navigation.test.ts --maxWorkers=1 --testTimeout=180000"
+    ]
+  },
+  "browser": {
+    "flow": [
+      "campus gate",
+      "navigate technology building",
+      "enter 1F",
+      "navigate stairs",
+      "enter 2F",
+      "navigate physics laboratory",
+      "teacher portrait dialogue",
+      "accept original quest",
+      "complete all five questions",
+      "badge and concept feedback",
+      "return exploration"
+    ],
+    "responsive": [
+      {
+        "width": 1280,
+        "height": 720,
+        "type": "desktop browser"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "type": "phone viewport emulation"
+      },
+      {
+        "width": 1024,
+        "height": 768,
+        "type": "tablet viewport emulation"
+      }
+    ],
+    "additional": [
+      "floor minimap and full map",
+      "scale switches 1/1.5/2",
+      "photo gallery",
+      "teacher sprite and portrait",
+      "production base path /proposal/rpg/ loads all characters",
+      "production bundle console errors/warnings: none"
+    ]
+  },
+  "review": {
+    "independent": true,
+    "fixed": [
+      "initial directory model availability",
+      "unique return spawn for each building entrance",
+      "recompute auto-walk route",
+      "cap waypoint movement on low FPS",
+      "line-of-sight interaction",
+      "label projection elevation",
+      "cached cross-scene reachability"
+    ]
+  },
+  "limitations": [
+    "Guide geometry is schematic rather than surveyed.",
+    "Viewport emulation does not substitute for physical iPad or phone testing.",
+    "No new multiplayer backend or creature training in this release."
+  ],
+  "screenshots": [
+    "ipad-1024x768.png",
+    "phone-390x844.png",
+    "quest-complete.png",
+    "teacher-dialogue.png"
+  ]
+}

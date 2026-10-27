@@ -1,0 +1,1 @@
+function e(e,t){t.querySelector(`p`).textContent=`${e.name} · NPC：${e.dialogue??`歡迎來到未來校園！前往科技館入口，與研究室助教一起修復能源核心。`}`,t.hidden=!1,document.getElementById(`dialogue-close`).focus()}export{e as showNpcDialogue};
