@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "daxi-woodcraft-campus",
+  "stage": "hex-adventure-spacious-campus",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -42,7 +42,8 @@
     "The public RPG URL and guide website remain unchanged. Original plan and illustration assets are retained.",
     "Natural sunny art uses the existing isometric geometry, collisions and character system.",
     "Three-center exploration requires discovering real room stations and completing them in order; correct answers show explanations before continuing.",
-    "NPCs are game characters. Progress is local, anonymous, and not uploaded. The legacy five-question energy quest remains available."
+    "NPCs are game characters. Progress is local, anonymous, and not uploaded. The legacy five-question energy quest remains available.",
+    "Original hex-terrain inspired artwork; no PaGamO assets, territory claiming, PvP or multiplayer added. Building exterior centers retained with compact footprints; original interior data unchanged."
   ],
   "pilotMode": "original-campus-technology-floors",
   "pilotRuntime": {
@@ -139,10 +140,10 @@
     "spaces": 95
   },
   "visualTheme": {
-    "name": "大溪木藝學園",
+    "name": "六角冒險校園",
     "sky": "blue sky and white clouds",
-    "ground": "green lawns with source planting, stone-paved entrances, original roadway and parking",
-    "buildings": "ivory plaster, timber lattice windows, gray hipped roofs and deep eaves; historic-street facade ornaments on selected existing buildings",
+    "ground": "hex grass and cream paved entrances; original sports fields retained",
+    "buildings": "original low cartoon buildings with independent roof colors and logical floor badges",
     "geometryChanged": true,
     "groundTexture": {
       "file": "assets/stone-paving-v1-BwZESdAK.webp",
@@ -150,7 +151,7 @@
       "generation": "built-in imagegen; source PNG retained in source archive",
       "projection": "world-space isometric repeated material"
     },
-    "buildingLayoutChanged": false
+    "buildingLayoutChanged": true
   },
   "threeCenters": {
     "topics": [
@@ -169,7 +170,7 @@
     "progress": "browser-only anonymous local progress; page-memory fallback",
     "legacyEnergyQuestRetained": true,
     "stageTracker": "01-03 numbered badges, current/locked/completed text, clue-question-next flow and world marker numbers",
-    "presentation": "wooden signboard and stamp-inspired numbered stages; original stations, questions, navigation and local progress retained"
+    "presentation": "bright rounded numbered stage cards; original stations, questions, navigation and local progress retained"
   },
   "boundary": {
     "file": "campus-boundary-v1.json",
@@ -207,7 +208,16 @@
     "sha256": "038b2356255bc4271e507b9bf9b03af8097d30b741986c164c616268c750eb4c",
     "interpretation": "inspired game artwork, not historical reconstruction or actual school renovation",
     "furniture": "three candidate benches anchored to existing planting; only clear positions are placed, with matching collisions",
-    "originalSchoolAppearanceOptionRetained": true,
-    "sourceBuildingFloorRoomDataChanged": false
+    "originalSchoolAppearanceOptionRetained": false,
+    "sourceBuildingFloorRoomDataChanged": false,
+    "comparisonOptionRetained": true
+  },
+  "outdoorLayout": {
+    "config": "cartoon-campus-v1.json",
+    "buildingFootprintScale": 0.74,
+    "centersPreserved": true,
+    "interiorMapsChanged": false,
+    "collisionEntrancesMinimapNavigationSynchronized": true,
+    "interpretation": "compact game exterior; not surveyed real-world dimensions"
   }
 }

@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-28",
+  "tests": {
+    "fullSuite": {
+      "files": 45,
+      "passed": 148
+    },
+    "afterNearestPortalFix": {
+      "files": 1,
+      "passed": 4,
+      "additionalCase": 1
+    },
+    "uniqueTotalPassed": 149,
+    "typescript": "passed",
+    "viteBuild": "passed"
+  },
+  "browser": {
+    "desktop": "gate to technology building, enter 1F, navigate to incenter station",
+    "quest": "discovered incenter; both answers and explanations; saved first stage; second unlocked",
+    "viewports": [
+      "1280x720",
+      "390x844",
+      "390x600",
+      "844x390",
+      "1024x768"
+    ],
+    "pending": "final published verification",
+    "stairs": "entered 1F, walked to main stairs, transitioned to 2F and reached centroid room station",
+    "responsive": "visually verified 390x844,390x600,844x390,1024x768; player clear of stage tracker, minimap and controls separated"
+  },
+  "sourceModelUnchanged": true,
+  "urlUnchanged": true,
+  "backup": "backups/rpg-before-hex-campus-20261028-192358.zip",
+  "review": "one P2 overlapping entry range resolved by nearest visible portal; regression for every outdoor portal at 1/1.5/2 scales"
+}
