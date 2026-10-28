@@ -1,0 +1,232 @@
+{
+  "version": 1,
+  "source": {
+    "commit": "b741ec9d12769d99951eebd1bafa88a4bfc4e87d",
+    "files": [
+      {
+        "file": "outdoor-plan.js",
+        "sha256": "45a597ce280089ba9dcfbd9ea2ff75e6e74b4202387aa7b963ee1af98c061310"
+      },
+      {
+        "file": "outdoor-world.js",
+        "sha256": "ce76f3e5f439cfc03373795f07bcff9e913814ce0409cb8b741422b562be9cb4"
+      },
+      {
+        "file": "explorer.js",
+        "sha256": "a6a1048253c567f3928244ad29b81e6b37d998147917a66a9f6ff7e20fc0dd1f"
+      }
+    ],
+    "note": "Gate parts transcribed from createMainEntrancePlaza; perimeter geometry remains campus-model-v2; guide dimensions are illustrative, not surveyed."
+  },
+  "playerHeight": 1.7,
+  "blocks": [
+    {
+      "id": "low-gate-post",
+      "cross": -11,
+      "inward": 0,
+      "width": 2.4,
+      "depth": 2.4,
+      "bottom": 0,
+      "top": 1.25,
+      "wall": "#ecece7",
+      "side": "#c7cabe",
+      "roof": "#e5e3d7",
+      "kind": "plain"
+    },
+    {
+      "id": "tower-foot--0.975",
+      "cross": 11,
+      "inward": -0.975,
+      "width": 2.4,
+      "depth": 0.45,
+      "bottom": 0,
+      "top": 2.85,
+      "wall": "#f1eee1",
+      "side": "#c7d1cb",
+      "roof": "#e2d9b4",
+      "kind": "plain"
+    },
+    {
+      "id": "tower-foot-0.975",
+      "cross": 11,
+      "inward": 0.975,
+      "width": 2.4,
+      "depth": 0.45,
+      "bottom": 0,
+      "top": 2.85,
+      "wall": "#f1eee1",
+      "side": "#c7d1cb",
+      "roof": "#e2d9b4",
+      "kind": "plain"
+    },
+    {
+      "id": "tower-shaft",
+      "cross": 11,
+      "inward": 0,
+      "width": 2.4,
+      "depth": 2.4,
+      "bottom": 2.85,
+      "top": 6.85,
+      "wall": "#f1eee1",
+      "side": "#c7d1cb",
+      "roof": "#e6dfc6",
+      "kind": "tower"
+    },
+    {
+      "id": "tower-cap",
+      "cross": 11,
+      "inward": 0,
+      "width": 2.55,
+      "depth": 2.55,
+      "bottom": 6.9,
+      "top": 8.65,
+      "wall": "#aecfdd",
+      "side": "#83aabd",
+      "roof": "#e9d79a",
+      "kind": "decorated"
+    },
+    {
+      "id": "folded-vehicle-gate",
+      "cross": -7.5,
+      "inward": 0,
+      "width": 3,
+      "depth": 0.15,
+      "bottom": 0,
+      "top": 1.6,
+      "wall": "#b2bbc0",
+      "side": "#82939a",
+      "roof": "#d4d4d8",
+      "kind": "folded-gate"
+    },
+    {
+      "id": "guard-body-base",
+      "cross": 17,
+      "inward": 2.5,
+      "width": 5.6,
+      "depth": 3.8,
+      "bottom": 0,
+      "top": 1,
+      "wall": "#a4cbd0",
+      "side": "#7ca5b3",
+      "roof": "#e5e0ca",
+      "kind": "plain"
+    },
+    {
+      "id": "guard-body",
+      "cross": 17,
+      "inward": 2.5,
+      "width": 5.6,
+      "depth": 3.8,
+      "bottom": 1,
+      "top": 3.2,
+      "wall": "#eee8d5",
+      "side": "#c6c8b6",
+      "roof": "#e9ddc7",
+      "kind": "guard"
+    },
+    {
+      "id": "guard-street-wing-base",
+      "cross": 18.6,
+      "inward": -0.7,
+      "width": 2.4,
+      "depth": 2.6,
+      "bottom": 0,
+      "top": 1,
+      "wall": "#a4cbd0",
+      "side": "#7ca5b3",
+      "roof": "#e5e0ca",
+      "kind": "plain"
+    },
+    {
+      "id": "guard-street-wing",
+      "cross": 18.6,
+      "inward": -0.7,
+      "width": 2.4,
+      "depth": 2.6,
+      "bottom": 1,
+      "top": 3.2,
+      "wall": "#eee8d5",
+      "side": "#c6c8b6",
+      "roof": "#e9ddc7",
+      "kind": "guard"
+    },
+    {
+      "id": "guard-counter",
+      "cross": 15.3,
+      "inward": -0.36,
+      "width": 2.2,
+      "depth": 0.5,
+      "bottom": 0.96,
+      "top": 1.08,
+      "wall": "#e6e5d7",
+      "side": "#b5bdb2",
+      "roof": "#f6f1e5",
+      "kind": "plain"
+    },
+    {
+      "id": "wicket-post-12.28",
+      "cross": 12.28,
+      "inward": -0.9,
+      "width": 0.1,
+      "depth": 0.1,
+      "bottom": 0,
+      "top": 1.12,
+      "wall": "#597b7e",
+      "side": "#3c6368",
+      "roof": "#9eb9b4",
+      "kind": "plain"
+    },
+    {
+      "id": "wicket-post-14.12",
+      "cross": 14.12,
+      "inward": -0.9,
+      "width": 0.1,
+      "depth": 0.1,
+      "bottom": 0,
+      "top": 1.12,
+      "wall": "#597b7e",
+      "side": "#3c6368",
+      "roof": "#9eb9b4",
+      "kind": "plain"
+    },
+    {
+      "id": "open-wicket-leaf",
+      "cross": 14.08,
+      "inward": -1.75,
+      "width": 0.09,
+      "depth": 1.7,
+      "bottom": 0,
+      "top": 1.06,
+      "wall": "#597b7e",
+      "side": "#3c6368",
+      "roof": "#9eb9b4",
+      "kind": "open-leaf"
+    }
+  ],
+  "gable": {
+    "cross": 16,
+    "inward": 1.2,
+    "width": 8.6,
+    "depth": 7.6,
+    "ridgeInset": 3.4,
+    "eaves": 3.2,
+    "rise": 1.4
+  },
+  "goldBall": {
+    "cross": 11,
+    "inward": 0,
+    "height": 9.35,
+    "radius": 0.75
+  },
+  "wallStyle": {
+    "solidHeight": 2.65,
+    "solidCapHeight": 2.81,
+    "metalBaseHeight": 1.5,
+    "metalTopHeight": 2.9,
+    "postHeight": 2.96,
+    "postWidth": 0.9,
+    "capWidth": 1.02,
+    "bayLength": 5.8,
+    "metalSpacing": 0.65
+  }
+}

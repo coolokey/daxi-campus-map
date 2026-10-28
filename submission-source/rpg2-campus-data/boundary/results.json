@@ -1,0 +1,40 @@
+{
+  "fullRegression": {
+    "files": 43,
+    "tests": 140,
+    "status": "passed"
+  },
+  "boundaryRegressionAfterCulling": {
+    "tests": 5,
+    "status": "passed"
+  },
+  "distinctTests": 141,
+  "typescript": "passed",
+  "productionBuild": "passed",
+  "scales": [
+    1,
+    1.5,
+    2
+  ],
+  "physicalChecks": [
+    "source pedestrian path clear",
+    "tower foot opening clear",
+    "tower legs blocked",
+    "guardhouse blocked",
+    "retracted vehicle gate blocked",
+    "open wicket leaf blocked",
+    "continuous perimeter and corners blocked"
+  ],
+  "browser": [
+    "source gate and railings visible",
+    "custom map target inside the student gate",
+    "automatic walk arrives inside campus",
+    "390x844, 390x600, 844x390 and 1024x768 checked",
+    "latest offscreen-culling build visually verified"
+  ],
+  "rendering": "world geometry, short depth-sorted bays, cached masonry texture, offscreen culling",
+  "sourceBuildingsChanged": false,
+  "guideChanged": false,
+  "publicRoute": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/",
+  "browserErrors": []
+}
