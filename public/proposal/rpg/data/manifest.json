@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "building-colors-three-center-stages",
+  "stage": "stone-paving-numbered-three-centers",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -141,9 +141,15 @@
   "visualTheme": {
     "name": "Sunny meadow smart campus",
     "sky": "blue sky and white clouds",
-    "ground": "meadow ribbons, flower flecks, entrance promenade and tiled building aprons",
+    "ground": "imagegen stone paver texture in world coordinates; source sports fields, planting and roadway retained",
     "buildings": "11 distinct coordinated facade, side and roof palettes by building ID",
-    "geometryChanged": false
+    "geometryChanged": false,
+    "groundTexture": {
+      "file": "assets/stone-paving-v1-BwZESdAK.webp",
+      "bytes": 177876,
+      "generation": "built-in imagegen; source PNG retained in source archive",
+      "projection": "world-space isometric repeated material"
+    }
   },
   "threeCenters": {
     "topics": [
@@ -161,6 +167,6 @@
     ],
     "progress": "browser-only anonymous local progress; page-memory fallback",
     "legacyEnergyQuestRetained": true,
-    "stageTracker": "persistent ordered steps with navigation, discovery, challenge and completion actions"
+    "stageTracker": "01-03 numbered badges, current/locked/completed text, clue-question-next flow and world marker numbers"
   }
 }

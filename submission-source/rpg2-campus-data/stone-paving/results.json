@@ -1,0 +1,23 @@
+{
+  "tests": 136,
+  "testFiles": 42,
+  "typescript": "passed",
+  "productionBuild": "passed",
+  "imagegen": {
+    "mode": "built-in",
+    "source": "src/assets/environment/stone-paving-v1.png",
+    "runtime": "src/assets/environment/stone-paving-v1.webp",
+    "runtimeBytes": 177876
+  },
+  "geometryChanged": false,
+  "publicRoute": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/",
+  "visualQA": {
+    "desktop": "passed",
+    "ipad1024x768": "passed",
+    "phone390x844": "passed",
+    "phone390x600": "compact stages keep player visible",
+    "phone844x390": "compact stages keep player and controls visible"
+  },
+  "stageRegression": "01-03 badges; actual model station navigation/discovery/progress/complete states tested",
+  "review": "no P1/P2; short viewport overlap fixed and verified"
+}
