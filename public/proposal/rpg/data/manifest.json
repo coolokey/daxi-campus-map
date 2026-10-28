@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "hex-adventure-spacious-campus",
+  "stage": "gate-landmarks-and-complete-palm-avenue",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -43,7 +43,8 @@
     "Natural sunny art uses the existing isometric geometry, collisions and character system.",
     "Three-center exploration requires discovering real room stations and completing them in order; correct answers show explanations before continuing.",
     "NPCs are game characters. Progress is local, anonymous, and not uploaded. The legacy five-question energy quest remains available.",
-    "Original hex-terrain inspired artwork; no PaGamO assets, territory claiming, PvP or multiplayer added. Building exterior centers retained with compact footprints; original interior data unchanged."
+    "Original hex-terrain inspired artwork; no PaGamO assets, territory claiming, PvP or multiplayer added. Building exterior centers retained with compact footprints; original interior data unchanged.",
+    "Exterior approach extends the RPG world to include the existing guide palm avenue; original building centers and interior maps retained. Stage uses planar movement, not a new height physics system."
   ],
   "pilotMode": "original-campus-technology-floors",
   "pilotRuntime": {
@@ -219,5 +220,24 @@
     "interiorMapsChanged": false,
     "collisionEntrancesMinimapNavigationSynchronized": true,
     "interpretation": "compact game exterior; not surveyed real-world dimensions"
+  },
+  "entranceLandmarks": {
+    "file": "entrance-landmarks-v1.json",
+    "palmTrees": 20,
+    "avenueSourceZ": [
+      89,
+      171
+    ],
+    "worldSouthZ": 182,
+    "landmarks": [
+      "palm avenue",
+      "Jiekou trail entrance",
+      "Chiang statue courtyard",
+      "grandstand and flagpoles"
+    ],
+    "collision": "trunks, sign, statue base, stage walls and columns, flagpoles",
+    "navigation": "outdoor landmark choices in campus directory; minimap has avenue and landmark markers",
+    "originalGuideChanged": false,
+    "sourcePlanChanged": false
   }
 }

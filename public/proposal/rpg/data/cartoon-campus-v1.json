@@ -3,7 +3,7 @@
   "theme": "六角冒險校園",
   "buildingFootprintScale": 0.74,
   "hexRadius": 5.2,
-  "boundaryHeightScale": 0.58,
+  "boundaryHeightScale": 0.9,
   "grass": [
     "#a0d765",
     "#a5dc6d",

@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-28",
+  "status": "local-qa-passed",
+  "tests": {
+    "files": 46,
+    "passed": 152,
+    "typescript": "passed",
+    "viteBuild": "passed",
+    "scales": [
+      1,
+      1.5,
+      2
+    ]
+  },
+  "browser": {
+    "desktop": "walked from student gate to avenue z160; navigated back to statue garden; visible route above new roads; gate gold ball visible",
+    "mobile390x844": "player clear of tracker, larger map and controls separated; landmark buttons wrap and dialog scrolls",
+    "ipad1024x768": "statue/stage and return path visible; original controls usable"
+  },
+  "reviewFixes": [
+    "landmark ground now precedes navigation path",
+    "gold ball depth ordered after tower cap",
+    "comparison-mode test name updated to current woodcraft mode"
+  ],
+  "backup": "backups/rpg-before-entrance-landmarks-20261028.zip",
+  "guideUnchanged": true,
+  "originalModelJsonUnchanged": true,
+  "rpgUrl": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/"
+}
