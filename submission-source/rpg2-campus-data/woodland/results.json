@@ -1,0 +1,38 @@
+{
+  "fullRegression": {
+    "files": 44,
+    "tests": 144,
+    "status": "passed"
+  },
+  "afterRoofOcclusionFix": {
+    "files": 2,
+    "tests": 8,
+    "status": "passed"
+  },
+  "distinctTests": 145,
+  "typescript": "passed",
+  "productionBuild": "passed",
+  "browser": [
+    "outdoor navigation reaches technology building",
+    "enter technology 1F",
+    "indoor navigation reaches incenter station",
+    "discover clue and open dialogue",
+    "answer both incenter questions",
+    "save completed first stage and guide to centroid",
+    "original school appearance toggles and wood mode restores"
+  ],
+  "viewports": [
+    "1280x720",
+    "1024x768",
+    "390x844",
+    "390x600",
+    "844x390"
+  ],
+  "browserErrors": [],
+  "geometry": {
+    "sourceBuildingFloorRoomDataChanged": false,
+    "newBenchFootprintsHaveCollision": true,
+    "roofIsOverheadArtwork": true
+  },
+  "url": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/"
+}

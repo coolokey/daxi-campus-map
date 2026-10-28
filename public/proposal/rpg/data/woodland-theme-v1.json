@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "theme": "大溪木藝學園",
+  "interpretation": "Game art inspired by Daxi wooden museum houses and historic street facades; not a surveyed reconstruction or actual campus renovation.",
+  "materials": {
+    "wall": "#eee6d2",
+    "side": "#d9cbb2",
+    "roof": "#68756a",
+    "roofShade": "#4c5a51",
+    "roofLight": "#8b9483",
+    "wood": "#856346",
+    "woodDark": "#594633",
+    "brick": "#aa7258",
+    "glass": "#a1b7ac"
+  },
+  "buildings": {
+    "gym-bld": {
+      "accent": "#677e84",
+      "entry": "old-street"
+    },
+    "recycle-bld": {
+      "accent": "#7c8e55",
+      "entry": "wood"
+    },
+    "admin-front": {
+      "accent": "#ad744c",
+      "entry": "old-street"
+    },
+    "health-bld": {
+      "accent": "#a26d64",
+      "entry": "wood"
+    },
+    "grade8-front": {
+      "accent": "#7f7790",
+      "entry": "wood"
+    },
+    "grade9-back": {
+      "accent": "#9b7758",
+      "entry": "wood"
+    },
+    "grade8-mid": {
+      "accent": "#68857a",
+      "entry": "wood"
+    },
+    "new-grade7": {
+      "accent": "#8a8a52",
+      "entry": "wood"
+    },
+    "multi-building": {
+      "accent": "#987a86",
+      "entry": "old-street"
+    },
+    "tech-building": {
+      "accent": "#5c8190",
+      "entry": "wood"
+    },
+    "art-building": {
+      "accent": "#b58c59",
+      "entry": "old-street"
+    }
+  },
+  "furniture": [
+    {
+      "id": "planting-wood-bench",
+      "anchor": "planting",
+      "dx": -2.2,
+      "dz": 6,
+      "width": 0.9,
+      "depth": 3,
+      "axis": "z"
+    },
+    {
+      "id": "south-wood-bench-1",
+      "anchor": "southTreeRow",
+      "dx": 14,
+      "dz": 5.2,
+      "width": 3,
+      "depth": 0.9,
+      "axis": "x"
+    },
+    {
+      "id": "south-wood-bench-2",
+      "anchor": "southTreeRow",
+      "dx": 28,
+      "dz": 5.2,
+      "width": 3,
+      "depth": 0.9,
+      "axis": "x"
+    }
+  ]
+}

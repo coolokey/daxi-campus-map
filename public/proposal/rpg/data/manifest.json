@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "source-gate-solid-perimeter",
+  "stage": "daxi-woodcraft-campus",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -77,7 +77,7 @@
     }
   },
   "collisionAudit": {
-    "geometry": "source buildings, continuous perimeter strips and posts, ground-level gate parts, pond and tree trunks",
+    "geometry": "source buildings, continuous perimeter strips and posts, ground-level gate parts, pond and tree trunks; collision-checked game benches near planting",
     "playerFootRadius": 11,
     "scales": [
       1,
@@ -139,10 +139,10 @@
     "spaces": 95
   },
   "visualTheme": {
-    "name": "Sunny meadow smart campus",
+    "name": "大溪木藝學園",
     "sky": "blue sky and white clouds",
-    "ground": "imagegen stone paver texture in world coordinates; source sports fields, planting and roadway retained",
-    "buildings": "11 distinct coordinated facade, side and roof palettes by building ID",
+    "ground": "green lawns with source planting, stone-paved entrances, original roadway and parking",
+    "buildings": "ivory plaster, timber lattice windows, gray hipped roofs and deep eaves; historic-street facade ornaments on selected existing buildings",
     "geometryChanged": true,
     "groundTexture": {
       "file": "assets/stone-paving-v1-BwZESdAK.webp",
@@ -168,7 +168,8 @@
     ],
     "progress": "browser-only anonymous local progress; page-memory fallback",
     "legacyEnergyQuestRetained": true,
-    "stageTracker": "01-03 numbered badges, current/locked/completed text, clue-question-next flow and world marker numbers"
+    "stageTracker": "01-03 numbered badges, current/locked/completed text, clue-question-next flow and world marker numbers",
+    "presentation": "wooden signboard and stamp-inspired numbered stages; original stations, questions, navigation and local progress retained"
   },
   "boundary": {
     "file": "campus-boundary-v1.json",
@@ -192,15 +193,21 @@
       "note": "Gate parts transcribed from createMainEntrancePlaza; perimeter geometry remains campus-model-v2; guide dimensions are illustrative, not surveyed."
     },
     "appearance": [
-      "single gold-ball tower",
-      "low left post",
-      "retracted main gate",
-      "open pedestrian wicket",
-      "cream-blue guardhouse with red gable roof",
-      "masonry walls and front metal railings"
+      "original gate geometry with warm plaster and wood-toned trim",
+      "old-street arch motif on the existing tower cap",
+      "gray guardhouse roof",
+      "muted stone walls and timber-colored railings"
     ],
     "collision": "continuous source perimeter strips and posts; gate parts below player height; overhead shaft and roof remain traversable below",
     "playerHeightGuideUnits": 1.7,
     "sourceBuildingLayoutChanged": false
+  },
+  "woodlandTheme": {
+    "file": "woodland-theme-v1.json",
+    "sha256": "038b2356255bc4271e507b9bf9b03af8097d30b741986c164c616268c750eb4c",
+    "interpretation": "inspired game artwork, not historical reconstruction or actual school renovation",
+    "furniture": "three candidate benches anchored to existing planting; only clear positions are placed, with matching collisions",
+    "originalSchoolAppearanceOptionRetained": true,
+    "sourceBuildingFloorRoomDataChanged": false
   }
 }
