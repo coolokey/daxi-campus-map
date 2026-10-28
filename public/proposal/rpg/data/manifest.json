@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "sunny-campus-three-centers",
+  "stage": "building-colors-three-center-stages",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -141,8 +141,8 @@
   "visualTheme": {
     "name": "Sunny meadow smart campus",
     "sky": "blue sky and white clouds",
-    "ground": "green meadow and warm paving",
-    "buildings": "cream facade, terracotta roofs, individual windows",
+    "ground": "meadow ribbons, flower flecks, entrance promenade and tiled building aprons",
+    "buildings": "11 distinct coordinated facade, side and roof palettes by building ID",
     "geometryChanged": false
   },
   "threeCenters": {
@@ -160,6 +160,7 @@
       "tech-building:2:TC-NE-2:tech-smart"
     ],
     "progress": "browser-only anonymous local progress; page-memory fallback",
-    "legacyEnergyQuestRetained": true
+    "legacyEnergyQuestRetained": true,
+    "stageTracker": "persistent ordered steps with navigation, discovery, challenge and completion actions"
   }
 }

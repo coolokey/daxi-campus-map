@@ -1,0 +1,24 @@
+{
+  "tests": 136,
+  "testFiles": 42,
+  "typescript": "passed",
+  "productionBuild": "passed",
+  "review": "short/landscape toolbar overlap corrected",
+  "browser": [
+    "navigate to technology building",
+    "enter 1F",
+    "navigate to incenter",
+    "discover clue",
+    "answer 2 questions",
+    "save first stage",
+    "tracker advances to centroid"
+  ],
+  "viewports": [
+    "390x600",
+    "390x844",
+    "1024x768",
+    "844x390"
+  ],
+  "geometryChanged": false,
+  "publicRoute": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/"
+}
