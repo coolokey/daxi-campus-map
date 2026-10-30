@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "source": {
+    "file": "public/campus-explorer/explorer.js:createBasketballComplex",
+    "sha256": "a6a1048253c567f3928244ad29b81e6b37d998147917a66a9f6ff7e20fc0dd1f",
+    "commit": "29754e6b7cba2a5c7ff2228489a6065edfbfdc43",
+    "note": "Guide schematic dimensions; original guide unchanged."
+  },
+  "center": {
+    "x": 12,
+    "z": -38
+  },
+  "offsets": [
+    -14,
+    0,
+    14
+  ],
+  "width": 28,
+  "depth": 12.6,
+  "bufferWidth": 34,
+  "bufferDepth": 46,
+  "keyWidth": 5.8,
+  "keyDepth": 4.8,
+  "keyCenterX": 11.1,
+  "circleRadius": 1.8,
+  "hoopX": 14.2,
+  "postRadius": 0.22,
+  "postHeight": 4.4,
+  "boardHeight": 3.9,
+  "rimHeight": 3.6
+}

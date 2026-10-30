@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "gate-landmarks-and-complete-palm-avenue",
+  "stage": "basketball-complex-restored",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -239,5 +239,15 @@
     "navigation": "outdoor landmark choices in campus directory; minimap has avenue and landmark markers",
     "originalGuideChanged": false,
     "sourcePlanChanged": false
+  },
+  "basketball": {
+    "file": "basketball-courts-v1.json",
+    "courts": 3,
+    "hoops": 6,
+    "source": "guide createBasketballComplex",
+    "collision": "low support pads only; floor and overhead backboards traversable",
+    "navigation": true,
+    "minimap": true,
+    "guideAndOriginalPlanUnchanged": true
   }
 }

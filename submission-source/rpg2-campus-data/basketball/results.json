@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-30",
+  "status": "local-qa-passed",
+  "tests": {
+    "files": 47,
+    "passed": 155,
+    "scales": [
+      1,
+      1.5,
+      2
+    ],
+    "typescript": "passed",
+    "viteBuild": "passed"
+  },
+  "browser": {
+    "desktop": "navigated from gate to middle basketball court; all three surfaces and six hoops visible",
+    "mobile390x844": "player and court visible; tracker and controls separated; minimap shows sports courts",
+    "errors": []
+  },
+  "review": "no new P1/P2 found; source dimensions and orientation, collision insertion before walkable cache, navigation line ground ordering, footprints clear of buildings confirmed",
+  "backup": "backups/rpg-before-basketball-20261030.zip",
+  "originalGuideAndAssetsUnchanged": true,
+  "url": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/"
+}
