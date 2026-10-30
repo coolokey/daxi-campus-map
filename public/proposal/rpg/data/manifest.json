@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "basketball-complex-restored",
+  "stage": "fine-hex-terrain-nine-natural-shades",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -143,7 +143,7 @@
   "visualTheme": {
     "name": "六角冒險校園",
     "sky": "blue sky and white clouds",
-    "ground": "hex grass and cream paved entrances; original sports fields retained",
+    "ground": "fine hex grass in nine natural green/yellow-green/sage shades with subtle seams and sparse ground details; existing paved roads and sports fields retained",
     "buildings": "original low cartoon buildings with independent roof colors and logical floor badges",
     "geometryChanged": true,
     "groundTexture": {
@@ -249,5 +249,15 @@
     "navigation": true,
     "minimap": true,
     "guideAndOriginalPlanUnchanged": true
+  },
+  "fineTerrain": {
+    "hexRadius": 2.4,
+    "previousHexRadius": 5.2,
+    "shades": 9,
+    "details": "sparse grass and tiny flowers; subtle seams",
+    "variation": "stable per-cell hash, independent of camera",
+    "rendering": "inverse-camera candidate range with per-cell culling",
+    "worldGeometryChanged": false,
+    "collisionChanged": false
   }
 }

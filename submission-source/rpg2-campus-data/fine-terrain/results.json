@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-31",
+  "status": "local-qa-passed",
+  "tests": {
+    "relatedFiles": 3,
+    "passed": 11,
+    "fullLegacySuiteRerun": false,
+    "typescript": "passed",
+    "viteBuild": "passed",
+    "viewCoverage": "world scales 1,1.5,2 x DPR 1,2 x four corners and center"
+  },
+  "browser": {
+    "desktop": "gate to technology entrance; fine terrain stable across camera movement",
+    "mobile390x844": "smaller varied tiles, controls and player view retained",
+    "errors": []
+  },
+  "backup": "backups/rpg-before-fine-terrain-20261031.zip",
+  "worldGeometryChanged": false,
+  "url": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/"
+}

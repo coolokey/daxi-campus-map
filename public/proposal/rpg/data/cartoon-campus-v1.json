@@ -2,12 +2,18 @@
   "version": 1,
   "theme": "六角冒險校園",
   "buildingFootprintScale": 0.74,
-  "hexRadius": 5.2,
+  "hexRadius": 2.4,
   "boundaryHeightScale": 0.9,
   "grass": [
-    "#a0d765",
-    "#a5dc6d",
-    "#99d05f"
+    "#8fbd68",
+    "#a3ce77",
+    "#b2d785",
+    "#96bd79",
+    "#87b86b",
+    "#bdd38b",
+    "#a8c281",
+    "#82b07b",
+    "#c5d69f"
   ],
   "buildingColors": {
     "gym-bld": "#56a8dc",
