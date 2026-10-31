@@ -1,0 +1,37 @@
+{
+  "stage": "natural-meadow-roads",
+  "tests": {
+    "files": 49,
+    "passed": 162,
+    "typescript": true,
+    "build": true
+  },
+  "browser": {
+    "desktop": "Gate natural roads visible; navigation reached technology entrance, interaction entered 1F",
+    "viewport": [
+      390,
+      844
+    ],
+    "physicalDevice": false,
+    "woodComparisonRetained": true,
+    "consoleErrorsOrWarnings": []
+  },
+  "changedSource": [
+    "src/presentation/meadow-renderer.ts",
+    "src/presentation/model-renderer.ts",
+    "src/presentation/entrance-renderer.ts"
+  ],
+  "unchanged": [
+    "geometry",
+    "collision",
+    "portals",
+    "floor data",
+    "original campus model",
+    "guide website",
+    "public URLs"
+  ],
+  "aerialReference": {
+    "images": 11,
+    "purpose": "relative arrangement and campus recognition; no photo-derived survey or copied textures"
+  }
+}

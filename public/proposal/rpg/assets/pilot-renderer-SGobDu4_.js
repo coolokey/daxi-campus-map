@@ -1,0 +1,1 @@
+import"./presentation-DJoyrJBT.js";function e(e){}export{e as setActorPainter};

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "soft-meadow-campus-reference",
+  "stage": "natural-meadow-roads",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -274,6 +274,21 @@
     "pondCollision": "overlapping water-body bands registered before first navigation; existing shore barriers retained",
     "sourceScreenshotsUsedAsAssets": false,
     "originalCampusModelChanged": false,
-    "testsPassed": 162
+    "testsPassed": 162,
+    "roads": {
+      "surfaces": [
+        "gate forecourt driveway",
+        "palm avenue",
+        "ecological trail approach",
+        "building entrance aprons"
+      ],
+      "material": "warm earth with irregular inward edges, gravel and grass fringe",
+      "defaultGrayCarriagewayRemoved": true,
+      "geometryChanged": false,
+      "collisionChanged": false,
+      "offscreenCulling": true,
+      "aerialReferencesReviewed": 11,
+      "photoDerivedSurvey": false
+    }
   }
 }
