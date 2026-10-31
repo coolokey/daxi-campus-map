@@ -1,0 +1,1 @@
+import"./presentation-BW_gHZjl.js";function e(e){}export{e as setActorPainter};

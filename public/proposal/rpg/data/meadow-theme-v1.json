@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "name": "晴日草甸校園",
+  "ground": "#8fbd62",
+  "grass": [
+    "#7faf53",
+    "#95c763",
+    "#a8ce73",
+    "#6ba157",
+    "#b6d984"
+  ],
+  "treeGreens": [
+    [
+      "#497e42",
+      "#72aa4d",
+      "#a5cd69"
+    ],
+    [
+      "#407d4c",
+      "#68a85e",
+      "#9bc76f"
+    ],
+    [
+      "#648b3f",
+      "#93b952",
+      "#c4d777"
+    ]
+  ],
+  "stone": [
+    "#7b8878",
+    "#a0aa8b",
+    "#bec7a4"
+  ],
+  "paving": "#c6ae7d",
+  "lightDirection": [
+    -0.65,
+    -0.5
+  ],
+  "sourceTrees": [
+    {
+      "x": 15,
+      "z": 28
+    },
+    {
+      "x": 15,
+      "z": 12
+    },
+    {
+      "x": 15,
+      "z": 46
+    },
+    {
+      "x": -12,
+      "z": 2
+    },
+    {
+      "x": 38,
+      "z": 2
+    },
+    {
+      "x": 38,
+      "z": 54
+    },
+    {
+      "x": 74,
+      "z": -2
+    },
+    {
+      "x": 74,
+      "z": 28
+    },
+    {
+      "x": 92,
+      "z": 28
+    }
+  ],
+  "source": {
+    "file": "public/campus-explorer/explorer.js:createBroadleafTree placement list",
+    "sha256": "a6a1048253c567f3928244ad29b81e6b37d998147917a66a9f6ff7e20fc0dd1f"
+  },
+  "reference": "User supplied 11 screenshots: soft low-poly meadow, layered crowns, sun shadows, natural ground and cream-green UI. Original artwork; source screenshots not used as game textures.",
+  "note": "Extra source trees are placed only when their trunks clear compact building footprints. Small grass/pebbles are decorative; pond stones align with existing barrier footprints."
+}

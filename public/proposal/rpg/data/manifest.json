@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "fine-hex-terrain-nine-natural-shades",
+  "stage": "soft-meadow-campus-reference",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -141,9 +141,9 @@
     "spaces": 95
   },
   "visualTheme": {
-    "name": "六角冒險校園",
+    "name": "晴日草甸校園",
     "sky": "blue sky and white clouds",
-    "ground": "fine hex grass in nine natural green/yellow-green/sage shades with subtle seams and sparse ground details; existing paved roads and sports fields retained",
+    "ground": "continuous blended grass with cached tufts and flowers; warm gravel paving on existing roads",
     "buildings": "original low cartoon buildings with independent roof colors and logical floor badges",
     "geometryChanged": true,
     "groundTexture": {
@@ -152,7 +152,9 @@
       "generation": "built-in imagegen; source PNG retained in source archive",
       "projection": "world-space isometric repeated material"
     },
-    "buildingLayoutChanged": true
+    "buildingLayoutChanged": true,
+    "trees": "layered low-poly style crowns and forked trunks, shared trunk collision and selective canopy fade",
+    "ui": "cream and forest green"
   },
   "threeCenters": {
     "topics": [
@@ -258,6 +260,20 @@
     "variation": "stable per-cell hash, independent of camera",
     "rendering": "inverse-camera candidate range with per-cell culling",
     "worldGeometryChanged": false,
-    "collisionChanged": false
+    "collisionChanged": false,
+    "active": false
+  },
+  "meadowTheme": {
+    "file": "meadow-theme-v1.json",
+    "rendering": "native Canvas 2.5D, existing isometric engine",
+    "cachedTreeVariants": 12,
+    "cachedGroundTextures": 2,
+    "guideTreePositionsAdded": 9,
+    "broadleafTrees": 22,
+    "palms": 20,
+    "pondCollision": "overlapping water-body bands registered before first navigation; existing shore barriers retained",
+    "sourceScreenshotsUsedAsAssets": false,
+    "originalCampusModelChanged": false,
+    "testsPassed": 162
   }
 }

@@ -1,0 +1,43 @@
+{
+  "theme": "晴日草甸校園",
+  "tests": {
+    "files": 49,
+    "passed": 162,
+    "typescript": true,
+    "build": true,
+    "fullLog": "output/meadow-reference-tests-release.log"
+  },
+  "browser": {
+    "localUrl": "http://127.0.0.1:8781/presentation.html",
+    "desktop": "campus to technology 1F, life-tech room, dialogue and incenter quiz loaded; basketball navigation reached",
+    "viewports": [
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        1024,
+        768
+      ]
+    ],
+    "physicalDevicesTested": false,
+    "errorsOrWarnings": []
+  },
+  "geometry": {
+    "newGuideTreePositions": 9,
+    "broadleafTrees": 22,
+    "palms": 20,
+    "pondWaterBlockedScales": [
+      1,
+      1.5,
+      2
+    ],
+    "originalModelEdited": false
+  },
+  "review": "Roof base, pond label order and early pond collision registration reviewed; no additional P1/P2 reported",
+  "publicUrl": "https://coolokey.github.io/daxi-campus-map/proposal/rpg/"
+}
