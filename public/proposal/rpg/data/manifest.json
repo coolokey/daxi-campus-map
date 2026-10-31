@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "natural-meadow-roads",
+  "stage": "official-plan-road-network",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -290,5 +290,22 @@
       "aerialReferencesReviewed": 11,
       "photoDerivedSurvey": false
     }
+  },
+  "roadNetwork": {
+    "file": "campus-roads-v1.json",
+    "pavingRects": 6,
+    "entrancePaths": 4,
+    "source": "official plan topology with existing guide schematic coordinates",
+    "minimapSharedData": true,
+    "newRoads": [
+      "east north-south driveway",
+      "north teaching breezeway",
+      "south teaching breezeway",
+      "health-center breezeway"
+    ],
+    "collisionChanged": false,
+    "portalsChanged": false,
+    "surveyedGeometry": false,
+    "testsPassed": 164
   }
 }

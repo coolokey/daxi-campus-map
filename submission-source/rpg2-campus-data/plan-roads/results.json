@@ -1,0 +1,40 @@
+{
+  "stage": "official-plan-road-network",
+  "tests": {
+    "files": 50,
+    "passed": 164,
+    "typescript": true,
+    "build": true,
+    "newRegressions": 2,
+    "redBeforeFix": true
+  },
+  "roads": {
+    "pavingRects": 6,
+    "entrancePaths": 4,
+    "source": "campus-roads-v1.json",
+    "scales": [
+      1,
+      1.5,
+      2
+    ]
+  },
+  "browser": {
+    "desktop": "East road visible, minimap and full map show L shape, technology 1F entered",
+    "mobileViewport": [
+      390,
+      844
+    ],
+    "physicalDevice": false,
+    "worldScale2Selected": true
+  },
+  "unchanged": [
+    "raw campus model",
+    "original JPG",
+    "building footprints",
+    "collision",
+    "portals",
+    "floor data",
+    "guide site",
+    "public URLs"
+  ]
+}

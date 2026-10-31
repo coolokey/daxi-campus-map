@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "source": {
+    "plan": "大溪國中平面圖-115學年.jpg",
+    "planSha256": "0f256351b68298b331dceacfb183a3c4e549ca8f12cf34e3bbbb7b4b36710583",
+    "guide": "public/campus-explorer/explorer.js",
+    "guideSha256": "a6a1048253c567f3928244ad29b81e6b37d998147917a66a9f6ff7e20fc0dd1f",
+    "note": "Plan supplies topology; positions reuse existing schematic guide coordinates, not surveyed distances. Raw plan and model are unchanged."
+  },
+  "roads": [
+    {
+      "id": "east-driveway",
+      "name": "東側南北主車道",
+      "rect": {
+        "x0": 47.5,
+        "x1": 56.5,
+        "z0": -65,
+        "z1": 90.5
+      },
+      "evidence": "guide centralRoad: width 9, center (52,12), depth 154; extend south by 1.5 to join forecourt driveway without seam"
+    },
+    {
+      "id": "north-breezeway",
+      "name": "教學區北側通廊",
+      "rect": {
+        "x0": 2,
+        "x1": 28,
+        "z0": 6,
+        "z1": 10
+      },
+      "evidence": "guide createBreezeway(15,8,26,4)"
+    },
+    {
+      "id": "south-breezeway",
+      "name": "教學區南側通廊",
+      "rect": {
+        "x0": 2,
+        "x1": 28,
+        "z0": 50,
+        "z1": 54
+      },
+      "evidence": "guide createBreezeway(15,52,26,4)"
+    },
+    {
+      "id": "health-breezeway",
+      "name": "健康中心銜接通廊",
+      "rect": {
+        "x0": 10,
+        "x1": 14,
+        "z0": -2,
+        "z1": 6
+      },
+      "evidence": "guide createBreezeway(12,2,4,8); building covers north end"
+    }
+  ],
+  "entranceLinks": [
+    {
+      "building": "tech-building",
+      "anchor": {
+        "x": 52,
+        "z": 14.5
+      },
+      "portalIndex": 0
+    },
+    {
+      "building": "art-building",
+      "anchor": {
+        "x": 52,
+        "z": 54.5
+      },
+      "portalIndex": 0
+    },
+    {
+      "building": "multi-building",
+      "anchor": {
+        "x": 52,
+        "z": -13.6
+      },
+      "portalIndex": 1
+    },
+    {
+      "building": "new-grade7",
+      "anchor": {
+        "x": 52,
+        "z": -61
+      },
+      "portalIndex": 1
+    }
+  ],
+  "connectorWidth": 2.4,
+  "note": "Entrance connectors use existing first-floor portal positions and collision-checked routes; they are schematic short access paths, not new doors. Covered corridors are ground markings only, no new roof or upper-floor connection."
+}
