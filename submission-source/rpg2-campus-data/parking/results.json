@@ -1,0 +1,37 @@
+{
+  "stage": "reference-parking-a-b",
+  "tests": {
+    "files": 51,
+    "passed": 168,
+    "typescript": true,
+    "build": true,
+    "scales": [
+      1,
+      1.5,
+      2
+    ]
+  },
+  "parking": {
+    "bicycles": 22,
+    "scooters": 16,
+    "cars": 15,
+    "posts": 22,
+    "targets": 3,
+    "source": "parking-layout-v1.json",
+    "surveyed": false
+  },
+  "browser": {
+    "local": "A aisle and B car aisle reached; B parking screenshot, mobile 390x844 verified",
+    "consoleErrorsOrWarnings": [],
+    "physicalDeviceTested": false
+  },
+  "unchanged": [
+    "raw model",
+    "original plan",
+    "building positions",
+    "floor data",
+    "portals",
+    "guide site",
+    "public URLs"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "source": {
+    "file": "public/campus-explorer/landscape-world.js",
+    "sha256": "29c1ae59d96b42241e77c858173d206ef53e4c05a1505cf411d8edc24fb0d162",
+    "layoutFile": "campus-model-v2.json outdoor.parking",
+    "reference": "User supplied A/B annotated parking image; reuse approved guide schematic positions, not surveyed measurements."
+  },
+  "twoWheel": {
+    "x0": 4,
+    "x1": 35,
+    "bikeZ": 91.65,
+    "motoZ": 95.3,
+    "aisleZ": 93.45,
+    "roofDepth": 1.9
+  },
+  "cars": {
+    "x0": 61.5,
+    "x1": 86,
+    "z0": 54.8,
+    "z1": 80.5,
+    "westX": 65.2,
+    "eastX": 81,
+    "aisleX": 73.2,
+    "coveredX0": 68,
+    "coveredX1": 92.5,
+    "coveredZ": 92.1
+  },
+  "targets": [
+    {
+      "id": "student-bicycle-parking",
+      "name": "學生自行車棚",
+      "x": 19,
+      "z": 93.45
+    },
+    {
+      "id": "staff-moto-parking",
+      "name": "教職員機車棚",
+      "x": 28,
+      "z": 93.45
+    },
+    {
+      "id": "art-car-parking",
+      "name": "藝術館旁汽車停車區",
+      "x": 73.2,
+      "z": 76
+    }
+  ],
+  "roofHeight": 3.05,
+  "roofColor": "#617e9b",
+  "carColors": [
+    "#dce2d6",
+    "#5184a4",
+    "#b46c5d",
+    "#cfc194",
+    "#53686b"
+  ]
+}

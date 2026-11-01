@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "western-campus-walking-paths",
+  "stage": "reference-parking-a-b",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -79,7 +79,7 @@
     }
   },
   "collisionAudit": {
-    "geometry": "source buildings, continuous perimeter strips and posts, ground-level gate parts, pond and tree trunks; collision-checked game benches near planting",
+    "geometry": "source buildings, continuous perimeter strips and posts, ground-level gate parts, pond and tree trunks; collision-checked game benches near planting; parked vehicle bodies and shelter posts registered before navigation",
     "playerFootRadius": 11,
     "scales": [
       1,
@@ -314,5 +314,20 @@
       "學生活動中心東門",
       "資源回收室北門"
     ]
+  },
+  "parking": {
+    "file": "parking-layout-v1.json",
+    "source": "guide landscape-world.js and outdoor.parking; A/B user reference",
+    "bicycles": 22,
+    "scooters": 16,
+    "cars": 15,
+    "posts": 22,
+    "navigationTargets": 3,
+    "accessibleBayClear": true,
+    "canopyRoofsCollide": false,
+    "bodiesAndPostsCollide": true,
+    "minimap": true,
+    "surveyed": false,
+    "testsPassed": 168
   }
 }
