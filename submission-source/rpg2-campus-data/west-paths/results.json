@@ -1,0 +1,48 @@
+{
+  "stage": "western-campus-walking-paths",
+  "tests": {
+    "files": 50,
+    "passed": 165,
+    "typescript": true,
+    "build": true,
+    "scales": [
+      1,
+      1.5,
+      2
+    ]
+  },
+  "paths": {
+    "newWesternPaths": 3,
+    "totalOutdoorPaths": 7,
+    "destinations": [
+      "stage landmark",
+      "gym existing east entrance",
+      "recycle existing north entrance"
+    ],
+    "sharedStart": {
+      "x": -36,
+      "z": 34.5
+    },
+    "collisionChecked": true,
+    "surveyed": false
+  },
+  "review": "No P1/P2; sequential routes and collision cache initialization verified",
+  "unchanged": [
+    "raw plan",
+    "campus model",
+    "building positions",
+    "collision",
+    "portals",
+    "guide site",
+    "public URLs"
+  ],
+  "browser": {
+    "desktop": "Activity center entrance, stage landmark and recycling room entrance reached via existing navigation; paths visible",
+    "mobileViewport": [
+      390,
+      844
+    ],
+    "physicalDevice": false,
+    "consoleErrorsOrWarnings": []
+  }
+}

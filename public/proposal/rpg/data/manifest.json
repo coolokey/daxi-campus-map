@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "official-plan-road-network",
+  "stage": "western-campus-walking-paths",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -294,7 +294,7 @@
   "roadNetwork": {
     "file": "campus-roads-v1.json",
     "pavingRects": 6,
-    "entrancePaths": 4,
+    "entrancePaths": 6,
     "source": "official plan topology with existing guide schematic coordinates",
     "minimapSharedData": true,
     "newRoads": [
@@ -306,6 +306,13 @@
     "collisionChanged": false,
     "portalsChanged": false,
     "surveyedGeometry": false,
-    "testsPassed": 164
+    "testsPassed": 165,
+    "totalOutdoorPaths": 7,
+    "westPaths": 3,
+    "westernDestinations": [
+      "司令台",
+      "學生活動中心東門",
+      "資源回收室北門"
+    ]
   }
 }

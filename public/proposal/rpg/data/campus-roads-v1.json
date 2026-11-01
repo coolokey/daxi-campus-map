@@ -88,5 +88,78 @@
     }
   ],
   "connectorWidth": 2.4,
-  "note": "Entrance connectors use existing first-floor portal positions and collision-checked routes; they are schematic short access paths, not new doors. Covered corridors are ground markings only, no new roof or upper-floor connection."
+  "note": "Entrance connectors use existing first-floor portal positions and collision-checked routes; they are schematic short access paths, not new doors. Covered corridors are ground markings only, no new roof or upper-floor connection.",
+  "westPaths": [
+    {
+      "id": "west-stage",
+      "name": "銅像庭園至司令台步道",
+      "start": {
+        "x": -36,
+        "z": 34.5
+      },
+      "via": [
+        {
+          "x": -44,
+          "z": 34.5
+        },
+        {
+          "x": -44,
+          "z": 3
+        }
+      ],
+      "target": {
+        "kind": "landmark",
+        "label": "司令台"
+      },
+      "evidence": "Official plan stage north of activity center; follow open plaza east of flagpoles to existing stage-front landmark"
+    },
+    {
+      "id": "west-gym",
+      "name": "活動中心入口步道",
+      "start": {
+        "x": -36,
+        "z": 34.5
+      },
+      "via": [
+        {
+          "x": -52,
+          "z": 34.5
+        },
+        {
+          "x": -52,
+          "z": 58
+        }
+      ],
+      "target": {
+        "kind": "portal",
+        "id": "building-entry:gym-bld"
+      },
+      "evidence": "Official plan activity center east-facing approach; existing guide gym-path-1 and current 1F portal"
+    },
+    {
+      "id": "west-recycle",
+      "name": "活動中心北側至資源回收室步道",
+      "start": {
+        "x": -36,
+        "z": 34.5
+      },
+      "via": [
+        {
+          "x": -102,
+          "z": 34.5
+        },
+        {
+          "x": -102,
+          "z": 46
+        }
+      ],
+      "target": {
+        "kind": "portal",
+        "id": "building-entry:recycle-bld:1"
+      },
+      "evidence": "Official plan recycling room west of activity center; route around north side of gym to existing north entrance instead of crossing gym footprint"
+    }
+  ],
+  "westPathWidth": 3.2,
+  "westPathNote": "Plan-based schematic walking spine with source building/landmark endpoints; turn coordinates are illustrative, collision checked at every scale, not surveyed."
 }
