@@ -1,0 +1,9 @@
+{
+ "feature":"palm-gardens-creek-and-outer-forest",
+ "tests":{"fullFiles":57,"fullPassed":187,"finalFocusedFiles":3,"finalFocusedPassed":11,"typescript":"passed","build":"passed","review":"No important issues; bridge railing segmentation corrected"},
+ "design":{"forestTreesAndBamboo":98,"plantClusters":68,"flowerShrubs":6,"hills":7,"newTargets":2,"worldBoundsChanged":false,"existingPalms":20,"googleMapImagesUsedAsTextures":false},
+ "research":{"checked":"2026-11-01","googleMaps":"https://www.google.com/maps/search/?api=1&query=桃園市立大溪國民中學","panoramaDate":"July 2021","officialCreekPlan":"https://www.wra.gov.tw/flwe/cp.aspx?n=17249","surveyedReconstruction":false},
+ "browser":{"desktop":"1280x720","phone":"390x844","tablet":"1024x768","avenueAndBridgeNavigationArrived":true,"forestOutsideWallsObserved":true,"controlsSeparated":true},
+ "scope":"Procedural RPG scenery inspired by local woodland and creek; new garden, bridge and stream alignment are creative extensions. Browser viewport testing, not physical devices or measured FPS.",
+ "screenshots":["creek-desktop.png","forest-desktop.png","mobile.png","tablet.png"]
+}

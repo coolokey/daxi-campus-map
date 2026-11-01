@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "lan-pavilion-and-site-activities",
+  "stage": "palm-gardens-creek-and-outer-forest",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -81,7 +81,7 @@
     }
   },
   "collisionAudit": {
-    "geometry": "source buildings, continuous perimeter strips and posts, ground-level gate parts, pond and tree trunks; collision-checked game benches near planting; parked vehicle bodies and shelter posts registered before navigation; farm beds, equipment and open-gate wooden fence; west flower shrub cores, infield equipment and bunting poles; source-position Lan pavilion columns and seats with open front",
+    "geometry": "source buildings, continuous perimeter strips and posts, ground-level gate parts, pond and tree trunks; collision-checked game benches near planting; parked vehicle bodies and shelter posts registered before navigation; farm beds, equipment and open-gate wooden fence; west flower shrub cores, infield equipment and bunting poles; source-position Lan pavilion columns and seats with open front; exterior grove trunks, flower shrub cores, creek water minus passable observation deck, benches, stones and bridge posts",
     "playerFootRadius": 11,
     "scales": [
       1,
@@ -309,7 +309,7 @@
     "portalsChanged": false,
     "surveyedGeometry": false,
     "testsPassed": 165,
-    "totalOutdoorPaths": 8,
+    "totalOutdoorPaths": 9,
     "westPaths": 3,
     "westernDestinations": [
       "司令台",
@@ -404,5 +404,25 @@
     "regressionPassed": 183,
     "finalFocusedPassed": 22,
     "surveyed": false
+  },
+  "surroundings": {
+    "file": "campus-surroundings-v1.json",
+    "forestTreesAndBamboo": 98,
+    "plantClusters": 68,
+    "flowerShrubs": 6,
+    "distantHills": 7,
+    "butterflyVisibleCaps": {
+      "desktop": 3,
+      "phone": 2
+    },
+    "birds": 2,
+    "proceduralSpriteCache": 24,
+    "existingTreeSpritesReused": true,
+    "worldBoundsChanged": false,
+    "creekAndBridgeCollisionShared": true,
+    "surveyed": false,
+    "googleImageryUsedAsTextures": false,
+    "regressionPassed": 187,
+    "finalFocusedPassed": 11
   }
 }
