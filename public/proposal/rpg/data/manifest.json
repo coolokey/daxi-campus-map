@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "moderate-campus-ecology",
+  "stage": "agriculture-vocational-farm",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -79,7 +79,7 @@
     }
   },
   "collisionAudit": {
-    "geometry": "source buildings, continuous perimeter strips and posts, ground-level gate parts, pond and tree trunks; collision-checked game benches near planting; parked vehicle bodies and shelter posts registered before navigation",
+    "geometry": "source buildings, continuous perimeter strips and posts, ground-level gate parts, pond and tree trunks; collision-checked game benches near planting; parked vehicle bodies and shelter posts registered before navigation; farm beds, equipment and open-gate wooden fence",
     "playerFootRadius": 11,
     "scales": [
       1,
@@ -293,7 +293,7 @@
   },
   "roadNetwork": {
     "file": "campus-roads-v1.json",
-    "pavingRects": 6,
+    "pavingRects": 7,
     "entrancePaths": 6,
     "source": "official plan topology with existing guide schematic coordinates",
     "minimapSharedData": true,
@@ -307,7 +307,7 @@
     "portalsChanged": false,
     "surveyedGeometry": false,
     "testsPassed": 165,
-    "totalOutdoorPaths": 7,
+    "totalOutdoorPaths": 8,
     "westPaths": 3,
     "westernDestinations": [
       "司令台",
@@ -349,5 +349,23 @@
     "staticSpriteCache": 12,
     "collisionChanged": false,
     "testsPassed": 172
+  },
+  "farm": {
+    "file": "campus-farm-v1.json",
+    "beds": 12,
+    "cropTypes": 6,
+    "cropSpriteCache": 12,
+    "stages": [
+      "young",
+      "mature"
+    ],
+    "minimap": true,
+    "navigation": true,
+    "physicalBedsAndFixtures": true,
+    "scene": "outdoor",
+    "originalTrackChanged": false,
+    "surveyed": false,
+    "cultivationSaveSystem": false,
+    "testsPassed": 175
   }
 }

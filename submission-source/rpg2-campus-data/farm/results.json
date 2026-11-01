@@ -1,0 +1,8 @@
+{
+  "feature": "agriculture-vocational-farm",
+  "tests": {"files": 53, "passed": 175, "finalFocusedPassed": 3, "typescript": "passed", "build": "passed"},
+  "layout": {"beds": 12, "cropTypes": 6, "plants": 216, "colliders": 23, "scalesTested": [1, 1.5, 2]},
+  "browser": {"desktop": "1280x720", "mobile": "390x844", "navigationArrived": true, "signReadable": true, "mobileControlsSeparated": true, "consoleWarningsAndErrors": []},
+  "scope": "Landscape and navigation only; no cultivation, harvest or farming save mechanics. Mobile viewport emulation, not physical device testing.",
+  "screenshots": ["farm-desktop.png", "farm-mobile.png"]
+}

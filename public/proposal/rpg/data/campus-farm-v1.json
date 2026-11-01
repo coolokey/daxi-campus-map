@@ -1,0 +1,272 @@
+{
+  "version": 1,
+  "name": "開心農場（農業職群）",
+  "bounds": {
+    "x0": -119,
+    "x1": -35,
+    "z0": -74,
+    "z1": -57
+  },
+  "target": {
+    "id": "vocational-farm",
+    "name": "開心農場（農業職群）",
+    "x": -80,
+    "z": -66
+  },
+  "gate": {
+    "x": -35,
+    "z0": -68,
+    "z1": -64
+  },
+  "path": {
+    "x0": -118.8,
+    "x1": -35,
+    "z0": -67.4,
+    "z1": -64.6
+  },
+  "approach": [
+    {
+      "x": -22,
+      "z": -66
+    },
+    {
+      "x": -39,
+      "z": -66
+    }
+  ],
+  "crops": [
+    {
+      "id": "lettuce",
+      "name": "葉菜區",
+      "color": "#86b554",
+      "hint": "觀察葉色與土壤濕度"
+    },
+    {
+      "id": "carrot",
+      "name": "根莖區",
+      "color": "#e7a159",
+      "hint": "留意土壤排水與株距"
+    },
+    {
+      "id": "tomato",
+      "name": "番茄區",
+      "color": "#d9775d",
+      "hint": "搭架支撐並觀察結果"
+    },
+    {
+      "id": "pumpkin",
+      "name": "瓜果區",
+      "color": "#e6af55",
+      "hint": "保留藤蔓伸展空間"
+    },
+    {
+      "id": "herbs",
+      "name": "香草區",
+      "color": "#82ad72",
+      "hint": "認識香氣與葉形差異"
+    },
+    {
+      "id": "seedling",
+      "name": "育苗區",
+      "color": "#b6c66c",
+      "hint": "比較發芽與成株外觀"
+    }
+  ],
+  "beds": [
+    {
+      "id": "bed-0-0",
+      "crop": "lettuce",
+      "stage": "young",
+      "rect": {
+        "x0": -114.0,
+        "x1": -106.7,
+        "z0": -72.2,
+        "z1": -68.8
+      }
+    },
+    {
+      "id": "bed-0-1",
+      "crop": "carrot",
+      "stage": "young",
+      "rect": {
+        "x0": -104.7,
+        "x1": -97.4,
+        "z0": -72.2,
+        "z1": -68.8
+      }
+    },
+    {
+      "id": "bed-0-2",
+      "crop": "tomato",
+      "stage": "young",
+      "rect": {
+        "x0": -95.4,
+        "x1": -88.1,
+        "z0": -72.2,
+        "z1": -68.8
+      }
+    },
+    {
+      "id": "bed-0-3",
+      "crop": "pumpkin",
+      "stage": "young",
+      "rect": {
+        "x0": -86.1,
+        "x1": -78.8,
+        "z0": -72.2,
+        "z1": -68.8
+      }
+    },
+    {
+      "id": "bed-0-4",
+      "crop": "herbs",
+      "stage": "young",
+      "rect": {
+        "x0": -76.8,
+        "x1": -69.5,
+        "z0": -72.2,
+        "z1": -68.8
+      }
+    },
+    {
+      "id": "bed-0-5",
+      "crop": "seedling",
+      "stage": "young",
+      "rect": {
+        "x0": -67.5,
+        "x1": -60.2,
+        "z0": -72.2,
+        "z1": -68.8
+      }
+    },
+    {
+      "id": "bed-1-0",
+      "crop": "lettuce",
+      "stage": "mature",
+      "rect": {
+        "x0": -114.0,
+        "x1": -106.7,
+        "z0": -63.2,
+        "z1": -59.8
+      }
+    },
+    {
+      "id": "bed-1-1",
+      "crop": "carrot",
+      "stage": "mature",
+      "rect": {
+        "x0": -104.7,
+        "x1": -97.4,
+        "z0": -63.2,
+        "z1": -59.8
+      }
+    },
+    {
+      "id": "bed-1-2",
+      "crop": "tomato",
+      "stage": "mature",
+      "rect": {
+        "x0": -95.4,
+        "x1": -88.1,
+        "z0": -63.2,
+        "z1": -59.8
+      }
+    },
+    {
+      "id": "bed-1-3",
+      "crop": "pumpkin",
+      "stage": "mature",
+      "rect": {
+        "x0": -86.1,
+        "x1": -78.8,
+        "z0": -63.2,
+        "z1": -59.8
+      }
+    },
+    {
+      "id": "bed-1-4",
+      "crop": "herbs",
+      "stage": "mature",
+      "rect": {
+        "x0": -76.8,
+        "x1": -69.5,
+        "z0": -63.2,
+        "z1": -59.8
+      }
+    },
+    {
+      "id": "bed-1-5",
+      "crop": "seedling",
+      "stage": "mature",
+      "rect": {
+        "x0": -67.5,
+        "x1": -60.2,
+        "z0": -63.2,
+        "z1": -59.8
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "water",
+      "name": "灌溉水槽",
+      "rect": {
+        "x0": -49,
+        "x1": -44,
+        "z0": -72.2,
+        "z1": -69
+      }
+    },
+    {
+      "id": "tools",
+      "name": "農具角",
+      "rect": {
+        "x0": -41,
+        "x1": -38,
+        "z0": -72.6,
+        "z1": -70.8
+      }
+    },
+    {
+      "id": "compost",
+      "name": "堆肥箱",
+      "rect": {
+        "x0": -49,
+        "x1": -44.5,
+        "z0": -62.8,
+        "z1": -59.5
+      }
+    },
+    {
+      "id": "crates",
+      "name": "採收籃",
+      "rect": {
+        "x0": -40.9,
+        "x1": -38.1,
+        "z0": -62.5,
+        "z1": -60.2
+      }
+    },
+    {
+      "id": "scarecrow",
+      "name": "稻草人",
+      "rect": {
+        "x0": -54.15,
+        "x1": -53.85,
+        "z0": -61.55,
+        "z1": -61.25
+      }
+    },
+    {
+      "id": "sign",
+      "name": "農業職群看板",
+      "rect": {
+        "x0": -37.1,
+        "x1": -36.7,
+        "z0": -58.7,
+        "z1": -58.3
+      }
+    }
+  ],
+  "note": "User-designated game agriculture vocational display in the north strip between existing perimeter and track. New game landscape, not a claim of an existing physical farm. Keep track and wall positions unchanged; crop stages are visual demonstrations."
+}
