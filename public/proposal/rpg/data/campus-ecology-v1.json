@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "name": "校園自然小群落",
+  "zones": [
+    {
+      "id": "entrance-border",
+      "kind": "flowers",
+      "x": -20,
+      "z": 62,
+      "rx": 7,
+      "rz": 7,
+      "count": 6
+    },
+    {
+      "id": "south-tree-row",
+      "kind": "flowers",
+      "x": 18,
+      "z": 74,
+      "rx": 20,
+      "rz": 2,
+      "count": 10
+    },
+    {
+      "id": "gym-east",
+      "kind": "flowers",
+      "x": -48,
+      "z": 48,
+      "rx": 3,
+      "rz": 8,
+      "count": 5
+    },
+    {
+      "id": "gym-north",
+      "kind": "flowers",
+      "x": -76,
+      "z": 39,
+      "rx": 17,
+      "rz": 2.2,
+      "count": 8
+    },
+    {
+      "id": "recycle-garden",
+      "kind": "grass",
+      "x": -115,
+      "z": 60,
+      "rx": 2,
+      "rz": 8,
+      "count": 4
+    },
+    {
+      "id": "stage-east",
+      "kind": "flowers",
+      "x": -39,
+      "z": 15,
+      "rx": 3,
+      "rz": 8,
+      "count": 4
+    },
+    {
+      "id": "court-border",
+      "kind": "grass",
+      "x": -10,
+      "z": -10,
+      "rx": 4,
+      "rz": 4,
+      "count": 4
+    },
+    {
+      "id": "teaching-court",
+      "kind": "flowers",
+      "x": 17.5,
+      "z": 30,
+      "rx": 2.2,
+      "rz": 12,
+      "count": 6
+    },
+    {
+      "id": "north-corridor",
+      "kind": "grass",
+      "x": 36,
+      "z": 3,
+      "rx": 6,
+      "rz": 3,
+      "count": 6
+    },
+    {
+      "id": "technology-garden",
+      "kind": "flowers",
+      "x": 89,
+      "z": 20,
+      "rx": 4,
+      "rz": 13,
+      "count": 8
+    },
+    {
+      "id": "library-garden",
+      "kind": "flowers",
+      "x": 95,
+      "z": -18,
+      "rx": 2.5,
+      "rz": 8,
+      "count": 5
+    },
+    {
+      "id": "grade7-border",
+      "kind": "flowers",
+      "x": 84,
+      "z": -70,
+      "rx": 16,
+      "rz": 1.8,
+      "count": 7
+    },
+    {
+      "id": "pond-west",
+      "kind": "reeds",
+      "x": -13,
+      "z": -66,
+      "rx": 2,
+      "rz": 6,
+      "count": 5
+    },
+    {
+      "id": "pond-east",
+      "kind": "reeds",
+      "x": 9,
+      "z": -66,
+      "rx": 2,
+      "rz": 6,
+      "count": 4
+    },
+    {
+      "id": "palm-west",
+      "kind": "flowers",
+      "x": -46,
+      "z": 132,
+      "rx": 2,
+      "rz": 30,
+      "count": 6
+    },
+    {
+      "id": "palm-east",
+      "kind": "flowers",
+      "x": -26,
+      "z": 132,
+      "rx": 2,
+      "rz": 30,
+      "count": 6
+    }
+  ],
+  "butterflies": 12,
+  "dragonflies": 4,
+  "visibleCaps": {
+    "desktop": {
+      "butterflies": 4,
+      "dragonflies": 3
+    },
+    "mobile": {
+      "butterflies": 2,
+      "dragonflies": 2
+    }
+  },
+  "note": "Decorative ecology in open lawns near existing landmarks; locations are game landscape design, not a claim about recorded campus species. No collision or navigation changes."
+}

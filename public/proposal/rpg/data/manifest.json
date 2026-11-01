@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "reference-parking-a-b",
+  "stage": "moderate-campus-ecology",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -329,5 +329,25 @@
     "minimap": true,
     "surveyed": false,
     "testsPassed": 168
+  },
+  "ecology": {
+    "file": "campus-ecology-v1.json",
+    "habitatZones": 16,
+    "maxPlantCandidates": 94,
+    "maxButterflyPool": 12,
+    "dragonflyPool": 4,
+    "desktopVisibleCaps": {
+      "butterflies": 4,
+      "dragonflies": 3
+    },
+    "mobileVisibleCaps": {
+      "butterflies": 2,
+      "dragonflies": 2
+    },
+    "mobileCssBreakpoint": 640,
+    "reducedMotion": true,
+    "staticSpriteCache": 12,
+    "collisionChanged": false,
+    "testsPassed": 172
   }
 }

@@ -1,0 +1,57 @@
+{
+  "stage": "moderate-campus-ecology",
+  "tests": {
+    "files": 52,
+    "passed": 172,
+    "typescript": true,
+    "build": true,
+    "scales": [
+      1,
+      1.5,
+      2
+    ]
+  },
+  "ecology": {
+    "habitatZones": 16,
+    "maxPlantCandidates": 94,
+    "maxButterflyPool": 12,
+    "dragonflyPool": 4,
+    "desktopVisibleCaps": {
+      "butterflies": 4,
+      "dragonflies": 3
+    },
+    "mobileVisibleCaps": {
+      "butterflies": 2,
+      "dragonflies": 2
+    },
+    "mobileCssBreakpoint": 640,
+    "reducedMotion": true,
+    "collisionChanged": false
+  },
+  "browser": {
+    "desktop": "Entrance, tree rows, pond and basketball navigation verified",
+    "mobileViewports": [
+      [
+        390,
+        844
+      ],
+      [
+        480,
+        844
+      ]
+    ],
+    "consoleErrorsOrWarnings": [],
+    "physicalDeviceOrFPSMeasured": false
+  },
+  "unchanged": [
+    "original map",
+    "raw campus model",
+    "collision",
+    "portals",
+    "floor data",
+    "characters",
+    "quiz progress",
+    "guide site",
+    "public URLs"
+  ]
+}
