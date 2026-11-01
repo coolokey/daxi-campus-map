@@ -1,0 +1,680 @@
+{
+  "version": 1,
+  "name": "西牆花境與田徑體驗區",
+  "target": {
+    "id": "athletics-field",
+    "name": "田徑體驗區",
+    "x": -110,
+    "z": -25
+  },
+  "plants": [
+    {
+      "id": "shrub-0",
+      "kind": "shrub",
+      "x": -145,
+      "z": -48,
+      "variant": 0
+    },
+    {
+      "id": "flower-0-0",
+      "kind": "grass",
+      "x": -142.4,
+      "z": -49.5,
+      "variant": 0
+    },
+    {
+      "id": "flower-0-1",
+      "kind": "flowers",
+      "x": -142.2,
+      "z": -47.2,
+      "variant": 1
+    },
+    {
+      "id": "flower-0-2",
+      "kind": "flowers",
+      "x": -144,
+      "z": -45.3,
+      "variant": 2
+    },
+    {
+      "id": "flower-0-3",
+      "kind": "grass",
+      "x": -146.6,
+      "z": -46.2,
+      "variant": 3
+    },
+    {
+      "id": "flower-0-4",
+      "kind": "flowers",
+      "x": -144.7,
+      "z": -50.8,
+      "variant": 0
+    },
+    {
+      "id": "flower-0-5",
+      "kind": "flowers",
+      "x": -141.5,
+      "z": -45.5,
+      "variant": 1
+    },
+    {
+      "id": "shrub-1",
+      "kind": "shrub",
+      "x": -146,
+      "z": -39,
+      "variant": 1
+    },
+    {
+      "id": "flower-1-0",
+      "kind": "grass",
+      "x": -143.4,
+      "z": -40.5,
+      "variant": 1
+    },
+    {
+      "id": "flower-1-1",
+      "kind": "flowers",
+      "x": -143.2,
+      "z": -38.2,
+      "variant": 2
+    },
+    {
+      "id": "flower-1-2",
+      "kind": "flowers",
+      "x": -145,
+      "z": -36.3,
+      "variant": 3
+    },
+    {
+      "id": "flower-1-3",
+      "kind": "grass",
+      "x": -147.6,
+      "z": -37.2,
+      "variant": 0
+    },
+    {
+      "id": "flower-1-4",
+      "kind": "flowers",
+      "x": -145.7,
+      "z": -41.8,
+      "variant": 1
+    },
+    {
+      "id": "flower-1-5",
+      "kind": "flowers",
+      "x": -142.5,
+      "z": -36.5,
+      "variant": 2
+    },
+    {
+      "id": "shrub-2",
+      "kind": "shrub",
+      "x": -146,
+      "z": -30,
+      "variant": 2
+    },
+    {
+      "id": "flower-2-0",
+      "kind": "grass",
+      "x": -143.4,
+      "z": -31.5,
+      "variant": 2
+    },
+    {
+      "id": "flower-2-1",
+      "kind": "flowers",
+      "x": -143.2,
+      "z": -29.2,
+      "variant": 3
+    },
+    {
+      "id": "flower-2-2",
+      "kind": "flowers",
+      "x": -145,
+      "z": -27.3,
+      "variant": 0
+    },
+    {
+      "id": "flower-2-3",
+      "kind": "grass",
+      "x": -147.6,
+      "z": -28.2,
+      "variant": 1
+    },
+    {
+      "id": "flower-2-4",
+      "kind": "flowers",
+      "x": -145.7,
+      "z": -32.8,
+      "variant": 2
+    },
+    {
+      "id": "flower-2-5",
+      "kind": "flowers",
+      "x": -142.5,
+      "z": -27.5,
+      "variant": 3
+    },
+    {
+      "id": "shrub-3",
+      "kind": "shrub",
+      "x": -145,
+      "z": -21,
+      "variant": 3
+    },
+    {
+      "id": "flower-3-0",
+      "kind": "grass",
+      "x": -142.4,
+      "z": -22.5,
+      "variant": 3
+    },
+    {
+      "id": "flower-3-1",
+      "kind": "flowers",
+      "x": -142.2,
+      "z": -20.2,
+      "variant": 0
+    },
+    {
+      "id": "flower-3-2",
+      "kind": "flowers",
+      "x": -144,
+      "z": -18.3,
+      "variant": 1
+    },
+    {
+      "id": "flower-3-3",
+      "kind": "grass",
+      "x": -146.6,
+      "z": -19.2,
+      "variant": 2
+    },
+    {
+      "id": "flower-3-4",
+      "kind": "flowers",
+      "x": -144.7,
+      "z": -23.8,
+      "variant": 3
+    },
+    {
+      "id": "flower-3-5",
+      "kind": "flowers",
+      "x": -141.5,
+      "z": -18.5,
+      "variant": 0
+    },
+    {
+      "id": "shrub-4",
+      "kind": "shrub",
+      "x": -144,
+      "z": -12,
+      "variant": 0
+    },
+    {
+      "id": "flower-4-0",
+      "kind": "grass",
+      "x": -141.4,
+      "z": -13.5,
+      "variant": 0
+    },
+    {
+      "id": "flower-4-1",
+      "kind": "flowers",
+      "x": -141.2,
+      "z": -11.2,
+      "variant": 1
+    },
+    {
+      "id": "flower-4-2",
+      "kind": "flowers",
+      "x": -143,
+      "z": -9.3,
+      "variant": 2
+    },
+    {
+      "id": "flower-4-3",
+      "kind": "grass",
+      "x": -145.6,
+      "z": -10.2,
+      "variant": 3
+    },
+    {
+      "id": "flower-4-4",
+      "kind": "flowers",
+      "x": -143.7,
+      "z": -14.8,
+      "variant": 0
+    },
+    {
+      "id": "flower-4-5",
+      "kind": "flowers",
+      "x": -140.5,
+      "z": -9.5,
+      "variant": 1
+    },
+    {
+      "id": "shrub-5",
+      "kind": "shrub",
+      "x": -142,
+      "z": -3,
+      "variant": 1
+    },
+    {
+      "id": "flower-5-0",
+      "kind": "grass",
+      "x": -139.4,
+      "z": -4.5,
+      "variant": 1
+    },
+    {
+      "id": "flower-5-1",
+      "kind": "flowers",
+      "x": -139.2,
+      "z": -2.2,
+      "variant": 2
+    },
+    {
+      "id": "flower-5-2",
+      "kind": "flowers",
+      "x": -141,
+      "z": -0.2999999999999998,
+      "variant": 3
+    },
+    {
+      "id": "flower-5-3",
+      "kind": "grass",
+      "x": -143.6,
+      "z": -1.2,
+      "variant": 0
+    },
+    {
+      "id": "flower-5-4",
+      "kind": "flowers",
+      "x": -141.7,
+      "z": -5.8,
+      "variant": 1
+    },
+    {
+      "id": "flower-5-5",
+      "kind": "flowers",
+      "x": -138.5,
+      "z": -0.5,
+      "variant": 2
+    },
+    {
+      "id": "shrub-6",
+      "kind": "shrub",
+      "x": -139,
+      "z": 6,
+      "variant": 2
+    },
+    {
+      "id": "flower-6-0",
+      "kind": "grass",
+      "x": -136.4,
+      "z": 4.5,
+      "variant": 2
+    },
+    {
+      "id": "flower-6-1",
+      "kind": "flowers",
+      "x": -136.2,
+      "z": 6.8,
+      "variant": 3
+    },
+    {
+      "id": "flower-6-2",
+      "kind": "flowers",
+      "x": -138,
+      "z": 8.7,
+      "variant": 0
+    },
+    {
+      "id": "flower-6-3",
+      "kind": "grass",
+      "x": -140.6,
+      "z": 7.8,
+      "variant": 1
+    },
+    {
+      "id": "flower-6-4",
+      "kind": "flowers",
+      "x": -138.7,
+      "z": 3.2,
+      "variant": 2
+    },
+    {
+      "id": "flower-6-5",
+      "kind": "flowers",
+      "x": -135.5,
+      "z": 8.5,
+      "variant": 3
+    },
+    {
+      "id": "shrub-7",
+      "kind": "shrub",
+      "x": -136,
+      "z": 15,
+      "variant": 3
+    },
+    {
+      "id": "flower-7-0",
+      "kind": "grass",
+      "x": -133.4,
+      "z": 13.5,
+      "variant": 3
+    },
+    {
+      "id": "flower-7-1",
+      "kind": "flowers",
+      "x": -133.2,
+      "z": 15.8,
+      "variant": 0
+    },
+    {
+      "id": "flower-7-2",
+      "kind": "flowers",
+      "x": -135,
+      "z": 17.7,
+      "variant": 1
+    },
+    {
+      "id": "flower-7-3",
+      "kind": "grass",
+      "x": -137.6,
+      "z": 16.8,
+      "variant": 2
+    },
+    {
+      "id": "flower-7-4",
+      "kind": "flowers",
+      "x": -135.7,
+      "z": 12.2,
+      "variant": 3
+    },
+    {
+      "id": "flower-7-5",
+      "kind": "flowers",
+      "x": -132.5,
+      "z": 17.5,
+      "variant": 0
+    },
+    {
+      "id": "shrub-8",
+      "kind": "shrub",
+      "x": -132,
+      "z": 24,
+      "variant": 0
+    },
+    {
+      "id": "flower-8-0",
+      "kind": "grass",
+      "x": -129.4,
+      "z": 22.5,
+      "variant": 0
+    },
+    {
+      "id": "flower-8-1",
+      "kind": "flowers",
+      "x": -129.2,
+      "z": 24.8,
+      "variant": 1
+    },
+    {
+      "id": "flower-8-2",
+      "kind": "flowers",
+      "x": -131,
+      "z": 26.7,
+      "variant": 2
+    },
+    {
+      "id": "flower-8-3",
+      "kind": "grass",
+      "x": -133.6,
+      "z": 25.8,
+      "variant": 3
+    },
+    {
+      "id": "flower-8-4",
+      "kind": "flowers",
+      "x": -131.7,
+      "z": 21.2,
+      "variant": 0
+    },
+    {
+      "id": "flower-8-5",
+      "kind": "flowers",
+      "x": -128.5,
+      "z": 26.5,
+      "variant": 1
+    },
+    {
+      "id": "shrub-9",
+      "kind": "shrub",
+      "x": -128,
+      "z": 33,
+      "variant": 1
+    },
+    {
+      "id": "flower-9-0",
+      "kind": "grass",
+      "x": -125.4,
+      "z": 31.5,
+      "variant": 1
+    },
+    {
+      "id": "flower-9-1",
+      "kind": "flowers",
+      "x": -125.2,
+      "z": 33.8,
+      "variant": 2
+    },
+    {
+      "id": "flower-9-2",
+      "kind": "flowers",
+      "x": -127,
+      "z": 35.7,
+      "variant": 3
+    },
+    {
+      "id": "flower-9-3",
+      "kind": "grass",
+      "x": -129.6,
+      "z": 34.8,
+      "variant": 0
+    },
+    {
+      "id": "flower-9-4",
+      "kind": "flowers",
+      "x": -127.7,
+      "z": 30.2,
+      "variant": 1
+    },
+    {
+      "id": "flower-9-5",
+      "kind": "flowers",
+      "x": -124.5,
+      "z": 35.5,
+      "variant": 2
+    },
+    {
+      "id": "shrub-10",
+      "kind": "shrub",
+      "x": -136,
+      "z": -57,
+      "variant": 2
+    },
+    {
+      "id": "flower-10-0",
+      "kind": "grass",
+      "x": -133.4,
+      "z": -58.5,
+      "variant": 2
+    },
+    {
+      "id": "flower-10-1",
+      "kind": "flowers",
+      "x": -133.2,
+      "z": -56.2,
+      "variant": 3
+    },
+    {
+      "id": "flower-10-2",
+      "kind": "flowers",
+      "x": -135,
+      "z": -54.3,
+      "variant": 0
+    },
+    {
+      "id": "flower-10-3",
+      "kind": "grass",
+      "x": -137.6,
+      "z": -55.2,
+      "variant": 1
+    },
+    {
+      "id": "flower-10-4",
+      "kind": "flowers",
+      "x": -135.7,
+      "z": -59.8,
+      "variant": 2
+    },
+    {
+      "id": "flower-10-5",
+      "kind": "flowers",
+      "x": -132.5,
+      "z": -54.5,
+      "variant": 3
+    },
+    {
+      "id": "shrub-11",
+      "kind": "shrub",
+      "x": -127,
+      "z": -64,
+      "variant": 3
+    },
+    {
+      "id": "flower-11-0",
+      "kind": "grass",
+      "x": -124.4,
+      "z": -65.5,
+      "variant": 3
+    },
+    {
+      "id": "flower-11-1",
+      "kind": "flowers",
+      "x": -124.2,
+      "z": -63.2,
+      "variant": 0
+    },
+    {
+      "id": "flower-11-2",
+      "kind": "flowers",
+      "x": -126,
+      "z": -61.3,
+      "variant": 1
+    },
+    {
+      "id": "flower-11-3",
+      "kind": "grass",
+      "x": -128.6,
+      "z": -62.2,
+      "variant": 2
+    },
+    {
+      "id": "flower-11-4",
+      "kind": "flowers",
+      "x": -126.7,
+      "z": -66.8,
+      "variant": 3
+    },
+    {
+      "id": "flower-11-5",
+      "kind": "flowers",
+      "x": -123.5,
+      "z": -61.5,
+      "variant": 0
+    }
+  ],
+  "equipment": [
+    {
+      "id": "high-jump",
+      "kind": "mat",
+      "name": "跳高練習區",
+      "rect": {
+        "x0": -120,
+        "x1": -114,
+        "z0": -34,
+        "z1": -30
+      }
+    },
+    {
+      "id": "sand-pit",
+      "kind": "sand",
+      "name": "跳遠沙坑",
+      "rect": {
+        "x0": -106,
+        "x1": -94,
+        "z0": -15,
+        "z1": -11
+      }
+    },
+    {
+      "id": "hurdle-0",
+      "kind": "hurdle",
+      "name": "跨欄練習",
+      "rect": {
+        "x0": -104.22,
+        "x1": -103.78,
+        "z0": -37,
+        "z1": -33
+      }
+    },
+    {
+      "id": "hurdle-1",
+      "kind": "hurdle",
+      "name": "跨欄練習",
+      "rect": {
+        "x0": -98.22,
+        "x1": -97.78,
+        "z0": -37,
+        "z1": -33
+      }
+    },
+    {
+      "id": "hurdle-2",
+      "kind": "hurdle",
+      "name": "跨欄練習",
+      "rect": {
+        "x0": -92.22,
+        "x1": -91.78,
+        "z0": -37,
+        "z1": -33
+      }
+    },
+    {
+      "id": "timing",
+      "kind": "timing",
+      "name": "計時服務站",
+      "rect": {
+        "x0": -83,
+        "x1": -78,
+        "z0": -17,
+        "z1": -14
+      }
+    },
+    {
+      "id": "equipment",
+      "kind": "rack",
+      "name": "田徑器材",
+      "rect": {
+        "x0": -82,
+        "x1": -78,
+        "z0": -38,
+        "z1": -35
+      }
+    }
+  ],
+  "note": "RPG landscape and athletics demonstration only. Track dimensions remain source-derived, not a surveyed or certified competition layout. West border flower plants are low decorative foliage; shrub cores and sports equipment are solid."
+}

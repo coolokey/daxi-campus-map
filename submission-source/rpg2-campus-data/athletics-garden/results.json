@@ -1,0 +1,8 @@
+{
+  "feature": "west-flower-border-and-athletics",
+  "tests": {"fullFiles":54,"fullPassed":178,"finalFocusedFiles":4,"finalFocusedPassed":15,"typescript":"passed","build":"passed"},
+  "design":{"plantClusters":84,"raisedShrubs":12,"sportsEquipment":7,"additionalColliders":23,"lanes":6,"trackDimensionsChanged":false},
+  "qa":{"scalesTested":[1,1.5,2],"desktopViewport":"1280x720","mobileViewport":"390x844","landmarkNavigationArrived":true,"mobileControlsSeparated":true,"consoleWarningsAndErrors":[],"reviewIssue":"Running direction and finish/start alignment corrected and re-reviewed"},
+  "limitations":"Decorative athletics demonstration, not surveyed or certified competition markings. Mobile browser viewport emulation, not physical device measurement.",
+  "screenshots":["desktop-overview.png","mobile.png"]
+}

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "agriculture-vocational-farm",
+  "stage": "west-flower-border-and-athletics",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -79,7 +79,7 @@
     }
   },
   "collisionAudit": {
-    "geometry": "source buildings, continuous perimeter strips and posts, ground-level gate parts, pond and tree trunks; collision-checked game benches near planting; parked vehicle bodies and shelter posts registered before navigation; farm beds, equipment and open-gate wooden fence",
+    "geometry": "source buildings, continuous perimeter strips and posts, ground-level gate parts, pond and tree trunks; collision-checked game benches near planting; parked vehicle bodies and shelter posts registered before navigation; farm beds, equipment and open-gate wooden fence; west flower shrub cores, infield equipment and bunting poles",
     "playerFootRadius": 11,
     "scales": [
       1,
@@ -367,5 +367,18 @@
     "surveyed": false,
     "cultivationSaveSystem": false,
     "testsPassed": 175
+  },
+  "athleticsGarden": {
+    "file": "athletics-garden-v1.json",
+    "plantClusters": 84,
+    "raisedShrubs": 12,
+    "equipment": 7,
+    "solidFootprints": 23,
+    "lanes": 6,
+    "trackDimensionsChanged": false,
+    "surveyedOrCertified": false,
+    "spriteCache": 12,
+    "regressionPassed": 178,
+    "finalFocusedPassed": 15
   }
 }
