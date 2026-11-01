@@ -1,0 +1,9 @@
+{
+ "feature":"lan-pavilion-and-site-activities",
+ "tests":{"fullFiles":55,"fullPassed":183,"finalFocusedFiles":3,"finalFocusedPassed":22,"typescript":"passed","build":"passed","review":"No outstanding important issues; reviewer reran 22 tests"},
+ "geometry":{"pavilionCenter":{"x":-18,"z":-66},"solidFootprints":11,"scalesTested":[1,1.5,2],"originalGuideAndModelChanged":false,"farmApproachX":-29},
+ "activities":{"kinds":["basketball","gardening","running"],"desktopNpcCount":7,"phoneNpcCount":5,"existingAtlasesReused":true,"collisionSamplesSeconds":100,"pauseAndResponsiveIdentityProgressPreservation":"passed"},
+ "browser":{"desktop":"1280x720","phone":"390x844","tablet":"1024x768","pavilionAndFarmNavigationArrived":true,"basketballAndWateringObserved":true,"runnerObservedOnTrack":true,"farmStudentDialogueAndPortrait":"passed","controlsSeparated":true,"consoleWarningsAndErrors":[]},
+ "limitations":"Browser viewport emulation, not physical devices. NPC demonstrations only, not online people, farming gameplay or scored sports matches.",
+ "screenshots":["pavilion-desktop.png","basketball-desktop.png","farm-desktop.png","farm-dialogue.png","mobile.png","tablet.png"]
+}

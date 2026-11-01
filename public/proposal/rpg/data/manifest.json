@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "west-flower-border-and-athletics",
+  "stage": "lan-pavilion-and-site-activities",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -70,16 +70,18 @@
     "roamingCaps": {
       "desktop": {
         "teacher": 3,
-        "student": 3
+        "studentActivities": 3,
+        "guard": 1
       },
       "phone": {
         "teacher": 1,
-        "student": 2
+        "studentActivities": 3,
+        "guard": 1
       }
     }
   },
   "collisionAudit": {
-    "geometry": "source buildings, continuous perimeter strips and posts, ground-level gate parts, pond and tree trunks; collision-checked game benches near planting; parked vehicle bodies and shelter posts registered before navigation; farm beds, equipment and open-gate wooden fence; west flower shrub cores, infield equipment and bunting poles",
+    "geometry": "source buildings, continuous perimeter strips and posts, ground-level gate parts, pond and tree trunks; collision-checked game benches near planting; parked vehicle bodies and shelter posts registered before navigation; farm beds, equipment and open-gate wooden fence; west flower shrub cores, infield equipment and bunting poles; source-position Lan pavilion columns and seats with open front",
     "playerFootRadius": 11,
     "scales": [
       1,
@@ -380,5 +382,27 @@
     "spriteCache": 12,
     "regressionPassed": 178,
     "finalFocusedPassed": 15
+  },
+  "pavilionActivities": {
+    "file": "pavilion-activities-v1.json",
+    "pavilionSourceCenter": {
+      "x": -18,
+      "z": -66
+    },
+    "pavilionSolidFootprints": 11,
+    "activities": [
+      "basketball",
+      "gardening",
+      "running"
+    ],
+    "existingStudentAtlasesReused": true,
+    "desktopNpcCount": 7,
+    "phoneNpcCount": 5,
+    "pauseWithGame": true,
+    "movementCollisionChecked": true,
+    "farmApproachAdjusted": true,
+    "regressionPassed": 183,
+    "finalFocusedPassed": 22,
+    "surveyed": false
   }
 }

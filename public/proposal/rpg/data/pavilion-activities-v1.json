@@ -1,0 +1,11 @@
+{
+ "version":1,
+ "source":{"guide":"public/campus-explorer/explorer.js:createLanPavilion and outdoor-world.js:renderLanPavilion","photo":"013.JPG","note":"Source-derived schematic position and photo-inspired appearance; not surveyed dimensions."},
+ "pavilion":{"x":-18,"z":-66,"radius":4.25,"columnRadius":3.2,"roofRadius":4.75,"roofTop":7.13,"target":{"id":"lan-pavilion","name":"蘭亭與訓平池","x":-18,"z":-59.8}},
+ "activities":[
+  {"id":"basketball","name":"投籃練習","x":18,"z":-38,"dialogue":"我正在練習運球和投籃！先穩定運球，再瞄準籃框。這是校園 NPC 的練習示範。"},
+  {"id":"gardening","name":"農園澆水","x":-100,"z":-66.8,"dialogue":"我在照顧開心農場的幼苗。適量澆水、觀察葉片，是認識農業職群的第一步！目前是 NPC 示範，還沒有種植收成玩法。"},
+  {"id":"running","name":"跑道慢跑","x":-110,"z":-4.75,"dialogue":"我在跑道上練習慢跑。沿著自己的分道，留意前方同學，一起保持運動習慣！"}
+ ],
+ "note":"Three student NPC activity slots replace generic outdoor student roaming; they are not online players. Existing sprite atlases are reused."
+}
