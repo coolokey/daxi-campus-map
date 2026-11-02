@@ -1,0 +1,1 @@
+import"./presentation-CEIz-67m.js";function e(e){}export{e as setActorPainter};

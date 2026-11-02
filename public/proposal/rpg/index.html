@@ -1,9 +1,14 @@
 <!doctype html>
 <html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>大溪國中未來科技校園 RPG</title>
+<link rel="preload" href="./data/rpg-characters-runtime-v1.json" as="fetch" crossorigin="anonymous">
+<script>
+// Start the selected player's atlas before the world module and roster finish loading.
+(()=>{const ids=['player-male-uniform','player-female-uniform','player-male-casual','player-female-casual'];let selected=ids[0];try{const saved=localStorage.getItem('campus:rpg-player');if(ids.includes(saved))selected=saved;}catch{}for(const id of [selected,'gate-guard']){const link=document.createElement('link');link.rel='preload';link.as='image';link.href='./assets/characters/guide-rpg/style-v4-webp/'+id+'.webp';link.fetchPriority=id===selected?'high':'auto';document.head.append(link);}})();
+</script>
 
 
 
-  <script type="module" crossorigin src="./assets/presentation-pwuAH4uY.js"></script>
+  <script type="module" crossorigin src="./assets/presentation-CEIz-67m.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/styles-CW-oLfht.js">
   <link rel="stylesheet" crossorigin href="./assets/styles-DRUlPi7W.css">
   <link rel="stylesheet" crossorigin href="./assets/presentation-Bgkn8MEP.css">
