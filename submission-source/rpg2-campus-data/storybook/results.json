@@ -1,0 +1,12 @@
+{
+ "date":"2026-11-02",
+ "build":"passed: TypeScript and Vite",
+ "regression":{"files":57,"passed":187},
+ "visualViewports":["1280x720","1024x768","390x844","844x390","667x375"],
+ "scalesChecked":[1,1.5,2],
+ "navigation":"gate to technology building entrance, enter 1F, arrive at incenter station",
+ "consoleErrors":[],
+ "review":"No important code issues; short screen flow hidden and narrow landscape toolbar compacted after visual QA",
+ "narrowLandscape":{"trackerBottom":218.5,"controlsTop":221,"overlap":false},
+ "scope":"Visual rendering and interface styling only. Collision and source geometry unchanged. No new sprite network requests."
+}

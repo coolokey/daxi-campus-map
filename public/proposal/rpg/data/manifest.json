@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "palm-gardens-creek-and-outer-forest",
+  "stage": "sunny-storybook-campus-art",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -145,7 +145,7 @@
   "visualTheme": {
     "name": "晴日草甸校園",
     "sky": "blue sky and white clouds",
-    "ground": "continuous blended grass with cached tufts and flowers; warm gravel paving on existing roads",
+    "ground": "storybook fine brick on existing masonry, meadow trails and reduced grass detail; original imagegen paving retained in wood comparison mode",
     "buildings": "original low cartoon buildings with independent roof colors and logical floor badges",
     "geometryChanged": true,
     "groundTexture": {
@@ -424,5 +424,15 @@
     "googleImageryUsedAsTextures": false,
     "regressionPassed": 187,
     "finalFocusedPassed": 11
+  },
+  "storybookArt": {
+    "date": "2026-11-02",
+    "buildingPalettes": 11,
+    "fineBrickTexture": "procedural cached 256px canvas",
+    "pathsAndCollisionsChanged": false,
+    "additionalNetworkImages": 0,
+    "repeatedRoofBadges": false,
+    "regressionPassed": 187,
+    "shortViewportSecondaryFlowHidden": true
   }
 }

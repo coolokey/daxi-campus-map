@@ -1,0 +1,1 @@
+import"./presentation-pwuAH4uY.js";function e(e){}export{e as setActorPainter};

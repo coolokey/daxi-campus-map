@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "name": "晴日草甸校園",
-  "ground": "#8fbd62",
+  "name": "晴日繪本校園",
+  "ground": "#96bd76",
   "grass": [
-    "#7faf53",
-    "#95c763",
-    "#a8ce73",
-    "#6ba157",
-    "#b6d984"
+    "#83ad67",
+    "#a3c77f",
+    "#b3ce8e",
+    "#79a66c",
+    "#c0d798"
   ],
   "treeGreens": [
     [

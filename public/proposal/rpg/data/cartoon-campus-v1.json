@@ -16,17 +16,17 @@
     "#c5d69f"
   ],
   "buildingColors": {
-    "gym-bld": "#56a8dc",
-    "recycle-bld": "#8dbb52",
-    "admin-front": "#f2ad52",
-    "health-bld": "#eb819c",
-    "grade8-front": "#9c8cda",
-    "grade9-back": "#e98e68",
-    "grade8-mid": "#57b99d",
-    "new-grade7": "#bad15a",
-    "multi-building": "#d28ec7",
-    "tech-building": "#4ebbd1",
-    "art-building": "#e7b767"
+    "gym-bld": "#699eb8",
+    "recycle-bld": "#91aa65",
+    "admin-front": "#d8ad70",
+    "health-bld": "#d49ba9",
+    "grade8-front": "#a59bc3",
+    "grade9-back": "#ce9a7e",
+    "grade8-mid": "#7eaf9b",
+    "new-grade7": "#b3bf78",
+    "multi-building": "#b69fb8",
+    "tech-building": "#7baeba",
+    "art-building": "#cfb086"
   },
   "note": "Original artwork inspired by colorful hex-terrain learning games. Exterior buildings are centered on source positions and compacted uniformly by building; interior source floor plans and challenge structure remain unchanged. Hex cells are visual terrain, not new territory/PvP/multiplayer mechanics."
 }
