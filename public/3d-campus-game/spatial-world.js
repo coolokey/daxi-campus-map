@@ -1,0 +1,700 @@
+/* Shared spatial model → geometry, collision, floor surfaces and navigation. */
+(() => {
+ const M=CampusWalkMath,layouts=BUILDINGS_CONFIG.map(M.layout),galleryLayouts=CampusSpatialPlan.galleries(layouts),graph={},roomTargets={},oldNodes={...NAV_NODES};
+ const node=(id,p,buildingId)=>{graph[id]={id,...p,buildingId,neighbors:[]};return id};
+ const link=(a,b)=>{if(a!==b&&!graph[a].neighbors.includes(b)){graph[a].neighbors.push(b);graph[b].neighbors.push(a)}};
+ const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.96});
+ const colors={wall:material(0xc9c5b9),blue:material(0x8da9ae),floor:material(0xa6aaa3),stair:material(0xb8bab0),wood:material(0x956941),green:material(0x315748),steel:material(0x61717a),paper:material(0xcacbbb),screen:material(0x293f48),light:material(0xfff9dd),glass:new THREE.MeshStandardMaterial({color:0x8fa5a9,transparent:true,opacity:.45})};
+ colors.light.emissive.setHex(0x8a8467);colors.light.emissiveIntensity=.4;
+ const techWindowFrame=material(0x4d8773);
+ const safetyMeshMaterial=new THREE.LineBasicMaterial({color:0x7f8880,transparent:true,opacity:.45});
+ const surfaces=new Map(),cameraVolumes=WALL_COLLIDERS.filter(c=>c.perimeter||c.lanBank).map(c=>({...c}));
+ const cameraVolume=(r,y0,y1)=>cameraVolumes.push({minX:r.x0,maxX:r.x1,minZ:r.z0,maxZ:r.z1,minY:y0,maxY:y1});
+ function surfaceMaterials(l){
+  if(surfaces.has(l.id))return surfaces.get(l.id);
+  const p=CampusSurfacePalette.forBuilding(l.b),own={...colors};
+  for(const [key,colour] of Object.entries(p)){
+   const m=material(colour);m.name=`campus-surface-${l.id}-${key}`;m.userData={campusSurface:key,campusBuildingId:l.id};own[key==='band'?'blue':key]=m;
+  }
+  surfaces.set(l.id,own);return own;
+ }
+ const box=(group,l,u0,u1,v0,v1,y0,y1,mat,solid=false)=>{
+  if(u1-u0<1e-5||v1-v0<1e-5||y1-y0<1e-5)return null;
+  const r=l.rect(u0,u1,v0,v1),mesh=new THREE.Mesh(new THREE.BoxGeometry(r.x1-r.x0,y1-y0,r.z1-r.z0),mat);
+  mesh.position.set((r.x0+r.x1)/2,(y0+y1)/2,(r.z0+r.z1)/2);mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);
+  if(mat!==colors.glass)cameraVolume(r,y0,y1);
+  if(solid){registerWallCollider(r.x0,r.x1,r.z0,r.z1,y0,y1);WALL_COLLIDERS.at(-1).buildingId=l.id;}
+  return mesh;
+ };
+ // Level guards around the stair void leave both flight mouths open.
+ function landingGuard(g,l,u0,u1,v0,v1,y,colors){
+  const barrier=box(g,l,u0,u1,v0,v1,y,y+.98,colors.steel,true);if(barrier)barrier.visible=false;
+  // Give the collision barrier a visible masonry base, as in the stair photos.
+  box(g,l,u0,u1,v0,v1,y,y+(l.id==='gym-bld'?.12:.68),colors.wall);
+  box(g,l,u0,u1,v0,v1,y+.91,y+.98,colors.handrail);
+  const alongU=u1-u0>v1-v0,length=alongU?u1-u0:v1-v0,count=Math.max(1,Math.ceil(length/.6));
+  for(let i=0;i<=count;i++){const u=alongU?u0+(u1-u0)*i/count:(u0+u1)/2,v=alongU?(v0+v1)/2:v0+(v1-v0)*i/count;box(g,l,u-.022,u+.022,v-.022,v+.022,y,y+.95,colors.steel);}
+ }
+ const insideFloor=(l,x,z,floor)=>{const q=l.local(x,z);return l.footprints.some(p=>p.floor===floor&&CampusSpatialPlan.contains(p,q.u,q.v))};
+ // Legacy outdoor canopies predate the shared floor plan. Keep their exterior
+ // shade, but subtract the complete occupied volume of upper floors AND stairs.
+ // A stair-only cut leaves the same roof running through adjoining corridors.
+ scene.updateMatrixWorld(true);
+ const occupied=layouts.flatMap(l=>[
+  ...l.footprints.filter(p=>p.floor>1).map(p=>({...l.rect(p.u0,p.u1,p.v0,p.v1),y0:(p.floor-1)*FH,y1:(p.floor-1)*FH+AVATAR_HEIGHT})),
+  ...(l.ramps.length?l.stairs.map(s=>({...l.rect(s.u0,s.u1,s.v0,s.v1),y0:0,y1:l.b.floors*FH+AVATAR_HEIGHT})):[])
+ ]).map(r=>({...r,x0:r.x0-AVATAR_COLLISION_RADIUS,x1:r.x1+AVATAR_COLLISION_RADIUS,z0:r.z0-AVATAR_COLLISION_RADIUS,z1:r.z1+AVATAR_COLLISION_RADIUS}));
+ const clearanceCuts=b=>occupied.filter(r=>r.y0<b.max.y&&r.y1>b.min.y&&r.x0<b.max.x&&r.x1>b.min.x&&r.z0<b.max.z&&r.z1>b.min.z);
+ const canopySupports=[];scene.traverse(o=>{if(o.userData.legacyBreezewaySupport)canopySupports.push(o)});
+ for(const post of canopySupports)if(clearanceCuts(new THREE.Box3().setFromObject(post)).length){post.parent.remove(post);post.geometry.dispose();}
+ const canopyRoofs=[];scene.traverse(o=>{if(o.userData.legacyBreezewayRoof)canopyRoofs.push(o)});
+ for(const roof of canopyRoofs){
+  const bounds=new THREE.Box3().setFromObject(roof),cuts=clearanceCuts(bounds);
+  if(!cuts.length)continue;
+  const xs=[bounds.min.x,bounds.max.x],zs=[bounds.min.z,bounds.max.z];
+  for(const r of cuts){for(const x of [r.x0,r.x1])if(x>bounds.min.x&&x<bounds.max.x)xs.push(x);for(const z of [r.z0,r.z1])if(z>bounds.min.z&&z<bounds.max.z)zs.push(z)}
+  xs.sort((a,b)=>a-b);zs.sort((a,b)=>a-b);
+  for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++){
+   const x=(xs[i-1]+xs[i])/2,z=(zs[j-1]+zs[j])/2;if(cuts.some(r=>x>r.x0&&x<r.x1&&z>r.z0&&z<r.z1))continue;
+   const mesh=new THREE.Mesh(new THREE.BoxGeometry(xs[i]-xs[i-1],bounds.max.y-bounds.min.y,zs[j]-zs[j-1]),roof.material);
+   mesh.name='floor-cleared-breezeway-roof';mesh.userData.breezewayClearancePiece=true;mesh.position.copy(roof.parent.worldToLocal(new THREE.Vector3(x,(bounds.min.y+bounds.max.y)/2,z)));mesh.castShadow=mesh.receiveShadow=true;roof.parent.add(mesh);
+  }
+  roof.parent.remove(roof);roof.geometry.dispose();
+ }
+ // Subtract the same stair holes that groundAt uses from every slab.
+ // Raise only the visual 1F paving slightly above the outdoor ground plane.
+ function slab(g,l,p,y,paint=null,cutAtGround=false){
+  const colors=surfaceMaterials(l);
+  const xs=[p.u0,p.u1],zs=[p.v0,p.v1];
+  for(const h of l.holes){if(h.u0>p.u0&&h.u0<p.u1)xs.push(h.u0);if(h.u1>p.u0&&h.u1<p.u1)xs.push(h.u1);if(h.v0>p.v0&&h.v0<p.v1)zs.push(h.v0);if(h.v1>p.v0&&h.v1<p.v1)zs.push(h.v1)}
+  if(p.kind==='porch')return; // Shared support comes from the entrance steps and access ramp.
+  if(p.kind==='tower'){for(let u=p.u0+.3;u<p.u1;u+=.3)xs.push(u);for(let v=p.v0+.3;v<p.v1;v+=.3)zs.push(v);}
+  xs.sort((a,b)=>a-b);zs.sort((a,b)=>a-b);
+  for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++)if((p.kind!=='tower'||CampusSpatialPlan.contains(p,(xs[i-1]+xs[i])/2,(zs[j-1]+zs[j])/2))&&((y===0&&!cutAtGround)||!l.holes.some(h=>CampusSpatialPlan.onFloor(h,Math.round(y/FH)+1)&&CampusSpatialPlan.contains(h,(xs[i-1]+xs[i])/2,(zs[j-1]+zs[j])/2))))box(g,l,xs[i-1],xs[i],zs[j-1],zs[j],y-.18,y+(y===0?.045:0),paint||colors.floor);
+ }
+ function roomWall(g,l,c,side,y){
+  const colors=surfaceMaterials(l),q={u:(c.u0+c.u1)/2,v:(c.v0+c.v1)/2};
+  if(side==='u0')q.u=c.u0-.15;else if(side==='u1')q.u=c.u1+.15;else if(side==='v0')q.v=c.v0-.15;else q.v=c.v1+.15;
+  const exposed=!l.footprints.some(p=>p.floor===c.floor&&CampusSpatialPlan.contains(p,q.u,q.v)),paint=exposed?colors.exterior:colors.wall;
+  const alongU=side[0]==='v',fixed=side==='v0'?c.v0:side==='v1'?c.v1:side==='u0'?c.u0:c.u1;
+  const start=alongU?c.u0:c.v0,end=alongU?c.u1:c.v1,door=c.door&&l.local(c.door.x,c.door.z),center=c.doorSide===side&&door?(alongU?door.u:door.v):(start+end)/2;
+  const wall=(a,b,y0,y1,mat,solid=true)=>alongU?box(g,l,a,b,fixed-.09,fixed+.09,y0,y1,mat,solid):box(g,l,fixed-.09,fixed+.09,a,b,y0,y1,mat,solid);
+  if(c.doorSide===side){
+   const half=Math.min(.95,(end-start)/2-.16);
+   const photoCorridor=['grade8-front','grade8-mid','grade9-back','admin-front','admin-back','new-grade7','multi-building','health-bld'].includes(l.id);
+   const wing=(a,b)=>{
+    if(!photoCorridor||b-a<1.3){wall(a,b,y,y+FH,paint);return;}
+    const collider=wall(a,b,y,y+FH,paint);if(collider)collider.visible=false;
+    wall(a,b,y,y+1.05,colors.blue,false);wall(a,b,y+2.65,y+FH,paint,false);
+    wall(a+.1,b-.1,y+1.05,y+2.65,colors.glass,false);
+    for(let t=a+.12;t<b;t+=.55)wall(t-.02,t+.02,y+1.05,y+2.65,colors.steel,false);
+    for(const h of [1.05,1.7,2.65])wall(a,b,y+h-.02,y+h+.02,colors.steel,false);
+   };
+   wing(start,center-half);wing(center+half,end);wall(center-half,center+half,y+2.3,y+FH,paint);
+  }else if(!exposed||c.kind==='wc'){
+   // Internal room partitions are real walls, not exterior-style windows.
+   wall(start,end,y,y+FH,paint);
+  }else if(l.id==='art-building'){
+   const solid=wall(start,end,y,y+FH,paint);if(solid)solid.visible=false;
+   wall(start,end,y,y+1.1,paint,false);wall(start,end,y+2.5,y+FH,paint,false);
+   const count=Math.max(1,Math.floor((end-start)/3)),pitch=(end-start)/count;
+   for(let i=0;i<count;i++){const a=start+i*pitch,b=a+pitch,half=Math.min(1.05,pitch/2-.22),center=(a+b)/2;wall(a,center-half,y+1.1,y+2.5,paint,false);wall(center+half,b,y+1.1,y+2.5,paint,false);wall(center-half,center+half,y+1.1,y+2.5,colors.glass,false);}
+  }else{
+   const solid=wall(start,end,y,y+FH,colors.wall);if(solid)solid.visible=false;
+   wall(start,end,y,y+1.05,colors.windowSill||colors.blue,false);wall(start,end,y+2.65,y+FH,paint,false);
+   wall(start+.2,end-.2,y+1.05,y+2.65,colors.glass,false);
+   for(let u=start+.35;u<end-.2;u+=.6)wall(u-.022,u+.022,y+1.05,y+2.65,colors.steel,false);
+  }
+  const trim=(a,b)=>alongU?box(g,l,a,b,fixed-.104,fixed+.104,y+.005,y+.125,colors.skirt):box(g,l,fixed-.104,fixed+.104,a,b,y+.005,y+.125,colors.skirt);
+  if(c.doorSide===side){const half=Math.min(.95,(end-start)/2-.16);trim(start,center-half);trim(center+half,end)}else trim(start,end);
+
+ }
+ function stairEnclosure(g,l,s,y){
+  const colors=surfaceMaterials(l),stop=s.nearU-.14,wallTop=Math.min(y+FH,s.photoTower?.height||Infinity);
+  if(y===0&&s.groundEntry){
+   const e=s.groundEntry,a=s.v1,b=e.landingV1;
+   // Ground landing is entered only through its left side (confirmed E).
+   box(g,l,s.u0,s.u1,b-.09,b+.09,0,FH,colors.wall,true);
+   box(g,l,s.u1-.09,s.u1+.09,a,b,0,FH,colors.wall,true);
+   for(const [v0,v1] of [[a,e.v-.95],[e.v+.95,b]])box(g,l,s.u0-.09,s.u0+.09,v0,v1,0,FH,colors.wall,true);
+   box(g,l,s.u0-.09,s.u0+.09,e.v-.95,e.v+.95,2.3,FH,colors.wall,true);
+  }
+
+  // Thin side walls leave the full 1.8m exit landing open to the corridor.
+  for(const v of [s.v0,s.v1]){
+   if(l.id==='multi-building'&&v===s.v0){
+    const proxy=box(g,l,s.u0,stop,v-.09,v+.09,y,wallTop,colors.wall,true);proxy.visible=false;
+    const band=CampusMultiWorld.windowBand(s,Math.round(y/FH)+1);
+    if(band&&band[0]<.5){proxy.visible=true;proxy.material=colors.glass;}
+    if(!band){box(g,l,s.u0,stop,v-.09,v+.09,y,wallTop,colors.wall);continue;}
+    box(g,l,s.u0,stop,v-.09,v+.09,y,y+band[0],colors.wall);
+    box(g,l,s.u0,stop,v-.09,v+.09,y+band[1],wallTop,colors.wall);
+    box(g,l,s.u0,stop,v-.04,v+.04,y+band[0],y+band[1],colors.glass);
+   }else box(g,l,s.u0,stop,v-.09,v+.09,y,wallTop,colors.wall,true);
+  }
+  // The detached history room has a ground-floor entrance through the north
+  // stair boundary. Preserve actual entrance crossings when closing the shaft.
+  const doors=y===0?l.entrances.flatMap(e=>{const a=l.local(e.inside.x,e.inside.z),b=l.local(e.outside.x,e.outside.z);if((a.u-s.u0)*(b.u-s.u0)>0||Math.abs(b.u-a.u)<1e-6)return [];const t=(s.u0-a.u)/(b.u-a.u),v=a.v+(b.v-a.v)*t;return v>s.v0&&v<s.v1?[{v0:v-1,v1:v+1}]:[]}):[];
+  const wall=(a,b,y0,y1,paint)=>{const cuts=[a,b,...doors.flatMap(d=>[Math.max(a,d.v0),Math.min(b,d.v1)]).filter(v=>v>a&&v<b)].sort((a,b)=>a-b);for(let i=1;i<cuts.length;i++){const middle=(cuts[i-1]+cuts[i])/2,bottom=doors.some(d=>middle>d.v0&&middle<d.v1)?Math.max(y0,y+2.3):y0;box(g,l,s.u0-.09,s.u0+.09,cuts[i-1],cuts[i],bottom,y1,paint,true);}},half=Math.min(1.6,(s.v1-s.v0)/2-.3);
+  const wrapBand=l.id==='multi-building'?CampusMultiWorld.windowBand(s,Math.round(y/FH)+1):[1.05,2.65];
+  if(!wrapBand){wall(s.v0,s.v1,y,wallTop,colors.wall);return;}
+  const sill=y+wrapBand[0],lintel=y+wrapBand[1];
+  wall(s.v0,s.v1,y,sill,colors.wall);wall(s.v0,s.v1,lintel,wallTop,colors.wall);
+  wall(s.v0,s.centerV-half,sill,lintel,colors.wall);wall(s.centerV+half,s.v1,sill,lintel,colors.wall);
+  wall(s.centerV-half,s.centerV+half,sill,lintel,colors.glass);
+  for(let v=s.centerV-half;v<=s.centerV+half+.001;v+=half/2){const bottom=doors.some(d=>v+.025>d.v0&&v-.025<d.v1)?Math.max(y+2.3,sill):sill;box(g,l,s.u0-.105,s.u0+.105,v-.025,v+.025,bottom,lintel,colors.steel);}
+ }
+ function details(g,l,r,y){
+  const colors=surfaceMaterials(l);
+  const pp={...r.door,y:y+2.55},width=Math.min(2.5,r.doorSide.startsWith('v')?r.u1-r.u0-.2:r.v1-r.v0-.2);
+  const label=CampusRoomLayout.nameplate(r.name,r.cat);
+  const plate=new THREE.Mesh(new THREE.PlaneGeometry(width,.38),new THREE.MeshBasicMaterial({map:createRoomNameplateTexture(label.text,label.color),side:THREE.DoubleSide}));
+  const axis=r.doorSide[0],out=r.doorSide.endsWith('0')?-1:1,normal=l.world(axis==='u'?out:0,axis==='v'?out:0),origin=l.world(0,0),nx=normal.x-origin.x,nz=normal.z-origin.z;
+  // The old plaque sat inside the opaque wall above the door. Offset its face
+  // beyond the wall thickness, with its readable side facing the corridor.
+  plate.position.set(pp.x+nx*.115,pp.y,pp.z+nz*.115);plate.rotation.y=Math.atan2(nx,nz);plate.userData={roomId:r.id,nameplateKey:label.key,nameplateStyle:'wall'};g.add(plate);
+  const wallLength=axis==='u'?r.v1-r.v0:r.u1-r.u0,half=Math.min(.95,wallLength/2-.16),jamb=-Math.min(wallLength/2-.13,half+.15);
+  const tangent=l.world(axis==='v'?1:0,axis==='u'?1:0),tx=tangent.x-origin.x,tz=tangent.z-origin.z;
+  const center={x:r.door.x+tx*jamb+nx*.57,z:r.door.z+tz*jamb+nz*.57},signLabel=CampusRoomLayout.projectingNameplate(r.name,r.cat);
+  const frame=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?(axis==='u'?.9:.065):(axis==='u'?.065:.9),.47,l.horizontal?(axis==='u'?.065:.9):(axis==='u'?.9:.065)),colors.steel);
+  frame.name='door-sign-frame-'+r.id;frame.position.set(center.x,y+2.65,center.z);g.add(frame);
+  const fw=frame.geometry.parameters.width,fd=frame.geometry.parameters.depth;cameraVolume({x0:center.x-fw/2,x1:center.x+fw/2,z0:center.z-fd/2,z1:center.z+fd/2},y+2.415,y+2.885);
+  const mount=new THREE.Mesh(new THREE.BoxGeometry(nx?.12:.16,.54,nz?.12:.16),colors.steel);mount.position.set(center.x-nx*.45,y+2.65,center.z-nz*.45);g.add(mount);
+  const signMaterial=new THREE.MeshBasicMaterial({map:createProjectingRoomSignTexture(signLabel)});
+  signMaterial.userData.nameplateKey=signLabel.key;
+  // Two front-facing planes share a texture; the reverse face is rotated,
+  // so names read correctly from either end of the corridor.
+  for(const side of [-1,1]){const face=new THREE.Mesh(new THREE.PlaneGeometry(.84,.42),signMaterial);face.position.set(center.x+tx*side*.034,y+2.65,center.z+tz*side*.034);face.rotation.y=Math.atan2(tx*side,tz*side);face.userData={roomId:r.id,nameplateKey:signLabel.key,nameplateStyle:'projecting'};g.add(face);}
+  if(l.id==='gym-bld'||r.kind==='wc'||r.kind==='office-suite')return; // Shells and toilets own signs; open desk zones own furniture.
+  const plan=CampusRoomLayout.furnishings(r);
+  for(const item of plan.parts){
+   const mesh=box(g,l,item.u0,item.u1,item.v0,item.v1,y+item.y0,y+item.y1,colors[item.paint],item.solid);if(!mesh)continue;
+   mesh.userData={roomId:r.id,furnitureRole:item.role};
+   if(item.role==='score-sign'||item.role==='score-monitor'){
+    // Annual room-name editing owns roomId textures; station content has its
+    // own identity so editing a room never overwrites the computer screen.
+    delete mesh.userData.roomId;mesh.userData.scoreStationRoomId=r.id;
+    const cv=document.createElement('canvas');cv.width=1024;cv.height=384;const c=cv.getContext('2d');
+    c.fillStyle=item.role==='score-sign'?'#19584e':'#183944';c.fillRect(0,0,1024,384);c.textAlign='center';c.fillStyle='#fff8e5';c.font='bold 80px sans-serif';c.fillText('歷屆段考成績查詢',512,152);c.fillStyle='#b9ded0';c.font='46px sans-serif';c.fillText('停留 3 秒 · 另開新視窗',512,265);
+    mesh.material=new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv)});mesh.name=item.role;
+   }
+  }
+  box(g,l,r.u-.7,r.u+.7,r.v-.12,r.v+.12,y+FH-.22,y+FH-.2,colors.light);
+ }
+ // Retain existing outer ornament; replace old floors, stair meshes and roofs for shaped wings.
+ for(let i=WALL_COLLIDERS.length-1;i>=0;i--)if(WALL_COLLIDERS[i].buildingId&&!WALL_COLLIDERS[i].persistent)WALL_COLLIDERS.splice(i,1);
+ STAIR_ZONES.length=0;
+ for(const l of layouts){
+  const colors=surfaceMaterials(l);
+  const roofMaterial=material(l.b.roofColor);
+  const parent=scene.children.find(g=>g.userData.buildingId===l.id);
+  for(const child of [...parent.children])if(l.id==='gym-bld'||child.name.startsWith('floor-')||child.userData.oldStairs||(l.b.spatialProfile.shape&&child.userData.roof)){
+   parent.remove(child);child.traverse(o=>{if(o.geometry)o.geometry.dispose()});const i=floorMeshes.indexOf(child);if(i>=0)floorMeshes.splice(i,1);
+  }
+  if(l.id==='gym-bld')for(let i=floorMeshes.length-1;i>=0;i--)if(floorMeshes[i].userData.buildingId===l.id)floorMeshes.splice(i,1);
+  for(let f=1;f<=l.b.floors;f++){
+   const y=(f-1)*FH,g=new THREE.Group();g.name=`floor-${f}`;g.userData={buildingId:l.id,floorNum:f};scene.add(g);floorMeshes.push(g);
+   for(const p of l.footprints.filter(p=>p.floor===f)){slab(g,l,p,y);
+    if(f===l.b.floors&&!['gym-bld','multi-building'].includes(l.id)){const roof=box(g,l,p.u0,p.u1,p.v0,p.v1,y+FH-.18,y+FH,roofMaterial);if(roof)roof.userData.roof=true;}
+   }
+   if(l.id==='gym-bld'){
+    for(const r of l.rooms.filter(r=>r.floor===f))details(g,l,r,y);
+    if(f>1)for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f)&&CampusSpatialPlan.onFloor(s.hole,f))){const h=s.hole;
+     for(const v of [h.v0-.04,h.v1+.04])landingGuard(g,l,h.u0-.04,h.u1+.04,v-.03,v+.03,y,colors);
+     landingGuard(g,l,h.u0-.07,h.u0-.01,h.v0-.04,h.v1+.04,y,colors);
+     for(const [a,b] of [[-2.34,-2.05],[-.45,.45],[2.05,2.34]])landingGuard(g,l,s.nearU+.01,s.nearU+.07,s.centerV+a,s.centerV+b,y,colors);
+    }
+    if(f>1)for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f)&&CampusSpatialPlan.onFloor(s.hole,f))){const h=s.windowLanding;for(const u of [h.u0,h.u1])landingGuard(g,l,u-.03,u+.03,h.v0,17,y,colors);for(const [a,b] of [[s.u0,h.u0],[h.u1,s.u1]])landingGuard(g,l,a,b,16.97,17.03,y,colors);}
+    continue;
+   }
+   // Rooms and WC use identical rectangles for visible walls and blocking volumes.
+   for(const r of l.cells.filter(c=>c.floor===f&&(c.kind==='room'||c.kind==='wc'))){
+    if(!r.openOffice&&!r.photoShell)for(const side of ['u0','u1','v0','v1'])roomWall(g,l,r,side,y);
+    if(r.kind==='room')details(g,l,r,y);
+    else if(l.id==='admin-front'&&f<=2)details(g,l,{...r,name:r.label,cat:'admin'},y);
+   }
+   for(const shell of l.cells.filter(c=>c.floor===f&&c.kind==='office-suite')){
+    for(const side of ['u0','u1','v0','v1'])if(!shell.omitSides.includes(side))roomWall(g,l,shell,side,y);
+    if(shell.doorSide)details(g,l,{...shell,cat:'admin'},y);
+   }
+   for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f)))stairEnclosure(g,l,s,y);
+   if(f>1)for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f)&&CampusSpatialPlan.onFloor(s.hole,f))){
+    const h=s.hole;
+    for(const v of [h.v0-.04,h.v1+.04])landingGuard(g,l,h.u0-.04,h.u1+.04,v-.03,v+.03,y,colors);
+    landingGuard(g,l,h.u0-.07,h.u0-.01,h.v0-.04,h.v1+.04,y,colors);
+    for(const [a,b] of [[-2.34,-2.05],[-.45,.45],[2.05,2.34]])landingGuard(g,l,s.nearU+.01,s.nearU+.07,s.centerV+a,s.centerV+b,y,colors);
+   }
+   // Corridor edges: split against footprint intersections so internal joints stay open.
+   const neighbors=layouts.filter(q=>q.id!==l.id&&((['grade8-front','grade8-mid'].includes(l.id)&&['grade8-front','grade8-mid'].includes(q.id))||(['admin-front','grade9-back'].includes(l.id)&&['admin-front','grade9-back'].includes(q.id)))),neighborCorridors=neighbors.flatMap(q=>q.corridors.filter(c=>c.floor===f).map(c=>{const a=l.local(c.rect.x0,c.rect.z0),b=l.local(c.rect.x1,c.rect.z1);return {u0:Math.min(a.u,b.u),u1:Math.max(a.u,b.u),v0:Math.min(a.v,b.v),v1:Math.max(a.v,b.v)}}));
+   const parts=l.footprints.filter(p=>p.floor===f),divisions=[...parts,...l.corridors.filter(p=>p.floor===f),...neighborCorridors,...galleryLayouts.flatMap(q=>q.footprints.filter(p=>p.floor===f).map(p=>{const a=l.local(p.rect.x0,p.rect.z0),b=l.local(p.rect.x1,p.rect.z1);return {u0:Math.min(a.u,b.u),u1:Math.max(a.u,b.u),v0:Math.min(a.v,b.v),v1:Math.max(a.v,b.v)}}))],us=[...new Set(divisions.flatMap(p=>[p.u0,p.u1]))].sort((a,b)=>a-b),vs=[...new Set(divisions.flatMap(p=>[p.v0,p.v1]))].sort((a,b)=>a-b);
+   const present=(u,v)=>parts.some(p=>u>p.u0+1e-5&&u<p.u1-1e-5&&v>p.v0+1e-5&&v<p.v1-1e-5);
+   function edge(alongU,fixed,a,b){
+    const u=alongU?(a+b)/2:fixed,v=alongU?fixed:(a+b)/2;
+    const corridor=l.corridors.some(p=>p.floor===f&&CampusSpatialPlan.contains(p,u,v));if(!corridor)return;
+    const min=alongU?a:fixed-.09,max=alongU?b:fixed+.09,v0=alongU?fixed-.09:a,v1=alongU?fixed+.09:b;
+    // Keep ground-floor access and actual gallery junctions open. Exposed upper
+    // corridor ends need visible parapets instead of an invisible support limit.
+    const point=l.world(u,v),galleryJoin=galleryLayouts.some(q=>q.footprints.some(p=>p.floor===f&&M.inside(p.rect,point.x,point.z)));
+    const teachingJoin=neighborCorridors.some(p=>CampusSpatialPlan.contains(p,u,v));
+    if(l.id==='tech-building'&&f===1){
+     const entry=l.entrances.find(e=>e.kind==='main'),main=alongU&&Math.abs(fixed-entry.wallV)<.01;
+     const cuts=[a,b,...(main?[entry.u-entry.width/2,entry.u-1,entry.u+1,entry.u+entry.width/2].filter(t=>t>a&&t<b):[])].sort((a,b)=>a-b);
+     const panel=(s,t,y0,y1,paint,solid=true)=>alongU?box(g,l,s,t,fixed-.09,fixed+.09,y0,y1,paint,solid):box(g,l,fixed-.09,fixed+.09,s,t,y0,y1,paint,solid);
+     for(let i=1;i<cuts.length;i++){
+      const s=cuts[i-1],t=cuts[i],door=main&&(s+t)/2>entry.u-1&&(s+t)/2<entry.u+1;
+      if(door){panel(s,t,3.32,FH,colors.exterior);continue;}
+      if(main&&Math.abs((s+t)/2-entry.u)<entry.width/2){panel(s,t,0,.24,colors.exterior);panel(s,t,.24,2.65,colors.glass);panel(s,t,3.32,FH,colors.exterior);continue;}
+      panel(s,t,0,1.05,colors.exterior);panel(s,t,2.65,FH,colors.exterior);panel(s,t,1.05,2.65,colors.glass);
+     }
+     return;
+    }
+    const open=f===1||galleryJoin||teachingJoin;
+    const connector=l.b.spatialProfile.shape==='admin'&&l.footprints.some(p=>p.floor===f&&p.part==='connector'&&CampusSpatialPlan.contains(p,u,v));
+    if(connector&&!open){
+     box(g,l,min,max,v0,v1,y,y+1.05,colors.exterior,true);
+     box(g,l,min,max,v0,v1,y+2.6,y+FH,colors.exterior,true);
+     box(g,l,min,max,v0,v1,y+1.05,y+2.6,colors.glass,true);
+     for(let t=a+.5;t<b;t+=.8)box(g,l,alongU?t-.025:fixed-.12,alongU?t+.025:fixed+.12,alongU?fixed-.12:t-.025,alongU?fixed+.12:t+.025,y+1.05,y+2.6,colors.steel);
+     return;
+    }
+    if(!open)box(g,l,min,max,v0,v1,y,y+1.05,colors.exterior,true);
+    // Space columns away from doors and corridor ends.
+    for(let t=a+1;t<b-1;t+=6)if(f!==1&&!galleryJoin&&!teachingJoin&&!(l.id==='multi-building'&&f===2)){
+     const post=box(g,l,alongU?t-.13:fixed-.13,alongU?t+.13:fixed+.13,alongU?fixed-.13:t-.13,alongU?fixed+.13:t+.13,y,y+FH,colors.exterior,true);
+     if(l.id==='new-grade7'&&post){post.geometry.dispose();post.geometry=new THREE.CylinderGeometry(.13,.13,FH,12);post.material=colors.ceiling;}
+    }
+   }
+   for(const v of vs)for(let i=1;i<us.length;i++){const u=(us[i]+us[i-1])/2;if(present(u,v-.02)!==present(u,v+.02))edge(true,v,us[i-1],us[i]);}
+   for(const u of us)for(let i=1;i<vs.length;i++){const v=(vs[i]+vs[i-1])/2;if(present(u-.02,v)!==present(u+.02,v))edge(false,u,vs[i-1],vs[i]);}
+   const ceiling=new THREE.Group();ceiling.name=`corridor-ceiling-${l.id}-${f}`;ceiling.userData={buildingId:l.id,floorNum:f,campusCeiling:true};scene.add(ceiling);floorMeshes.push(ceiling);
+   for(const p of l.corridors.filter(p=>p.floor===f)){
+    if(l.id==='multi-building'&&f===2)continue; // Open terrace above the photographed low connector.
+    const longU=p.u1-p.u0>=p.v1-p.v0,lo=longU?p.u0:p.v0,hi=longU?p.u1:p.v1;
+    // Keep the same stair holes clear in the ceiling as in the floor above.
+    slab(ceiling,l,p,y+FH-.22,colors.ceiling,true);
+    for(let t=lo+1.2;t<hi;t+=1.2)box(g,l,longU?t-.005:p.u0,longU?t+.005:p.u1,longU?p.v0:t-.005,longU?p.v1:t+.005,y+(y===0?.047:.002),y+(y===0?.053:.008),colors.grout);
+    const acrossLo=longU?p.v0:p.u0,acrossHi=longU?p.v1:p.u1;
+    for(let t=acrossLo+1.2;t<acrossHi;t+=1.2)box(g,l,longU?p.u0:t-.005,longU?p.u1:t+.005,longU?t-.005:p.v0,longU?t+.005:p.v1,y+(y===0?.047:.002),y+(y===0?.053:.008),colors.grout);
+    for(let t=lo+2;t<hi-.6;t+=5){
+     const u=longU?t:(p.u0+p.u1)/2,v=longU?(p.v0+p.v1)/2:t;
+     // Skip any fixture whose footprint would extend over a stair opening.
+     const beam={u0:longU?u-.12:p.u0,u1:longU?u+.12:p.u1,v0:longU?p.v0:v-.12,v1:longU?p.v1:v+.12},lamp={u0:longU?u-.7:u-.09,u1:longU?u+.7:u+.09,v0:longU?v-.09:v-.7,v1:longU?v+.09:v+.7};
+     if(l.holes.some(h=>CampusSpatialPlan.onFloor(h,f+1)&&[beam,lamp].some(q=>q.u0<h.u1&&q.u1>h.u0&&q.v0<h.v1&&q.v1>h.v0)))continue;
+     box(ceiling,l,longU?u-.12:p.u0,longU?u+.12:p.u1,longU?p.v0:v-.12,longU?p.v1:v+.12,y+FH-.58,y+FH-.4,colors.ceiling);
+     box(ceiling,l,longU?u-.7:u-.09,longU?u+.7:u+.09,longU?v-.09:v-.7,longU?v+.09:v+.7,y+FH-.64,y+FH-.59,colors.light);
+    }
+   }
+  }
+  if(l.b.spatialProfile.shape==='admin'){
+   const connector=l.footprints.find(p=>p.part==='connector'),g=new THREE.Group();g.name='floor-admin-covered-passage-1';g.userData={buildingId:l.id,floorNum:1};scene.add(g);floorMeshes.push(g);
+   // An open ground-floor undercroft supports the upper connected body.
+   for(const u of [connector.u0+.12,connector.u1-.12])for(const v of [connector.v0+1.8,connector.v1-.5])box(g,l,u-.1,u+.1,v-.1,v+.1,0,FH,colors.exterior,true);
+  }
+  if(l.id==='art-building'){
+   const v0=-l.D/2,c0=v0+5.2,c1=c0+2.8,cv=(c0+c1)/2;
+   for(let f=1;f<=l.b.floors;f++){
+    const y=(f-1)*FH,g=new THREE.Group();g.name=`floor-art-envelope-${f}`;g.userData={buildingId:l.id,floorNum:f};scene.add(g);floorMeshes.push(g);
+    // Photo: a closed grey tower with separate windows, not open stacked galleries.
+    box(g,l,-l.L/2,l.L/2,v0-.17,v0-.07,y,y+1.1,colors.exterior,true);
+    box(g,l,-l.L/2,l.L/2,v0-.17,v0-.07,y+2.5,y+FH,colors.exterior,true);
+    const pitch=l.L/3;
+    for(let i=0;i<3;i++){const a=-l.L/2+i*pitch,b=a+pitch,center=(a+b)/2;
+     box(g,l,a,center-1,v0-.17,v0-.07,y+1.1,y+2.5,colors.exterior,true);box(g,l,center+1,b,v0-.17,v0-.07,y+1.1,y+2.5,colors.exterior,true);
+     box(g,l,center-1,center+1,v0-.17,v0-.07,y+1.1,y+2.5,colors.glass,true);
+    }
+    for(const side of [-1,1]){
+     const u=side*(l.L/2+.1),center=(v0+c0)/2;
+     box(g,l,u-.05,u+.05,v0,c0,y,y+1.1,colors.exterior,true);box(g,l,u-.05,u+.05,v0,c0,y+2.5,y+FH,colors.exterior,true);
+     box(g,l,u-.05,u+.05,v0,center-1,y+1.1,y+2.5,colors.exterior,true);box(g,l,u-.05,u+.05,center+1,c0,y+1.1,y+2.5,colors.exterior,true);box(g,l,u-.05,u+.05,center-1,center+1,y+1.1,y+2.5,colors.glass,true);
+     if(f===1){for(const [a,b] of [[c0,cv-1],[cv+1,c1]])box(g,l,u-.05,u+.05,a,b,y,y+FH,colors.exterior,true);box(g,l,u-.05,u+.05,cv-1,cv+1,y+2.3,y+FH,colors.exterior,true);}
+     else{box(g,l,u-.05,u+.05,c0,c1,y,y+1.1,colors.exterior,true);box(g,l,u-.05,u+.05,c0,c1,y+2.5,y+FH,colors.exterior,true);box(g,l,u-.05,u+.05,c0,c1,y+1.1,y+2.5,colors.glass,true);}
+    }
+   }
+  }
+  if(l.id==='tech-building'){
+   const nose=l.facadeFeatures.roundedNose;
+   for(let f=1;f<=l.b.floors;f++){
+    const y=(f-1)*FH,g=new THREE.Group();g.name=`floor-tech-facade-${f}`;g.userData={buildingId:l.id,floorNum:f};scene.add(g);floorMeshes.push(g);
+    const p=l.world(nose.u,nose.v,y+FH/2),body=new THREE.Mesh(new THREE.CylinderGeometry(nose.radius,nose.radius,FH,24,1,false,0,Math.PI),colors.exterior);body.position.set(p.x,p.y,p.z);body.rotation.y=Math.PI;body.castShadow=body.receiveShadow=true;body.name='tech-rounded-junction';g.add(body);
+    // Closed semicircular outboard volume; use the same curve for visible shell and physics.
+    for(let u=nose.u-nose.radius;u<nose.u+nose.radius-.001;u+=.2){
+     const end=Math.min(nose.u+nose.radius,u+.2),v=nose.v+Math.sqrt(Math.max(0,nose.radius**2-((u+end)/2-nose.u)**2));
+     const r=l.rect(u,end,nose.v-.08,v);registerWallCollider(r.x0,r.x1,r.z0,r.z1,y,y+FH);WALL_COLLIDERS.at(-1).buildingId=l.id;cameraVolume(r,y,y+FH);
+    }
+    if(f===2)for(let u=nose.u;u<l.L/2-.01;u+=.8){
+     if(Math.abs(u+.4-nose.u)<nose.radius+.4)continue;
+     box(g,l,u+.04,Math.min(u+.76,l.L/2-.04),nose.v+.1,nose.v+.15,y+1.15,y+2.7,colors.glass);
+     for(const h of [1.15,2.7])box(g,l,u,Math.min(u+.8,l.L/2),nose.v+.09,nose.v+.18,y+h-.055,y+h+.055,techWindowFrame);
+     box(g,l,u,u+.055,nose.v+.09,nose.v+.18,y+1.15,y+2.7,techWindowFrame);
+    }
+   }
+   const e=l.entrances.find(e=>e.kind==='main'),g=new THREE.Group();g.name='floor-tech-road-entrance-1';g.userData={buildingId:l.id,floorNum:1};scene.add(g);floorMeshes.push(g);
+   const stone=material(0xa49a92),frame=material(0xd8d4c3),steel=material(0x9da6a4),glass=new THREE.MeshStandardMaterial({color:0x687f7b,transparent:true,opacity:.34});
+   const named=(name,u0,u1,v0,v1,y0,y1,paint,solid=false)=>{const m=box(g,l,u0,u1,v0,v1,y0,y1,paint,solid);if(m){m.name=name;if(['tech-entry-glass-transom','tech-entry-right-handrail'].includes(name)){const part=new THREE.Group();part.name=name;m.name=name+'-mesh';g.remove(m);part.add(m);g.add(part);}}return m;};
+   for(const p of l.platforms.filter(p=>p.entranceStep||p.entranceLanding)){
+    named(p.entranceStep?'tech-entry-step':'tech-entry-tiled-landing',p.u0,p.u1,p.v0,p.v1,0,p.y,stone);
+    for(let u=p.u0+.32;u<p.u1;u+=.32)named('tech-entry-tile-joint',u-.006,u+.006,p.v0,p.v1,p.y+.001,p.y+.004,colors.grout);
+    for(let v=p.v0+.32;v<p.v1;v+=.32)named('tech-entry-tile-joint',p.u0,p.u1,v-.006,v+.006,p.y+.001,p.y+.004,colors.grout);
+   }
+   const transition=l.ramps.find(r=>r.entranceTransition),r0=l.local(transition.start.x,transition.start.z),r1=l.local(transition.end.x,transition.end.z),u0=e.u-1,u1=e.u+1;
+   const vertices=[l.world(u0,r0.v,transition.h0),l.world(u1,r0.v,transition.h0),l.world(u1,r1.v,transition.h1),l.world(u0,r1.v,transition.h1),l.world(u0,r0.v,-.02),l.world(u1,r0.v,-.02),l.world(u1,r1.v,-.02),l.world(u0,r1.v,-.02)],positions=[];
+   for(const i of [0,1,2,0,2,3,0,4,5,0,5,1,1,5,6,1,6,2,3,7,4,3,4,0]){const p=vertices[i];positions.push(p.x,p.y,p.z)}
+   const slopeGeometry=new THREE.BufferGeometry();slopeGeometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));slopeGeometry.computeVertexNormals();const slope=new THREE.Mesh(slopeGeometry,stone);slope.name='tech-entry-interior-transition';slope.castShadow=slope.receiveShadow=true;g.add(slope);
+   const entryBox=(name,u0,u1,t0,t1,y0,y1,paint,solid=false)=>named(name,u0,u1,e.wallV-t1,e.wallV-t0,y0,y1,paint,solid);
+   const t=-.12,lo=e.u-e.width/2,hi=e.u+e.width/2;
+   entryBox('tech-entry-glass-transom',lo,hi,t-.03,t+.03,2.65,3.28,glass);
+   // Fixed side glazing leaves a 2-unit open central doorway for actual walking.
+   for(const [a,b] of [[lo,e.u-1],[e.u+1,hi]])entryBox('tech-entry-fixed-glass',a,b,t-.04,t+.04,.24,2.65,glass);
+   for(const u of [lo,e.u-1,e.u+1,hi])entryBox('tech-entry-aluminium-jamb',u-.04,u+.04,t-.07,t+.07,.24,3.32,frame);
+   for(const y of [2.65,3.3])entryBox('tech-entry-aluminium-crossbar',lo,hi,t-.07,t+.07,y-.025,y+.025,frame);
+   for(const [a,b] of [[lo,e.u-1],[e.u+1,hi]])for(const y of [.28,1.12])entryBox('tech-entry-fixed-panel-frame',a,b,t-.07,t+.07,y-.025,y+.025,frame);
+   // Glass leaves are held open inward, clear of the passage and its headroom.
+   for(const side of [-1,1]){const u=e.u+side*1.08;entryBox('tech-entry-open-glass-leaf',u-.025,u+.025,t+.08,t+.9,.28,2.61,glass);for(const h of [.29,1.12,2.6])entryBox('tech-entry-open-leaf-frame',u-.045,u+.045,t+.05,t+.93,h-.025,h+.025,frame);}
+   const railU=hi+.12;
+   entryBox('tech-entry-right-handrail',railU-.035,railU+.035,-3,-.15,1.1,1.17,steel,true);
+   for(const t of [-2.9,-2.1,-1.1,-.2])entryBox('tech-entry-rail-post',railU-.035,railU+.035,t-.035,t+.035,.02,1.14,steel,true);
+  }
+  if(l.id==='new-grade7')CampusNew7World.build({l,scene,floorMeshes,box,surfaceMaterials});
+  if(l.id==='multi-building')CampusMultiWorld.build({l,scene,floorMeshes,box,slab,surfaceMaterials,cameraVolume,details});
+  if(l.id==='gym-bld')CampusGymWorld.build({l,scene,floorMeshes,box,slab,surfaceMaterials,cameraVolume,details});
+  for(const s of l.stairs)for(let f=s.fromFloor||1;f<Math.min(l.b.floors,s.toFloor||l.b.floors);f++){
+   const g=new THREE.Group();g.name=`floor-stairs-${f+1}`;g.userData={buildingId:l.id,floorNum:f+1};scene.add(g);floorMeshes.push(g);
+   const ramps=l.ramps.filter(r=>r.stairId===s.id&&r.floor===f),p=l.platforms.find(p=>p.stairId===s.id&&p.floor===f);
+   box(g,l,p.u0,p.u1,p.v0,p.v1,p.y-.16,p.y,colors.stair);
+   landingGuard(g,l,p.u0,p.u0+.07,p.v0,p.v1,p.y,colors);
+   for(const v of [p.v0,p.v1]){if(l.id==='gym-bld'&&v===p.v1)landingGuard(g,l,p.u0,s.windowLanding.u0,v-.035,v+.035,p.y,colors);else landingGuard(g,l,p.u0,p.u1,v-.035,v+.035,p.y,colors);}
+   if(l.id==='gym-bld'){
+    for(let v=s.centerV-1.9;v<s.centerV+2.3;v+=.4)box(g,l,s.u0+.2,s.farU+.08,v-.004,v+.004,p.y+.002,p.y+.008,colors.grout);
+    for(let u=s.u0+.6;u<s.farU+.08;u+=.4)box(g,l,u-.004,u+.004,s.centerV-2.3,s.centerV+2.3,p.y+.002,p.y+.008,colors.grout);
+   }
+
+
+   for(const r of ramps){
+    registerStairZone((r.x0+r.x1)/2,(r.z0+r.z1)/2,r.x1-r.x0,r.z1-r.z0,r.h0,r.h1,f,f+1,r.axis,r.axis==='x'?Math.sign(r.end.x-r.start.x):Math.sign(r.end.z-r.start.z));
+    // Closed risers follow the existing smooth walk ramp. A thin stepped waist
+    // leaves headroom below the next storey instead of filling a concrete wedge.
+    const count=Math.ceil((r.h1-r.h0)/.15),runLength=Math.hypot(r.end.x-r.start.x,r.end.z-r.start.z),depth=runLength/count;
+    const stepBox=(point,width,height,length,colour)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(l.horizontal?length:width,height,l.horizontal?width:length),colour);mesh.position.set(point.x,point.y,point.z);mesh.castShadow=mesh.receiveShadow=true;g.add(mesh);cameraVolume({x0:point.x-(l.horizontal?length:width)/2,x1:point.x+(l.horizontal?length:width)/2,z0:point.z-(l.horizontal?width:length)/2,z1:point.z+(l.horizontal?width:length)/2},point.y-height/2,point.y+height/2);return mesh};
+    for(let i=0;i<count;i++){
+     const mid=M.rampPoint(r,(i+.5)/count),front=M.rampPoint(r,i/count),top=r.h0+(i+1)/count*(r.h1-r.h0),bottom=top-.3;
+     stepBox({...mid,y:(top+bottom)/2},1.6,top-bottom,depth,colors.stair);
+     stepBox({...front,y:top+.009},1.6,.018,.035,colors.edge);
+     if(l.id==='gym-bld'){
+      // Visible tile joints, anti-slip grooves and blue stepped side paint (photo 18).
+      for(const offset of [-.4,0,.4]){const q={...mid,y:top+.004};q[l.horizontal?'z':'x']+=offset;stepBox(q,.007,.008,depth,colors.grout);}
+      for(const t of [.05,.12]){const q=M.rampPoint(r,(i+t)/count);stepBox({...q,y:top+.006},1.45,.009,.008,colors.edge);}
+      for(const side of [-1,1]){const q={...mid,y:top-.06};q[l.horizontal?'z':'x']+=side*.79;stepBox(q,.07,.12,depth,colors.skirt);}
+     }
+    }
+    for(const side of [-1,1]){
+     const shift=p=>{const q=new THREE.Vector3(p.x,p.y,p.z);q[l.horizontal?'z':'x']+=side*.78;return q};
+     const rail=(a,c,colour,radius)=>{const mesh=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,a.distanceTo(c),8),colour);mesh.position.copy(a).add(c).multiplyScalar(.5);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),c.clone().sub(a).normalize());g.add(mesh)};
+     const a=shift(r.start),c=shift(r.end);a.y+=.9;c.y+=.9;rail(a,c,colors.handrail,.04);
+     const posts=Math.max(2,Math.ceil(runLength/.8));for(let j=0;j<=posts;j++){const q=shift(M.rampPoint(r,j/posts));rail(q,q.clone().add(new THREE.Vector3(0,.9,0)),colors.steel,.022);}
+     // Physical side guards follow each flight's slope. Short volumes protect
+     // the whole body without filling the headroom beneath stacked stairs.
+     const guards=Math.ceil(runLength/.24);
+     for(let j=0;j<guards;j++){
+      const a=shift(M.rampPoint(r,j/guards)),c=shift(M.rampPoint(r,(j+1)/guards)),rect={x0:Math.min(a.x,c.x)-.04,x1:Math.max(a.x,c.x)+.04,z0:Math.min(a.z,c.z)-.04,z1:Math.max(a.z,c.z)+.04},low=Math.min(a.y,c.y)-.08,high=Math.max(a.y,c.y)+.98;
+      registerWallCollider(rect.x0,rect.x1,rect.z0,rect.z1,low,high);
+      Object.assign(WALL_COLLIDERS.at(-1),{stairRail:true,stairId:s.id,floor:f});
+      cameraVolume(rect,low,high);
+     }
+     // Administrative stair safety mesh is schematic, without reproducing notices.
+     if(l.b.spatialProfile.shape==='admin'){
+      const points=[];
+      // Diamond weave in the stair-side plane, clipped to the guard height.
+      for(const direction of [-1,1])for(let k=-runLength-.7;k<runLength+.7;k+=.24){
+       const x0=Math.max(0,direction===1?k:k-.7),x1=Math.min(runLength,direction===1?k+.7:k);if(x1<=x0)continue;
+       const a=shift(M.rampPoint(r,x0/runLength)),c=shift(M.rampPoint(r,x1/runLength));a.y+=.12+direction*(x0-k);c.y+=.12+direction*(x1-k);points.push(a.x,a.y,a.z,c.x,c.y,c.z);
+      }
+      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(points,3));g.add(new THREE.LineSegments(geo,safetyMeshMaterial));
+     }
+    }
+
+   }
+  }
+ }
+ const galleries=[];
+ // Static batching retains low draw calls despite the extra circulation details.
+ for(const g of scene.children.filter(g=>g.type==='Group'&&(g.name.startsWith('floor-')||g.userData.campusCeiling))){
+  const batches=new Map();for(const mesh of [...g.children])if(mesh.isMesh&&mesh.visible&&!mesh.userData.roof&&!mesh.material.map&&!Array.isArray(mesh.material)){
+   mesh.updateMatrix();const geo=(mesh.geometry.index?mesh.geometry.toNonIndexed():mesh.geometry.clone()).applyMatrix4(mesh.matrix);if(!batches.has(mesh.material))batches.set(mesh.material,{p:[],n:[],uv:[]});const data=batches.get(mesh.material);
+   for(const [name,key] of [['position','p'],['normal','n'],['uv','uv']]){const a=geo.getAttribute(name);if(a)for(const v of a.array)data[key].push(v)}geo.dispose();mesh.geometry.dispose();g.remove(mesh);
+  }
+  for(const [mat,data] of batches){const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(data.p,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(data.n,3));if(data.uv.length)geo.setAttribute('uv',new THREE.Float32BufferAttribute(data.uv,2));const mesh=new THREE.Mesh(geo,mat);mesh.castShadow=mesh.receiveShadow=true;g.add(mesh)}
+ }
+ const cameraIndex=CampusCollisionGrid.create(cameraVolumes,0,0);
+ window.campusCollisionIndex=CampusCollisionGrid.create(WALL_COLLIDERS,AVATAR_COLLISION_RADIUS,AVATAR_HEIGHT);
+ // A small planning margin keeps interpolated turns away from exact wall tangents.
+ const navigationIndex=CampusCollisionGrid.create(WALL_COLLIDERS,AVATAR_COLLISION_RADIUS+.08,AVATAR_HEIGHT);
+ // Adults are wider and taller than the player. Their own broad-phase grid
+ // includes the whole animated body instead of letting shoulders enter walls.
+ window.campusPeopleCollisionIndex=CampusCollisionGrid.create(WALL_COLLIDERS,.64,2.15);
+ function floorAt(position){
+  const y=position.y,l=layouts.find(l=>insideFloor(l,position.x,position.z,Math.max(1,Math.round(y/FH)+1))||l.platforms.some(p=>M.inside(p,position.x,position.z)&&p.y<=y+.35));
+  if(l)return M.groundAt(l,position.x,position.z,y);
+  return CampusOutdoorPlan.ground(position);
+ }
+ // Keep the feet on a connected surface. Stair rails and slab edges must not
+ // become a multi-floor drop when keyboard or joystick input drifts sideways.
+ function stepHeight(from,x,z){
+  const current=floorAt(from),next=floorAt({x,y:from.y,z});
+  return Math.abs(next-current)<=.35+1e-6?next:null;
+ }
+ // Static graph requests share BFS work. Runtime searches use fresh state.
+ const startupSearches=new Map();let buildingGraph=true;
+ // Four-connected grid connectors reject blocked edges, floor holes and courtyard voids.
+ function gridPath(start,end,y=0,interior=null,stageSurface=false,avoidPeople=false){
+  const step=(interior||stageSurface||avoidPeople)?.35:1,origin=stageSurface?{x:CampusOutdoorPlan.stage.x0-1,z:CampusOutdoorPlan.stage.stairs.z0-1}:interior?{x:interior.bounds.x0-1,z:interior.bounds.z0-1}:{x:-130,z:-100},round=p=>({x:Math.round((p.x-origin.x)/step),z:Math.round((p.z-origin.z)/step)}),f=Math.round(y/FH)+1;
+  let a=round(start),b=round(end);
+  const stageFree=(x,z)=>CampusOutdoorPlan.onStage({x,z,y})&&Math.abs(CampusOutdoorPlan.ground({x,z})-y)<.15;
+  const peopleFree=(x,z)=>!avoidPeople||(Math.hypot(x-start.x,z-start.z)<=12&&window.campusPeople?.blocksPlayer({x,y,z},{x,y,z})!==true);
+  const free=(x,z)=>{const wx=origin.x+x*step,wz=origin.z+z*step;
+   return ((wx>=-125&&wx<=115&&wz>=-100&&wz<=108)||CampusEntranceAvenue.contains(wx,wz))&&!navigationIndex.hit(wx,y,wz)&&peopleFree(wx,wz)&&(stageSurface?stageFree(wx,wz):interior?insideFloor(interior,wx,wz,f)&&Math.abs(M.groundAt(interior,wx,wz,y)-y)<.08:!CampusOutdoorPlan.reserved({x:wx,z:wz})&&!layouts.some(l=>insideFloor(l,wx,wz,1)))};
+  const clear=(p,q)=>{const dist=Math.hypot(p.x-q.x,p.z-q.z),steps=Math.max(1,Math.ceil(dist/.12));for(let i=0;i<=steps;i++){const t=i/steps,x=p.x+(q.x-p.x)*t,z=p.z+(q.z-p.z)*t;if(checkWallCollision(x,y,z)||((p!==start||t*dist>.3)&&(q!==end||(1-t)*dist>.3)&&navigationIndex.hit(x,y,z))||!peopleFree(x,z)||(stageSurface?!stageFree(x,z):!interior&&CampusOutdoorPlan.reserved({x,z}))||(interior&&(!insideFloor(interior,x,z,f)||Math.abs(M.groundAt(interior,x,z,y)-y)>.08)))return false}return true};
+  // A safe continuous position may round into a person's clearance. Anchor
+  // detours to a nearby free cell connected to the exact position instead.
+  if(avoidPeople||!buildingGraph){
+   const anchor=p=>{const c=round(p),candidates=[];for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++)candidates.push({x:c.x+dx,z:c.z+dz});
+    return candidates.sort((a,b)=>Math.hypot(origin.x+a.x*step-p.x,origin.z+a.z*step-p.z)-Math.hypot(origin.x+b.x*step-p.x,origin.z+b.z*step-p.z)).find(c=>free(c.x,c.z)&&clear(p,{x:origin.x+c.x*step,z:origin.z+c.z*step}));};
+   a=anchor(start);b=anchor(end);if(!a||!b)return null;
+  }
+  const searchKey=`${stageSurface?'stage':interior?.id||'outdoor'}/${y}/${a.x},${a.z}`;
+  let state=buildingGraph?startupSearches.get(searchKey):null;if(!state){state=CampusGridSearch.create(a);if(buildingGraph)startupSearches.set(searchKey,state)}
+  const points=CampusGridSearch.path(state,b,free,Infinity,(p,q)=>clear({x:origin.x+p.x*step,z:origin.z+p.z*step},{x:origin.x+q.x*step,z:origin.z+q.z*step}));if(points){const result=points.map(p=>({x:origin.x+p.x*step,y,z:origin.z+p.z*step}));
+    if(avoidPeople)return [{...start},...result,{...end}];
+    if(result.length===1)return clear(start,end)?[{...start},{...end}]:null;
+    if(!clear(start,result[1])||!clear(result.at(-2),end))return null;result[0]={...start};result[result.length-1]={...end};return result;
+  }
+  return null;
+ }
+ function attachPath(idA,idB,path,buildingId){if(!path)return false;let prev=idA;path.slice(1,-1).forEach((p,i)=>{const next=node(`${idA}-${idB}-p${i}`,p,buildingId);link(prev,next);prev=next});link(prev,idB);return true}
+ const hubs={};
+ for(const l of layouts){
+  if(l.paths)continue;
+  for(let f=1;f<=l.b.floors;f++){
+   const y=(f-1)*FH,c=l.corridors.find(c=>c.floor===f),p=l.world((c.u0+c.u1)/2,(c.v0+c.v1)/2,y),hub=node(`${l.id}-entry-${f}`,p,l.id);hubs[`${l.id}-${f}`]=hub;
+   for(const r of l.rooms.filter(r=>r.floor===f)){
+    const corridor=node(`walk-${r.id}-corridor`,r.corridor,l.id),door=node(`walk-${r.id}-door`,r.door,l.id),target=node(`walk-${r.id}`,r.center,l.id);link(corridor,door);link(door,target);roomTargets[r.id]=target;
+    const old=ROOMS_DB[r.id].node;ROOMS_DB[r.id].node=target;ROOMS_DB[r.id].spaceCode=r.spaceCode;if(r.entryHint)ROOMS_DB[r.id].entryHint=r.entryHint;const badge=roomBadgeElements.find(e=>e.nodeId===old);if(badge)badge.nodeId=target;
+    if(r.sharedEntrance){
+     const e=r.sharedEntrance,prefix=e.id;
+     if(!graph[prefix+'-outside']){
+      const outside=node(prefix+'-outside',e.corridor,l.id),entry=node(prefix+'-door',e.door,l.id),inside=node(prefix+'-inside',e.inside,l.id);
+      attachPath(hub,outside,gridPath(p,e.corridor,y,l),l.id);link(outside,entry);link(entry,inside);
+     }
+     attachPath(prefix+'-inside',corridor,gridPath(e.inside,r.corridor,y,l),l.id);
+    }else attachPath(hub,corridor,gridPath(p,r.corridor,y,l),l.id);
+   }
+   for(const s of l.stairs.filter(s=>CampusSpatialPlan.onFloor(s,f))){
+    for(const [label,v] of [['lower',s.centerV+s.sign*1.25],['upper',s.centerV-s.sign*1.25]]){
+     const q=l.world(s.innerU,v,y),id=node(`${s.id}-${label}-${f}`,q,l.id);attachPath(hub,id,gridPath(p,q,y,l),l.id);
+    }
+   }
+  }
+  for(const s of l.stairs)for(let f=s.fromFloor||1;f<Math.min(l.b.floors,s.toFloor||l.b.floors);f++){
+   let previous=`${s.id}-lower-${f}`;
+   for(const [ri,r] of l.ramps.filter(r=>r.stairId===s.id&&r.floor===f).entries()){
+    if(ri===1){
+     const enter=node(`${s.id}-turn-in-${f}`,l.world(s.turnU,s.centerV+s.sign*1.25,(f-.5)*FH),l.id);link(previous,enter);
+     const turn=node(`${s.id}-turn-${f}`,l.world(s.turnU,s.centerV-s.sign*1.25,(f-.5)*FH),l.id);link(enter,turn);previous=turn;
+    }
+    for(let i=0;i<=18;i++){const n=node(`${s.id}-ramp-${f}-${ri}-${i}`,M.rampPoint(r,i/18),l.id);link(previous,n);previous=n;}
+   }
+   link(previous,`${s.id}-upper-${f+1}`);
+  }
+ }
+ for(const j of CampusSpatialPlan.junctions(layouts)){
+  const a=layouts.find(l=>l.id===j.a),b=layouts.find(l=>l.id===j.b),ha=hubs[`${j.a}-${j.floor}`],hb=hubs[`${j.b}-${j.floor}`];
+  const na=node(`teaching-junction-${j.id||j.floor}-a`,j.start,j.a),nb=node(`teaching-junction-${j.id||j.floor}-b`,j.end,j.b);
+  attachPath(ha,na,gridPath(graph[ha],j.start,j.start.y,a),j.a);if(j.path)attachPath(na,nb,j.path,j.a);else link(na,nb);
+  attachPath(nb,hb,gridPath(j.end,graph[hb],j.end.y,b),j.b);
+ }
+ const gate=node('gate',{...CampusOutdoorPlan.entrance.spawn});
+ const pedestrianEntry=node('pedestrian-entry',{...CampusOutdoorPlan.entrance.pedestrian.inside});
+ attachPath(gate,pedestrianEntry,gridPath(graph[gate],graph[pedestrianEntry]));
+ for(const l of layouts)for(const [i,e] of l.entrances.entries()){
+  const steps=Math.ceil(Math.hypot(e.outside.x-e.inside.x,e.outside.z-e.inside.z)/.12);
+  if(Array.from({length:steps+1},(_,j)=>j/steps).some(t=>checkWallCollision(e.inside.x+(e.outside.x-e.inside.x)*t,0,e.inside.z+(e.outside.z-e.inside.z)*t)))continue;
+  const exterior=node(`${l.id}-outside-${i}`,e.outside),inside=node(`${l.id}-entrance-${i}`,e.inside,l.id);if(e.path)attachPath(inside,exterior,e.path,l.id);else link(exterior,inside);
+  const hub=hubs[`${l.id}-1`];attachPath(inside,hub,gridPath(e.inside,graph[hub],0,l),l.id);
+  // Detached rooms get their own entrance; no route crosses the parking void.
+  for(const r of l.rooms.filter(r=>r.floor===1))attachPath(inside,`walk-${r.id}-corridor`,gridPath(e.inside,r.corridor,0,l),l.id);
+  attachPath(pedestrianEntry,exterior,gridPath(graph[pedestrianEntry],e.outside));
+ }
+ const stageFoot=node('stage-outdoor-foot',{...CampusOutdoorPlan.stage.foot});
+ attachPath(pedestrianEntry,stageFoot,gridPath(graph[pedestrianEntry],graph[stageFoot]));
+ let stagePrevious=stageFoot;
+ for(const [i,p] of CampusOutdoorPlan.stairsPath().entries()){const id=node(`stage-outdoor-stair-${i}`,p);link(stagePrevious,id);stagePrevious=id;}
+ const podium=node('stand-podium',{...CampusOutdoorPlan.stage.center});link(stagePrevious,podium);roomTargets.grandstand=podium;
+ for(const room of Object.values(ROOMS_DB))if(!roomTargets[room.id]&&room.node!=='gate'){
+  const old=oldNodes[room.node];if(!old)continue;let p={x:old.x,y:0,z:old.z};const l=layouts.find(l=>insideFloor(l,p.x,p.z,1));if(l)p=l.entrance;
+  const target=node(room.node,p),entry=['palm-avenue-end','jiekou-trail-entry'].includes(room.node)?gate:pedestrianEntry;attachPath(entry,target,gridPath(graph[entry],p));
+ }
+ for(const [alias,id] of Object.entries(CampusSpatialData.aliases))ROOMS_DB[alias]={...ROOMS_DB[id],id:alias,aliasFor:id};
+ Object.keys(NAV_NODES).forEach(k=>delete NAV_NODES[k]);Object.assign(NAV_NODES,graph);
+ buildingGraph=false;startupSearches.clear();
+ // Raised photo-based surfaces need a changing-height connector. A fixed-height
+ // grid search cannot leave the stage or a bleacher tier to rejoin a level floor.
+ function gymSurfaceExit(position){
+  const l=layouts.find(l=>l.id==='gym-bld');if(!l||!M.inside(l.bounds,position.x,position.z))return null;
+  const q=l.local(position.x,position.z),points=[];
+  if(Math.abs(position.y-.6)<.1&&q.v>=-17&&q.v<=-13&&Math.abs(q.u)<14.2){
+   points.push(l.world(0,q.v,.6),l.world(0,-13,.6),l.world(0,-11),l.world(0,-10.8));
+  }else if(position.y>=0&&position.y<=.65&&Math.abs(q.u)<=1&&q.v>-13&&q.v<=-11){
+   points.push(l.world(0,-10.8));
+  }else if(position.y>3.68&&position.y<4.2&&q.v>=11&&q.v<=14.1&&Math.abs(q.u)<9.1){
+   points.push(l.world(q.u,10.6,3.6));
+  }else if(position.y>=0&&position.y<.25&&q.u>=-10&&q.u<=-6&&q.v>=18.3&&q.v<=24.3){
+   points.push(l.world(q.u,24.6));
+  }else if(position.y>.02&&position.y<.25&&q.v>=17&&q.v<=20.5){
+   if(q.u<-5.5&&q.v>18.3)points.push(l.world(q.u,24.6));
+   else{if(q.v<18.3)points.push(l.world(q.u,17.8,.12),l.world(0,17.8,.12));points.push(l.world(0,21.3));}
+  }else if(Math.abs(position.y-1.8)<.12){
+   const s=l.stairs.find(s=>CampusSpatialPlan.contains(s.windowLanding,q.u,q.v));
+   if(s){const r=l.ramps.find(r=>r.stairId===s.id&&r.h0===0);points.push(l.world(s.turnU,q.v,1.8),l.world(s.turnU,s.centerV+s.sign*1.25,1.8),r.end,r.start,l.world(s.innerU,s.centerV+s.sign*1.25));}
+  }
+  if(!points.length)return null;
+  const path=[{...position}];let previous=position;
+  for(const target of points){const origin=previous,n=Math.max(1,Math.ceil(Math.hypot(target.x-origin.x,target.z-origin.z)/.1));
+   for(let i=1;i<=n;i++){const t=i/n,x=origin.x+(target.x-origin.x)*t,z=origin.z+(target.z-origin.z)*t,y=CampusSpatialPlan.groundAt(l,x,z,position.y);
+    if(Math.abs(y-previous.y)>.35||checkWallCollision(x,y,z))return null;previous={x,y,z};path.push(previous);
+   }
+  }
+  return path;
+ }
+ // Photo courtyard treads and shallow access ramp are not level-floor
+ // graph anchors. Follow their measured-in-model support down to the court.
+ function new7CourtExit(position){
+  if(position.y<=.02||position.y>.25)return null;
+  const l=layouts.find(l=>l.id==='new-grade7'),q=l.local(position.x,position.z),r=l.ramps.find(r=>r.stairId==='new7-court-access');
+  const onRamp=M.inside(r,position.x,position.z),onStep=l.platforms.some(p=>p.kind==='new7-court-step'&&M.inside(p,position.x,position.z));
+  if(!onRamp&&!onStep)return null;
+  const goals=onRamp?[l.world((r.u0+r.u1)/2,q.v),l.world((r.u0+r.u1)/2,r.v1+.45)]:[l.world(q.u,3.8)],path=[{...position}];
+  let previous=position;
+  for(const goal of goals){const start=previous,n=Math.max(1,Math.ceil(Math.hypot(goal.x-start.x,goal.z-start.z)/.1));for(let i=1;i<=n;i++){
+   const t=i/n,x=start.x+(goal.x-start.x)*t,z=start.z+(goal.z-start.z)*t,y=CampusSpatialPlan.groundAt(l,x,z,previous.y);
+   if(Math.abs(y-previous.y)>.35||checkWallCollision(x,y,z))return null;previous={x,y,z};path.push(previous);
+  }}
+  return path;
+ }
+ // Goal-rooted shortest paths are reused while the static graph is unchanged.
+ // A heap avoids repeatedly scanning the entire open set during touch actions.
+ const navigationCache=new Map();
+ function pathsTo(goal){
+  if(navigationCache.has(goal))return navigationCache.get(goal);
+  const distance=new Map([[goal,0]]),next=new Map(),heap=[];
+  const push=item=>{heap.push(item);let i=heap.length-1;while(i){const parent=(i-1)>>1;if(heap[parent].cost<=item.cost)break;heap[i]=heap[parent];i=parent}heap[i]=item};
+  const pop=()=>{const first=heap[0],last=heap.pop();if(heap.length){let i=0;while(i*2+1<heap.length){let child=i*2+1;if(child+1<heap.length&&heap[child+1].cost<heap[child].cost)child++;if(heap[child].cost>=last.cost)break;heap[i]=heap[child];i=child}heap[i]=last}return first};
+  push({id:goal,cost:0});
+  while(heap.length){const current=pop();if(current.cost!==distance.get(current.id))continue;
+   const a=graph[current.id];for(const id of a.neighbors){const b=graph[id];if(!b)continue;const cost=current.cost+Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z);
+    if(cost<(distance.get(id)??Infinity)){distance.set(id,cost);next.set(id,current.id);push({id,cost})}
+   }
+  }
+  // Several room branches reuse the same physical corridor coordinates. Test
+  // each attachment once, retaining the branch with the lowest remaining cost.
+  const anchors=new Map();for(const id of distance.keys()){const n=graph[id],key=[n.buildingId||'',n.x.toFixed(5),n.y.toFixed(5),n.z.toFixed(5)].join('/'),previous=anchors.get(key);if(!previous||distance.get(id)<distance.get(previous.id))anchors.set(key,n);}
+  const result={distance,next,anchors:[...anchors.values()]};if(navigationCache.size>=8)navigationCache.delete(navigationCache.keys().next().value);navigationCache.set(goal,result);return result;
+ }
+ // Use the same body clearance, stair support and sliding-axis rules as walking.
+ // People are transient: the automatic walker handles them while executing.
+ function supportedSegment(a,b){
+  if(Math.abs(floorAt(a)-a.y)>.12)return false;
+  const p={x:a.x,y:a.y,z:a.z},length=Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z),steps=Math.max(1,Math.ceil(length/.16));
+  for(let i=1;i<=steps;i++){const t=i/steps,q={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z:a.z+(b.z-a.z)*t};
+   if(i*length/steps>.25&&navigationIndex.hit(q.x,q.y,q.z))return false;
+   if(moveAvatarWithCollision(p,q.x-p.x,q.z-p.z,q.y-p.y,true)||Math.hypot(p.x-q.x,p.z-q.z)>.02||Math.abs(p.y-q.y)>.12)return false;
+  }
+  return true;
+ }
+ function simplifyRoute(points){
+  const turns=[];
+  for(const p of points){const b=turns.at(-1),a=turns.at(-2);if(b&&Math.hypot(p.x-b.x,p.y-b.y,p.z-b.z)<1e-7)continue;
+   if(a){const ux=b.x-a.x,uy=b.y-a.y,uz=b.z-a.z,vx=p.x-b.x,vy=p.y-b.y,vz=p.z-b.z;
+    const cross=Math.hypot(uy*vz-uz*vy,uz*vx-ux*vz,ux*vy-uy*vx);
+    if(cross<1e-7&&ux*vx+uy*vy+uz*vz>0)turns.pop();
+   }turns.push({x:p.x,y:p.y,z:p.z});
+  }
+  if(turns.length<2)return points.map(p=>({x:p.x,y:p.y,z:p.z}));
+  const result=[turns[0]];let i=0;
+  while(i<turns.length-1){let j=turns.length-1;
+   for(;j>i+1;j--)if(Math.abs(turns[i].y-turns[j].y)<.08&&supportedSegment(turns[i],turns[j]))break;
+   result.push(turns[j]);i=j;
+  }
+  return result;
+ }
+ function route(position,room){
+  const target=graph[room.node];if(!target)return null;
+  const entrance=CampusOutdoorPlan.entrance,pedestrian=entrance.pedestrian;
+  const cross=(position.x-entrance.gate.x)*entrance.right.x+(position.z-entrance.gate.z)*entrance.right.z,inward=(position.x-entrance.gate.x)*entrance.axis.x+(position.z-entrance.gate.z)*entrance.axis.z;
+  // Keep the first walking leg through the real wicket. The generic nearest-
+  // anchor shortcut must not replace it with the wider vehicle driveway.
+  if(![gate,'palm-avenue-end','jiekou-trail-entry'].includes(room.node)&&Math.abs(position.y)<.15&&Math.abs(cross-pedestrian.cross)<.8&&inward>=-8&&inward<5.75){
+   const entry=pedestrian.inside,approach=supportedSegment(position,entry)?[{...position},{...entry}]:gridPath(position,entry);
+   const tail=approach&&route(entry,room);return tail?[...approach,...tail.slice(1)]:null;
+  }
+  if(![gate,'palm-avenue-end','jiekou-trail-entry'].includes(room.node)&&Math.abs(position.y)<.15&&CampusEntranceAvenue.trailContains(position.x,position.z)){const approach=gridPath(position,pedestrian.outside),tail=approach&&route(pedestrian.outside,room);return tail?[...approach,...tail.slice(1)]:null;}
+  const bankExit=CampusOutdoorPlan.lanBankExit(position);
+  if(bankExit){const tail=route(bankExit.at(-1),room);return tail?[...bankExit,...tail.slice(1)]:null;}
+  const courtExit=new7CourtExit(position);
+  if(courtExit){const rest=route(courtExit.at(-1),room);return rest?[...courtExit,...rest.slice(1)]:null;}
+  const gymExit=gymSurfaceExit(position);
+  if(gymExit){const rest=route(gymExit.at(-1),room);return rest?[...gymExit,...rest.slice(1)]:null;}
+  let stageExit=CampusOutdoorPlan.exitPath(position);
+  if(stageExit){
+   if(CampusOutdoorPlan.inside(CampusOutdoorPlan.stage,position)){
+    const path=gridPath(position,{x:-62,y:1.4,z:8.1},1.4,null,true);if(!path)return null;
+    stageExit=[...path,...CampusOutdoorPlan.stairsPath().reverse().slice(1),{...CampusOutdoorPlan.stage.foot}];
+   }
+   const ids=findShortestPath(stageFoot,room.node);return ids?[...stageExit,...ids.slice(1).map(id=>graph[id])]:null;
+  }
+  const f=Math.max(1,Math.round(position.y/FH)+1),l=layouts.find(l=>insideFloor(l,position.x,position.z,f));
+  const cached=pathsTo(room.node),distance=n=>Math.hypot(n.x-position.x,n.y-position.y,n.z-position.z);
+  if(supportedSegment(position,target))return [{x:position.x,y:position.y,z:position.z},{x:target.x,y:target.y,z:target.z}];
+  const reachable=cached.anchors.filter(n=>Math.abs(n.y-position.y)<=FH+.36).sort((a,b)=>distance(a)-distance(b));
+  const candidates=reachable.slice(0,48);
+  let best=null;
+  for(const n of candidates){const cost=distance(n)+cached.distance.get(n.id);if(best&&cost>=best.cost)continue;
+   if(supportedSegment(position,n))best={start:n.id,connector:[{x:position.x,y:position.y,z:position.z},n],cost};
+  }
+  if(!best)for(const n of reachable.filter(n=>Math.abs(n.y-position.y)<.08&&(l?n.buildingId===l.id:n.id==='gate'||n.id.includes('-outside-'))).slice(0,20)){
+   const connector=gridPath(position,n,position.y,l);if(connector){best={start:n.id,connector};break}
+  }
+  if(!best)return null;const tail=[];let id=best.start;
+  while(id!==room.node){id=cached.next.get(id);if(!id)return null;tail.push(graph[id]);}
+  return simplifyRoute([...best.connector,...tail]);
+ }
+ // Rejoin a nearby level part of the existing route; never shortcut stairs.
+ function bypassPeople(position,points){
+  if(!window.campusPeople?.blocksPlayer)return null;
+  const floor=Math.round(position.y/FH)+1,l=layouts.find(l=>insideFloor(l,position.x,position.z,floor));
+  for(let i=0;i<Math.min(points.length,40);i++){
+   const target=points[i],distance=Math.hypot(target.x-position.x,target.z-position.z);
+   if(Math.abs(target.y-position.y)>.15)break;if(distance<2.5)continue;
+   // Simplified routes can have long straight segments. Rejoin six units
+   // along that segment instead of skipping every distant waypoint.
+   const previous=i?points[i-1]:position,segment=Math.hypot(target.x-previous.x,target.z-previous.z),along=Math.min(6,segment)/Math.max(segment,1e-6);
+   const rejoin=distance>8?{x:previous.x+(target.x-previous.x)*along,y:position.y,z:previous.z+(target.z-previous.z)*along}:target;
+   if(rejoin!==target&&!supportedSegment(rejoin,target))continue;
+   const detour=gridPath(position,rejoin,position.y,l||null,false,true);
+   if(detour)return [...detour,...(rejoin!==target?[target]:[]),...points.slice(i+1)];
+  }
+  return null;
+ }
+ function updateCamera(){
+  const pose=M.cameraPose(avatarGroup.position,avatarAngle,walkPitch,currentMode==='firstperson',window.campusMouse?.distance||6.5),eye=new THREE.Vector3(avatarGroup.position.x,avatarGroup.position.y+1.55,avatarGroup.position.z),desired=new THREE.Vector3(pose.position.x,pose.position.y,pose.position.z);
+  const l=layouts.find(l=>insideFloor(l,avatarGroup.position.x,avatarGroup.position.z,Math.max(1,Math.round(avatarGroup.position.y/FH)+1)));
+  const inStair=l&&l.stairs.some(s=>M.inside(s.rect,avatarGroup.position.x,avatarGroup.position.z));
+  if(l){if(l.id!=='gym-bld'&&!inStair&&currentMode==='avatar')desired.y=Math.min(desired.y,(Math.floor((avatarGroup.position.y+.1)/FH)+1)*FH-.7);if(currentMode==='avatar')desired.lerp(eye,.5)}
+  const fov=l?70:60;if(camera.fov!==fov){camera.fov=fov;camera.updateProjectionMatrix()}
+  const cameraGround=p=>{let y=floorAt(p);for(const layout of layouts)for(const r of layout.ramps)if(M.inside(r,p.x,p.z)&&avatarGroup.position.y>=r.h0-.35&&avatarGroup.position.y<=r.h1+.35){const t=Math.max(0,Math.min(1,((r.axis==='x'?p.x:p.z)-(r.axis==='x'?r.start.x:r.start.z))/((r.axis==='x'?r.end.x:r.end.z)-(r.axis==='x'?r.start.x:r.start.z))));y=Math.max(y,r.h0+t*(r.h1-r.h0))}return y};
+  const clear=currentMode==='avatar'?CampusMouseModel.cameraClear(eye,desired,cameraGround,p=>window.campusCollisionIndex.pointHit(p.x,p.y,p.z)||cameraIndex.pointHit(p.x,p.y,p.z)):1;
+  camera.position.copy(eye).lerp(desired,clear);controls.target.set(pose.target.x,pose.target.y,pose.target.z);camera.lookAt(controls.target);avatarGroup.visible=currentMode==='avatar'&&clear>.2;
+ }
+ let touch=null;renderer.domElement.addEventListener('touchstart',e=>{if(currentMode!=='bird'&&e.touches.length===1)touch={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});
+ renderer.domElement.addEventListener('touchmove',e=>{if(!touch||currentMode==='bird')return;const p=e.touches[0];if(!p)return;applyManualCameraRotation(p.clientX-touch.x,p.clientY-touch.y);touch={x:p.clientX,y:p.clientY};e.preventDefault()},{passive:false});renderer.domElement.addEventListener('touchend',()=>touch=null);
+ const roomAt=p=>{const f=Math.floor((p.y+.15)/FH)+1;for(const l of layouts){const q=l.local(p.x,p.z),r=l.rooms.find(r=>r.floor===f&&CampusSpatialPlan.contains(r,q.u,q.v));if(r)return r}return null};
+ window.campusWalkWorld={layouts,graph,ground:floorAt,stepHeight,route,gridPath,bypassPeople,updateCamera,roomAt,galleries,insideFloor,cameraBlocked:p=>cameraIndex.pointHit(p.x,p.y,p.z)};
+})();

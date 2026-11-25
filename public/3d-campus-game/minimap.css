@@ -1,0 +1,9 @@
+#minimap-card{pointer-events:none;left:16px;bottom:calc(42px + env(safe-area-inset-bottom,0px));width:176px;height:176px;border-radius:22px;border:2px solid #ffffffcc;background:#2b3644;box-shadow:0 10px 30px #060c1473;overflow:visible;z-index:24;padding:0;transform:none}
+#minimap-canvas{border-radius:20px;width:100%;height:100%;overflow:hidden}
+#minimap-card:hover{transform:none;border-color:#ffffffcc}
+.minimap-location{position:absolute;left:0;right:0;top:calc(100% + 8px);padding:4px 7px;border-radius:7px;background:#1c2a35e6;color:#f0f2e8;text-align:center;font-size:11px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.02em}
+.minimap-compass{left:0;top:0;right:auto;bottom:auto;width:22px;height:22px;border:0;border-radius:50%;background:#e55248;color:#fff;font-size:9px;transform:translate(-50%,-50%);box-shadow:0 2px 7px #0005}
+.minimap-floor-badge{right:7px;bottom:7px;border:0;background:#101923;color:white;font-size:15px;padding:2px 7px;border-radius:7px;font-weight:700}
+#scene-caption{bottom:240px}
+@media(max-width:768px){#minimap-card{left:12px;bottom:calc(40px + env(safe-area-inset-bottom,0px));width:128px;height:128px;border-radius:17px}#minimap-canvas{border-radius:15px}.minimap-location{font-size:10px;padding:3px 4px}.minimap-compass{width:19px;height:19px;font-size:8px}.minimap-floor-badge{font-size:13px;right:5px;bottom:5px}#scene-caption{bottom:185px}#scene-toolbar{max-width:calc(100vw - 154px)}}
+@media(max-width:768px){.minimap-location{right:auto;width:108px;font-size:9px}}
