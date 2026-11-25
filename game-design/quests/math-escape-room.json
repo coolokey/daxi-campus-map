@@ -1,0 +1,47 @@
+{
+  "title": "大溪國中 80 週年：校園數學密令",
+  "version": 1,
+  "mode": "math-escape-room",
+  "quests": [
+    {
+      "id": "coordinate-01",
+      "title": "校門口的座標密令",
+      "location": "gate",
+      "topic": "coordinate-plane",
+      "question": "地圖上 A=(-2,3)、B=(4,3)，兩點的水平距離是多少？",
+      "answer": "6",
+      "hint": "同一水平線上的距離等於 x 座標相減後取絕對值。",
+      "reward": "行政大樓入口密碼的第一碼"
+    },
+    {
+      "id": "geometry-01",
+      "title": "操場外圈的秘密",
+      "location": "sports-ground",
+      "topic": "area-and-perimeter",
+      "question": "矩形花圃長 12 公尺、寬 5 公尺，面積是多少平方公尺？",
+      "answer": "60",
+      "hint": "矩形面積等於長乘以寬。",
+      "reward": "木藝教室寶箱鑰匙"
+    },
+    {
+      "id": "pythagorean-01",
+      "title": "最短的回家路",
+      "location": "courtyard",
+      "topic": "pythagorean-theorem",
+      "question": "兩條互相垂直的道路長 6 公尺與 8 公尺，直接穿越中庭的距離是多少？",
+      "answer": "10",
+      "hint": "使用 6²+8² 的平方根。",
+      "reward": "圖書館下一關線索"
+    },
+    {
+      "id": "equation-01",
+      "title": "樓層密碼",
+      "location": "academic-building",
+      "topic": "linear-equation",
+      "question": "3x+5=20，x 是多少？",
+      "answer": "5",
+      "hint": "先移除常數 5，再除以 3。",
+      "reward": "校慶禮堂煙火秀"
+    }
+  ]
+}
