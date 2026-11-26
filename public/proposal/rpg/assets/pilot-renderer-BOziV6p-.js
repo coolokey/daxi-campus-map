@@ -1,0 +1,1 @@
+import"./presentation-DoknVjTX.js";function e(e){}export{e as setActorPainter};

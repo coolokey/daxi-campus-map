@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "storybook-character-loading-improvement",
+  "stage": "storybook-campus-building-art",
   "playablePilot": true,
   "dataVersion": "115-0302e9dea7ba8a16",
   "sourceCommit": "f99070472930845605b04355395177ddd3ef3dfa",
@@ -444,5 +444,15 @@
     "deferredRosterCards": true,
     "testsPassed": 20,
     "imageQualityChanged": false
+  },
+  "buildingArt": {
+    "file": "building-art-v1.json",
+    "roofTypesFollowCampusGuide": true,
+    "floorBandsFollowSourceFloorCount": true,
+    "perSurfaceOcclusion": true,
+    "portalsAndFootprintsChanged": false,
+    "focusedTestsPassed": 11,
+    "regressionTestsPassed": 192,
+    "desktopAndPhoneVisualCheck": true
   }
 }

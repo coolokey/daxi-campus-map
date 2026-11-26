@@ -1,0 +1,12 @@
+{
+  "pitchedBuildings": [
+    "admin-front",
+    "health-bld",
+    "grade8-front",
+    "grade9-back",
+    "grade8-mid"
+  ],
+  "solarBuilding": "gym-bld",
+  "source": "daxi-campus-map/public/campus-explorer/campus-data.js and explorer.js",
+  "note": "Source roof types; compact RPG elevations, no changes to footprints or entrances."
+}
